@@ -14,15 +14,15 @@ public class FMODMusicPlayer : MonoBehaviour
 
     #region General
     [FoldoutGroup("General")]
-    [Header("Speaker")]
     public FMODAudioSource speaker;
 
     [HorizontalGroup("General/timeLine")]
+    [ReadOnly]
     public bool isPaused;
 
     [HorizontalGroup("General/timeLine", width:0.75f)]
     [ShowInInspector]
-    private float timelinePosition { get { return Application.isPlaying ? speaker.TimelinePosotion() / 1000f : 0; } }
+    private float timelinePosition { get { return Application.isPlaying ? speaker.TimelinePosition() / 1000f : 0; } }
     #endregion
 
     #region Music Tracks
@@ -44,16 +44,19 @@ public class FMODMusicPlayer : MonoBehaviour
     [FoldoutGroup("Dynamics")]
     public int numOfEngagingWave;
 
-    [HorizontalGroup("Dynamics")]
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float bassIndex { get { return speaker.GetParamByName("bassIndex"); } }
-    [HorizontalGroup("Dynamics")]
+
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float drumIndex { get { return speaker.GetParamByName("drumIndex"); } }
-    [HorizontalGroup("Dynamics")]
+
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float melodyIndex { get { return speaker.GetParamByName("melodyIndex"); } }
-    [HorizontalGroup("Dynamics")]
+
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float backingIndex { get { return speaker.GetParamByName("backingIndex"); } }
 

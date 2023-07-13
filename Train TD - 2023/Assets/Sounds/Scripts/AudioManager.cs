@@ -3,15 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
+using Sirenix.OdinInspector;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
-{
+{    
     // singleton class
     public static AudioManager instance { get; private set; }
 
+    #region Unity Mixer
+    [FoldoutGroup("Unity Mixer")]
+    [AssetList]
+    public AudioMixer unityMixer;
+
+    private void UpdateUnityMixer()
+    {
+        unityMixer.GetFloat("EnemyEngineVol", out float enemyEngineVol);
+        float targetVol = Mathf.Lerp(enemyEngineVol, TimeController.s.isPaused ? -80 : 0, Time.unscaledDeltaTime * 10f);
+        unityMixer.SetFloat("EnemyEngineVol", targetVol);
+    }
+    #endregion
+
+    #region FMOD Mixer
+    [FoldoutGroup("FMOD Mixer")]
     [Header("Music Mixer")]
     public Bus musicBus;
-    [Range(-80f, 10f)] public float musicBusVolume;
+    [FoldoutGroup("FMOD Mixer")]
+    [PropertyRange(-80f, 10f)]
+    public float musicBusVolume;
+
+    private void UpdateBus()
+    {
+        musicBus.setVolume(musicBusVolume);
+    }
+    #endregion
 
     private void Awake()
     {
@@ -41,22 +66,18 @@ public class AudioManager : MonoBehaviour
     private void Update()
     {
         UpdateBus();
+
+        UpdateUnityMixer();
     }
 
-    private void UpdateBus()
-    {
-        musicBus.setVolume(musicBusVolume);
-    }
-    
-    private float DecibleToLinear(float db)
-    {
-        return Mathf.Pow(10f, db / 20f);
-    }
 
+
+    #region static methods
     public static EventInstance CreateFmodEventInstance(EventReference eventRef)
     {
         EventInstance eventInst = RuntimeManager.CreateInstance(eventRef);
         // Debug.Log(eventRef.ToString() + " is instantitated");
         return eventInst;
     }
+    #endregion
 }

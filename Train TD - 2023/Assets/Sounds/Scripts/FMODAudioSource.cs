@@ -4,29 +4,61 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 using FMOD;
+using Sirenix.OdinInspector;
 
 public class FMODAudioSource : MonoBehaviour
 {
+    [FoldoutGroup("Properties")]
     public EventReference clip;
+
+    [FoldoutGroup("Play & Pause")]
     public bool pauseOnGamePause = true;
+
+    [FoldoutGroup("Play & Pause")]
     public bool playOnStart = true;
-    [Range(0f, 3f)]public float volume = 1;
+
+
+    [FoldoutGroup("Properties")]
+    [PropertyRange(0f, 3f)]
+    public float volume = 1;
+
+    [FoldoutGroup("Properties")]
+    [PropertyRange(0f, 3f)]
+    public float pitch = 1;
 
     private EventInstance soundInstance;
-    private int pausedPosition;
 
     private void Start()
     {
         if(!clip.Equals(default(EventReference)))
             soundInstance = AudioManager.CreateFmodEventInstance(clip);
 
+
         if (playOnStart)
             Play();
+    }
+
+    private VECTOR Vector3ToVector(Vector3 vec)
+    {
+        VECTOR tmp = new VECTOR();
+        tmp.x = vec.x;
+        tmp.y = vec.y;
+        tmp.z = vec.z;
+        return tmp;
     }
 
     private void Update()
     {
         soundInstance.setVolume(volume);
+        soundInstance.setPitch(pitch);
+
+
+        ATTRIBUTES_3D attributes = new ATTRIBUTES_3D();
+        attributes.position = Vector3ToVector(transform.position);
+        attributes.forward = Vector3ToVector(transform.forward);
+        attributes.up = Vector3ToVector(transform.up);
+        soundInstance.set3DAttributes(attributes);
+
     }
 
     private void OnEnable()
@@ -44,7 +76,7 @@ public class FMODAudioSource : MonoBehaviour
 
 
     #region Play/Stop/Pause Functions
-    public int TimelinePosotion()
+    public int TimelinePosition()
     {
         soundInstance.getTimelinePosition(out int position);
         return position;
@@ -65,10 +97,6 @@ public class FMODAudioSource : MonoBehaviour
     {
         soundInstance.setPaused(true);
         // Invoke("PauseDelay", 0.5f);
-    }
-    private void PauseDelay()
-    {
-        soundInstance.setPaused(true);
     }
 
     public void UnPause()
