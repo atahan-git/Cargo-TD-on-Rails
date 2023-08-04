@@ -14882,6 +14882,10 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 96a10f57fff1f5d43b34e50fe2e4fabe, type: 3}
@@ -14892,3 +14896,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 982198009828473117}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7266964835821673512 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
+  m_PrefabInstance: {fileID: 982198009828473117}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8902459337375175774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7266964835821673512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 012b31bfceac5bd4bb3eb412c037b2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: 466770372
+      Data2: 1266614495
+      Data3: -774762054
+      Data4: -1716163024
+    Path: event:/SFX/Gun SFX/Enemy AVC
+  playOnStart: 1

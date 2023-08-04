@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{1bd259c4-00df-4b7f-ba11-d2d1306eb599}">
 		<property name="name">
-			<value>EnemyCannon 1</value>
+			<value>Enemy AVC</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -56,7 +56,7 @@
 			<destination>{71cc0c79-af6a-454c-aea2-ceec6ab70c0d}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{de6b1edf-1598-4103-98a7-55f69675bfbe}</destination>
+			<destination>{fff3b1fe-38b4-4a21-8115-998e068ca5f4}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{7c48ec6b-3c52-4ae4-ba66-4478ca45f7e7}" />
@@ -88,6 +88,7 @@
 	<object class="GroupTrack" id="{ad4dba30-fde2-4c2b-8ed6-86f20285eeab}">
 		<relationship name="modules">
 			<destination>{e3d933d9-3f49-4f76-a44b-64475e562c9a}</destination>
+			<destination>{d3bff35a-daa5-44e7-879b-b0145f70a443}</destination>
 		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{b40ac228-437e-4368-8ed9-9b297d04c8b2}</destination>
@@ -99,6 +100,7 @@
 			<destination>{f4d5f76d-0181-47cf-9474-b10da8656892}</destination>
 			<destination>{7b5f6e58-62ae-4ee9-adc4-bb3e5cb93cfc}</destination>
 			<destination>{e3d933d9-3f49-4f76-a44b-64475e562c9a}</destination>
+			<destination>{d3bff35a-daa5-44e7-879b-b0145f70a443}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{e98b6d81-4ae0-4e8a-a2ef-86b12ccf6393}">
@@ -201,15 +203,35 @@
 			<value>0.040000000000000001</value>
 		</property>
 		<property name="length">
-			<value>0.36000000000000004</value>
+			<value>0.16000000000000003</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{67ccaa5c-e7cc-40d8-baa7-8385f3054bd1}</destination>
 		</relationship>
 	</object>
+	<object class="SingleSound" id="{d3bff35a-daa5-44e7-879b-b0145f70a443}">
+		<property name="start">
+			<value>0.30000000000000004</value>
+		</property>
+		<property name="length">
+			<value>0.40000000000000013</value>
+		</property>
+		<property name="timelockedOffset">
+			<value>4.4040639132514947</value>
+		</property>
+		<property name="volume">
+			<value>-16</value>
+		</property>
+		<property name="pitch">
+			<value>-9</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{f12a537c-bed2-40ff-99cb-740f9ca355fa}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerGroup" id="{b40ac228-437e-4368-8ed9-9b297d04c8b2}">
 		<property name="volume">
-			<value>-3.5</value>
+			<value>-7</value>
 		</property>
 		<property name="name">
 			<value>Audio 4</value>
@@ -279,7 +301,7 @@
 	<object class="MixerBusFader" id="{bc83d6c1-57e9-494b-a8de-63753eaeb156}" />
 	<object class="DistortionEffect" id="{e10309f2-ab37-49ef-a4d9-6e9e695a4b91}">
 		<property name="level">
-			<value>0.86500001</value>
+			<value>0.974999964</value>
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{e5ec136e-1b5e-4f33-8134-8a7e35c36da9}" />

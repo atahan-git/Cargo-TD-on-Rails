@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{b17be1fe-fa64-4af3-a873-0bb330f52fc1}">
+		<property name="assetPath">
+			<value>Gun Sounds/Procedural Gun SFX/Remington_700_7.62x51mm_1m_right_MKH8040_1_clean_Single_shots_x_14.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>53.867333333333335</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{91efd2a6-c39c-40dc-a364-71eda5276c1d}</destination>
+		</relationship>
+	</object>
+</objects>

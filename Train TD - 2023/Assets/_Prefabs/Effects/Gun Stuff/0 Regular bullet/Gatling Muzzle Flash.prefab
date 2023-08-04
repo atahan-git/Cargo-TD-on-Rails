@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 397537018678349697}
   - component: {fileID: 6410512637714605023}
   - component: {fileID: 885264361701577247}
+  - component: {fileID: 2844811245395308150}
   m_Layer: 0
   m_Name: Sound
   m_TagString: Untagged
@@ -101,7 +102,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1542204055088986272}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 6205370731591766685, guid: 660d07ac376d6214b99c5d084e20d01f, type: 2}
   m_audioClip: {fileID: 8300000, guid: 96a10f57fff1f5d43b34e50fe2e4fabe, type: 3}
@@ -190,6 +191,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2844811245395308150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542204055088986272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 012b31bfceac5bd4bb3eb412c037b2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: 985924154
+      Data2: 1189610256
+      Data3: 166657199
+      Data4: -340889261
+    Path: event:/SFX/Gun SFX/Enemy Gatling
+  playOnStart: 1
 --- !u!1 &4910342899242157711
 GameObject:
   m_ObjectHideFlags: 0

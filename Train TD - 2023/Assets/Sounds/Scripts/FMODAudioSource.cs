@@ -10,6 +10,7 @@ public class FMODAudioSource : MonoBehaviour
     [FoldoutGroup("Clip")]
     public EventReference clip;
 
+
     [FoldoutGroup("Play settings")]
     public bool pauseOnGamePause = true;
 
@@ -18,6 +19,7 @@ public class FMODAudioSource : MonoBehaviour
 
     [FoldoutGroup("Play settings")]
     public bool instantiateInstanceOnStart = true;
+
 
     [FoldoutGroup("Play settings")]
     [Range(0f, 3f)]
@@ -28,8 +30,10 @@ public class FMODAudioSource : MonoBehaviour
 
     private void Start()
     {
-        if(!clip.Equals(default(EventReference)) && instantiateInstanceOnStart)
+        if (!clip.Equals(default(EventReference)) && instantiateInstanceOnStart)
+        {
             soundInstance = AudioManager.CreateFmodEventInstance(clip);
+        }
 
         if (playOnStart)
             Play();
@@ -52,6 +56,7 @@ public class FMODAudioSource : MonoBehaviour
     private void OnDestroy()
     {
         Stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        soundInstance.release();
         if (pauseOnGamePause)
         {
             TimeController.PausedEvent.RemoveListener(OnPause);
@@ -123,6 +128,11 @@ public class FMODAudioSource : MonoBehaviour
     public void Play()
     {
         soundInstance.start();
+    }
+
+    public void PlayDelayed(float delayTime)
+    {
+        Invoke("Play", delayTime);
     }
 
     [ButtonGroup("Play control/Play")]
