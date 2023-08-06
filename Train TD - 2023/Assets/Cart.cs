@@ -66,8 +66,7 @@ public class Cart : MonoBehaviour {
     public MeshRenderer cartMaterial;
 
     public Transform genericParticlesParent;
-
-
+    
     public void ResetState() {
         SetUpOverlays();
         SetUpOutlines();

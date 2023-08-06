@@ -1032,6 +1032,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cursor State Changer
       objectReference: {fileID: 0}
+    - target: {fileID: 2094104702812729048, guid: ee11766744e775843943a798f3ceb194, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4520012201633438021, guid: ee11766744e775843943a798f3ceb194, type: 3}
       propertyPath: m_RootOrder
       value: 3

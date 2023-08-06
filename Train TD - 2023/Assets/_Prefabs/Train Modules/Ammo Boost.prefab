@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2459800853535413774}
   m_Layer: 11
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 4964368836431716458}
   m_Layer: 11
   m_Name: Cube (3)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -513,7 +513,7 @@ GameObject:
   - component: {fileID: 7657403912087382203}
   m_Layer: 11
   m_Name: Cube (2)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -596,7 +596,7 @@ GameObject:
   - component: {fileID: 7746197678032756062}
   m_Layer: 11
   m_Name: Cube (1)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1033,7 +1033,7 @@ GameObject:
   - component: {fileID: 7786165240032343434}
   m_Layer: 11
   m_Name: Attachment Thing prefab
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1200,10 +1200,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 451fb5986e82b3845a1e56dc3a03582d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachmentThingParent: {fileID: 4021981235061229975}
   attachmentThing: {fileID: 5231439669197304400}
   attachmentThings: []
   isAttached: 0
+  spawnAttachmentThings: 1
   ammoBoost: 1
+  baseRange: 1
+  rangeBoost: 0
+  boostMultiplier: 1
+  boostRangeColor: {r: 10.556064, g: 9.728137, b: 0.16558532, a: 1}
 --- !u!1001 &5926245680219220562
 PrefabInstance:
   m_ObjectHideFlags: 0

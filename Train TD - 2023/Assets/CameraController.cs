@@ -584,7 +584,7 @@ public class CameraController : MonoBehaviour {
         Quaternion yQuaternion = Quaternion.AngleAxis (rotTarget.y, -Vector3.right);
         
         var targetPos = directControlTransform.position;
-        var targetRot = directControlTransform.rotation * xQuaternion * yQuaternion;
+        var targetRot = /*directControlTransform.rotation **/ xQuaternion * yQuaternion;
         cameraLerpDummy.transform.position = Vector3.Lerp(cameraLerpDummy.transform.position, targetPos, posLerpSpeed * Time.unscaledDeltaTime);
 
         if (rotLerping) {

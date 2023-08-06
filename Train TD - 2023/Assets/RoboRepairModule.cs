@@ -46,7 +46,7 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     bool BreadthFirstRepairSearch() {
         var carts = new List<Cart>();
 
-        var range = Mathf.Min(myTrain.carts.Count, baseRange + rangeBoost + 1);
+        var range = GetRange();
         
         for (int i = 0; i < range; i++) {
 
@@ -139,7 +139,7 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     
     
     protected override void _AttachedToTrain() {
-        for (int i = 1; i < (baseRange+rangeBoost*boostMultiplier)+1; i++) {
+        for (int i = 1; i < GetRange()+1; i++) {
             ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), true);
             ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), true);
         }
@@ -176,5 +176,14 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     public void ModifyStats(int range, float value) {
         rangeBoost += range;
         boostMultiplier += value;
+    }
+
+    public int GetRange() {
+        return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
+    }
+
+    [ColorUsageAttribute(true, true)] public Color boostRangeColor = Color.green;
+    public Color GetColor() {
+        return boostRangeColor;
     }
 }

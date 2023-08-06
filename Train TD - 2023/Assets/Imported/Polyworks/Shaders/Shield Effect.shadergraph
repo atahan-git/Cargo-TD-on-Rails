@@ -363,20 +363,6 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "44dce26d435c7a86a052390f19f3064e"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "37ba4f26bc5e46e1a6a234373ec940ff"
-                },
-                "m_SlotId": 0
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
                     "m_Id": "464966edf878258bbb739035ffb870e6"
                 },
                 "m_SlotId": 2
@@ -552,6 +538,20 @@
             "m_InputSlot": {
                 "m_Node": {
                     "m_Id": "185e98e697cc3e889182cd27a24ed37f"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "a468483caea4e785bb338b2e93452990"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "37ba4f26bc5e46e1a6a234373ec940ff"
                 },
                 "m_SlotId": 0
             }
@@ -1187,7 +1187,7 @@
     "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_5531E78E",
     "m_OverrideReferenceName": "_BaseColor",
-    "m_GeneratePropertyBlock": true,
+    "m_GeneratePropertyBlock": false,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_Precision": 0,

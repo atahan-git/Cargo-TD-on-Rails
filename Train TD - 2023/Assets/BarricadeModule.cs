@@ -14,7 +14,7 @@ public class BarricadeModule : ActivateWhenAttachedToTrain, IExtraInfo,IBooster
     
     
     protected override void _AttachedToTrain() {
-        for (int i = 1; i < (baseRange+rangeBoost)+1; i++) {
+        for (int i = 1; i < GetRange()+1; i++) {
             ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), true);
             ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), true);
         }
@@ -58,5 +58,14 @@ public class BarricadeModule : ActivateWhenAttachedToTrain, IExtraInfo,IBooster
     public void ModifyStats(int range, float value) {
         rangeBoost += range;
         boostMultiplier += value;
+    }
+    
+    public int GetRange() {
+        return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
+    }
+
+    [ColorUsageAttribute(true, true)] public Color boostRangeColor = Color.blue;
+    public Color GetColor() {
+        return boostRangeColor;
     }
 }

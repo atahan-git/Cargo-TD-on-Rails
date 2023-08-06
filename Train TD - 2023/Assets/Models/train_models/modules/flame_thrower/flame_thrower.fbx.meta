@@ -3,7 +3,17 @@ guid: 8ccc777581d4ac74b8784e303ca720da
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flame_thrower_texture
+    second: {fileID: 2100000, guid: 1f19e877bd2e45544901335fc08373f4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gun_rotate_texture
+    second: {fileID: 2100000, guid: ee9c43b67e2e4024da9d23c9f69cd1ba, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

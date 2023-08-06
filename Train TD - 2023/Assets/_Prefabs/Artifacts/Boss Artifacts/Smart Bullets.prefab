@@ -43,6 +43,10 @@ PrefabInstance:
       propertyPath: displayName
       value: Smart Bullets
       objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: isGoodEffect
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4702187580605122048, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -300,15 +304,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9db596f7ab01e8546817c1e20ff53ff4, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.90803504
+      value: -0.97992295
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9db596f7ab01e8546817c1e20ff53ff4, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9db596f7ab01e8546817c1e20ff53ff4, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.41889414
+      value: 0.19937661
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9db596f7ab01e8546817c1e20ff53ff4, type: 3}
       propertyPath: m_LocalRotation.z
@@ -320,7 +324,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9db596f7ab01e8546817c1e20ff53ff4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 49.53
+      value: 336.999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9db596f7ab01e8546817c1e20ff53ff4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

@@ -21,8 +21,10 @@ public class Artifact : MonoBehaviour
     public GameObject attachedToCartPart;
 
     public Sprite mySprite;
-
-
+    
+    public int range;
+    public bool isGoodEffect;
+    
     public bool isAttached = false;
     private void Start() {
         ApplyNameAndSprite();

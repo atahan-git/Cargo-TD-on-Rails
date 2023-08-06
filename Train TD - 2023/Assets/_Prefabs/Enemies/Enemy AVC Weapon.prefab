@@ -50,15 +50,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunSprite: {fileID: 21300000, guid: bec3762d1db84584099e1e504d2ab9e9, type: 3}
   isGigaGatling: 0
-  fireDelayReductionPerGatlingAmount: 2
+  gatlinificator: 0
+  maxFireRateReduction: 0.9
   gatlingAmount: 0
   maxGatlingAmount: 0
   rotateTransforms:
   - transform: {fileID: 7765424429026798987}
+  rotateTransform:
+    anchor: {fileID: 0}
+    xAxis: {fileID: 0}
+    yAxis: {fileID: 0}
+    centerBarrelEnd: {fileID: 0}
   barrelEndTransforms:
   - transform: {fileID: 594081064391482721}
   - transform: {fileID: 6865992294043940538}
   projectileSpawnOffset: 0.2
+  useProviderBullet: 0
+  myType: 0
   bulletPrefab: {fileID: 4908573584345181807, guid: 98bc522f3c4ff4b44a93406dcf01c13c, type: 3}
   muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3a4d3fe2abd806c46964330e5993cfa2, type: 3}
   target: {fileID: 0}
@@ -68,8 +76,15 @@ MonoBehaviour:
   fireBarrageDelay: 0.2
   fireRateMultiplier: 1
   projectileDamage: 25
+  burnDamage: 0
+  bonusBurnDamage: 0
   damageMultiplier: 1
+  sniperDamageMultiplier: 1
+  burnDamageMultiplier: 1
+  regularToBurnDamageConversionMultiplier: 0
+  regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  isHeal: 0
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
@@ -91,10 +106,19 @@ MonoBehaviour:
   stopShootingEvent:
     m_PersistentCalls:
       m_Calls: []
+  gatlingCountZeroEvent:
+    m_PersistentCalls:
+      m_Calls: []
   gunShakeOnShoot: 0
   beingDirectControlled: 0
+  isHoming: 0
   boostDamageOnUpgrade: 0.5
   waitTimer: 0
+  isFire: 0
+  isSticky: 0
+  isExplosive: 0
+  explosionRange: 0
+  explosionRangeBoost: 0
 --- !u!114 &7919185260005158776
 MonoBehaviour:
   m_ObjectHideFlags: 0

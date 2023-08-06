@@ -46,4 +46,15 @@ public class ButtonPrompt : MonoBehaviour {
         if(GamepadControlsHelper.s != null)
             GamepadControlsHelper.s.buttonPrompts.Remove(this);
     }
+
+    
+    [Button]
+    void Debug_ApplyGamepadSprite() {
+        keyPrompt.sprite = gamepadSprite;
+    }
+    
+    [Button]
+    void Debug_ApplyKeyboardSprite() {
+        keyPrompt.sprite = keyboardSprite;
+    }
 }

@@ -60,7 +60,7 @@ public class GatlingAnimator : MonoBehaviour {
         loopAudioSource.Stop();
         introAudioSource.PlayOneShot(stopClip);*/
     }
-
+    
     private void Update() {
         if (isRotating) {
             curSpeed = Mathf.MoveTowards(curSpeed, rotationSpeed * (1f / (_gunModule.GetFireDelay() * 10)), angleDelta * Time.deltaTime);
@@ -69,7 +69,7 @@ public class GatlingAnimator : MonoBehaviour {
         }
 
         if (curSpeed > 0.1f) {
-            rotatingBit.Rotate(0, curSpeed * Time.deltaTime, 0);
+            rotatingBit.Rotate(0, 0, curSpeed * Time.deltaTime);
         }
     }
 }

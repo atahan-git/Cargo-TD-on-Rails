@@ -22,6 +22,7 @@ MonoBehaviour:
         ammo: -1
         isFire: 0
         isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -34,54 +35,20 @@ MonoBehaviour:
         ammo: -1
         isFire: 0
         isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
           isLeftCargo: 0
-        attachedArtifact: 
-      - uniqueName: basic_ammo
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          isLeftCargo: 0
-        attachedArtifact: 
-      - uniqueName: ammo_fire
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          isLeftCargo: 0
-        attachedArtifact: 
-      - uniqueName: shield_cart
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact: boost_damage
       - uniqueName: side_gatling
         health: -1
         ammo: -1
         isFire: 0
         isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -94,6 +61,59 @@ MonoBehaviour:
         ammo: -1
         isFire: 0
         isSticky: 0
+        isExplosive: 0
+        level: 0
+        cargoState:
+          cargoReward: 
+          cargoLevel: 0
+          artifactReward: 
+          isLeftCargo: 0
+        attachedArtifact: 
+      - uniqueName: side_flames
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
+        cargoState:
+          cargoReward: 
+          cargoLevel: 0
+          artifactReward: 
+          isLeftCargo: 0
+        attachedArtifact: 
+      - uniqueName: top_flame
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
+        cargoState:
+          cargoReward: 
+          cargoLevel: 0
+          artifactReward: 
+          isLeftCargo: 0
+        attachedArtifact: 
+      - uniqueName: side_avr
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
+        cargoState:
+          cargoReward: 
+          cargoLevel: 0
+          artifactReward: 
+          isLeftCargo: 0
+        attachedArtifact: 
+      - uniqueName: top_avr
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 

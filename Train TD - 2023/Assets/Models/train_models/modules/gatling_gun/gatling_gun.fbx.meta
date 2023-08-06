@@ -3,7 +3,17 @@ guid: 81742b5fbb8f5844d9765be8eed652ad
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gatling_gun_texture
+    second: {fileID: 2100000, guid: 19ac76010abf3b443b75528b73271f40, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gun_rotate_texture
+    second: {fileID: 2100000, guid: ee9c43b67e2e4024da9d23c9f69cd1ba, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

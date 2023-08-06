@@ -148,7 +148,8 @@ public class DirectControlMaster : MonoBehaviour {
 		myGun.isSticky = false;
 		for (int i = 0; i < bulletTypes.Length; i++) {
 			if (!bulletTypes[i].GetComponentInParent<Cart>().isDestroyed) {
-				switch (bulletTypes[i].targetState) {
+				Debug.LogError("Bullet types for top guns not implemented");
+				/*switch (bulletTypes[i].targetState) {
 					case PlayerWorldInteractionController.CursorState.reload_explosive:
 						myGun.isExplosive = true;
 						break;
@@ -158,7 +159,7 @@ public class DirectControlMaster : MonoBehaviour {
 					case PlayerWorldInteractionController.CursorState.reload_sticky:
 						myGun.isSticky = true;
 						break;
-				}
+				}*/
 			}
 		}
 	}

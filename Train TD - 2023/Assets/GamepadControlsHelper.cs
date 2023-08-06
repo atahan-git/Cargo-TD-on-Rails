@@ -17,8 +17,8 @@ public class GamepadControlsHelper : MonoBehaviour {
     }
     
     public enum PossibleActions {
-        move, reload, repair, directControl, openMap, pause, fastForward, showDetails, shoot, exitDirectControl, flipCamera, cutsceneSkip, clickGate, changeTrack, engineBoost,
-        encounterButtons, moveArtifact, selectTopButton, click
+        move=0, reload=1, repair=2, directControl=3, openMap=4, pause=5, fastForward=6, showDetails=7, shoot=8, exitDirectControl=9, flipCamera=10, cutsceneSkip=11, clickGate=12, changeTrack=13, engineBoost=14,
+        encounterButtons=15, selectTopButton=17, shield=19
     }
 
     public GameObject gamepadSelector;
@@ -36,12 +36,6 @@ public class GamepadControlsHelper : MonoBehaviour {
         PlayerWorldInteractionController.s.OnSelectEnemy.AddListener(UpdateButtonPromptsLocation);
         PlayerWorldInteractionController.s.OnSelectArtifact.AddListener(UpdateButtonPromptsLocation);
         PlayerWorldInteractionController.s.OnSelectGate.AddListener(UpdateGateSelectPrompt);
-    }
-
-
-    public Image clickActionIcon;
-    public void SetClickActionIcon( Sprite toSet) {
-        clickActionIcon.sprite = toSet;
     }
 
     private void UpdateButtonPromptsLocation(Cart cart, bool isSelecting) {
