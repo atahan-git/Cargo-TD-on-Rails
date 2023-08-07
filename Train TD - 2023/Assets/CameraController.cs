@@ -48,6 +48,8 @@ public class CameraController : MonoBehaviour {
 
     public InputActionReference moveAction;
     public InputActionReference moveGamepadAction;
+    public InputActionReference gamepadSnapMoveForward;
+    public InputActionReference gamepadSnapMoveBackward;
     public InputActionReference rotateAction;
     public InputActionReference zoomAction;
     public InputActionReference zoomGamepadAction;
@@ -78,6 +80,9 @@ public class CameraController : MonoBehaviour {
         rotateCameraAction.action.Enable();
         aimAction.action.Enable();
         
+        gamepadSnapMoveForward.action.Enable();
+        gamepadSnapMoveBackward.action.Enable();
+        
         zoomGamepadAction.action.Enable();
         aimGamepadAction.action.Enable();
         
@@ -93,6 +98,9 @@ public class CameraController : MonoBehaviour {
         zoomAction.action.Disable();
         rotateCameraAction.action.Disable();
         aimAction.action.Disable();
+        
+        gamepadSnapMoveForward.action.Disable();
+        gamepadSnapMoveBackward.action.Disable();
         
         zoomGamepadAction.action.Disable();
         aimGamepadAction.action.Disable();
@@ -133,11 +141,34 @@ public class CameraController : MonoBehaviour {
                     if (canEdgeMove)
                         ProcessScreenCorners(mousePos);
 
+                    if (SettingsController.GamepadMode() && PlayStateMaster.s.isCombatInProgress() && !isSnappedToTrain) {
+                        var gamepadPos = PlayerWorldInteractionController.s.GetMousePositionOnPlane();
+                        
+                        var closestModule = Train.s.carts[0];
+                        var closestDistance = 1000f;
+                        for (int i = 0; i < Train.s.carts.Count; i++) {
+                            var dist = Vector3.Distance(gamepadPos, Train.s.carts[i].transform.position);
+                            if (dist < closestDistance) {
+                                closestModule = Train.s.carts[i];
+                                closestDistance = dist;
+                            }
+                        }
+
+                        print(closestDistance);
+                        if (closestDistance < 1) {
+                            SnapToTrainModule(closestModule);
+                        }
+                    }
+                    
                     if (!isSnappedToTransform) {
                         ProcessMovementInput(moveAction.action.ReadValue<Vector2>(), wasdSpeed);
                         ProcessMovementInput(moveGamepadAction.action.ReadValue<Vector2>(), gamepadMoveSpeed);
-                    } else
-                        ProcessMovementSnapped(moveAction.action.ReadValue<Vector2>(), snappedwasdDelay);
+                        ProcessMovementGamepadJumpForwardAndBack();
+                    } else {
+                        //ProcessMovementSnapped(moveAction.action.ReadValue<Vector2>(), snappedwasdDelay);
+                        ProcessMovementSnapped(moveGamepadAction.action.ReadValue<Vector2>(), snappedwasdDelay);
+                        ProcessMovementSnappedGamepadForwardBackwards();
+                    }
 
                     if (canZoom)
                         ProcessZoom(zoomAction.action.ReadValue<float>(), zoomGamepadAction.action.ReadValue<float>());
@@ -297,6 +328,12 @@ public class CameraController : MonoBehaviour {
     }
 
     private void LerpCameraTarget() {
+        if (isSnappedToTransform) {
+            var snapPos = snapTarget.position;
+            snapPos.y = cameraCenter.position.y;
+            cameraCenter.position = Vector3.Lerp(cameraCenter.position, snapPos, snappedMovementLerp*Time.unscaledDeltaTime);
+        }
+        
         //var centerRotTarget = Quaternion.Euler(0, isRight ? -rotationAngleTarget : rotationAngleTarget, 0);
         var centerRotTarget = Quaternion.Euler(0, -rotationAngleTarget, 0);
 
@@ -451,56 +488,130 @@ public class CameraController : MonoBehaviour {
 
         cameraCenter.position = camPos;
     }
-    
-    
+
+
+    Cart GetSnappedCart() {
+        if (snappedCartIndex >= 0 && snappedCartIndex < Train.s.carts.Count) {
+            return Train.s.carts[snappedCartIndex];
+        }
+
+        return null;
+    }
 
     private float snappedMoveTimer = 0;
     public float snappedMovementLerp = 1f;
+    private float snappedDetachTimer = 0;
     void ProcessMovementSnapped(Vector2 value, float delay) {
+        
+        Cart snappedCart = GetSnappedCart();
+        if (snappedCart == null) {
+            snapTarget = null;
+        } else {
+            snapTarget = snappedCart.transform;
+        }
+        
         if (snapTarget == null) {
             UnSnap();
             return;
         }
         
-        cameraCenter.position = Vector3.Lerp(cameraCenter.position, snapTarget.position + snapOffset, snappedMovementLerp*Time.unscaledDeltaTime);
 
         if (isSnappedToTrain) {
             if (snappedMoveTimer <= 0) {
                 if (Mathf.Abs(value.x) > 0.1f) {
-                    //var nextBuilding = GetNextBuilding(value.x > 0, snappedTrainBuilding.mySlot, snappedTrainBuilding.mySlotIndex);
-                    var nextBuilding = GetNextBuilding();
-                    if (nextBuilding != null) {
-                        SnapToTrainModule(nextBuilding);
-                        //PlayerModuleSelector.s.ActivateActionDisplayOnTrainBuilding(snappedCart);
-                    }
-                    snappedMoveTimer = delay;
-                }
+                    snappedDetachTimer += Time.deltaTime;
 
+                    if (snappedDetachTimer > 0.2f) {
+                        UnSnap();
+                        Vector3 delta;
+                        if (value.x > 0) {
+                            delta = Vector3.right;
+                        } else {
+                            delta = Vector3.left;
+                        }
+                        
+                        cameraCenter.position += delta*1.5f;
+                    }
+                } else {
+                    snappedDetachTimer = 0;
+                }
+                
                 if (Mathf.Abs(value.y) > 0.1f) {
-                    //var nextBuilding = GetNextBuilding(value.y > 0, snappedTrainBuilding.mySlot, snappedTrainBuilding.mySlot.GetCart().index);
-                    var nextBuilding = GetNextBuilding();
+                    var nextBuilding = GetNextCart(value.y > 0, snappedCart);
                     if (nextBuilding != null) {
                         SnapToTrainModule(nextBuilding);
-                        //PlayerModuleSelector.s.ActivateActionDisplayOnTrainBuilding(snappedCart);
                     }
+                    
+                    PlayerWorldInteractionController.s.MoveSelectedCart(value.y > 0);
                     
                     snappedMoveTimer = delay;
                 }
-
             }
         } else {
             isSnappedToTransform = false;
         }
 
-        if (value.sqrMagnitude < 0.1f) {
+        if (Mathf.Abs(value.y) < 0.05f) {
             snappedMoveTimer = 0;
         }
 
         snappedMoveTimer -= Time.unscaledDeltaTime;
     }
 
-    private Cart GetNextBuilding() {
-        throw new NotImplementedException();
+    void ProcessMovementSnappedGamepadForwardBackwards() {
+        Cart snappedCart = GetSnappedCart();
+        if (snappedCart == null) {
+            snapTarget = null;
+        } else {
+            snapTarget = snappedCart.transform;
+        }
+        
+        if (snapTarget == null) {
+            UnSnap();
+            return;
+        }
+
+        if (isSnappedToTrain) {
+            if (gamepadSnapMoveForward.action.WasPerformedThisFrame()) {
+                var nextBuilding = GetNextCart(true, snappedCart);
+                if (nextBuilding != null) {
+                    SnapToTrainModule(nextBuilding);
+                }
+                PlayerWorldInteractionController.s.MoveSelectedCart(true);
+            }
+
+            if (gamepadSnapMoveBackward.action.WasPerformedThisFrame()) {
+                var nextBuilding = GetNextCart(false, snappedCart);
+                if (nextBuilding != null) {
+                    SnapToTrainModule(nextBuilding);
+                }
+                PlayerWorldInteractionController.s.MoveSelectedCart(false);
+            }
+        } else {
+            isSnappedToTransform = false;
+        }
+    }
+
+    void ProcessMovementGamepadJumpForwardAndBack() {
+        if (gamepadSnapMoveForward.action.WasPerformedThisFrame()) {
+            Vector3 delta = Vector3.forward * 0.55f;
+            var lerpDummyPos = cameraLerpDummy.transform.position;
+            cameraCenter.position += delta;
+            cameraLerpDummy.transform.position = lerpDummyPos;
+        }
+
+        if (gamepadSnapMoveBackward.action.WasPerformedThisFrame()) {
+            Vector3 delta = Vector3.back * 0.55f;
+            var lerpDummyPos = cameraLerpDummy.transform.position;
+            cameraCenter.position += delta;
+            cameraLerpDummy.transform.position = lerpDummyPos;
+        }
+    }
+
+    
+
+    private Cart GetNextCart(bool isForward, Cart currentCart) {
+        return Train.s.GetNextBuilding(isForward ? 1 : -1, currentCart);
     }
     
 
@@ -523,26 +634,18 @@ public class CameraController : MonoBehaviour {
         return minDist < minSnapDistance;
     }*/
 
-    public Cart snappedCart;
-    public Vector3 snapOffset;
+    public int snappedCartIndex;
     public void SnapToTrainModule(Cart module) {
-        snappedCart = module;
+        snappedCartIndex = module.trainIndex;
         snapTarget = module.transform;
-        snapOffset = Vector3.down * 0.75f;
         isSnappedToTransform = true;
         isSnappedToTrain = true;
-    }
-
-    public void SnapToTransform(Transform target) {
-        snapTarget = target;
-        snapOffset = Vector3.down * 0.5f;
-        isSnappedToTransform = true;
-        isSnappedToTrain = false;
     }
 
     public void UnSnap() {
         isSnappedToTransform = false;
         isSnappedToTrain = false;
+        snappedDetachTimer = 0;
     }
 
 

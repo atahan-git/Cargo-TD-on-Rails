@@ -386,8 +386,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             //projectile.isTargetSeeking = true;
             projectile.canPenetrateArmor = canPenetrateArmor;
             if (beingDirectControlled) {
-                projectile.speed *= 2;
-                projectile.acceleration *= 2;
+                projectile.speed *= 3;
+                projectile.acceleration *= 3;
             } else {
                 projectile.isHoming = isHoming;
             }

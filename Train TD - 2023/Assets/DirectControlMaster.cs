@@ -92,6 +92,7 @@ public class DirectControlMaster : MonoBehaviour {
 
 			curCooldown = myGun.GetFireDelay();
 			enterDirectControlShootLock = true;
+			Invoke(nameof(DisableDirectControlEnterShootLock), 0.5f);
 
 			DirectControlGameObject.SetActive(true);
 			directControlInProgress = true;
@@ -142,13 +143,17 @@ public class DirectControlMaster : MonoBehaviour {
 		}
 	}
 
+	void DisableDirectControlEnterShootLock() {
+		enterDirectControlShootLock = false;
+	}
+
 	void ApplyBulletTypes() {
 		myGun.isExplosive = false;
 		myGun.isFire = false;
 		myGun.isSticky = false;
 		for (int i = 0; i < bulletTypes.Length; i++) {
 			if (!bulletTypes[i].GetComponentInParent<Cart>().isDestroyed) {
-				Debug.LogError("Bullet types for top guns not implemented");
+				//Debug.LogError("Bullet types for top guns not implemented");
 				/*switch (bulletTypes[i].targetState) {
 					case PlayerWorldInteractionController.CursorState.reload_explosive:
 						myGun.isExplosive = true;
@@ -189,6 +194,8 @@ public class DirectControlMaster : MonoBehaviour {
 
 			isSniper = false;
 			myGun.sniperDamageMultiplier = 1;
+			
+			CancelInvoke(nameof(DisableDirectControlEnterShootLock));
 		}
 	}
 

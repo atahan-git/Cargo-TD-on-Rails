@@ -211,6 +211,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Gamepad Snapped to Train Move Forward",
+                    "type": "Button",
+                    "id": "c9c570de-1c6d-48eb-a6df-844873754388",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Gamepad Snapped to Train Move Backward",
+                    "type": "Button",
+                    "id": "667ac7dd-15af-44f4-916e-720355d9bb03",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -305,7 +323,7 @@
                 {
                     "name": "",
                     "id": "27bd7de6-cd88-48f5-a0c2-0ff70af462f7",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/leftStickPress",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -426,7 +444,7 @@
                 {
                     "name": "",
                     "id": "c75118a6-71de-4f6a-a45f-eff62bf217eb",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/rightStickPress",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -640,6 +658,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Drag Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b12619c-81fe-4948-b492-a2521633a9e0",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Gamepad Snapped to Train Move Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5e32db7-785d-4dfd-b20d-276f73d2a167",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Gamepad Snapped to Train Move Backward",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

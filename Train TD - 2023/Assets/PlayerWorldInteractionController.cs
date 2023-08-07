@@ -107,9 +107,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             if (showDetailClick.action.WasPerformedThisFrame() || clickCart.action.WasPerformedThisFrame()) {
                 HideInfo();
             }
-        } 
+        }
 
-        if (!isHoldDragStarted && !infoCardActive) {
+        if (!isDragging() && !infoCardActive) {
             if(PlayStateMaster.s.isShopOrEndGame())
                 CastRayToOutlineArtifact();
             
@@ -221,25 +221,23 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
             if (cart == selectedCart && !cart.isMainEngine )
-                currentSpot += Vector3.up * (isHoldDragStarted ? 0.4f : 0.05f);
+                currentSpot += Vector3.up * (isDragging() ? 0.4f : 0.05f);
 
             cart.transform.localPosition = Vector3.Lerp(cart.transform.localPosition, currentSpot, lerpSpeed * Time.deltaTime);
             cart.transform.localRotation = Quaternion.Slerp(cart.transform.localRotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-            
-            /*if (cart.artifactParent.childCount > 0) {
-                var artifact = cart.artifactParent.GetChild(0);
-                artifact.transform.localPosition = Vector3.MoveTowards(artifact.transform.localPosition, Vector3.zero, 5*lerpSpeed * Time.deltaTime);
-                artifact.transform.localRotation = Quaternion.RotateTowards(artifact.transform.localRotation, Quaternion.identity, 5*slerpSpeed * Time.deltaTime);
-            }*/
 
             if (cart == selectedCart && !cart.isMainEngine)
-                currentSpot -= Vector3.up * (isHoldDragStarted ? 0.4f : 0.05f);
+                currentSpot -= Vector3.up * (isDragging() ? 0.4f : 0.05f);
 
 
             currentSpot += -Vector3.forward * cart.length;
             var index = i;
             cart.name = $"Cart {index}";
         }
+    }
+
+    public bool isDragging() {
+        return isToggleDragStarted || isHoldDragStarted;
     }
 
     private float clickCartTime = 0;
@@ -265,15 +263,15 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
         
         if (!isHoldDragStarted) {
-            if (dragClick.action.WasPerformedThisFrame() && !isHoldDragStarted) {
-                HideInfo();
-                if (CanDragCart(selectedCart)) {
-                    isToggleDragStarted = true;
-                    BeginCartDragCombat();
+            if (!isToggleDragStarted) {
+                if (dragClick.action.WasPerformedThisFrame() && !isHoldDragStarted) {
+                    HideInfo();
+                    if (CanDragCart(selectedCart)) {
+                        isToggleDragStarted = true;
+                        BeginCartDragCombat();
+                    }
                 }
-            }
-
-            if (isToggleDragStarted) {
+            }else{
                 CheckIfCartSnappingCombat();
                 if (dragClick.action.WasPerformedThisFrame()) {
                     EndCartDragCombat();
@@ -328,7 +326,27 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     
     
     void CheckIfCartSnappingCombat() {
-        SnapToTrainCombat();
+        if (!SettingsController.GamepadMode()) {
+            SnapToTrainCombat();
+        }
+    }
+
+    public void MoveSelectedCart(bool isForward) {
+        if (PlayStateMaster.s.isCombatInProgress() && isDragging()) {
+            if (selectedCart != null) {
+                if (CanDragCart(selectedCart)) {
+                    if (isForward) {
+                        if (selectedCart.trainIndex > 1) {
+                            Train.s.RemoveCart(selectedCart);
+                            Train.s.AddCartAtIndex(selectedCart.trainIndex - 1, selectedCart);
+                        }
+                    } else {
+                        Train.s.RemoveCart(selectedCart);
+                        Train.s.AddCartAtIndex(selectedCart.trainIndex + 1, selectedCart);
+                    }
+                }
+            }
+        }
     }
     private bool SnapToTrainCombat() {
         var carts = Train.s.carts;
@@ -339,18 +357,18 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             totalLength += carts[i].length;
         }
 
-        var currentSpot = - Vector3.back * (totalLength / 2f);
+        var currentSpot = Vector3.forward * (totalLength / 2f);
 
         bool inserted = false;
         float distance = 0;
 
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
-            currentSpot += -Vector3.forward * cart.length;
+            currentSpot += Vector3.back * cart.length;
 
             if (i != 0) {
                 distance = Mathf.Abs((currentSpot.z + (cart.length / 2f)) - zPos);
-                Debug.Log($"{currentSpot.z + (cart.length / 2f)} < {zPos} && {distance} < {cart.length*4}");
+                //Debug.Log($"{currentSpot.z + (cart.length / 2f)} < {zPos} && {distance} < {cart.length*4}");
                 if (currentSpot.z + (cart.length / 2f) < zPos && distance < cart.length*4) {
                     if (cart != selectedCart) {
                         inserted = true;
@@ -444,15 +462,15 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
         
         if (!isHoldDragStarted) {
-            if (dragClick.action.WasPerformedThisFrame()) {
-                HideInfo();
-                if (CanDragArtifact(selectedArtifact)) {
-                    isToggleDragStarted = true;
-                    BeginArtifactDrag();
+            if (!isToggleDragStarted) {
+                if (dragClick.action.WasPerformedThisFrame()) {
+                    HideInfo();
+                    if (CanDragArtifact(selectedArtifact)) {
+                        isToggleDragStarted = true;
+                        BeginArtifactDrag();
+                    }
                 }
-            }
-
-            if (isToggleDragStarted) {
+            }else{
                 CheckIfArtifactSnapping();
                 if (!isSnapping) {
                     selectedArtifact.transform.position = GetMousePositionOnPlane() + offset;
@@ -642,15 +660,15 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
         
         if (!isHoldDragStarted) {
-            if (dragClick.action.WasPerformedThisFrame()) {
-                HideInfo();
-                if (CanDragCart(selectedCart)) {
-                    isToggleDragStarted = true;
-                    BeginCartDrag();
+            if (!isToggleDragStarted) {
+                if (dragClick.action.WasPerformedThisFrame()) {
+                    HideInfo();
+                    if (CanDragCart(selectedCart)) {
+                        isToggleDragStarted = true;
+                        BeginCartDrag();
+                    }
                 }
-            }
-
-            if (isToggleDragStarted) {
+            }else{
                 CheckIfCartSnapping();
                 if (!isSnapping) {
                     selectedCart.transform.position = GetMousePositionOnPlane() + offset;
@@ -660,7 +678,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 
                 if (dragClick.action.WasPerformedThisFrame()) {
                     EndCartDrag();
-                } 
+                }
             }
         }
     }
@@ -908,7 +926,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
             if (cart == selectedCart && !cart.isMainEngine )
-                currentSpot += Vector3.up * (isHoldDragStarted ? 0.4f : 0.05f);
+                currentSpot += Vector3.up * (isDragging() ? 0.4f : 0.05f);
 
 
             cart.transform.localPosition = Vector3.Lerp(cart.transform.localPosition, currentSpot, lerpSpeed * Time.deltaTime);
@@ -921,7 +939,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
 
             if (cart == selectedCart && !cart.isMainEngine)
-                currentSpot -= Vector3.up * (isHoldDragStarted ? 0.4f : 0.05f);
+                currentSpot -= Vector3.up * (isDragging() ? 0.4f : 0.05f);
 
 
             currentSpot += -Vector3.forward * cart.length;
@@ -953,7 +971,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     
 
     void CheckAndDoClick() {
-        if (!isHoldDragStarted) {
+        if (!isDragging()) {
             if (selectedCart != null) {
                 if (clickCart.action.WasPerformedThisFrame()) {
                     HideInfo();
@@ -1249,9 +1267,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             if (PlayStateMaster.s.isShopOrEndGame()) {
                 GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
                 GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
+                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
                 if (!CanDragArtifact(artifact)) {
                     myColor = cantActColor;
                     GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+                    GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
                 }
             } else {
                 myColor = cantActColor;
@@ -1266,6 +1286,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
             
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
         }
 
@@ -1313,9 +1334,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
             
             GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
+            if(PlayStateMaster.s.isShopOrEndGame())
+                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             if (!CanDragCart(building)) {
                 myColor = cantActColor;
                 GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+                GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             }
 
             if (PlayStateMaster.s.isCombatInProgress() && !isMove) {
@@ -1365,6 +1389,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
             
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repair);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.reload);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControl);
@@ -1448,7 +1473,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
     
 
-    Vector3 GetMousePositionOnPlane() {
+    public Vector3 GetMousePositionOnPlane() {
         Plane plane = new Plane(Vector3.up, new Vector3(0,0.5f,0));
 
         float distance;

@@ -15,7 +15,7 @@ public class ButtonPrompt : MonoBehaviour {
 
     public Image keyPrompt;
     
-    [HideIf("gamepadModeOnly")]
+    //[HideIf("gamepadModeOnly")]
     public Sprite gamepadSprite;
     [HideIf("gamepadModeOnly")]
     public Sprite keyboardSprite;
@@ -28,12 +28,10 @@ public class ButtonPrompt : MonoBehaviour {
             gameObject.SetActive(true);
         }
 
-        if (!gamepadModeOnly) {
-            if (gamepadMode) {
-                keyPrompt.sprite = gamepadSprite;
-            } else {
-                keyPrompt.sprite = keyboardSprite;
-            }
+        if (gamepadMode) {
+            keyPrompt.sprite = gamepadSprite;
+        } else {
+            keyPrompt.sprite = keyboardSprite;
         }
     }
 

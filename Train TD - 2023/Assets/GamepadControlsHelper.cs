@@ -18,7 +18,7 @@ public class GamepadControlsHelper : MonoBehaviour {
     
     public enum PossibleActions {
         move=0, reload=1, repair=2, directControl=3, openMap=4, pause=5, fastForward=6, showDetails=7, shoot=8, exitDirectControl=9, flipCamera=10, cutsceneSkip=11, clickGate=12, changeTrack=13, engineBoost=14,
-        encounterButtons=15, selectTopButton=17, shield=19
+        encounterButtons=15, selectTopButton=17, shield=19, moveHoldGamepad=20
     }
 
     public GameObject gamepadSelector;

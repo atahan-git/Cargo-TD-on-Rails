@@ -333,7 +333,7 @@ MonoBehaviour:
   fireBarrageCount: 2
   fireBarrageDelay: 0.1
   fireRateMultiplier: 1
-  projectileDamage: 3.5
+  projectileDamage: 7
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
