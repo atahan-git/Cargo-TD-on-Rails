@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BarricadeModule : ActivateWhenAttachedToTrain, IExtraInfo,IBooster
+public class BarricadeModule : ActivateWhenAttachedToTrain, IExtraInfo,IBooster, IResetState
 {
     public void ProtectFromDamage(float damage) {
         GetComponentInParent<ModuleHealth>().DealDamage(damage);

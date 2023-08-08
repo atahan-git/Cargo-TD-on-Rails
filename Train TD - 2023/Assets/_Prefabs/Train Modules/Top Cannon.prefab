@@ -454,6 +454,7 @@ MonoBehaviour:
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
+  gotShootCredits: 0
   waitTimer: 0
   isFire: 0
   isSticky: 0

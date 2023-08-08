@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat, IBooster {
+public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat, IBooster, IResetState {
 
     public bool isRepair = true;
     

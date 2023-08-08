@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AmmoBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster {
+public class AmmoBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster, IResetState {
 	public float ammoBoost = 1;
 	
 	protected override void _AttachedToTrain() {

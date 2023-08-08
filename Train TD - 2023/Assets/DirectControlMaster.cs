@@ -65,7 +65,9 @@ public class DirectControlMaster : MonoBehaviour {
 	public float directControlLock = 0;
 	public bool enterDirectControlShootLock = false;
 
-	private CursorStateChanger[] bulletTypes;
+	public GameObject isFire;
+	public GameObject isExplosive;
+	public GameObject isSticky;
 	public void AssumeDirectControl(DirectControllable source) {
 		if (!directControlInProgress && directControlLock <= 0) {
 			PlayerWorldInteractionController.s.canSelect = false;
@@ -138,7 +140,6 @@ public class DirectControlMaster : MonoBehaviour {
 			}
 
 			
-			bulletTypes = Train.s.GetComponentsInChildren<CursorStateChanger>(true);
 			ApplyBulletTypes();
 		}
 	}
@@ -148,25 +149,9 @@ public class DirectControlMaster : MonoBehaviour {
 	}
 
 	void ApplyBulletTypes() {
-		myGun.isExplosive = false;
-		myGun.isFire = false;
-		myGun.isSticky = false;
-		for (int i = 0; i < bulletTypes.Length; i++) {
-			if (!bulletTypes[i].GetComponentInParent<Cart>().isDestroyed) {
-				//Debug.LogError("Bullet types for top guns not implemented");
-				/*switch (bulletTypes[i].targetState) {
-					case PlayerWorldInteractionController.CursorState.reload_explosive:
-						myGun.isExplosive = true;
-						break;
-					case PlayerWorldInteractionController.CursorState.reload_fire:
-						myGun.isFire = true;
-						break;
-					case PlayerWorldInteractionController.CursorState.reload_sticky:
-						myGun.isSticky = true;
-						break;
-				}*/
-			}
-		}
+		isFire.SetActive(myGun.isFire);
+		isExplosive.SetActive(myGun.isExplosive);
+		isSticky.SetActive(myGun.isSticky);
 	}
 
 	private void DisableDirectControl(InputAction.CallbackContext obj) {
@@ -448,7 +433,8 @@ public class DirectControlMaster : MonoBehaviour {
 	void OnShoot() {
 		//if (doShake) {
 		var range = Mathf.Clamp01(myGun.projectileDamage / 10f) ;
-		range /= 4f;
+		range /= 8f;
+		range *= myGun.directControlShakeMultiplier;
 		
 		//print(range);
 		if (doShake) {

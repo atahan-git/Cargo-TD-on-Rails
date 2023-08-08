@@ -785,7 +785,6 @@ public abstract class ActivateWhenAttachedToTrain : MonoBehaviour {
 }
 
 public interface IBooster {
-    public void ResetState(int level);
     public void ModifyStats(int range, float value);
     public int GetRange();
     public Color GetColor();

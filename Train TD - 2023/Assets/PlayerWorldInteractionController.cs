@@ -453,7 +453,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     if (!isSnapping) {
                         selectedArtifact.transform.position = GetMousePositionOnPlane() + offset;
                         selectedArtifact.transform.rotation = Quaternion.Slerp(selectedArtifact.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-                        offset = Vector3.Lerp(offset, Vector3.zero, lerpSpeed * Time.deltaTime);
+                        offset = Vector3.Lerp(offset, Vector3.up/2f, lerpSpeed * Time.deltaTime);
                     }
                 } else {
                     EndArtifactDrag();
@@ -1024,7 +1024,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     void TryRepairShieldCart(Cart cart) {
         cart.GetHealthModule()?.Repair(GetRepairAmount());
         cart.GetHealthModule()?.ShieldUp(GetShieldUpAmount());
-        SelectBuilding(selectedCart, true);
+        if(selectedCart != null)
+            SelectBuilding(selectedCart, true);
     }
 
     public void CartHPUIButton(Cart cart) {
@@ -1087,6 +1088,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             
             if(hit.collider.GetComponentInParent<ModuleHealth>() && canRepair)
                 currentSelectMode = SelectMode.cart;
+            
+            
             
             var topButton = hit.rigidbody.gameObject.GetComponentInChildren<IShowButtonOnCartUIDisplay>();
             if (topButton != null) {
@@ -1168,7 +1171,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 if (artifact != selectedArtifact) {
                     SelectArtifact(artifact, true);
                 } else {
-                    if (showDetailClick.action.WasPerformedThisFrame() /*|| (holdOverTimer > infoShowTime && !SettingsController.GamepadMode())*/) {
+                    if (showDetailClick.action.WasPerformedThisFrame() || DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired)) {
                         ShowSelectedThingInfo();
                     }
                 }

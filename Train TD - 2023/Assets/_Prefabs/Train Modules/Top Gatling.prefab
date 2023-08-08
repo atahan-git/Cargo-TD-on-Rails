@@ -366,6 +366,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  directControlShakeMultiplier: 0.05
   isHeal: 0
   rotateSpeed: 5
   gunActive: 1
@@ -392,9 +393,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gunShakeOnShoot: 1
+  gunShakeMagnitudeMultiplier: 0
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
+  gotShootCredits: 0
   waitTimer: 0
   isFire: 0
   isSticky: 0

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DamageBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster
+public class DamageBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster, IResetState
 {
     public float damageBoost = 1;
     

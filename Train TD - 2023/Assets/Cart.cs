@@ -75,27 +75,11 @@ public class Cart : MonoBehaviour {
 
         cartMaterial.material = LevelReferences.s.cartLevelMats[level];
 
-        var gunModules = GetComponentsInChildren<GunModule>();
-        for (int i = 0; i < gunModules.Length; i++) {
-            gunModules[i].ResetState(level);
-        }
 
-        var ammoModules = GetComponentsInChildren<ModuleAmmo>();
-        for (int i = 0; i < ammoModules.Length; i++) {
-            ammoModules[i].ResetState();
+        var modulesWithResetStates = GetComponentsInChildren<IResetState>();
+        for (int i = 0; i < modulesWithResetStates.Length; i++) {
+            modulesWithResetStates[i].ResetState(level);
         }
-
-        var boosterModules = GetComponentsInChildren<IBooster>();
-        for (int i = 0; i < boosterModules.Length; i++) {
-            boosterModules[i].ResetState(level);
-        }
-        
-        
-        var moduleAmmoProviders = GetComponentsInChildren<ModuleAmmoProvider>();
-        for (int i = 0; i < moduleAmmoProviders.Length; i++) {
-            moduleAmmoProviders[i].ResetState(level);
-        }
-
     }
 
     public void SetDisabledState() {
@@ -300,5 +284,9 @@ public interface IActiveDuringCombat {
 public interface IActiveDuringShopping {
     public void ActivateForShopping();
     public void Disable();
-    
+}
+
+
+public interface IResetState {
+    public void ResetState(int level);
 }

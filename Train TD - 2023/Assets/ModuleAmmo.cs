@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping {
+public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState {
 
     [ShowInInspector]
     public float curAmmo { get; private set; }
@@ -41,10 +41,23 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         return ammoUse;
     }
 
-    public void ResetState() {
+    public void ResetState(int level) {
         ammoPerBarrageMultiplier = 1;
         maxAmmoMultiplier = 1;
         reloadEfficiency = 1;
+        
+        
+        isFire = false;
+        isExplosive = false;
+        isSticky = false;
+        myGunModules = GetComponentsInChildren<GunModule>();
+        for (int i = 0; i < myGunModules.Length; i++) {
+            myGunModules[i].isFire = isFire;
+            myGunModules[i].isSticky = isSticky;
+            myGunModules[i].isExplosive = isExplosive;
+        }
+        OnAmmoTypeChange?.Invoke();
+        
         ChangeMaxAmmo(0);
     }
     

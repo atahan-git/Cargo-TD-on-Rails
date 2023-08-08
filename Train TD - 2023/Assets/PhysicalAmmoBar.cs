@@ -63,7 +63,9 @@ public class PhysicalAmmoBar : MonoBehaviour {
         allAmmoChunks.Clear();
         
         for (int i = oldAmmo.Count-1; i >= 0; i--) {
-            allAmmoChunks.Add(Instantiate(ammoChunk, oldAmmo[i].transform.position, oldAmmo[i].transform.rotation));
+            var chunk = Instantiate(ammoChunk, oldAmmo[i].transform.position, oldAmmo[i].transform.rotation);
+            chunk.transform.SetParent(transform);
+            allAmmoChunks.Add(chunk);
             Destroy(oldAmmo[i].gameObject);
         }
         
@@ -75,6 +77,7 @@ public class PhysicalAmmoBar : MonoBehaviour {
         while ( allAmmoChunks.Count < moduleAmmo.curAmmo) {
             var newOne = Instantiate(ammoChunk, reloadSpawnPos);
             newOne.transform.position += delta + new Vector3(Random.Range(-0.005f, 0.005f), 0, Random.Range(-0.005f, 0.005f));
+            newOne.transform.SetParent(transform);
             newOne.SetActive(true);
             allAmmoChunks.Add(newOne);
             if (showEffect) {
