@@ -151,17 +151,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd7d8813f9924c4b8211217655eb9b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isArmed: 0
   engineOnly: 0
   cargoOnly: 0
+  applyGlobally: 0
+  glassCart: 0
+  canHaveNoShields: 0
+  reflectiveShields: 0
+  luckyCart: 0
   addShieldAsHpPercent: 0
   addShieldAmount: 0
-  damageMultiplier: 0.5
   healthMultiplier: 1
+  shieldDecayMultiplier: 1
+  fireDecayRateMultiplier: 1
+  gatlinificator: 0
+  isHoming: 0
+  fireRateMultiplier: 1
+  damageMultiplier: 0.5
   ammoMultiplier: 1
-  canHaveNoShields: 0
+  addFireDamage: 0
+  addExplosionRange: 0
   boosterRangeModification: 0
   boosterEffectMultiplier: 1
+  repairEfficiency: 1
+  reloadEfficiency: 1
+  shieldUpEfficiency: 1
 --- !u!114 &4024348743404075118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,7 +187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a489c1020da35640b945d99cd61b638, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isArmed: 0
   capacityBoost: 1
   speedMultiplier: 0
   speedAmount: 0

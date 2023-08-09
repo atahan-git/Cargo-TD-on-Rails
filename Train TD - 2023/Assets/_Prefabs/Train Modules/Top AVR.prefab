@@ -333,7 +333,7 @@ MonoBehaviour:
   fireBarrageCount: 2
   fireBarrageDelay: 0.1
   fireRateMultiplier: 1
-  projectileDamage: 3.5
+  projectileDamage: 15
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
@@ -371,6 +371,7 @@ MonoBehaviour:
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
+  gotShootCredits: 0
   waitTimer: 0
   isFire: 0
   isSticky: 0

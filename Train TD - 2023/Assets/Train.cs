@@ -322,7 +322,7 @@ public class Train : MonoBehaviour {
     public float restoreDelay = 0.1f;
 
     public bool doShake = true;
-    private float shakeBlock = 0f;
+    public float shakeBlock = 0f;
 
     private void Update() {
         if (PlayStateMaster.s.isCombatInProgress()) {
@@ -453,22 +453,33 @@ public class Train : MonoBehaviour {
         UpdateThingsAffectingOtherThings(true);
     }
 
-    public void StopShake() {
+    public void StopShake(float _shakeBlock = 1, bool fixPos = true) {
         if (doShake) {
             StopCoroutine(nameof(_RestartShake));
             StopCoroutine(nameof(ShakeWave));
             StopCoroutine(nameof(RestoreWave));
-            for (int i = 0; i < carts.Count; i++) {
-                carts[i].transform.localPosition = cartDefPositions[i];
+            if (fixPos) {
+                for (int i = 0; i < carts.Count; i++) {
+                    carts[i].transform.localPosition = cartDefPositions[i];
+                }
             }
+
             doShake = false;
             //print("stop shake");
         }
+        
+        
+        shakeBlock = _shakeBlock;
     }
 
-    public void RestartShake() {
-        if(shakeBlock < 0f)
-            Invoke(nameof(_RestartShake), 0.01f); // one frame later so that any transform changes have been applied
+    public void RestartShake(float delay = 0.01f, bool overrideShakeBlock = false) {
+        if (overrideShakeBlock) {
+            shakeBlock = delay;
+        } else {
+            shakeBlock = Mathf.Max(delay, shakeBlock);
+        }
+        /*if(shakeBlock < 0f)
+            Invoke(nameof(_RestartShake), delay); // one frame later so that any transform changes have been applied*/
     }
 
     public void SwapCarts(Cart cart1, Cart cart2) {
@@ -519,6 +530,8 @@ public class Train : MonoBehaviour {
             var cartLength = DataHolder.s.cartLength;
             var lastCart = -1;
             while (curShakePos < cartCount * cartLength) {
+                if(!doShake)
+                    yield break;
                 var curCart = Mathf.FloorToInt(curShakePos / cartLength);
                 curCart = Mathf.Clamp(curCart, 0, cartCount - 1);
 
@@ -548,6 +561,9 @@ public class Train : MonoBehaviour {
             var cartLength = DataHolder.s.cartLength;
             var lastCart = -1;
             while (curShakePos < cartCount * cartLength) {
+                if(!doShake)
+                    yield break;
+                
                 var curCart = Mathf.FloorToInt(curShakePos / cartLength);
                 curCart = Mathf.Clamp(curCart, 0, cartCount - 1);
 
@@ -561,41 +577,6 @@ public class Train : MonoBehaviour {
         }
     }
     
-    
-    IEnumerator ShakeAndRestoreWave() {
-        if (PlayStateMaster.s.isCombatInProgress()) {
-            var curShakePos = 0f;
-
-            var cartCount = carts.Count;
-            var cartLength = DataHolder.s.cartLength;
-            var lastCart = -1;
-            while (curShakePos < cartCount * cartLength) {
-                var curCart = Mathf.FloorToInt(curShakePos / cartLength);
-                curCart = Mathf.Clamp(curCart, 0, cartCount - 1);
-
-                if (curCart != lastCart) {
-                    if (lastCart >= 0)
-                        carts[lastCart].transform.localPosition = cartDefPositions[lastCart];
-
-                    carts[curCart].transform.localPosition = cartDefPositions[curCart] + new Vector3(
-                        Random.Range(-shakeOffsetMax.x, shakeOffsetMax.x),
-                        Random.Range(-shakeOffsetMax.y, shakeOffsetMax.y),
-                        Random.Range(-shakeOffsetMax.z, shakeOffsetMax.z)
-                    );
-
-                    lastCart = curCart;
-                }
-
-                curShakePos += LevelReferences.s.speed * Time.deltaTime;
-                yield return null;
-            }
-
-            if (lastCart != -1) {
-                carts[lastCart].transform.localPosition = cartDefPositions[lastCart];
-            }
-        }
-    }
-
     public float GetTrainLength() {
         return Train.s.carts.Count *DataHolder.s.cartLength;
     }
@@ -734,7 +715,11 @@ public class Train : MonoBehaviour {
 
 public abstract class ActivateWhenAttachedToTrain : MonoBehaviour {
 
+    [ShowIf("spawnAttachmentThings")]
+    public Transform attachmentThingParent;
+    [ShowIf("spawnAttachmentThings")]
     public GameObject attachmentThing;
+    [ShowIf("spawnAttachmentThings")]
     public List<GameObject> attachmentThings = new List<GameObject>();
 
     public bool isAttached = false;
@@ -760,7 +745,7 @@ public abstract class ActivateWhenAttachedToTrain : MonoBehaviour {
             if (doApply) {
                 if(spawnAttachmentThings)
                     attachmentThings.Add(
-                        Instantiate(attachmentThing).GetComponent<AttachmentThingScript>().SetUp(GetComponentInParent<Cart>(), target)
+                        Instantiate(attachmentThing, attachmentThingParent).GetComponent<AttachmentThingScript>().SetUp(GetComponentInParent<Cart>(), target)
                     );
                 _ApplyBoost(target, doApply);
             } else {
@@ -800,7 +785,8 @@ public abstract class ActivateWhenAttachedToTrain : MonoBehaviour {
 }
 
 public interface IBooster {
-    public void ResetState(int level);
     public void ModifyStats(int range, float value);
+    public int GetRange();
+    public Color GetColor();
 }
 

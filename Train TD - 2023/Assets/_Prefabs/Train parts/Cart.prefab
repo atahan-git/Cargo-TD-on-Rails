@@ -213,6 +213,7 @@ MonoBehaviour:
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
+  baseShields: 0
   baseHealth: 500
   maxHealth: 500
   currentHealth: 500
@@ -229,6 +230,11 @@ MonoBehaviour:
   boostHealthOnUpgrade: 0.5
   repairEfficiency: 1
   shieldUpEfficiency: 1
+  shieldDecayMultiplier: 1
+  burnReductionMultiplier: 1
+  glassCart: 0
+  reflectiveShields: 0
+  luckyCart: 0
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0
@@ -479,6 +485,7 @@ MonoBehaviour:
   - {fileID: 5927460583573825002}
   - {fileID: 4985551259673951950}
   fullLength: 0.4980437
+  healthPercent: 0
 --- !u!1 &4985551259673951950
 GameObject:
   m_ObjectHideFlags: 0
@@ -1392,6 +1399,7 @@ MonoBehaviour:
   - {fileID: 6969446081533272694}
   - {fileID: 7835183593625357749}
   shieldBreakEffect: {fileID: 8973257810519519465, guid: d159590aa39f3b54092e834356eb9809, type: 3}
+  shieldPercent: 0
 --- !u!1 &8380301722333623595
 GameObject:
   m_ObjectHideFlags: 0

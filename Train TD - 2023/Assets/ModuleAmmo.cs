@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping {
+public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState {
 
     [ShowInInspector]
     public float curAmmo { get; private set; }
@@ -14,6 +14,10 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public bool isFire;
     public bool isSticky;
     public bool isExplosive;
+
+    public enum AmmoEffects {
+        fire, sticky, explosive
+    }
     
     public int maxAmmo {
         get { return Mathf.RoundToInt(_maxAmmo * maxAmmoMultiplier); }
@@ -37,10 +41,23 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         return ammoUse;
     }
 
-    public void ResetState() {
+    public void ResetState(int level) {
         ammoPerBarrageMultiplier = 1;
         maxAmmoMultiplier = 1;
         reloadEfficiency = 1;
+        
+        
+        isFire = false;
+        isExplosive = false;
+        isSticky = false;
+        myGunModules = GetComponentsInChildren<GunModule>();
+        for (int i = 0; i < myGunModules.Length; i++) {
+            myGunModules[i].isFire = isFire;
+            myGunModules[i].isSticky = isSticky;
+            myGunModules[i].isExplosive = isExplosive;
+        }
+        OnAmmoTypeChange?.Invoke();
+        
         ChangeMaxAmmo(0);
     }
     
@@ -52,11 +69,6 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         OnUse?.Invoke();
     }
 
-    public void UseFuel(float amount) {
-        curAmmo -= amount;
-        curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
-        UpdateModuleState();
-    }
 
 
     public float reloadEfficiency = 1;
@@ -81,9 +93,9 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         OnReload?.Invoke(showEffect);
     }
 
-    public void ApplyBulletEffect(PlayerWorldInteractionController.CursorState effect) {
+    public void ApplyBulletEffect(AmmoEffects effect) {
         switch (effect) {
-            case PlayerWorldInteractionController.CursorState.reload_fire:
+            case AmmoEffects.fire:
                 if (!isFire) {
                     Instantiate(LevelReferences.s.reloadEffect_fire, transform);
                     isFire = true;
@@ -91,14 +103,14 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
                 }
 
                 break;
-            case PlayerWorldInteractionController.CursorState.reload_sticky:
+            case AmmoEffects.sticky:
                 if (!isSticky) {
                     Instantiate(LevelReferences.s.reloadEffect_sticky, transform);
                     isSticky = true;
                     OnAmmoTypeChange?.Invoke();
                 }
                 break;
-            case PlayerWorldInteractionController.CursorState.reload_explosive:
+            case AmmoEffects.explosive:
                 if (!isExplosive) {
                     Instantiate(LevelReferences.s.reloadEffect_explosive, transform);
                     isExplosive = true;
@@ -174,7 +186,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         /*if (GetComponent<EngineModule>())
             GetComponent<EngineModule>().hasFuel = curAmmo > 0;*/
 
-        if (!hasAmmo) {
+        /*if (!hasAmmo) {
             isFire = false;
             isSticky = false;
             isExplosive = false;
@@ -185,7 +197,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
                 myGunModules[i].isExplosive = isExplosive;
             }
             OnAmmoTypeChange?.Invoke();
-        }
+        }*/
     }
 
     public float AmmoPercent() {

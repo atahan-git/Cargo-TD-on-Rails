@@ -45,15 +45,16 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
     
 
     protected override void _Arm() {
-
         var targets = new List<Cart>();
         if (!applyGlobally) {
+            GetComponent<Artifact>().range = 1;
             var myCart = GetComponentInParent<Cart>();
 
             targets.Add(myCart);
             targets.Add(Train.s.GetNextBuilding(1, myCart));
             targets.Add(Train.s.GetNextBuilding(-1, myCart));
         } else {
+            GetComponent<Artifact>().range = 100;
             targets = Train.s.carts;
         }
 

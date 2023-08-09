@@ -25,6 +25,7 @@ MonoBehaviour:
         ammo: -1
         isFire: 0
         isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -37,6 +38,7 @@ MonoBehaviour:
         ammo: -1
         isFire: 0
         isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -49,18 +51,7 @@ MonoBehaviour:
         ammo: -1
         isFire: 0
         isSticky: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          isLeftCargo: 0
-        attachedArtifact: 
-      - uniqueName: basic_ammo
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -73,6 +64,7 @@ MonoBehaviour:
         ammo: -1
         isFire: 0
         isSticky: 0
+        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 

@@ -3,7 +3,22 @@ guid: 2074274cc7ca55649a1bc2cba88a4815
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gun_module_metal
+    second: {fileID: 2100000, guid: ee9c43b67e2e4024da9d23c9f69cd1ba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gun_module_red
+    second: {fileID: 2100000, guid: ee9c43b67e2e4024da9d23c9f69cd1ba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gun_module_red_dark
+    second: {fileID: 2100000, guid: ee9c43b67e2e4024da9d23c9f69cd1ba, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -17,6 +17,10 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
 
     public bool avoid = false;
     public bool flying = false;
+
+    private bool isCartTarget = false;
+    private Cart myCart;
+    private Outline _outline;
     private void OnEnable() {
         if (targetTransform == null) {
             var building = GetComponent<Cart>();
@@ -29,6 +33,10 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
         }
         LevelReferences.allTargets.Add(this);
         LevelReferences.targetsDirty = true;
+
+        myCart = GetComponent<Cart>();
+        _outline = GetComponentInChildren<Outline>();
+        isCartTarget = myCart != null;
     }
 
     private void OnDisable() {
@@ -61,5 +69,26 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
             velocity = Vector3.Lerp(velocity, newVelocity, 1 * Time.deltaTime);
             previous = transform.position;
         }
+
+        if (isCartTarget) {
+            if (myCart != PlayerWorldInteractionController.s.selectedCart) {
+                if (enemiesTargetingMe.Count > 0) {
+                    var totalWidth = 0f;
+                    for (int i = 0; i < enemiesTargetingMe.Count; i++) {
+                        if (enemiesTargetingMe[i] != null)
+                            totalWidth += enemiesTargetingMe[i].currentWidth + 0.5f;
+                    }
+
+                    _outline.enabled = totalWidth > 0;
+                    _outline.OutlineColor = Color.red;
+                    _outline.OutlineWidth = totalWidth;
+                } else {
+                    _outline.enabled = false;
+                }
+            }
+        }
     }
+
+
+    public List<EnemyTargetShower> enemiesTargetingMe = new List<EnemyTargetShower>();
 }

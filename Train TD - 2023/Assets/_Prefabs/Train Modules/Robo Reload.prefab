@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 264481290687422445}
   m_Layer: 11
   m_Name: Cube (3)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 7782484207396656599}
   m_Layer: 11
   m_Name: Cube (1)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -561,7 +561,7 @@ GameObject:
   - component: {fileID: 8920659721837074971}
   m_Layer: 11
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -725,7 +725,7 @@ GameObject:
   - component: {fileID: 2678693666499339100}
   m_Layer: 11
   m_Name: GameObject
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -761,7 +761,7 @@ GameObject:
   - component: {fileID: 8890702588179155593}
   m_Layer: 11
   m_Name: Attachment Thing prefab
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1004,7 +1004,7 @@ GameObject:
   - component: {fileID: 4403446130174486211}
   m_Layer: 11
   m_Name: Cube (2)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1240,9 +1240,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b49180ea77ea07d40898da773b037d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachmentThingParent: {fileID: 6272118237381906518}
   attachmentThing: {fileID: 5150239052755639989}
   attachmentThings: []
   isAttached: 0
+  spawnAttachmentThings: 1
   isRepair: 0
   delay: 2
   amount: 2
@@ -1250,6 +1252,7 @@ MonoBehaviour:
   baseRange: 1
   rangeBoost: 0
   boostMultiplier: 1
+  boostRangeColor: {r: 10.556064, g: 10.556064, b: 0, a: 1}
 --- !u!114 &4960686331885063257
 MonoBehaviour:
   m_ObjectHideFlags: 0

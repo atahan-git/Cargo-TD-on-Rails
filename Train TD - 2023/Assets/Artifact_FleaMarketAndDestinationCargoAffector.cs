@@ -10,6 +10,7 @@ public class Artifact_FleaMarketAndDestinationCargoAffector : ActivateWhenOnArti
     public bool rewardDestinationCart = true;
     
     protected override void _Arm() {
+        GetComponent<Artifact>().range = 100;
         UpgradesController.s.fleaMarketLocationCount += fleaMarketCountModifier;
 
         if (!rewardDestinationArtifact) {

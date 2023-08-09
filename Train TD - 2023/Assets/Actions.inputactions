@@ -87,24 +87,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ClickCart",
-                    "type": "Button",
-                    "id": "2122082d-79f5-4622-b6e9-0df7b8b4cf31",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ShowDetailsCart",
-                    "type": "Button",
-                    "id": "09b81cea-af1b-4eb2-bdc8-791ff06ccf58",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "FastForward",
                     "type": "Button",
                     "id": "f9c9dc34-5c44-4237-9239-125fb992b1a0",
@@ -135,60 +117,6 @@
                     "name": "Open Map",
                     "type": "Button",
                     "id": "9a1e09b9-14c6-4043-a5a7-797f1bb6cd51",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Reload Click Cart",
-                    "type": "Button",
-                    "id": "13805068-234e-4056-9a44-46a0deff1b46",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Direct Control Click Cart",
-                    "type": "Button",
-                    "id": "4586e67f-67dc-40f8-bcfb-6d59ff4544cd",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Engine Boost Click Cart",
-                    "type": "Button",
-                    "id": "5c93f292-9dd7-4772-8fe9-966209071628",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Repair Click Cart",
-                    "type": "Button",
-                    "id": "56b43908-7b9d-48a7-a257-2acfc7cbcbad",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Move Click Cart",
-                    "type": "Button",
-                    "id": "26b7b537-3bae-4540-a6ef-efc35b61d7c3",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Click Gate",
-                    "type": "Button",
-                    "id": "13749eed-ba71-425b-8d6c-058eeea37d4e",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -243,6 +171,60 @@
                     "name": "AutoTestPause",
                     "type": "Button",
                     "id": "5daf914c-b3af-4904-9dcb-9346e5e3dc2d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ShowDetailsCart",
+                    "type": "Button",
+                    "id": "09b81cea-af1b-4eb2-bdc8-791ff06ccf58",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ClickCart",
+                    "type": "Button",
+                    "id": "2122082d-79f5-4622-b6e9-0df7b8b4cf31",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Alternate Click",
+                    "type": "Button",
+                    "id": "1bff532c-d9f8-4ea2-a9d3-b0611cef2445",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Drag Click",
+                    "type": "Button",
+                    "id": "d86177a3-8cf7-4199-9693-8fa988b72b09",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Gamepad Snapped to Train Move Forward",
+                    "type": "Button",
+                    "id": "c9c570de-1c6d-48eb-a6df-844873754388",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Gamepad Snapped to Train Move Backward",
+                    "type": "Button",
+                    "id": "667ac7dd-15af-44f4-916e-720355d9bb03",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -341,7 +323,7 @@
                 {
                     "name": "",
                     "id": "27bd7de6-cd88-48f5-a0c2-0ff70af462f7",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/leftStickPress",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -450,28 +432,6 @@
                 },
                 {
                     "name": "",
-                    "id": "075e244e-d990-48ed-b1dd-f9992a03ea80",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ClickCart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "83cd7610-a156-4600-9298-aaf92fb9f9f5",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ClickCart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "853fcb1a-7f98-4509-a435-09b832097baf",
                     "path": "<Keyboard>/shift",
                     "interactions": "",
@@ -484,7 +444,7 @@
                 {
                     "name": "",
                     "id": "c75118a6-71de-4f6a-a45f-eff62bf217eb",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/rightStickPress",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -500,28 +460,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d83c227b-c912-40eb-a759-daef57b5a835",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ShowDetailsCart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "93588ad2-ac33-4c58-a13a-f0dee37b0a81",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ShowDetailsCart",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -560,61 +498,6 @@
                 },
                 {
                     "name": "",
-                    "id": "e9c33f40-f2c0-44e4-bbbe-3a9f70d8b5bb",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Reload Click Cart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8d3c25cd-20fa-4797-bfee-0a96ae14f94d",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Direct Control Click Cart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "bc021b14-984b-4ad4-a213-009032cb2de0",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Repair Click Cart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8a7976c8-8400-4548-b335-cc96a5ea704a",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move Click Cart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6b5d700c-8468-4417-a8dd-2512b3858322",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Click Gate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "6bc36dcf-e039-496e-82a8-a5dea0b1a3ce",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
@@ -643,17 +526,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Aim Gamepad",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "65cf1dd5-737d-42d8-875c-d6c56e266fb4",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Engine Boost Click Cart",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -720,6 +592,94 @@
                     "processors": "",
                     "groups": "",
                     "action": "AutoTestPause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "075e244e-d990-48ed-b1dd-f9992a03ea80",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ClickCart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "83cd7610-a156-4600-9298-aaf92fb9f9f5",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ClickCart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "93588ad2-ac33-4c58-a13a-f0dee37b0a81",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShowDetailsCart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0ada0d17-6f87-479b-bb38-042ae62e7d63",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Alternate Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "af8e7284-8e76-4beb-af75-6000ac0b6c7b",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Alternate Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "930f693f-4f11-4fca-afb3-8290c6c7bf13",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drag Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b12619c-81fe-4948-b492-a2521633a9e0",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Gamepad Snapped to Train Move Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5e32db7-785d-4dfd-b20d-276f73d2a167",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Gamepad Snapped to Train Move Backward",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

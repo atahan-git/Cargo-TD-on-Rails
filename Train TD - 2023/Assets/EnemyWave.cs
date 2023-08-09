@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
 
@@ -355,8 +356,11 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         }
     }
 
+    [NonSerialized]
+    public UnityEvent OnEnemyEnter = new UnityEvent();
     void PlayEnemyEnterSound() {
         drawnEnemies.PlayEnemyEnterSound();
+        OnEnemyEnter?.Invoke();
     }
 
 

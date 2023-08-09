@@ -39,6 +39,10 @@ PrefabInstance:
       propertyPath: displayName
       value: Reflective Shields
       objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: isGoodEffect
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4702187580605122048, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -157,6 +161,7 @@ MonoBehaviour:
   glassCart: 0
   canHaveNoShields: 0
   reflectiveShields: 1
+  luckyCart: 0
   addShieldAsHpPercent: 0
   addShieldAmount: 0
   healthMultiplier: 1

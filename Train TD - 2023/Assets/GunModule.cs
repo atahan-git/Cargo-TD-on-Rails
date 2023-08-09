@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
-public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringCombat {
+public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringCombat, IResetState {
 
     public Sprite gunSprite;
     [System.Serializable]
@@ -80,6 +80,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float regularToRangeConversionMultiplier = 0;
     public bool dontGetAffectByMultipliers = false;
 
+    public float directControlShakeMultiplier = 1f;
+
     public bool isHeal = false;
 
     public float GetDamage() {
@@ -139,13 +141,13 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public bool gunShakeOnShoot = true;
     private float gunShakeMagnitude = 0.04f;
+    public float gunShakeMagnitudeMultiplier = 1f;
 
     public bool beingDirectControlled = false;
 
     public bool isHoming = false;
 
     public float boostDamageOnUpgrade = 0.5f;
-
     public void ResetState(int level) {
         damageMultiplier = 1 + (boostDamageOnUpgrade*level);
         sniperDamageMultiplier = 1;
@@ -358,8 +360,19 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
                 yield break;
             }
         }
-        
-        
+
+        if (!isPlayer) {
+            if (needShootCredits) {
+                if (!gotShootCredits) {
+                    yield break;
+                } else {
+                    EnemyTargetAssigner.s.shootRequesters.Enqueue(this);
+                    gotShootCredits = false;
+                }
+            }
+        }
+
+
         if(!isFree)
             barrageShot?.Invoke();
 
@@ -386,8 +399,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             //projectile.isTargetSeeking = true;
             projectile.canPenetrateArmor = canPenetrateArmor;
             if (beingDirectControlled) {
-                projectile.speed *= 2;
-                projectile.acceleration *= 2;
+                projectile.speed *= 3;
+                projectile.acceleration *= 3;
             } else {
                 projectile.isHoming = isHoming;
             }
@@ -428,13 +441,37 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         }
     }
 
+    
+    public bool gotShootCredits = false;
+    public bool needShootCredits = false;
+    public float shootCreditsUse = 1f;
+    private void OnEnable() {
+        if (!isPlayer) {
+            bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
+            if (!isElite) {
+                needShootCredits = true;
+                gotShootCredits = true;
+            }
+        }
+    }
+
+    private void OnDisable() {
+        if (!isPlayer) {
+            bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
+            if (!isElite) {
+                needShootCredits = false;
+            }
+        }
+    }
+
     private bool stopUpdateRotation = false;
 
     public IEnumerator ShakeGun() {
         yield return null;
         
         var range = Mathf.Clamp01(GetDamage() / 10f) + Mathf.Clamp01(GetDamage() / 10f);
-        range /= 2f;
+        range /= 4f;
+        range *= gunShakeMagnitudeMultiplier;
 
         var defaultPositions = new List<Vector3>();
 

@@ -37,19 +37,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 164681cfcf85b9b498a95cea81b2a8b9, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8826661
+      value: -0.85901886
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 164681cfcf85b9b498a95cea81b2a8b9, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.21313883
+      value: 0.20742969
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 164681cfcf85b9b498a95cea81b2a8b9, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.40719095
+      value: 0.4549617
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 164681cfcf85b9b498a95cea81b2a8b9, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.09832509
+      value: 0.10986088
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 164681cfcf85b9b498a95cea81b2a8b9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -57,7 +57,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 164681cfcf85b9b498a95cea81b2a8b9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 49.53
+      value: 304.186
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 164681cfcf85b9b498a95cea81b2a8b9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -180,6 +180,10 @@ PrefabInstance:
     - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: displayName
       value: Small Train Cart
+      objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: isGoodEffect
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4702187580605122048, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Sprite
@@ -309,20 +313,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   engineOnly: 0
   cargoOnly: 0
+  applyGlobally: 0
+  glassCart: 0
+  canHaveNoShields: 0
+  reflectiveShields: 0
+  luckyCart: 0
   addShieldAsHpPercent: 0
   addShieldAmount: 100
-  fireRateMultiplier: 1
-  damageMultiplier: 1.25
   healthMultiplier: 1.5
-  ammoMultiplier: 1.25
-  addFireDamage: 0
-  glassCart: 0
+  shieldDecayMultiplier: 1
+  fireDecayRateMultiplier: 1
   gatlinificator: 0
   isHoming: 0
-  canHaveNoShields: 0
+  fireRateMultiplier: 1
+  damageMultiplier: 1.25
+  ammoMultiplier: 1.25
+  addFireDamage: 0
+  addExplosionRange: 0
   boosterRangeModification: 0
   boosterEffectMultiplier: 1
   repairEfficiency: 1
   reloadEfficiency: 1
   shieldUpEfficiency: 1
-  shieldDecayMultiplier: 1
