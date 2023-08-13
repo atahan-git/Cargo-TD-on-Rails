@@ -220,6 +220,7 @@ public class PathSelectorController : MonoBehaviour {
 
 	public List<TrackSwitchHex> myTrackSwitchHexes = new List<TrackSwitchHex>();
 	public void RegisterTrackSwitchHex(TrackSwitchHex hex) {
+		return;
 		if(MissionWinFinisher.s.isWon)
 			return;
 		

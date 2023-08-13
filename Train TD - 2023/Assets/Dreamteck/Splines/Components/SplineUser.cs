@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Dreamteck.Splines {
@@ -5,9 +6,10 @@ namespace Dreamteck.Splines {
     public class SplineUser : MonoBehaviour, ISerializationCallbackReceiver
     {
         public enum UpdateMethod { Update, FixedUpdate, LateUpdate }
-        [HideInInspector]
+        [ShowInInspector]
         public UpdateMethod updateMethod = UpdateMethod.Update;
 
+        [ShowInInspector]
         public SplineComputer spline
         {
             get {
@@ -32,6 +34,7 @@ namespace Dreamteck.Splines {
             }
         }
 
+        [ShowInInspector]
         public double clipFrom
         {
             get
@@ -54,6 +57,7 @@ namespace Dreamteck.Splines {
             }
         }
 
+        [ShowInInspector]
         public double clipTo
         {
             get
@@ -77,6 +81,7 @@ namespace Dreamteck.Splines {
             }
         }
 
+        [ShowInInspector]
         public bool autoUpdate
         {
             get
@@ -236,11 +241,11 @@ namespace Dreamteck.Splines {
         protected SplineSample evalResult = new SplineSample();
 
         //Threading values
-        [HideInInspector]
+        [ShowInInspector]
         public volatile bool multithreaded = false;
-        [HideInInspector]
+        [ShowInInspector]
         public bool buildOnAwake = true;
-        [HideInInspector]
+        [ShowInInspector]
         public bool buildOnEnable = false;
 
         public event EmptySplineHandler onPostBuild;

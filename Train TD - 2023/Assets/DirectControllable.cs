@@ -5,7 +5,9 @@ using UnityEngine;
 public class DirectControllable : MonoBehaviour, IShowButtonOnCartUIDisplay, IResetState {
 
 	public Transform cameraParent;
-	
+
+	public bool canUseAmmo = true;
+
 	public enum DirectControlMode {
 		Gun, LockOn
 	}
@@ -37,6 +39,9 @@ public class DirectControllable : MonoBehaviour, IShowButtonOnCartUIDisplay, IRe
 	}
 	
 	public void ApplyBulletEffect(ModuleAmmo.AmmoEffects effect) {
+		if (!canUseAmmo)
+			return;
+		
 		switch (effect) {
 			case ModuleAmmo.AmmoEffects.fire:
 				if (!isFire) {

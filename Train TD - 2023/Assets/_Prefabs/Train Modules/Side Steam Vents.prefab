@@ -406,8 +406,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: 'You can slowly burn your enemies with the hot hot steam coming from your
-      engines. '
+    text: You can slowly burn your enemies with the hot hot steam coming from your
+      engines. Shoots slower over time. Cannot use ammo modifiers.
   info: Steam Vents
 --- !u!1 &7353689250308290952
 GameObject:

@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Threading;
+using Sirenix.OdinInspector;
 #if UNITY_EDITOR
 using UnityEditor;
-#endif 
+#endif
 
 namespace Dreamteck.Splines
 {
@@ -11,6 +12,7 @@ namespace Dreamteck.Splines
     {
         protected const int UNITY_16_VERTEX_LIMIT = 65535;
 
+        [ShowInInspector]
         public float size
         {
             get { return _size; }
@@ -37,6 +39,7 @@ namespace Dreamteck.Splines
             }
         }
 
+        [ShowInInspector]
         public Vector3 offset
         {
             get { return _offset; }
@@ -247,7 +250,8 @@ namespace Dreamteck.Splines
         [HideInInspector]
         private Vector3 _offset = Vector3.zero;
         [SerializeField]
-        [HideInInspector]
+        //[HideInInspector]
+        [ShowInInspector]
         private NormalMethod _normalMethod = NormalMethod.SplineNormals;
         [SerializeField]
         [HideInInspector]
@@ -282,7 +286,7 @@ namespace Dreamteck.Splines
         private float _uvRotation = 0f;
         [SerializeField]
         [HideInInspector]
-        private UnityEngine.Rendering.IndexFormat _meshIndexFormat = UnityEngine.Rendering.IndexFormat.UInt16;
+        private UnityEngine.Rendering.IndexFormat _meshIndexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         [SerializeField]
         [HideInInspector]
         private Mesh _bakedMesh;
@@ -470,6 +474,9 @@ namespace Dreamteck.Splines
             //Logic for mesh generation, automatically called in the Build method
         }
 
+        [ShowInInspector]
+        [SerializeField]
+        public float meshSmoothing = 0;
         protected virtual void WriteMesh() 
         {
             MeshUtility.TransformMesh(_tsMesh, trs.worldToLocalMatrix);
@@ -503,7 +510,13 @@ namespace Dreamteck.Splines
 
             if (_normalMethod == 0)
             {
-                _mesh.RecalculateNormals();
+                //NormalSolver
+                //TB.NormalSolver;
+                TB.NormalSolver.RecalculateNormals(_mesh, meshSmoothing);
+                TB.NormalSolver.RecalculateTangents(_mesh);
+                //_mesh.RecalculateNormals();
+                //_mesh.RecalculateTangents();
+                //Debug.Log("custom recalculate");
             }
 
             if (filter != null)

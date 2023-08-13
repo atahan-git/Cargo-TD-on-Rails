@@ -24,7 +24,8 @@ public class GatlingAnimator : MonoBehaviour {
         introAudioSource.Play();
         loopAudioSource.PlayDelayed(warmUpTime);
     }
-    // Start is called before the first frame update
+
+    private bool easterEggSidewaysRotate = false;
     void Start() {
         _gunModule = GetComponentInParent<GunModule>();
         
@@ -37,6 +38,9 @@ public class GatlingAnimator : MonoBehaviour {
         _gunModule.startWarmUpEvent.AddListener(OnWarmUp);
         _gunModule.stopShootingEvent.AddListener(OnStopFiring);
         _gunModule.gatlingCountZeroEvent.AddListener(OnGatlingCountZero);
+
+
+        easterEggSidewaysRotate = EasterEggController.s.GetEasterEggDisplay(EasterEggController.EasterEggChances.rare4);
     }
 
     public bool isRotating = false;
@@ -69,7 +73,12 @@ public class GatlingAnimator : MonoBehaviour {
         }
 
         if (curSpeed > 0.1f) {
-            rotatingBit.Rotate(0, 0, curSpeed * Time.deltaTime);
+            if (easterEggSidewaysRotate) { 
+                rotatingBit.Rotate(0, curSpeed * Time.deltaTime, 0);
+                
+            } else {
+                rotatingBit.Rotate(0, 0, curSpeed * Time.deltaTime);
+            }
         }
     }
 }

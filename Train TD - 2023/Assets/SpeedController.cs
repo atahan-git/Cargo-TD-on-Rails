@@ -66,6 +66,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     public void SetMissionEndDistance(float distance) {
         missionDistance = distance;
         endTrainStation.startPos = Vector3.forward * missionDistance;
+        //Debug.LogError("Re add hex grid here");
         HexGrid.s.ResetDistance();
     }
 

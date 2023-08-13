@@ -407,7 +407,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltip:
     text: A gun made using meteor crystals. Has perfect accuracy and deals both regular
-      and burn damage.
+      and burn damage. Cannot use ammo modifiers.
   info: Laser Turret
 --- !u!1 &7353689250308290952
 GameObject:

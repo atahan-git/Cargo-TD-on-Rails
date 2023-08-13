@@ -406,10 +406,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: 'Uses steam pressure to shoot useless metal instead of ammo. No need to
-      reload but not great damage.
-
-'
+    text: No need to reload, but fires slower over time. Cannot use ammo modifiers.
   info: Pneumatic gun
 --- !u!1 &7353689250308290952
 GameObject:

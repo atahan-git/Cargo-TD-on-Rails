@@ -123,7 +123,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
         if (PlayStateMaster.s.isCombatInProgress()) {
             CheckAndDoClick();
-            CheckAndDoDragCombat();
+            //CheckAndDoDragCombat();
         } else {
             CheckAndDoDrag();
             CheckGate();
@@ -1331,15 +1331,16 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 PhysicalRangeShower.s.ShowCartRange(building,true);
             }
             
-            Color myColor = moveColor;
-
             if(!isMove)
                 GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
             
-            GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
-            if(PlayStateMaster.s.isShopOrEndGame())
+            Color myColor = moveColor;
+            if (PlayStateMaster.s.isShopOrEndGame()) {
                 GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
-            if (!CanDragCart(building)) {
+                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
+            }
+
+            if (building!= null && !CanDragCart(building)) {
                 myColor = cantActColor;
                 GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
                 GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);

@@ -5,7 +5,7 @@ namespace Dreamteck.Splines.Editor
     using System.Collections.Generic;
     using UnityEditor;
 
-    [CustomEditor(typeof(SplineUser), true)]
+    [CustomEditor(typeof(SplineUser)/*, true*/)]
     [CanEditMultipleObjects]
     public class SplineUserEditor : Editor
     {

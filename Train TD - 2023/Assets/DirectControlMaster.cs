@@ -445,8 +445,11 @@ public class DirectControlMaster : MonoBehaviour {
 				Mathf.Lerp(0.1f, 0.5f, range),
 				true
 			);
-			if(!SettingsController.GamepadMode())
-				CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range*2, range*2), range*5));
+			if (!SettingsController.GamepadMode()) {
+				range /= myGun.directControlShakeMultiplier;
+				range *= 2;
+				CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range * 2, range * 2), range * 5));
+			}
 		} else {
 			/*CameraShakeController.s.ShakeCamera(
 				Mathf.Lerp(0.1f, 0.7f, range),

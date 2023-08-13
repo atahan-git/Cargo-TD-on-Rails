@@ -158,7 +158,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.05
@@ -281,9 +281,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunSprite: {fileID: 0}
-  isGigaGatling: 0
+  isGigaGatling: 1
   gatlinificator: 0
-  maxFireRateReduction: 0.875
+  maxFireRateReduction: -0.5
   gatlingAmount: 0
   maxGatlingAmount: 8
   rotateTransforms:
@@ -302,11 +302,11 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 980176138545819842, guid: 9f203256bde154f4dbdbd70f4a8702c0, type: 3}
   target: {fileID: 0}
   mortarRotation: 0
-  fireDelay: 1
+  fireDelay: 0.8
   fireBarrageCount: 5
   fireBarrageDelay: 0.2
   fireRateMultiplier: 1
-  projectileDamage: 0.3
+  projectileDamage: 1
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
@@ -315,6 +315,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  directControlShakeMultiplier: 1
   isHeal: 0
   rotateSpeed: 10
   gunActive: 1
@@ -341,6 +342,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gunShakeOnShoot: 0
+  gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
@@ -350,6 +352,9 @@ MonoBehaviour:
   isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  gotShootCredits: 0
+  needShootCredits: 0
+  shootCreditsUse: 1
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,7 +447,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.05

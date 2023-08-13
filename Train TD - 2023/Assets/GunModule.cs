@@ -447,19 +447,25 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float shootCreditsUse = 1f;
     private void OnEnable() {
         if (!isPlayer) {
-            bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
-            if (!isElite) {
-                needShootCredits = true;
-                gotShootCredits = true;
-            }
+            var enemyHp = GetComponentInParent<EnemyHealth>();
+            if (enemyHp != null) {
+                bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
+                if (!isElite) {
+                    needShootCredits = true;
+                    gotShootCredits = true;
+                }
+            } 
         }
     }
 
     private void OnDisable() {
         if (!isPlayer) {
-            bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
-            if (!isElite) {
-                needShootCredits = false;
+            var enemyHp = GetComponentInParent<EnemyHealth>();
+            if (enemyHp != null) {
+                bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
+                if (!isElite) {
+                    needShootCredits = false;
+                }
             }
         }
     }

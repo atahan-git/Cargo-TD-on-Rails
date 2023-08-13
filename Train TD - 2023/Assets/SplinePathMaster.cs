@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SplinePathMaster : MonoBehaviour {
     public static SplinePathMaster s;
@@ -11,6 +13,7 @@ public class SplinePathMaster : MonoBehaviour {
     }
 
     public GameObject splinePrefab;
+    public GameObject switchEdgePrefab;
 
     public SplineSegment currentSegment;
 
@@ -25,7 +28,16 @@ public class SplinePathMaster : MonoBehaviour {
     }
 
 
+    [Button]
+    public void GenerateDummySegments() {
+        var firstSegmentLength = Random.Range(40,100);
+        currentSegment.MakeSegment(firstSegmentLength + 20, 30);
+        currentSegment.transform.position = Vector3.back*20;
+        GenerateForkSegments(currentSegment, Random.Range(40,100), Random.Range(40,100));
+    }
+    
     public void GenerateInitialSegments() {
+        transform.DeleteAllChildren();
         for (int i = 0; i < segmentsToBeDeleted.Count; i++) {
             Destroy(segmentsToBeDeleted[i].gameObject);
         }
@@ -33,19 +45,21 @@ public class SplinePathMaster : MonoBehaviour {
         
         
         var firstSegmentLength = activeLevel.mySegmentsA[0].segmentLength;
+        currentSegment = Instantiate(splinePrefab, transform).GetComponent<SplineSegment>();
         currentSegment.MakeSegment(firstSegmentLength + 20, 30);
         currentSegment.transform.position = Vector3.back*20;
         GenerateForkSegments(currentSegment, activeLevel.mySegmentsA[1].segmentLength, activeLevel.mySegmentsB[1].segmentLength);
     }
 
 
+    [Button]
     public void GenerateForkSegments(SplineSegment segment, float lengthA, float lengthB) {
-        var segmentA = Instantiate(splinePrefab).GetComponent<SplineSegment>();
-        segmentA.MakeSegment(lengthA);
+        var segmentA = Instantiate(splinePrefab,transform).GetComponent<SplineSegment>();
+        segmentA.MakeSwitchSegment(lengthA, true);
         segmentA.AttachToSegment(segment);
         
-        var segmentB = Instantiate(splinePrefab).GetComponent<SplineSegment>();
-        segmentB.MakeSegment(lengthB);
+        var segmentB = Instantiate(splinePrefab,transform).GetComponent<SplineSegment>();
+        segmentB.MakeSwitchSegment(lengthB, false);
         segmentB.AttachToSegment(segment);
 
         segment.pathA = segmentA;

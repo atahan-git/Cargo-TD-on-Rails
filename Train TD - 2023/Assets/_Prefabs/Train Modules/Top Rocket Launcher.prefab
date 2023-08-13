@@ -675,7 +675,7 @@ MonoBehaviour:
   fireBarrageCount: 1
   fireBarrageDelay: 0.5
   fireRateMultiplier: 1
-  projectileDamage: 220
+  projectileDamage: 250
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
@@ -684,6 +684,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  directControlShakeMultiplier: 1
   isHeal: 0
   rotateSpeed: 10
   gunActive: 1
@@ -710,6 +711,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gunShakeOnShoot: 0
+  gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
@@ -719,6 +721,9 @@ MonoBehaviour:
   isExplosive: 0
   explosionRange: 0.5
   explosionRangeBoost: 0
+  gotShootCredits: 0
+  needShootCredits: 0
+  shootCreditsUse: 1
 --- !u!114 &3530306806417391473
 MonoBehaviour:
   m_ObjectHideFlags: 0

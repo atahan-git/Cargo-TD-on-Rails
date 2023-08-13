@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraParent: {fileID: 381691161858782705}
+  canUseAmmo: 0
   myMode: 0
 --- !u!1 &2138098808061829194
 GameObject:
@@ -359,9 +360,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunSprite: {fileID: 0}
-  isGigaGatling: 0
+  isGigaGatling: 1
   gatlinificator: 0
-  maxFireRateReduction: 0.875
+  maxFireRateReduction: -0.5
   gatlingAmount: 0
   maxGatlingAmount: 8
   rotateTransforms:
@@ -380,11 +381,11 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 980176138545819842, guid: b58d077182325ea49941e75c95f259c8, type: 3}
   target: {fileID: 0}
   mortarRotation: 0
-  fireDelay: 0.5
+  fireDelay: 0.25
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
   fireRateMultiplier: 1
-  projectileDamage: 15
+  projectileDamage: 30
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
@@ -393,6 +394,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  directControlShakeMultiplier: 1
   isHeal: 0
   rotateSpeed: 10
   gunActive: 1
@@ -419,16 +421,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gunShakeOnShoot: 1
+  gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
-  gotShootCredits: 0
   waitTimer: 0
   isFire: 0
   isSticky: 0
   isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  gotShootCredits: 0
+  needShootCredits: 0
+  shootCreditsUse: 1
 --- !u!114 &3530306806417391473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,7 +447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Deals less damage than a regular gun but fires faster.
+    text: Similar to a regular gun, but fires slower over time. Cannot use ammo modifiers.
   info: Penumatic Gun
 --- !u!1 &5901234116158881788
 GameObject:

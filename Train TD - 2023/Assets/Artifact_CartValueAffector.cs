@@ -109,6 +109,12 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
                 healthModule.shieldDecayMultiplier *= shieldDecayMultiplier;
             }
 
+            var moduleAmmo = cart.GetComponentInChildren<ModuleAmmo>();
+            if (moduleAmmo != null) {
+                moduleAmmo.ChangeMaxAmmo(ammoMultiplier-1);
+                moduleAmmo.reloadEfficiency += reloadEfficiency - 1;
+            }
+            
             foreach (var gunModule in cart.GetComponentsInChildren<GunModule>()) {
                 gunModule.damageMultiplier += damageMultiplier-1;
                 gunModule.fireRateMultiplier += fireRateMultiplier - 1;
@@ -126,12 +132,6 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
                     gunModule.isHoming = true;
 
                 gunModule.explosionRangeBoost += addExplosionRange;
-            }
-
-            var moduleAmmo = cart.GetComponentInChildren<ModuleAmmo>();
-            if (moduleAmmo != null) {
-                moduleAmmo.ChangeMaxAmmo(ammoMultiplier-1);
-                moduleAmmo.reloadEfficiency += reloadEfficiency - 1;
             }
 
             foreach (var booster in cart.GetComponentsInChildren<IBooster>()) {

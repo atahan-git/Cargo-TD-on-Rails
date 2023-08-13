@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraParent: {fileID: 381691161858782705}
+  canUseAmmo: 0
   myMode: 0
 --- !u!1 &3154776757341186460
 GameObject:
@@ -353,8 +354,8 @@ MonoBehaviour:
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
   fireRateMultiplier: 1
-  projectileDamage: 16
-  burnDamage: 32
+  projectileDamage: 8
+  burnDamage: 8
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
@@ -362,6 +363,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  directControlShakeMultiplier: 1
   isHeal: 0
   rotateSpeed: 2
   gunActive: 1
@@ -388,6 +390,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gunShakeOnShoot: 0
+  gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
@@ -397,6 +400,9 @@ MonoBehaviour:
   isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  gotShootCredits: 0
+  needShootCredits: 0
+  shootCreditsUse: 1
 --- !u!114 &3530306806417391473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,7 +417,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltip:
     text: A gun made using meteor crystals. Has perfect accuracy and deals both regular
-      and burn damage.
+      and burn damage. Cannot use ammo modifiers.
   info: 'Laser Turret
 
 '
