@@ -628,7 +628,7 @@ MonoBehaviour:
   fireBarrageCount: 1
   fireBarrageDelay: 0.5
   fireRateMultiplier: 1
-  projectileDamage: 120
+  projectileDamage: 100
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1

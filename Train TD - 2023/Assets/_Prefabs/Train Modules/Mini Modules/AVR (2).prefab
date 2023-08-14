@@ -733,7 +733,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 60
+  rotationSpan: 75
   range: 5
   myPossibleTargets: 00000000
   canHitFlying: 0

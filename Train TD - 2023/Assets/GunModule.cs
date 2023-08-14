@@ -401,6 +401,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             if (beingDirectControlled) {
                 projectile.speed *= 3;
                 projectile.acceleration *= 3;
+                projectile.seekAcceleration *= 3;
             } else {
                 projectile.isHoming = isHoming;
             }

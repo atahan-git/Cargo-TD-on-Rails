@@ -224,7 +224,7 @@ public class DirectControlMaster : MonoBehaviour {
 			RaycastHit hit;
 			bool didHit = false;
 			
-			if (Physics.Raycast(ray, out hit, 1000, lookMask)) {
+			if (Physics.Raycast(ray, out hit, 30, lookMask)) {
 				myGun.LookAtLocation(hit.point);
 				didHit = true;
 				//Debug.DrawLine(ray.origin, hit.point);

@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraParent: {fileID: 381691161858782705}
+  canUseAmmo: 1
   myMode: 0
 --- !u!1 &2138098808061829194
 GameObject:
@@ -329,11 +330,11 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3a4d3fe2abd806c46964330e5993cfa2, type: 3}
   target: {fileID: 0}
   mortarRotation: 0
-  fireDelay: 0.5
+  fireDelay: 1
   fireBarrageCount: 2
-  fireBarrageDelay: 0.1
+  fireBarrageDelay: 0.25
   fireRateMultiplier: 1
-  projectileDamage: 15
+  projectileDamage: 20
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1

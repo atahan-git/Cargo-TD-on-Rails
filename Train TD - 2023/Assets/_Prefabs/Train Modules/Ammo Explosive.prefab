@@ -650,6 +650,9 @@ MonoBehaviour:
   boostExplosionRangePercentPerLevel: 0.0025
   activeExplosionRangeBoost: 0
   myAmmoType: 2
+  baseRange: 1
+  rangeBoost: 0
+  ammoColor: {r: 10.556064, g: 0, b: 9.521155, a: 1}
 --- !u!1 &6073088298320839589
 GameObject:
   m_ObjectHideFlags: 0

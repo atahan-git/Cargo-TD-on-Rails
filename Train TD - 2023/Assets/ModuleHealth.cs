@@ -216,7 +216,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     }
 
     public void Repair(float heal) {
-        Assert.IsTrue(heal > 0);
+        Assert.IsTrue(heal >= 0);
+        if(heal <= 0)
+            return;
+        
         heal *= repairEfficiency;
 
         if (currentHealth < maxHealth) {
@@ -497,6 +500,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         
         var emptyCart = Instantiate(LevelReferences.s.emptyCart).GetComponent<Cart>();
         
+        Train.s.RemoveCart(myCart);
         Train.s.AddCartAtIndex(myCart.trainIndex, emptyCart);
         
         Destroy(gameObject);

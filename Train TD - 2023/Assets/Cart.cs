@@ -78,7 +78,7 @@ public class Cart : MonoBehaviour {
 
         var modulesWithResetStates = GetComponentsInChildren<IResetState>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
-            modulesWithResetStates[i].ResetState(level);
+            modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
         }
     }
 

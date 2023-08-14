@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShieldGeneratorModule : ActivateWhenAttachedToTrain {
+public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState {
 
+	public int baseIncreaseMaxShieldsAmount = 500;
+	public int increasePerLevel = 500;
 	public int increaseMaxShieldsAmount = 500;
 	protected override void _AttachedToTrain() {
 		for (int i = 0; i < Train.s.carts.Count; i++) {
@@ -30,5 +32,9 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain {
 
 	protected override void _DetachedFromTrain() {
 		
+	}
+
+	public void ResetState(int level) {
+		increaseMaxShieldsAmount = baseIncreaseMaxShieldsAmount + (level * increasePerLevel);
 	}
 }

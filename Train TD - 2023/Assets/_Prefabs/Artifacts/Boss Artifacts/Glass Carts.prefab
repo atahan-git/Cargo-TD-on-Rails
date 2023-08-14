@@ -50,7 +50,7 @@ PrefabInstance:
     - target: {fileID: 6382012039353133210, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: myTooltip.text
       value: This and connected carts have 100 health which cannot be increased.
-        They deal 500% more damage.
+        They deal 300% more damage.
       objectReference: {fileID: 0}
     - target: {fileID: 6620300279125450212, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Pivot.x
@@ -170,7 +170,7 @@ MonoBehaviour:
   gatlinificator: 0
   isHoming: 0
   fireRateMultiplier: 1
-  damageMultiplier: 5
+  damageMultiplier: 4
   ammoMultiplier: 1
   addFireDamage: 0
   addExplosionRange: 0

@@ -621,9 +621,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Click on this to equip shield generator! Click on carts to add shields.
-      Shields will decay over time, and more shields will decay faster. This module
-      increases max shields you can put on each cart.
+    text: Shields will decay over time, and more shields will decay faster. This
+      module increases max shields you can put on each cart.
   info: Shield Generator Cart
 --- !u!114 &2783105301990292587
 MonoBehaviour:
@@ -637,11 +636,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2f31fcdf685b33419c117208547c49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachmentThingParent: {fileID: 0}
   attachmentThing: {fileID: 0}
   attachmentThings: []
   isAttached: 0
   spawnAttachmentThings: 0
-  increaseMaxShieldsAmount: 500
+  baseIncreaseMaxShieldsAmount: 300
+  increasePerLevel: 150
+  increaseMaxShieldsAmount: 300
 --- !u!1 &6073088298320839589
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,7 +15,7 @@ public class ArtifactsController : MonoBehaviour {
 	}
 
 
-	public Artifact[] myArtifacts = new Artifact[0];
+	public List<Artifact> myArtifacts = new List<Artifact>();
 
 	public bool gotBonusArtifact = false;
 	public string bonusArtifactUniqueName;
@@ -24,8 +24,8 @@ public class ArtifactsController : MonoBehaviour {
 	
 
 	public void OnDisarmArtifacts() {
-		myArtifacts = Train.s.GetComponentsInChildren<Artifact>();
-		for (int i = 0; i < myArtifacts.Length; i++) {
+		GetArtifacts();
+		for (int i = 0; i < myArtifacts.Count; i++) {
 			var effects = myArtifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
 			for (int j = 0; j < effects.Length; j++) {
 				effects[j].Disarm();
@@ -35,8 +35,8 @@ public class ArtifactsController : MonoBehaviour {
 
 
 	public void OnArmArtifacts() {
-		myArtifacts = Train.s.GetComponentsInChildren<Artifact>();
-		for (int i = 0; i < myArtifacts.Length; i++) {
+		GetArtifacts();
+		for (int i = 0; i < myArtifacts.Count; i++) {
 			var effects = myArtifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
 			for (int j = 0; j < effects.Length; j++) {
 				if(!effects[j].GetComponentInParent<Cart>().isDestroyed)
@@ -127,7 +127,7 @@ public class ArtifactsController : MonoBehaviour {
 	}
 	
 	public void ModifyEnemy(EnemyHealth enemyHealth) {
-		for (int i = 0; i < myArtifacts.Length; i++) {
+		for (int i = 0; i < myArtifacts.Count; i++) {
 			if(!myArtifacts[i].GetComponentInParent<Cart>().isDestroyed)
 				myArtifacts[i].GetComponent<ActivateWhenEnemySpawns>()?.ModifyEnemy(enemyHealth);
 		}
@@ -135,7 +135,18 @@ public class ArtifactsController : MonoBehaviour {
 
 
 	public void ArtifactsChanged() {
-		myArtifacts = Train.s.GetComponentsInChildren<Artifact>();
+		GetArtifacts();
+	}
+
+	void GetArtifacts() {
+		myArtifacts.Clear();
+
+		for (int i = 0; i < Train.s.carts.Count; i++) {
+			var artifact = Train.s.carts[i].GetComponentInChildren<Artifact>();
+			if(artifact != null)
+				myArtifacts.Add(artifact);
+		}
+		
 	}
 }
 

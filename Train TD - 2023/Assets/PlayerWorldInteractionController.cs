@@ -98,8 +98,25 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public Color directControlColor = Color.magenta;
     public Color engineBoostColor = Color.red;
 
+
+    public float maxRepairCapacity = 1000;
+    public float repairRecharge = 10;
+    public float repairRechargeDelay = 1;
+    public float curRepairRechargeDelay = 0;
+    public float curRepairCapacity;
     private void Update() {
-        if (!canSelect || Pauser.s.isPaused || PlayStateMaster.s.isLoading || DirectControlMaster.s.directControlInProgress) {
+        if (curRepairRechargeDelay <= 0) {
+            if (curRepairCapacity < maxRepairCapacity) {
+                curRepairCapacity += repairRecharge*Time.deltaTime;
+                curRepairCapacity = Mathf.Clamp(curRepairCapacity, 0, maxRepairCapacity);
+            }
+        } else {
+            curRepairRechargeDelay -= Time.deltaTime;
+        }
+
+
+
+        if (!canSelect || Pauser.s.isPaused || PlayStateMaster.s.isLoading || DirectControlMaster.s.directControlLock > 0) {
             return;
         }
 
@@ -960,27 +977,43 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         return (reloadAmountPerClick+reloadAmountPerClickBoost) * reloadAmountMultiplier;
     }
 
-    public float GetRepairAmount() {
-        return repairAmountPerClick * repairAmountMultiplier;
+    public float GetRepairAmount(ModuleHealth health) {
+        var repairAmount = repairAmountPerClick * repairAmountMultiplier;
+        repairAmount = Mathf.Clamp(repairAmount, 0, health.maxHealth - health.currentHealth);
+        if (repairAmount > curRepairCapacity) {
+            repairAmount = curRepairCapacity;
+        }
+        curRepairCapacity -= repairAmount;
+        curRepairRechargeDelay = repairRechargeDelay;
+        
+        
+        return repairAmount;
     }
     
     public float GetShieldUpAmount() {
         return shieldUpAmountPerClick * shieldUpAmountMultiplier;
     }
 
-    
 
+    private bool shielding = false;
     void CheckAndDoClick() {
         if (!isDragging()) {
             if (selectedCart != null) {
-                if (clickCart.action.WasPerformedThisFrame()) {
+                if (DragStarted(clickCart, ref clickCartTime, ref clickCartPos, ref clickCartFired) || shielding) {
                     HideInfo();
-                    TryRepairShieldCart(selectedCart);
-                    SelectBuilding(selectedCart, true, true);
-                } else if (alternateClick.action.WasPerformedThisFrame()) {
+                    TryShieldCartContinuous(selectedCart);
+                    shielding = true;
+
+                    if (!clickCart.action.IsPressed())
+                        shielding = false;
+                    //SelectBuilding(selectedCart, true, true);
+                } else if (clickCart.action.WasReleasedThisFrame() /*|| dragClick.action.IsPressed()*/) {
+                    HideInfo();
+                    TryRepairCart(selectedCart);
+                } else if (alternateClick.action.WasPerformedThisFrame() && DirectControlMaster.s.directControlLock <= 0) {
                     switch (currentSelectMode) {
                         case SelectMode.cart:
-                            TryRepairShieldCart(selectedCart);
+                            //TryRepairShieldCart(selectedCart);
 
                             break;
                         case SelectMode.directControl:
@@ -1020,12 +1053,28 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         TryRepairShieldCart(cart);
     }
 
-
     void TryRepairShieldCart(Cart cart) {
-        cart.GetHealthModule()?.Repair(GetRepairAmount());
-        cart.GetHealthModule()?.ShieldUp(GetShieldUpAmount());
+        if (CanRepair(cart)) {
+            cart.GetHealthModule()?.Repair(GetRepairAmount(cart.GetHealthModule()));
+        }else if (CanShield(cart)) {
+            cart.GetHealthModule()?.ShieldUp(GetShieldUpAmount());
+        }
         if(selectedCart != null)
             SelectBuilding(selectedCart, true);
+    }
+
+    void TryRepairCart(Cart cart) {
+        cart.GetHealthModule()?.Repair(GetRepairAmount(cart.GetHealthModule()));
+        
+
+        if(selectedCart != null)
+            SelectBuilding(selectedCart, true, true, repairColor);
+    }
+
+    void TryShieldCartContinuous(Cart cart) {
+        cart.GetHealthModule()?.ShieldUp(GetShieldUpAmount() * Time.deltaTime);
+        if(selectedCart != null)
+            SelectBuilding(selectedCart, true, true, shieldColor);
     }
 
     public void CartHPUIButton(Cart cart) {
@@ -1301,25 +1350,36 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     bool CanShield(Cart cart) {
+        if (cart == null) {
+            Debug.Log($"Cart is null {cart}");
+        }
+        var healthModule = cart.GetHealthModule();
+        if (healthModule.maxShields > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    bool CanRepair(Cart cart) {
         var healthModule = cart.GetHealthModule();
         if (healthModule.currentHealth < healthModule.maxHealth) {
-            return false;
+            return true;
         } else {
-            if (healthModule.maxShields > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
 
+    void SelectBuilding(Cart building, bool isSelecting, bool isDefaultClick = true, bool isMove = false) {
+        SelectBuilding(building, isSelecting, false, Color.white, isDefaultClick, isMove);
+    }
 
     [HideInInspector]
     public UnityEvent<Cart, bool> OnSelectBuilding = new UnityEvent<Cart, bool>();
     public UnityEvent<EnemyHealth, bool> OnSelectEnemy = new UnityEvent<EnemyHealth, bool>();
     public UnityEvent<Artifact, bool> OnSelectArtifact = new UnityEvent<Artifact, bool>();
     public UnityEvent<GateScript, bool> OnSelectGate = new UnityEvent<GateScript, bool>();
-    void SelectBuilding(Cart building, bool isSelecting, bool isDefaultClick = true, bool isMove = false) {
+    void SelectBuilding(Cart building, bool isSelecting, bool forceColor, Color forcedColor, bool isDefaultClick = true, bool isMove = false) {
         Deselect();
         
         Outline outline = null;
@@ -1350,10 +1410,14 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 if (CanShield(building)) {
                     myColor = shieldColor;
                     GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shield);
-                } else {
-                    myColor = repairColor;
-                    GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.repair);
                 }
+
+                if (CanRepair(building)) {
+                    myColor = repairColor;
+                }
+
+                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.repair);
+                
                 switch (currentSelectMode) {
                     case SelectMode.cart:
                         // do nothing. This will do the default action button
@@ -1384,8 +1448,14 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                         break;
                 }
             }
-            
-            outline.OutlineColor = myColor;
+
+            if (forceColor) {
+                outline.OutlineColor = forcedColor;
+            } else {
+                outline.OutlineColor = myColor;
+            }
+
+            outline.OutlineWidth = 5;
             selectedCart = building;
         } else {
             if (PlayStateMaster.s.isShopOrEndGame()) {

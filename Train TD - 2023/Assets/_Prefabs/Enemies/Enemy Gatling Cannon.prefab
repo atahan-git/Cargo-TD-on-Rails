@@ -50,11 +50,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunSprite: {fileID: 21300000, guid: 61fbb9ba0a73f9241975aeaa982749ab, type: 3}
-  isGigaGatling: 0
+  isGigaGatling: 1
   gatlinificator: 0
   maxFireRateReduction: 0.9
   gatlingAmount: 0
-  maxGatlingAmount: 4
+  maxGatlingAmount: 8
   rotateTransforms:
   - transform: {fileID: 1671597282880483576}
   rotateTransform:
@@ -72,7 +72,7 @@ MonoBehaviour:
   target: {fileID: 0}
   mortarRotation: 0
   fireDelay: 4
-  fireBarrageCount: 10
+  fireBarrageCount: 1
   fireBarrageDelay: 0.2
   fireRateMultiplier: 1
   projectileDamage: 25

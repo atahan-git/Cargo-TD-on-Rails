@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ModuleAmmoProvider : ActivateWhenAttachedToTrain, IResetState {
+public class ModuleAmmoProvider : ActivateWhenAttachedToTrain,IBooster, IResetState {
 
     public int boostReloadCountPerLevel = 1;
     
@@ -20,13 +20,16 @@ public class ModuleAmmoProvider : ActivateWhenAttachedToTrain, IResetState {
         PlayerWorldInteractionController.s.reloadAmountPerClickBoost += (boostReloadCountPerLevel*level);
         activeFireDamageBoost = boostFireDamageBase + (boostFireDamagePercentPerLevel * level);
         activeExplosionRangeBoost = boostExplosionRangeBase + (boostExplosionRangePercentPerLevel * level);
+        
+        rangeBoost = level;
     }
 
     public ModuleAmmo.AmmoEffects myAmmoType;
 
     protected override void _AttachedToTrain() {
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            ApplyBoost(Train.s.carts[i], true);
+        for (int i = 1; i < GetRange()+1; i++) {
+            ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), true);
+            ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), true);
         }
     }
 
@@ -51,7 +54,22 @@ public class ModuleAmmoProvider : ActivateWhenAttachedToTrain, IResetState {
         }
     }
 
+    public int baseRange = 1;
+    public int rangeBoost = 0;
     protected override void _DetachedFromTrain() {
         // do nothing
+    }
+
+    public void ModifyStats(int range, float value) {
+        rangeBoost += range;
+    }
+
+    public int GetRange() {
+        return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost );
+    }
+
+    [ColorUsageAttribute(true, true)] public Color ammoColor = Color.red;
+    public Color GetColor() {
+        return ammoColor;
     }
 }

@@ -499,8 +499,8 @@ public class Train : MonoBehaviour {
 
         (cart1.transform.position, cart2.transform.position) = (cart2.transform.position, cart1.transform.position);
         
-        AddCartAtIndex(cart2Index, cart1);
         AddCartAtIndex(cart1Index, cart2);
+        AddCartAtIndex(cart2Index, cart1);
         
         UpdateThingsAffectingOtherThings(true);
 

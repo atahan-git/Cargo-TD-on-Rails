@@ -101,6 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraParent: {fileID: 381691161858782705}
+  canUseAmmo: 1
   myMode: 0
 --- !u!1 &2116716560435923217
 GameObject:
@@ -357,7 +358,7 @@ MonoBehaviour:
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
   fireRateMultiplier: 1
-  projectileDamage: 8.8
+  projectileDamage: 5
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
@@ -397,13 +398,15 @@ MonoBehaviour:
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
-  gotShootCredits: 0
   waitTimer: 0
   isFire: 0
   isSticky: 0
   isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  gotShootCredits: 0
+  needShootCredits: 0
+  shootCreditsUse: 1
 --- !u!114 &3530306806417391473
 MonoBehaviour:
   m_ObjectHideFlags: 0

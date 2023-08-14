@@ -96,8 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goBackDelta: 0
-  goBackStartDelta: -0.02
-  goBackDeltaAcceleration: 0.15
+  goBackStartDelta: -0.01
+  goBackDeltaAcceleration: 0.075
   frontBit: {fileID: 8592396825013126393}
   frontBitRetractedPos: {fileID: 2937005309393823754}
 --- !u!1 &2677843582063563157
@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 60
+  rotationSpan: 75
   range: 6
   myPossibleTargets: 00000000
   canHitFlying: 0

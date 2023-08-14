@@ -21,10 +21,13 @@ public class PhysicalHealthBar : MonoBehaviour {
 
     public float healthPercent;
     private void Update() {
-        healthPercent = Mathf.Lerp(healthPercent, myHp.GetHealthPercent(), 10 * Time.deltaTime);
-        if (Mathf.Abs(healthPercent - myHp.GetHealthPercent()) > 0.01f) {
-            UpdateHealth(healthPercent);
+        if (PlayStateMaster.s.isCombatInProgress()) {
+            healthPercent = myHp.GetHealthPercent();
+        } else {
+            healthPercent = Mathf.Lerp(healthPercent, myHp.GetHealthPercent(), 10 * Time.deltaTime);
         }
+        
+        UpdateHealth(healthPercent);
     }
 
     public void UpdateHealth(float percentage) {

@@ -53,8 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 6d6136a37f30c414e92bb2e0f629fda5, type: 3}
     - target: {fileID: 6382012039353133210, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: myTooltip.text
-      value: This and connected carts' shields decay half as fast. Useless without
-        a shield cart.
+      value: This and connected carts' shields decay half as fast.
       objectReference: {fileID: 0}
     - target: {fileID: 6620300279125450212, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Pivot.x
