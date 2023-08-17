@@ -53,7 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 502e5cabb030053458be929a43b75409, type: 3}
     - target: {fileID: 6382012039353133210, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: myTooltip.text
-      value: This and connected carts shoot 100% faster.
+      value: This and connected carts shoot 50% faster.
       objectReference: {fileID: 0}
     - target: {fileID: 6620300279125450212, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Pivot.x
@@ -172,7 +172,7 @@ MonoBehaviour:
   fireDecayRateMultiplier: 1
   gatlinificator: 0
   isHoming: 0
-  fireRateMultiplier: 1
+  fireRateMultiplier: 1.5
   damageMultiplier: 1
   ammoMultiplier: 1
   addFireDamage: 0

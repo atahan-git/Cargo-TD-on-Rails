@@ -16,19 +16,31 @@ public class CharacterSelector : MonoBehaviour {
     public GameObject charSelectUI;
     public Transform charsParent;
     public GameObject charPanelPrefab;
-    
 
+    public GameObject carSelectorArea;
+    public GameObject startTrainArea;
+
+    public MiniGUI_DepartureChecklist departureChecklist;
+    
+    public bool isInCharSelect = false;
     public void CheckAndShowCharSelectionScreen() {
         if (!DataSaver.s.GetCurrentSave().isInARun) {
             charSelectUI.SetActive(true);
-            PlayerWorldInteractionController.s.canSelect = false;
+            startTrainArea.SetActive(false);
+            carSelectorArea.SetActive(true);
             SetUpCharPanel();
+            isInCharSelect = true;
         } else {
             charSelectUI.SetActive(false);
-            if (!MissionWinFinisher.s.isWon) {
-                PlayerWorldInteractionController.s.canSelect = true;
-            }
+            startTrainArea.SetActive(true);
+            carSelectorArea.SetActive(false);
+            isInCharSelect = false;
         }
+    }
+
+
+    void CheckDepartureRequirements() {
+        departureChecklist.UpdateStatus(new []{false, false});
     }
 
     void SetUpCharPanel() {
@@ -80,43 +92,17 @@ public class CharacterSelector : MonoBehaviour {
         DataSaver.s.GetCurrentSave().currentRun.SetCharacter(_data);
         DataSaver.s.GetCurrentSave().isInARun = true;
 
-        /*var saveArtifacts = new List<string>();
-        saveArtifacts.Add(selectedArtifact.uniqueName);
-        if (bonusArtifactToggle.isOn) {
-            saveArtifacts.Add(bonusArtifact.uniqueName);
-        }*/
-
-        //DataSaver.s.GetCurrentSave().currentRun.artifacts = saveArtifacts.ToArray();
+        
         DataSaver.s.GetCurrentSave().xpProgress.bonusArtifact = "";
             
             
         DataSaver.s.SaveActiveGame();
 
+        isInCharSelect = true;
         PlayStateMaster.s.FinishCharacterSelection();
     }
 
     public void CharSelectionAndWorldGenerationComplete() {
         DataSaver.s.GetCurrentSave().isInARun = true;
-    }
-
-    public Transform starterArtifactsParent;
-    public GameObject starterWinWithItToGetMore;
-    public GameObject bonusArtifactEmpty;
-
-    public Transform bonusArtifactParent;
-
-    public GameObject startingArtifactSelectedMarker;
-
-    public Toggle bonusArtifactToggle;
-
-    public Artifact selectedArtifact;
-    public Artifact bonusArtifact;
-    public void SelectStartingArtifact(Artifact artifact) {
-        if (!DataSaver.s.GetCurrentSave().isInARun) {
-            selectedArtifact = artifact;
-            var newMarker = Instantiate(startingArtifactSelectedMarker, selectedArtifact.transform);
-            Destroy(startingArtifactSelectedMarker);
-            startingArtifactSelectedMarker = newMarker;
-        }
     }
 }

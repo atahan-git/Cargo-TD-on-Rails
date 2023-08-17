@@ -155,6 +155,8 @@ public class LevelReferences : MonoBehaviour {
     public GameObject bullet_sticky_explosive;
     public GameObject bullet_fire_sticky_explosive;
 
+    public GameObject bullet_repair;
+
     /*public GameObject GetResourceParticle(ResourceTypes types) {
         switch (types) {
             case ResourceTypes.scraps:

@@ -280,13 +280,13 @@ public class FirstTimeTutorialController : MonoBehaviour {
                 activeHints.Add(Instantiate(reloadHintPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_TutorialHint>().SetUp(cart));
             }
 
-            if (cart.isMainEngine || cart.isMysteriousCart) {
+            /*if (cart.isMainEngine || cart.isMysteriousCart) {
                 if(!_progress.repairHint)
                     activeHints.Add(Instantiate(repairCriticalHintPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_TutorialHint>().SetUp(cart));
             } else {
                 if(!_progress.repairCriticalHint)
                     activeHints.Add(Instantiate(repairHintPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_TutorialHint>().SetUp(cart));
-            }
+            }*/
         }
     }
 

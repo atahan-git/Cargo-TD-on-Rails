@@ -10653,7 +10653,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedAdd: 3
-  enginePower: 9
+  enginePower: 10
   OnEngineStart:
     m_PersistentCalls:
       m_Calls: []
@@ -25556,6 +25556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bca75e19cb63b044dbf15e58cedde33e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachmentThingParent: {fileID: 0}
   attachmentThing: {fileID: 0}
   attachmentThings: []
   isAttached: 0

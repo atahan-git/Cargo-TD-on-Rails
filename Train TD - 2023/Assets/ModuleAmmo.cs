@@ -27,6 +27,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public float ammoPerBarrageMultiplier = 1;
 
     public GunModule[] myGunModules;
+    public RoboRepairModule[] myRoboRepairModules;
 
     private bool listenerAdded = false;
 
@@ -50,17 +51,17 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         isFire = false;
         isExplosive = false;
         isSticky = false;
-        myGunModules = GetComponentsInChildren<GunModule>();
-        for (int i = 0; i < myGunModules.Length; i++) {
-            myGunModules[i].isFire = isFire;
-            myGunModules[i].isSticky = isSticky;
-            myGunModules[i].isExplosive = isExplosive;
-        }
+        UpdateConnectedModules();
         OnAmmoTypeChange?.Invoke();
         
         ChangeMaxAmmo(0);
+        UpdateModuleState();
     }
-    
+
+    private void Start() {
+        UpdateModuleState();
+    }
+
     public void UseAmmo() {
         curAmmo -= AmmoUseWithMultipliers();
         
@@ -119,11 +120,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
                 break;
         }
         
-        for (int i = 0; i < myGunModules.Length; i++) {
-            myGunModules[i].isFire = isFire;
-            myGunModules[i].isSticky = isSticky;
-            myGunModules[i].isExplosive = isExplosive;
-        }
+        UpdateConnectedModules();
     }
     
     public void SetAmmo(int amount, bool _isFire, bool _isSticky, bool _isExplosive) {
@@ -134,11 +131,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         isSticky = _isSticky;
         isExplosive = _isExplosive;
         
-        for (int i = 0; i < myGunModules.Length; i++) {
-            myGunModules[i].isFire = isFire;
-            myGunModules[i].isSticky = isSticky;
-            myGunModules[i].isExplosive = isExplosive;
-        }
+        UpdateConnectedModules();
         
         
         OnAmmoTypeChange?.Invoke();
@@ -164,15 +157,13 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public UnityEvent OnUse;
     public UnityEvent<bool> OnReload;
     public UnityEvent OnAmmoTypeChange;
+    public bool hasAmmo => curAmmo >= AmmoUseWithMultipliers();
 
     [ReadOnly]
     public GameObject myUINoAmmoWarningThing;
     void UpdateModuleState() {
-        var hasAmmo = curAmmo >= AmmoUseWithMultipliers() ;
 
-        for (int i = 0; i < myGunModules.Length; i++) {
-            myGunModules[i].hasAmmo = hasAmmo;
-        }
+        UpdateConnectedModules();
         
 
         if (myUINoAmmoWarningThing == null) {
@@ -211,11 +202,18 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         Reload(-1,false);
 
         myGunModules = GetComponentsInChildren<GunModule>();
+        myRoboRepairModules = GetComponentsInChildren<RoboRepairModule>();
         if (!listenerAdded) {
 
             for (int i = 0; i < myGunModules.Length; i++) {
                 myGunModules[i].barrageShot.AddListener(UseAmmo);
             }
+
+            for (int i = 0; i < myRoboRepairModules.Length; i++) {
+                myRoboRepairModules[i].OnRepaired.AddListener(UseAmmo);
+                OnReload.AddListener(myRoboRepairModules[i].InstantRepair);
+            }
+            
             listenerAdded = true;
         }
 
@@ -230,6 +228,33 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public void Disable() {
         this.enabled = false;
         myGunModules = GetComponentsInChildren<GunModule>();
+    }
+
+
+    private bool isSetup = false;
+    void UpdateConnectedModules() {
+        if (!isSetup) {
+            myGunModules = GetComponentsInChildren<GunModule>();
+            myRoboRepairModules = GetComponentsInChildren<RoboRepairModule>();
+            isSetup = true;
+        }
+
+        var _hasAmmo = hasAmmo;
+        for (int i = 0; i < myGunModules.Length; i++) {
+            myGunModules[i].hasAmmo = _hasAmmo;
+        }
+
+        for (int i = 0; i < myRoboRepairModules.Length; i++) {
+            myRoboRepairModules[i].hasAmmo = _hasAmmo;
+        }
+        
+        
+        for (int i = 0; i < myGunModules.Length; i++) {
+            myGunModules[i].isFire = isFire;
+            myGunModules[i].isSticky = isSticky;
+            myGunModules[i].isExplosive = isExplosive;
+        }
+        
     }
     
 

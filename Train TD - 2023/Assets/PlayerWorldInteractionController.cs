@@ -1055,6 +1055,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
     void TryRepairShieldCart(Cart cart) {
         if (CanRepair(cart)) {
+            return;
             cart.GetHealthModule()?.Repair(GetRepairAmount(cart.GetHealthModule()));
         }else if (CanShield(cart)) {
             cart.GetHealthModule()?.ShieldUp(GetShieldUpAmount());
@@ -1064,6 +1065,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     void TryRepairCart(Cart cart) {
+        return;
         cart.GetHealthModule()?.Repair(GetRepairAmount(cart.GetHealthModule()));
         
 

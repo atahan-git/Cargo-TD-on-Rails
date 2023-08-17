@@ -672,7 +672,7 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 9155879028066676231, guid: 20718e1ecbf4a0a48851a1815d4ceeaa, type: 3}
   target: {fileID: 0}
   mortarRotation: 0
-  fireDelay: 4
+  fireDelay: 5
   fireBarrageCount: 1
   fireBarrageDelay: 0.5
   fireRateMultiplier: 1

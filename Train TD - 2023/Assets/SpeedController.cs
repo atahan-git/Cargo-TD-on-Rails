@@ -117,13 +117,13 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             if (excessCarts > 0) {
                 switch (excessCarts) {
                     case 1:
-                        targetSpeed *= 0.85f;
+                        targetSpeed *= 0.95f;
                         break;
                     case 2:
-                        targetSpeed *= 0.50f;
+                        targetSpeed *= 0.85f;
                         break;
                     default: // more than 2
-                        targetSpeed *= 0.20f;
+                        targetSpeed *= 0.75f;
                         break;
                 }
             }
