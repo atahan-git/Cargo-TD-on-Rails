@@ -307,16 +307,18 @@ public class UpgradesController : MonoBehaviour {
 		var buildingCargoCount = fleaMarketLocationCount;
 		var artifactCount = 0;
 
-		
-		var artifactRoll = Random.value;
-		if (artifactRoll < 0.2f) {
-			// 2 artifacts
-			buildingCargoCount -= 2;
-			artifactCount += 2;
-		} else if (artifactRoll < 0.5f) {
-			// 1 artifacts
-			buildingCargoCount -= 1;
-			artifactCount += 1;
+
+		if (DataSaver.s.GetCurrentSave().xpProgress.xp > 2) {
+			var artifactRoll = Random.value;
+			if (artifactRoll < 0.2f) {
+				// 2 artifacts
+				buildingCargoCount -= 2;
+				artifactCount += 2;
+			} else if (artifactRoll < 0.5f) {
+				// 1 artifacts
+				buildingCargoCount -= 1;
+				artifactCount += 1;
+			}
 		}
 
 		var didRollEpic = false;
