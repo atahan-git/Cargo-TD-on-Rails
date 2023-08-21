@@ -157,7 +157,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Click on top of this cart to reload
+  m_text: Click this cart to reload
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4debc8fd45be08c46a063f95d627c571, type: 2}
   m_sharedMaterial: {fileID: 3778325746667235197, guid: 4debc8fd45be08c46a063f95d627c571, type: 2}
@@ -280,6 +280,7 @@ MonoBehaviour:
   autoSetUp: 0
   avoidOverlaps: 0
   sourceTransform: {fileID: 0}
+  sourceLocation: {x: 0, y: 0, z: 0}
   UIRect: {fileID: 0}
 --- !u!1 &4934823528770110640
 GameObject:
@@ -407,6 +408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64e1fc876a2567d4885fd0e233a4b740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myAmmo: {fileID: 0}
 --- !u!1 &9139692486541064130
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,6 +444,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -36.943, y: -46.04}
+  m_AnchoredPosition: {x: -36.943, y: 135.6}
   m_SizeDelta: {x: 163.2, y: 78.39}
   m_Pivot: {x: 0.5, y: 0.5}

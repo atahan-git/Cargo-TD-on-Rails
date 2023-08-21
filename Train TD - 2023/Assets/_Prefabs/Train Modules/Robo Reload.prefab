@@ -1245,10 +1245,14 @@ MonoBehaviour:
   attachmentThings: []
   isAttached: 0
   spawnAttachmentThings: 1
-  isRepair: 0
+  myType: 0
   delay: 2
   amount: 2
   countPerCycle: 2
+  hasAmmo: 1
+  OnRepaired:
+    m_PersistentCalls:
+      m_Calls: []
   baseRange: 1
   rangeBoost: 0
   boostMultiplier: 1

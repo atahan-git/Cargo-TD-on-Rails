@@ -281,6 +281,7 @@ MonoBehaviour:
   noAmmoPos: {fileID: 7228994314959930037}
   reloadSpawnPos: {fileID: 1650063500131326081}
   moduleAmmo: {fileID: 0}
+  isRepairAmmo: 0
 --- !u!1 &6225804440057024274
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,9 +412,11 @@ MonoBehaviour:
   maxAmmoMultiplier: 1
   isFire: 0
   isSticky: 0
+  isExplosive: 0
   ammoPerBarrage: 1
   ammoPerBarrageMultiplier: 1
   myGunModules: []
+  myRoboRepairModules: []
   reloadEfficiency: 1
   OnUse:
     m_PersistentCalls:

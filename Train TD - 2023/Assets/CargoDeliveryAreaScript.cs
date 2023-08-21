@@ -28,7 +28,7 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
 
     void Update()
     {
-        if (!isEngaged && !PlayerWorldInteractionController.s.isHoldDragStarted) {
+        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging()) {
             if (location1.snapTransform.childCount > 0) 
                 StartCoroutine(EngagePlatform(location1, location2));
         }

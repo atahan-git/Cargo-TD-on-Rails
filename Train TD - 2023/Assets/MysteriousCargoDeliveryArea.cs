@@ -32,7 +32,7 @@ public class MysteriousCargoDeliveryArea : MonoBehaviour
     public bool rewardSpawned = false;
     void Update()
     {
-        if (!isEngaged && !PlayerWorldInteractionController.s.isHoldDragStarted) {
+        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging()) {
             if (deliverPlatform.snapTransform.childCount > 0) 
                 StartCoroutine(EngagePlatform());
         }

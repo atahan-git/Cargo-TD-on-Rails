@@ -40,7 +40,7 @@ public class EncounterController : MonoBehaviour {
         ResetEncounter();
     }
 
-    public void ResetEncounter() {
+    public void ResetEncounter(bool realCombat= true) {
         encounterMasterUI.SetActive(false);
         encounterTextUI.SetActive(false);
         fadeUI.SetActive(false);

@@ -10,6 +10,9 @@ public class PhysicalRangeShower : MonoBehaviour {
         s = this;
     }
 
+
+    public GameObject canAffectPrefab;
+    
     public GameObject[] cartEffectRanges;
 
     public GameObject[] artifactEffectRanges;
@@ -34,6 +37,9 @@ public class PhysicalRangeShower : MonoBehaviour {
             return;
         }
         
+        if (artifact.range <= 0) {
+            isArtifact = false;
+        }
 
         var artifactColor = Color.white;
         if (isArtifact) {
@@ -55,6 +61,7 @@ public class PhysicalRangeShower : MonoBehaviour {
         for (int i = 0; i < artifactEffectRanges.Length; i++) {
             if(resetPos)
                 artifactEffectRanges[i].transform.position = cartBasePos;
+
             artifactEffectRanges[i].SetActive(isArtifact);
             artifactEffectRanges[i].GetComponent<MeshRenderer>().material.SetColor(Emission, artifactColor);
         }

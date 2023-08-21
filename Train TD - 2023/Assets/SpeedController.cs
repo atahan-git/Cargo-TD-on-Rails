@@ -386,7 +386,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         }
     }
 
-    public void OnCombatFinished() {
+    public void OnCombatFinished(bool realCombat) {
         DisableLowPower();
     }
 

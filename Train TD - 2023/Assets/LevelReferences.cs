@@ -87,6 +87,7 @@ public class LevelReferences : MonoBehaviour {
 
     [Space]
     public Material[] cartLevelMats;
+    public Material[] artifactLevelMats;
 
     
     public struct TargetValues {

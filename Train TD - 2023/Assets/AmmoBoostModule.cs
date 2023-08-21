@@ -40,14 +40,13 @@ public class AmmoBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster
 		rangeBoost = level;
 		boostMultiplier = 1;
 	}
-
+	public int GetRange() {
+		return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
+	}
+	
 	public void ModifyStats(int range, float value) {
 		rangeBoost += range;
 		boostMultiplier += value;
-	}
-	
-	public int GetRange() {
-		return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
 	}
 
 	[ColorUsageAttribute(true, true)] public Color boostRangeColor = Color.yellow;

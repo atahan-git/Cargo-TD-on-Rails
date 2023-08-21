@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 806567023265069063}
   - component: {fileID: 1628824566}
   - component: {fileID: 7174679615329188756}
+  - component: {fileID: -8744703425546306579}
   m_Layer: 11
   m_Name: Cart
   m_TagString: Untagged
@@ -239,6 +240,7 @@ MonoBehaviour:
   burnResistant: 0
   currentBurn: 0
   burnSpeed: 0
+  isShieldActive: 0
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,6 +259,7 @@ MonoBehaviour:
   avoid: 0
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
+  enemiesTargetingMe: []
 --- !u!114 &-2084665083962906048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,6 +319,18 @@ MonoBehaviour:
   bakeKeys: []
   bakeValues: []
   isInitialized: 0
+--- !u!114 &-8744703425546306579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3399934084524781478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1616160450, guid: 15528e9db0a6c9b45a66378f0b6c4dd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3591906271589902553
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,6 +445,7 @@ MonoBehaviour:
   rare: {fileID: 2100000, guid: 99b543472aa96974fa0523348b8125c7, type: 2}
   epic: {fileID: 2100000, guid: 099e8cb5af27e554b8fe921d8955b317, type: 2}
   special: {fileID: 2100000, guid: 24c11a795701ebe41b82ecb3aadb24cf, type: 2}
+  boss: {fileID: 0}
 --- !u!1 &4724468226665651248
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,7 +1963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
       propertyPath: m_IsActive
@@ -1965,8 +1981,8 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
   m_PrefabInstance: {fileID: 6952783934435307748}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &2391465372220513488
-MeshCollider:
+--- !u!65 &1234357247162650245
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1975,10 +1991,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5495902117074765545, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 0.66657734, y: 2.120236, z: 2.5510478}
+  m_Center: {x: 0.19123453, y: 0.06011796, z: 0}
 --- !u!1001 &7816308972071837479
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2052,7 +2067,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
       propertyPath: m_IsActive
@@ -2065,8 +2080,8 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
   m_PrefabInstance: {fileID: 7816308972071837479}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &150193623189751042
-MeshCollider:
+--- !u!65 &4989162843538475637
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2075,10 +2090,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5495902117074765545, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 0.66657734, y: 2.120236, z: 2.5510478}
+  m_Center: {x: 0.19123453, y: 0.06011796, z: 0}
 --- !u!4 &7778740088140675276 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: eaaadeafd7a423347a005d9d5d277cf8, type: 3}

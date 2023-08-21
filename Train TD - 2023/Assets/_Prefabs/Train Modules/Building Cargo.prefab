@@ -5432,9 +5432,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0476e76a40770ea42a9720f0dda8c301, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myRewardCart: 
-  myRewardArtifact: 
-  isLeftCargo: 0
+  myState:
+    cargoReward: 
+    cargoLevel: 0
+    artifactReward: 
+    isLeftCargo: 0
   icons:
   - {fileID: 6859864511925905042}
   - {fileID: 5592214490614826655}
@@ -5849,3 +5851,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2849140471503338825, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
   m_PrefabInstance: {fileID: 5926245680219220562}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &9011912884359218676 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3399934084524781478, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+  m_PrefabInstance: {fileID: 5926245680219220562}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-4789536488205289259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9011912884359218676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1616160450, guid: 15528e9db0a6c9b45a66378f0b6c4dd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

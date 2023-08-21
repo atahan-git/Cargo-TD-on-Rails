@@ -137,7 +137,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4739534140841179192}
-  - component: {fileID: 3191332124163238141}
   - component: {fileID: 7319792888445679915}
   m_Layer: 17
   m_Name: Robo Repair
@@ -164,35 +163,6 @@ Transform:
   m_Father: {fileID: 8481526207145170715}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3191332124163238141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 599179972952695992}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b49180ea77ea07d40898da773b037d45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attachmentThingParent: {fileID: 6877869113008189340}
-  attachmentThing: {fileID: 270021327367191855}
-  attachmentThings: []
-  isAttached: 0
-  spawnAttachmentThings: 0
-  myType: 2
-  delay: 2
-  amount: 50
-  countPerCycle: 2
-  hasAmmo: 1
-  OnRepaired:
-    m_PersistentCalls:
-      m_Calls: []
-  baseRange: 1
-  rangeBoost: 0
-  boostMultiplier: 1
-  boostRangeColor: {r: 0, g: 6.945463, b: 10.556066, a: 1}
 --- !u!114 &7319792888445679915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,9 +176,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Shields will decay over time, and more shields will decay faster. This
-      module shields carts near it.
-  info: RoboShields
+    text: This module shields carts near it.
+  info: Shield Generator
 --- !u!1 &1293306664036113518
 GameObject:
   m_ObjectHideFlags: 0
@@ -2735,8 +2704,32 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shield Cart
       objectReference: {fileID: 0}
+    - target: {fileID: 6969446081533272694, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7427781900297684245, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: avoid
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7491730678060570383, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.58701
+      objectReference: {fileID: 0}
+    - target: {fileID: 7491730678060570383, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7778740088140675276, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.58701
+      objectReference: {fileID: 0}
+    - target: {fileID: 7778740088140675276, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7835183593625357749, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}

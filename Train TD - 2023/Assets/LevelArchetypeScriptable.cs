@@ -185,7 +185,7 @@ public class LevelArchetypeScriptable : ScriptableObject {
         
 
         if (segment.eliteEnemy) {
-            segment.artifactRewardUniqueName = UpgradesController.s.GetRandomRegularArtifact();
+            segment.artifactRewardUniqueName = UpgradesController.s.GetRandomEliteRewardArtifact();
         }
 
         segment.segmentLength = furthestEnemyDistance + lastEnemyAndSegmentEndDistance;

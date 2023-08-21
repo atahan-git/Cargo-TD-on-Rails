@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 public class Artifact : MonoBehaviour
 {
+    public UpgradesController.CartLocation myLocation = UpgradesController.CartLocation.train;
+    public int level = 0;
+    
     public string displayName = "Unnamed But Nice in game name";
     public string uniqueName = "unnamed";
 
@@ -22,12 +25,26 @@ public class Artifact : MonoBehaviour
 
     public Sprite mySprite;
     
-    public int range;
+    [NonSerialized]
+    public int range = -1;
     public bool isGoodEffect;
     
     public bool isAttached = false;
+
+
+    public MeshRenderer outerShellMaterial;
+    
     private void Start() {
         ApplyNameAndSprite();
+    }
+    
+    public void ResetState() {
+        outerShellMaterial.material = LevelReferences.s.artifactLevelMats[level];
+        
+        var modulesWithResetStates = GetComponentsInChildren<IResetStateArtifact>();
+        for (int i = 0; i < modulesWithResetStates.Length; i++) {
+            modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
+        }
     }
 
     [Button]
@@ -37,7 +54,30 @@ public class Artifact : MonoBehaviour
         }
     }
 
+
+    public void AttachToSnapLoc(SnapCartLocation loc, bool doSave=true) {
+        myLocation = loc.myLocation;
+        UpgradesController.s.AddArtifactToShop(this, loc.myLocation, doSave);
+        
+        var oldCart = GetComponentInParent<Cart>();
+        if (oldCart != null) {
+            if(oldCart.myAttachedArtifact == this)
+                oldCart.myAttachedArtifact = null;
+        }
+        
+        transform.SetParent(loc.snapTransform);
+        GetComponent<Rigidbody>().isKinematic = true;
+        GetComponent<Rigidbody>().useGravity = false;
+        
+        attachedToCartPart.SetActive(false);
+        worldPart.SetActive(true);
+        
+        
+        isAttached = false;
+    }
+
     public void AttachToCart(Cart cart, bool doSave = true) {
+        myLocation = UpgradesController.CartLocation.train;
         UpgradesController.s.RemoveArtifactFromShop(this, doSave);
         var oldCart = GetComponentInParent<Cart>();
         if (oldCart != null) {
@@ -56,13 +96,15 @@ public class Artifact : MonoBehaviour
         worldPart.SetActive(false);
         
         
-        Train.s.ArtifactsChanged();
+        if(cart.GetComponentInParent<Train>() != null)
+            cart.GetComponentInParent<Train>().ArtifactsChanged();
 
         isAttached = true;
     }
 
     public void DetachFromCart( bool doSave = true) {
-        UpgradesController.s.AddArtifactToShop(this, doSave);
+        myLocation = UpgradesController.CartLocation.world;
+        UpgradesController.s.AddArtifactToShop(this,UpgradesController.CartLocation.world, doSave);
         var oldCart = GetComponentInParent<Cart>();
         if (oldCart != null) {
             if(oldCart.myAttachedArtifact == this)
@@ -76,9 +118,11 @@ public class Artifact : MonoBehaviour
         
         GetComponent<Rigidbody>().isKinematic = false;
         GetComponent<Rigidbody>().useGravity = true;
-        
-        
-        Train.s.ArtifactsChanged();
+
+
+        if (oldCart != null) {
+            Train.s.ArtifactsChanged();
+        }
         
         isAttached = false;
     }
@@ -139,4 +183,9 @@ public class Artifact : MonoBehaviour
     public void OnUIClick() { 
         CharacterSelector.s.SelectStartingArtifact(this);   
     }*/
+}
+
+
+public interface IResetStateArtifact {
+    public void ResetState(int level);
 }

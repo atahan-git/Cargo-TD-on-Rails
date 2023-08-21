@@ -106,11 +106,18 @@ public class UpgradesController : MonoBehaviour {
 		}
 	}
 
-	public void AddArtifactToShop(Artifact artifact, bool doSave = true) {
+	public void AddArtifactToShop(Artifact artifact, CartLocation location, bool doSave = true) {
 		if (!shopArtifacts.Contains(artifact)) {
 			shopArtifacts.Add(artifact);
 			if(doSave)
 				SaveShopState();
+		}
+	}
+	
+	public void ChangeArtifactLocation(Artifact artifact, CartLocation location) {
+		if (artifact.myLocation != location) {
+			artifact.myLocation = location;
+			SaveShopState();
 		}
 	}
 
@@ -140,6 +147,8 @@ public class UpgradesController : MonoBehaviour {
 			fleaMarketLocations[i].SetEmptyStatus(fleaMarketLocations[i].IsEmpty());
 			//_cargoLocations[i].SetEmptyStatus(isLocationEmpty);
 		}
+
+		CheckIfCanGo();
 	}
 	
 	public void SnapDestinationCargos(Cart lastCart) {
@@ -250,9 +259,10 @@ public class UpgradesController : MonoBehaviour {
 
 			if (myArtifact != null) {
 				shopState.artifactStates.Add(new WorldArtifactState() {
-					artifactUniqueName = myArtifact.uniqueName,
+					location =  myArtifact.myLocation,
 					pos = myArtifact.transform.position,
 					rot = myArtifact.transform.rotation,
+					state = Train.GetStateFromArtifact(myArtifact),
 				});
 			}
 		}
@@ -272,9 +282,10 @@ public class UpgradesController : MonoBehaviour {
 	
 	[Serializable]
 	public class WorldArtifactState {
+		public CartLocation location;
 		public Vector3 pos;
 		public Quaternion rot;
-		public string artifactUniqueName;
+		public DataSaver.TrainState.ArtifactState state = new DataSaver.TrainState.ArtifactState();
 	}
 	
 	[Serializable]
@@ -289,14 +300,30 @@ public class UpgradesController : MonoBehaviour {
 	public enum CartLocation {
 		train = 0, market = 1, world = 2, forge = 3, destinationSelect = 4, cargoDelivery = 5, rewardDisplay = 6
 	}
-	
+
+	public Cart secondCityForcedRepairDrop;
 	void InitializeShop(DataSaver.RunState state) {
 		state.shopState = new ShopState();
-		var buildingCargoCount = fleaMarketLocationCount; 
+		var buildingCargoCount = fleaMarketLocationCount;
+		var artifactCount = 0;
+
 		
+		var artifactRoll = Random.value;
+		if (artifactRoll < 0.2f) {
+			// 2 artifacts
+			buildingCargoCount -= 2;
+			artifactCount += 2;
+		} else if (artifactRoll < 0.5f) {
+			// 1 artifacts
+			buildingCargoCount -= 1;
+			artifactCount += 1;
+		}
+
 		var didRollEpic = false;
 		var rollName = "";
 		var rollLevel = 0;
+		var artifactRollName = "";
+		var artifactRollLevel = 0;
 
 		for (int i = 0; i < buildingCargoCount; i++) {
 			didRollEpic = false;
@@ -311,24 +338,50 @@ public class UpgradesController : MonoBehaviour {
 				}
 			});
 		}
+
+		for (int i = 0; i < artifactCount; i++) {
+			didRollEpic = false;
+			artifactRollName = GetRandomFleaMarketArtifact(ref didRollEpic);
+			artifactRollLevel = GetRandomFleaMarketArtifactLevel(didRollEpic); 
+			
+			state.shopState.artifactStates.Add(new WorldArtifactState() {
+				location =  CartLocation.market,
+				state =  new DataSaver.TrainState.ArtifactState() {
+					uniqueName =  artifactRollName,
+					level = artifactRollLevel
+				}
+			});
+		}
+
+		if (state.map.GetPlayerStar().starChunk == 1) {
+			state.shopState.cartStates[0].state.uniqueName = secondCityForcedRepairDrop.uniqueName;
+		}
+		
 		
 		rollName = GetRandomBuildingCargoForDestinationReward(ref didRollEpic);
-		rollLevel = GetDestinationCargoLevel(didRollEpic); 
+		rollLevel = GetDestinationCargoLevel(didRollEpic);
+		artifactRollName = GetRandomDestinationArtifact(ref didRollEpic);
+		artifactRollLevel = GetRandomFleaMarketArtifactLevel(didRollEpic);
 
 		state.shopState.leftCargo = new DataSaver.TrainState.CartState.CargoState(
 			rollName,
-			GetRandomRegularArtifact(),
+			artifactRollName,
 			true,
-			rollLevel
+			rollLevel,
+			artifactRollLevel
 		);
 		
 		rollName = GetRandomBuildingCargoForDestinationReward(ref didRollEpic);
 		rollLevel = GetDestinationCargoLevel(didRollEpic); 
+		artifactRollName = GetRandomDestinationArtifact(ref didRollEpic);
+		artifactRollLevel = GetRandomFleaMarketArtifactLevel(didRollEpic);
+		
 		state.shopState.rightCargo = new DataSaver.TrainState.CartState.CargoState(
 			rollName,
-			GetRandomRegularArtifact(),
+			artifactRollName,
 			false,
-			rollLevel
+			rollLevel,
+			artifactRollLevel
 		);
 
 		state.shopInitialized = true;
@@ -404,6 +457,7 @@ public class UpgradesController : MonoBehaviour {
 		}
 
 
+		var fleaMarketLocationIndex = 0;
 		if (currentRun.isInEndRunArea) {
 			for (int i = 0; i < currentRun.shopState.cartStates.Count; i++) { // we don't properly load from carts in cargo delivery thingy
 				var cart = currentRun.shopState.cartStates[i];
@@ -418,24 +472,23 @@ public class UpgradesController : MonoBehaviour {
 			}
 			
 		} else {
-			var n = 0;
 			for (int i = 0; i < currentRun.shopState.cartStates.Count; i++) {
 				var cart = currentRun.shopState.cartStates[i];
 				
-				var thingy = Instantiate(DataHolder.s.GetCart(cart.state.uniqueName).gameObject, shopableComponentsParent);
-				Train.ApplyStateToCart(thingy.GetComponent<Cart>(), cart.state);
-				if (cart.location == CartLocation.market) { // we don't properly load from carts in the forge
-					var location = fleaMarketLocations[n];
-					n++;
+				var myCartInShop = Instantiate(DataHolder.s.GetCart(cart.state.uniqueName).gameObject, shopableComponentsParent);
+				Train.ApplyStateToCart(myCartInShop.GetComponent<Cart>(), cart.state);
+				if (cart.location == CartLocation.market) { // If a cart is anywhere but in market it might as well be in the world, eg the smithery
+					var location = fleaMarketLocations[fleaMarketLocationIndex]; // we don't care about the previous flea market order
+					fleaMarketLocationIndex++;
 					
-					location.SnapToLocation(thingy);
-					AddCartToShop(thingy.GetComponent<Cart>(), CartLocation.market, false);
+					location.SnapToLocation(myCartInShop);
+					AddCartToShop(myCartInShop.GetComponent<Cart>(), CartLocation.market, false);
 				} else {
-					AddCartToShop(thingy.GetComponent<Cart>(), CartLocation.world, false);
-					thingy.transform.position = cart.pos;
-					thingy.transform.rotation = cart.rot;
-					thingy.GetComponent<Rigidbody>().isKinematic = false;
-					thingy.GetComponent<Rigidbody>().useGravity = true;
+					AddCartToShop(myCartInShop.GetComponent<Cart>(), CartLocation.world, false);
+					myCartInShop.transform.position = cart.pos;
+					myCartInShop.transform.rotation = cart.rot;
+					myCartInShop.GetComponent<Rigidbody>().isKinematic = false;
+					myCartInShop.GetComponent<Rigidbody>().useGravity = true;
 				}
 				
 			}
@@ -476,17 +529,23 @@ public class UpgradesController : MonoBehaviour {
 			
 			SpawnRewardAtPos(leftRewardPos, leftCargo.GetComponentInChildren<CargoModule>());
 			SpawnRewardAtPos(rightRewardPos, rightCargo.GetComponentInChildren<CargoModule>());
-
-			CheckIfCanGo();
 		}
 
 
 		for (int i = 0; i < currentRun.shopState.artifactStates.Count; i++) {
 			var myArtifactState = currentRun.shopState.artifactStates[i];
-			var artifact = Instantiate(DataHolder.s.GetArtifact(myArtifactState.artifactUniqueName).gameObject, myArtifactState.pos, myArtifactState.rot).GetComponent<Artifact>();
-			artifact.DetachFromCart(false);
+			var artifact = Instantiate(DataHolder.s.GetArtifact(myArtifactState.state.uniqueName).gameObject, myArtifactState.pos, myArtifactState.rot).GetComponent<Artifact>();
+			Train.ApplyStateToArtifact(artifact, myArtifactState.state);
+			if (myArtifactState.location == CartLocation.market) {
+				var location = fleaMarketLocations[fleaMarketLocationIndex]; // we don't care about the previous flea market order
+				fleaMarketLocationIndex++;
+				artifact.AttachToSnapLoc(location,false);
+			} else {
+				artifact.DetachFromCart(false);
+			}
 		}
 
+		CheckIfCanGo();
 		SaveShopState();
 	}
 
@@ -560,8 +619,8 @@ public class UpgradesController : MonoBehaviour {
 
 		} else {
 			var fleaMarketCount = 0;
-			for (int i = 0; i < shopCarts.Count; i++) {
-				if (shopCarts[i].myLocation == CartLocation.market) {
+			for (int i = 0; i < fleaMarketLocations.Length; i++) {
+				if (fleaMarketLocations[i].snapTransform.childCount > 0) {
 					fleaMarketCount += 1;
 				}
 			}
@@ -639,7 +698,21 @@ public class UpgradesController : MonoBehaviour {
 		increaseValue = 0.02f
 	};
 	
-	RarityPickChance artifactRarity = new RarityPickChance() {
+	RarityPickChance fleaMarketArtifactRarity = new RarityPickChance() {
+		epicChance = 0.03f,
+		rareChance = 0.37f,
+		startingValue = -0.05f,
+		increaseValue = 0.01f
+	};
+	
+	RarityPickChance destinationArtifactRarity = new RarityPickChance() {
+		epicChance = 0.10f,
+		rareChance = 0.40f,
+		startingValue = -0.12f,
+		increaseValue = 0.02f
+	};
+	
+	RarityPickChance eliteArtifactRarity = new RarityPickChance() {
 		epicChance = 0.10f,
 		rareChance = 0.40f,
 		startingValue = -0.12f,
@@ -655,6 +728,40 @@ public class UpgradesController : MonoBehaviour {
 		public float level1;
 		public float level2;
 	}
+	
+	private UpgradeChange fleaMarketArtifactUpgradeChances = new UpgradeChange() {
+		chances = new[] {
+			new ActUpgradeChance() {
+				level1 = 0f,
+				level2 = 0f,
+			},
+			new ActUpgradeChance() {
+				level1 = 0.25f,
+				level2 = 0.05f,
+			},
+			new ActUpgradeChance() {
+				level1 = 0.5f,
+				level2 = 0.15f,
+			},
+		}
+	};
+	
+	private UpgradeChange destinationArtifactUpgradeChances = new UpgradeChange() {
+		chances = new[] {
+			new ActUpgradeChance() {
+				level1 = 0.25f,
+				level2 = 0f,
+			},
+			new ActUpgradeChance() {
+				level1 = 0.9f,
+				level2 = 0.1f,
+			},
+			new ActUpgradeChance() {
+				level1 = 0.75f,
+				level2 = 0.25f,
+			},
+		}
+	};
 
 	private UpgradeChange fleaMarketUpgradeChances = new UpgradeChange() {
 		chances = new[] {
@@ -694,14 +801,14 @@ public class UpgradesController : MonoBehaviour {
 	public void SetUpNewCharacterRarityBoosts() {
 		DataSaver.s.GetCurrentSave().currentRun.fleaMarketRarityBoost = fleaMarketRarity.startingValue;
 		DataSaver.s.GetCurrentSave().currentRun.destinationRarityBoost = destinationRarity.startingValue;
-		DataSaver.s.GetCurrentSave().currentRun.artifactRarityBoost = artifactRarity.startingValue;
+		DataSaver.s.GetCurrentSave().currentRun.fleaMarketArtifactRarityBoost = fleaMarketArtifactRarity.startingValue;
+		DataSaver.s.GetCurrentSave().currentRun.destinationArtifactRarityBoost = destinationArtifactRarity.startingValue;
+		DataSaver.s.GetCurrentSave().currentRun.eliteArtifactRarityBoost = eliteArtifactRarity.startingValue;
 	}
 
 	public string GetRandomBuildingCargoForDestinationReward(ref bool didRollEpic) {
 		return _GetRandomBuildingCargo(tier1Buildings, ref DataSaver.s.GetCurrentSave().currentRun.destinationRarityBoost, destinationRarity, ref didRollEpic);
 	}
-	
-	
 
 	public string GetRandomBuildingCargoForFleaMarket(ref bool didRollEpic) {
 		List<string> rollSource = tier1Buildings;
@@ -853,11 +960,58 @@ public class UpgradesController : MonoBehaviour {
 		return count;
 	}
 	
-	public string GetRandomRegularArtifact() {
+	public string GetRandomDestinationArtifact(ref bool didRollEpic) {
 		if(!hasArtifactsGeneratedOnce)
 			OnShopOpened();
 		
-		return _GetRandomArtifact(regularArtifacts, ref DataSaver.s.GetCurrentSave().currentRun.artifactRarityBoost, artifactRarity);
+		return _GetRandomArtifact(regularArtifacts, ref DataSaver.s.GetCurrentSave().currentRun.destinationArtifactRarityBoost, destinationArtifactRarity, ref didRollEpic);
+	}
+	
+	public string GetRandomFleaMarketArtifact(ref bool didRollEpic) {
+		if(!hasArtifactsGeneratedOnce)
+			OnShopOpened();
+		
+		return _GetRandomArtifact(regularArtifacts, ref DataSaver.s.GetCurrentSave().currentRun.fleaMarketArtifactRarityBoost, fleaMarketArtifactRarity, ref didRollEpic);
+	}
+	
+	public string GetRandomEliteRewardArtifact() {
+		if(!hasArtifactsGeneratedOnce)
+			OnShopOpened();
+
+		bool didRollEpic = false;
+		return _GetRandomArtifact(regularArtifacts, ref DataSaver.s.GetCurrentSave().currentRun.eliteArtifactRarityBoost, eliteArtifactRarity, ref didRollEpic);
+	}
+	
+	public int GetRandomFleaMarketArtifactLevel(bool didRollEpic) { // epic carts will be 1 upgrade level lower than their normal counterparts
+		var roll = Random.value;
+		var act = DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
+		
+		if (roll < fleaMarketArtifactUpgradeChances.chances[act].level2) {
+			// rolled an epic cart
+			return 2 + (didRollEpic? -1 : 0);
+		}else if ( roll < fleaMarketArtifactUpgradeChances.chances[act].level2 + fleaMarketArtifactUpgradeChances.chances[act].level1) {
+			//rolled a rare cart
+
+			return 1 + (didRollEpic? -1 : 0);
+		} else {
+			return 0;
+		}
+	}
+	
+	public int GetRandomDestinationArtifactLevel(bool didRollEpic) { // epic carts will be 1 upgrade level lower than their normal counterparts
+		var roll = Random.value;
+		var act = DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
+		
+		if (roll < destinationArtifactUpgradeChances.chances[act].level2) {
+			// rolled an epic cart
+			return 2 + (didRollEpic? -1 : 0);
+		}else if ( roll < destinationArtifactUpgradeChances.chances[act].level2 + destinationArtifactUpgradeChances.chances[act].level1) {
+			//rolled a rare cart
+
+			return 1 + (didRollEpic? -1 : 0);
+		} else {
+			return 0;
+		}
 	}
 	
 	public string[] GetRandomBossArtifacts(int count) {
@@ -882,7 +1036,7 @@ public class UpgradesController : MonoBehaviour {
 	
 	private List<string> recentArtifacts = new List<string>();
 
-	string _GetRandomArtifact(List<string> rollSource, ref float rarityBoost, RarityPickChance rarityPickChance) {
+	string _GetRandomArtifact(List<string> rollSource, ref float rarityBoost, RarityPickChance rarityPickChance ,ref bool didRollEpic) {
 		var building = _GetRandomArtifact(rollSource, ref rarityBoost, rarityPickChance, true);
 
 		for (int i = 0; i < 3; i++) {
@@ -896,9 +1050,11 @@ public class UpgradesController : MonoBehaviour {
 		if (building.Length <= 0) {
 			building = _GetRandomArtifact(rollSource, ref rarityBoost, rarityPickChance, false);
 		}
-
+		
+		didRollEpic = false;
 		if (DataHolder.s.GetArtifact(building).myRarity == CartRarity.epic) {
 			rarityBoost = rarityPickChance.startingValue;
+			didRollEpic = true;
 		} else {
 			rarityBoost += rarityPickChance.increaseValue;
 		}
@@ -961,6 +1117,9 @@ public class UpgradesController : MonoBehaviour {
 			result = possibleCarts[Random.Range(0, possibleCarts.Count)];
 		}
 		
+		
+		
+		
 		return result;
 	}
 
@@ -968,7 +1127,12 @@ public class UpgradesController : MonoBehaviour {
 		for (int i = 0; i < shopCarts.Count; i++) {
 			if (shopCarts[i].myLocation == CartLocation.world) {
 				shopCarts[i].gameObject.AddComponent<RubbleFollowFloor>().InstantAttachToFloor();
-				
+			}
+		}
+
+		for (int i = 0; i < shopArtifacts.Count; i++) {
+			if (shopArtifacts[i].myLocation == CartLocation.world) {
+				shopArtifacts[i].gameObject.AddComponent<RubbleFollowFloor>().InstantAttachToFloor();
 			}
 		}
 	}

@@ -35,6 +35,19 @@ public class MiniGUI_InfoCard_ExtraEffect : MonoBehaviour, IBuildingInfoCard {
 
         myText.text = tooltip.GetTooltip().text;
     }
+
+    public void SetUp(Artifact artifact) {
+        extraInfo = artifact.GetComponentInChildren<IExtraInfo>();
+        
+        if (extraInfo == null) {
+            gameObject.SetActive(false);
+            return;
+        }else{
+            gameObject.SetActive(true);
+        }
+
+        myText.text = extraInfo.GetInfoText();
+    }
 }
 
 

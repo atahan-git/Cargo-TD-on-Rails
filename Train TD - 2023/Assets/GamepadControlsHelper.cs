@@ -65,9 +65,9 @@ public class GamepadControlsHelper : MonoBehaviour {
         }
     }
 
-    void UpdateGateSelectPrompt(GateScript gateScript, bool isSelecting) {
+    void UpdateGateSelectPrompt(IClickableWorldItem gateScript, bool isSelecting) {
         if (isSelecting) {
-            gatePrompt.SetUp(gateScript.transform);
+            gatePrompt.SetUp((gateScript as MonoBehaviour).transform);
             gatePrompt.gameObject.SetActive(true);
         } else {
             gatePrompt.gameObject.SetActive(false);

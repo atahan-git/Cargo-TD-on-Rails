@@ -50,6 +50,7 @@ public class LevelSegment {
 	
 	[HideInInspector]
 	public string artifactRewardUniqueName;
+	public int artifactRewardLevel;
 	
 	public bool isRealLevel() {
 		return levelName != "unset";

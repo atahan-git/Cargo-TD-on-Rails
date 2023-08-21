@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
+public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetStateArtifact, IExtraInfo {
 
     public bool engineOnly;
     public bool cargoOnly;
     public bool applyGlobally;
+
+    public bool levelIncreasesRange = true;
     
     [Space]
     
@@ -17,6 +20,9 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
     
     public float addShieldAsHpPercent = 0f;
     public float addShieldAmount = 0;
+    [NonSerialized]
+    public float currentAddShieldAmount = 0;
+    public float addShieldAmountPerLevel = 0;
     public float healthMultiplier = 1;
     public float shieldDecayMultiplier = 1f;
     public float fireDecayRateMultiplier = 1f;
@@ -47,12 +53,14 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
     protected override void _Arm() {
         var targets = new List<Cart>();
         if (!applyGlobally) {
-            GetComponent<Artifact>().range = 1;
+            GetComponent<Artifact>().range = GetRange();
             var myCart = GetComponentInParent<Cart>();
 
             targets.Add(myCart);
-            targets.Add(Train.s.GetNextBuilding(1, myCart));
-            targets.Add(Train.s.GetNextBuilding(-1, myCart));
+            for (int i = 1; i < GetRange()+1; i++) {
+                targets.Add(Train.s.GetNextBuilding(i, myCart));
+                targets.Add(Train.s.GetNextBuilding(-i, myCart));
+            }
         } else {
             GetComponent<Artifact>().range = 100;
             targets = Train.s.carts;
@@ -82,7 +90,14 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
                 
                 if (healthModule.canHaveShields) {
                     healthModule.maxShields += addShieldAsHpPercent * healthModule.maxHealth;
-                    healthModule.maxShields += addShieldAmount;
+                    healthModule.maxShields += currentAddShieldAmount;
+
+                    if (!PlayStateMaster.s.isCombatInProgress()) {
+                        healthModule.currentShields = healthModule.maxShields;
+                        if (healthModule.currentShields > 0) {
+                            healthModule.isShieldActive = true;
+                        }
+                    }
                 }
 
                 if (glassCart) {
@@ -142,5 +157,32 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow {
 
     protected override void _Disarm() {
         // do nothing
+    }
+    
+    public int baseRange = 1;
+    public int rangeBoost = 0;
+    public float boostMultiplier = 1;
+
+    public void ResetState(int level) {
+        if (levelIncreasesRange) {
+            rangeBoost = level;
+        } else {
+            rangeBoost = 0;
+        }
+
+        currentAddShieldAmount = addShieldAmount + (addShieldAmountPerLevel * level);
+
+        boostMultiplier = 1;
+    }
+    public int GetRange() {
+        return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
+    }
+
+    public string GetInfoText() {
+        if (addShieldAmount == 0) {
+            return $"This artifact applies it's effect to {GetRange()} nearby carts";
+        } else {
+            return $"Gives the affected cart {currentAddShieldAmount} shields";
+        }
     }
 }

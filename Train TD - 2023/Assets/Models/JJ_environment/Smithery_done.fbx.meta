@@ -3,7 +3,12 @@ guid: 444dcf6c5c7562543809e072c1ab3817
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: smithery
+    second: {fileID: 2100000, guid: 37ec102e5c8547e44ab94f5afb914c97, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -14,7 +14,6 @@ public class Train : MonoBehaviour {
     public Transform trainBack;
     public Vector3 trainFrontOffset;
 
-
     public List<Cart> carts = new List<Cart>();
     public List<Vector3> cartDefPositions = new List<Vector3>();
 
@@ -24,19 +23,25 @@ public class Train : MonoBehaviour {
 
     public bool isTrainDrawn = false;
 
+    public bool isMainTrain = false;
+
     public int GetCargoCount() {
         return cargoCount;
     }
 
 
     private void Awake() {
-        s = this;
+        if (isMainTrain) {
+            s = this;
+        }
     }
 
 
     private void Start() {
         //UpdateBasedOnLevelData();
-        LevelReferences.s.train = this;
+        if (isMainTrain) {
+            LevelReferences.s.train = this;
+        }
     }
 
     [Button]
@@ -144,7 +149,12 @@ public class Train : MonoBehaviour {
             }
             
             if (cart.myAttachedArtifact != null) {
-                buildingState.attachedArtifact = cart.myAttachedArtifact.uniqueName;
+                var artifactState = buildingState.attachedArtifact;
+                if(artifactState == null) 
+                    artifactState = new DataSaver.TrainState.ArtifactState();
+                
+                ApplyArtifactToState(cart.myAttachedArtifact, artifactState);
+                buildingState.attachedArtifact = artifactState;
             }
             
         } else {
@@ -185,16 +195,36 @@ public class Train : MonoBehaviour {
         if (cargoModule != null) {
             cargoModule.SetCargo(cartState.cargoState);
         }
-
-        if (cartState.attachedArtifact != null && cartState.attachedArtifact.Length > 0) {
-            var artifact = Instantiate( DataHolder.s.GetArtifact(cartState.attachedArtifact).gameObject);
-            artifact.GetComponent<Artifact>().AttachToCart(cart);
+        
+        if (cartState.attachedArtifact != null && cartState.attachedArtifact.uniqueName!= null && cartState.attachedArtifact.uniqueName.Length > 0) {
+            var artifact = Instantiate( DataHolder.s.GetArtifact(cartState.attachedArtifact.uniqueName).gameObject).GetComponent<Artifact>();
+            ApplyStateToArtifact(artifact, cartState.attachedArtifact);
+            artifact.AttachToCart(cart);
         }
         
         cart.ResetState();
     }
+    
+    public static void ApplyArtifactToState(Artifact artifact, DataSaver.TrainState.ArtifactState artifactState) {
+        if (artifact != null) {
+            artifactState.uniqueName = artifact.uniqueName;
+            artifactState.level = artifact.level;
+        } else {
+            artifactState.EmptyState();
+        }
+    }
+    
+    public static DataSaver.TrainState.ArtifactState GetStateFromArtifact(Artifact artifact) {
+        var state = new DataSaver.TrainState.ArtifactState();
+        ApplyArtifactToState(artifact, state);
+        return state;
+    }
 
-    public void OnLeaveCombat() {
+    public static void ApplyStateToArtifact(Artifact artifact, DataSaver.TrainState.ArtifactState artifactState) {
+        artifact.level = artifactState.level;
+    }
+
+    public void OnLeaveCombat(bool realCombat) {
         StopShake();
     }
     
@@ -244,7 +274,7 @@ public class Train : MonoBehaviour {
             totalLength += carts[i].length;
         }
         
-        var currentSpot = transform.localPosition - Vector3.back * (totalLength / 2f);
+        var currentSpot = - Vector3.back * (totalLength / 2f);
 
         if (cartDefPositions.Count != carts.Count) {
             cartDefPositions.Clear();
@@ -267,8 +297,8 @@ public class Train : MonoBehaviour {
             }
         }
         
-        trainFront.transform.localPosition = carts[carts.Count-1].transform.localPosition + trainFrontOffset;
-        trainBack.transform.localPosition = carts[0].transform.localPosition + trainFrontOffset;
+        trainFront.transform.localPosition = carts[0].transform.localPosition + trainFrontOffset + carts[0].length*Vector3.forward;
+        trainBack.transform.localPosition = carts[carts.Count-1].transform.localPosition + trainFrontOffset - carts[carts.Count-1].length*Vector3.forward;
     }
     
 
@@ -362,7 +392,8 @@ public class Train : MonoBehaviour {
     
     public void UpdateThingsAffectingOtherThings(bool isActivating) {
         if (isActivating) {
-            ArtifactsController.s.OnArmArtifacts();
+            SetArtifactStatus(true);
+
             for (int i = 0; i < carts.Count; i++) {
                 carts[i].SetAttachedToTrainModulesMode(true);
             }
@@ -377,7 +408,7 @@ public class Train : MonoBehaviour {
                 carts[i].GetHealthModule().UpdateHpState();
             }
         } else {
-            ArtifactsController.s.OnDisarmArtifacts();
+            SetArtifactStatus(false);
             
             for (int i = 0; i < carts.Count; i++) {
                 carts[i].SetAttachedToTrainModulesMode(false);
@@ -387,13 +418,38 @@ public class Train : MonoBehaviour {
             for (int i = 0; i < UpgradesController.s.shopCarts.Count; i++) {
                 UpgradesController.s.shopCarts[i].ResetState();
             }
+            for (int i = 0; i < UpgradesController.s.shopArtifacts.Count; i++) {
+                UpgradesController.s.shopArtifacts[i].ResetState();
+            }
             
-            HpBarsCleanup(false);
+            //HpBarsCleanup(false);
             
             UpgradesController.s.ResetFleaMarketAndDestCargoValues();
             PlayerWorldInteractionController.s.ResetValues();
             SpeedController.s.ResetMultipliers();
             SpeedController.s.CalculateSpeedBasedOnCartCapacity();
+        }
+    }
+
+    void SetArtifactStatus(bool isArm) {
+        var artifacts = new List<Artifact>();
+
+        for (int i = 0; i < Train.s.carts.Count; i++) {
+            var artifact = Train.s.carts[i].GetComponentInChildren<Artifact>();
+            if(artifact != null)
+                artifacts.Add(artifact);
+        }
+        for (int i = 0; i < artifacts.Count; i++) {
+            var effects = artifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
+            for (int j = 0; j < effects.Length; j++) {
+                if (!effects[j].GetComponentInParent<Cart>().isDestroyed) {
+                    if (isArm) {
+                        effects[j].Arm();
+                    } else {
+                        effects[j].Disarm();
+                    }
+                }
+            }
         }
     }
 
@@ -448,7 +504,7 @@ public class Train : MonoBehaviour {
         }
     }
 
-    public void CartUpgraded() {
+    public void CartOrArtifactUpgraded() {
         UpdateThingsAffectingOtherThings(false);
         UpdateThingsAffectingOtherThings(true);
     }

@@ -28,6 +28,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 102113418812479629}
   - {fileID: 135721537500612285}
   - {fileID: 8463355129488749054}
   - {fileID: 2245214999320478086}
@@ -39,6 +40,7 @@ Transform:
   - {fileID: 7219858859891124358}
   - {fileID: 5060143490594071209}
   - {fileID: 938793582129840163}
+  - {fileID: 6058402918233460694}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -51,7 +53,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -97,6 +99,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -117,7 +123,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 53743146396522036, guid: 3e168dd004919dc4791f5232b34482a3, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 53743146396522036, guid: 3e168dd004919dc4791f5232b34482a3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -163,12 +169,82 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Opening_Medium_01
       objectReference: {fileID: 0}
+    - target: {fileID: 861664962221952142, guid: 3e168dd004919dc4791f5232b34482a3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e168dd004919dc4791f5232b34482a3, type: 3}
 --- !u!4 &135721537500612285 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 53743146396522036, guid: 3e168dd004919dc4791f5232b34482a3, type: 3}
   m_PrefabInstance: {fileID: 98165633753780361}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &495535461589270374
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 891625092456301520}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.035
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.3966126
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.628
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_Name
+      value: Rampart_done
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+--- !u!4 &102113418812479629 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1dba060df4200554b9740f9b7ce8a245, type: 3}
+  m_PrefabInstance: {fileID: 495535461589270374}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1008553907996183459
 PrefabInstance:
@@ -179,7 +255,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -225,6 +301,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -245,7 +325,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -291,6 +371,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -311,7 +395,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -357,6 +441,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -377,7 +465,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -423,6 +511,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -443,7 +535,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -489,6 +581,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -500,6 +596,68 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
   m_PrefabInstance: {fileID: 2486422460499356218}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3255687291445967143
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 891625092456301520}
+    m_Modifications:
+    - target: {fileID: 1481293891883706646, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_Name
+      value: Gate
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.408
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.271
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+--- !u!4 &6058402918233460694 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8736212577112897265, guid: 32bf1ba60a4ca1b43b7b68d4bec4d3e3, type: 3}
+  m_PrefabInstance: {fileID: 3255687291445967143}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7620075682189838512
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -509,7 +667,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -555,6 +713,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -575,7 +737,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -621,6 +783,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -641,7 +807,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -687,6 +853,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -707,7 +877,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7257746221505218707, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -752,6 +922,10 @@ PrefabInstance:
     - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Name
       value: Building_Fortress_Castle_Wall_Straight_Medium_01 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8066898081589809705, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8427252365913977852, guid: 378f83311b9575446b955bdd763de7aa, type: 3}
       propertyPath: m_Materials.Array.data[0]

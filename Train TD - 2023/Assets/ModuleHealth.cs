@@ -15,8 +15,8 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     public bool canHaveShields = true;
     public float maxShields = 0;
     public float currentShields = 0;
-    private float shieldDecayRatePer100Shields = 1f;
-    private float shieldRegenDelay = 1;
+    private float shieldRegenRate = 50;
+    private float shieldRegenDelay = 5;
     public float curShieldDelay = 0;
 
 
@@ -84,20 +84,26 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         
         damageDefenders.Clear();
         maxHealth = baseHealth * (1+(boostHealthOnUpgrade*level));
-        if (PlayStateMaster.s.isCombatInProgress()) {
-            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        } else {
-            if (PlayerWorldInteractionController.s.autoRepairAtStation)
-                currentHealth = maxHealth;
-            else
-                currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-                
-        }
         
         maxShields = baseShields;
         canHaveShields = true;
+        isShieldActive = maxShields > 0;
+        
+        if (PlayStateMaster.s.isCombatInProgress()) {
+            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        } else {
+            if (PlayerWorldInteractionController.s.autoRepairAtStation) {
+                currentHealth = maxHealth;
+            } else{
+                currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+            }
+
+            currentShields = maxShields;
+        }
+        
 
         glassCart = false;
+
         
         UpdateHpState();
     }
@@ -113,7 +119,6 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             return;
         }
 
-        curShieldDelay = shieldRegenDelay;
 
         myCart = GetComponent<Cart>();
         if (!isDead && (myCart == null || !myCart.isDestroyed)) {
@@ -125,7 +130,8 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
 
             damage *= damageReductionMultiplier;
             var shieldsWasMoreThan100 = currentShields > 100;
-            if (currentShields > 0) {
+            if (isShieldActive && currentShields > 0) {
+                curShieldDelay = shieldRegenDelay;
                 currentShields -= damage;
                 damage = 0;
                 if (currentShields <= 0) {
@@ -134,6 +140,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                     }
 
                     currentShields = 0;
+                    isShieldActive = false;
                 }
 
                 if (currentShields > 0 && reflectiveShields) {
@@ -392,7 +399,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         burnSpeed += damage;
     }
 
-    private bool isShieldActive;
+    public bool isShieldActive;
     private void Update() {
         var burnDistance = Mathf.Max(burnSpeed / 2f, 1f);
         if (currentBurn >= burnDistance) {
@@ -427,16 +434,19 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             lastBurn = burnSpeed;
         }
 
-        isShieldActive = currentShields > 0;
-        
-        if (curShieldDelay <= 0) {
-            currentShields -= shieldDecayRatePer100Shields * Mathf.CeilToInt(currentShields/100) * Time.deltaTime * shieldDecayMultiplier;
-        } else {
-            if (PlayStateMaster.s.isCombatInProgress()) {
+
+        if (maxShields > 0) {
+            if (curShieldDelay <= 0) {
+                if (!isShieldActive) {
+                    isShieldActive = currentShields >= (maxShields / 2f);
+                }
+
+                currentShields += shieldRegenRate * Time.deltaTime;
+            } else {
                 curShieldDelay -= Time.deltaTime;
             }
         }
-        
+
         currentShields = Mathf.Clamp(currentShields, 0, maxShields);
     }
 
@@ -564,6 +574,12 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                 rend.sharedMaterials[1].SetFloat(Alive, value);
             }
         }
+    }
+
+    private void OnDisable() {
+        if(myUIBar != null)
+            if(myUIBar.gameObject != null)
+                Destroy(myUIBar.gameObject);
     }
 
     private void OnDestroy() {

@@ -270,7 +270,9 @@ public class DataSaver {
 
 		public float fleaMarketRarityBoost = -0.05f;
 		public float destinationRarityBoost = -0.15f;
-		public float artifactRarityBoost = -0.15f;
+		public float fleaMarketArtifactRarityBoost = -0.05f;
+		public float destinationArtifactRarityBoost = -0.15f;
+		public float eliteArtifactRarityBoost = -0.05f;
 
 		public float luck = 0;
 
@@ -348,8 +350,7 @@ public class DataSaver {
 
 			public CargoState cargoState;
 
-			[ValueDropdown("GetAllArtifactNames")]
-			public string attachedArtifact = "";
+			public ArtifactState attachedArtifact = new ArtifactState();
 			
 			[Serializable]
 			public class CargoState { // dont forget to update the copy function
@@ -360,6 +361,7 @@ public class DataSaver {
 
 				[ValueDropdown("GetAllArtifactNames")]
 				public string artifactReward;
+				public int artifactLevel;
 				public bool isLeftCargo;
 				
 				private static IEnumerable GetAllModuleNames() {
@@ -371,26 +373,17 @@ public class DataSaver {
 					}
 					return buildingNames;
 				}
-				
-				private static IEnumerable GetAllArtifactNames() {
-					var artifacts = GameObject.FindObjectOfType<DataHolder>().artifacts;
-					var artifactNames = new List<string>();
-					artifactNames.Add("");
-					for (int i = 0; i < artifacts.Length; i++) {
-						artifactNames.Add(artifacts[i].uniqueName);
-					}
-					return artifactNames;
-				}
 
 				public static CargoState GetStateFromModule(CargoModule module) {
 					var state = module.GetState();
-					return new CargoState(state.cargoReward, state.artifactReward, state.isLeftCargo, state.cargoLevel);
+					return new CargoState(state.cargoReward, state.artifactReward, state.isLeftCargo, state.cargoLevel, state.artifactLevel);
 				}
 				
-				public CargoState(string _cargoReward, string _artifactReward, bool _isLeftCargo, int _cargoLevel) {
+				public CargoState(string _cargoReward, string _artifactReward, bool _isLeftCargo, int _cargoLevel, int _artifactLevel) {
 					cargoReward =_cargoReward;
 					cargoLevel = _cargoLevel;
 					artifactReward = _artifactReward;
+					artifactLevel = _artifactLevel;
 					isLeftCargo = _isLeftCargo;
 				}
 			}
@@ -403,7 +396,7 @@ public class DataSaver {
 				isFire = false;
 				isSticky = false;
 				isExplosive = false;
-				attachedArtifact = "";
+				attachedArtifact = new ArtifactState();
 				/*cargoCost = -1;
 				cargoReward = -1;*/
 			}
@@ -438,8 +431,29 @@ public class DataSaver {
 				copyState.isSticky = isSticky;
 				copyState.isExplosive = isExplosive;
 				copyState.attachedArtifact = attachedArtifact;
-				copyState.cargoState = new CargoState(cargoState.cargoReward, cargoState.artifactReward, cargoState.isLeftCargo, cargoState.cargoLevel);
+				copyState.cargoState = new CargoState(cargoState.cargoReward, cargoState.artifactReward, cargoState.isLeftCargo, cargoState.cargoLevel, cargoState.artifactLevel);
 				return copyState;
+			}
+		}
+
+		[Serializable]
+		public class ArtifactState {
+			[ValueDropdown("GetAllArtifactNames")]
+			public string uniqueName = "";
+			public int level;
+			private static IEnumerable GetAllArtifactNames() {
+				var artifacts = GameObject.FindObjectOfType<DataHolder>().artifacts;
+				var artifactNames = new List<string>();
+				artifactNames.Add("");
+				for (int i = 0; i < artifacts.Length; i++) {
+					artifactNames.Add(artifacts[i].uniqueName);
+				}
+				return artifactNames;
+			}
+			
+			public void EmptyState() {
+				uniqueName = "";
+				level = 0;
 			}
 		}
 

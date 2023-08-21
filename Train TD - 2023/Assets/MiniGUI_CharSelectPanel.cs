@@ -22,9 +22,9 @@ public class MiniGUI_CharSelectPanel : MonoBehaviour {
 		GetComponentInChildren<Button>().interactable = !isLocked;
 
 		if (autoSelect) {
-			if (SettingsController.GamepadMode()) {
+			/*if (SettingsController.GamepadMode()) {
 				EventSystem.current.SetSelectedGameObject(GetComponentInChildren<Button>().gameObject);
-			}
+			}*/
 		}
 	}
 

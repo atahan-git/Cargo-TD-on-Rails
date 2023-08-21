@@ -21,29 +21,6 @@ public class ArtifactsController : MonoBehaviour {
 	public string bonusArtifactUniqueName;
 
 	public Transform bonusArtifactStarLocation;
-	
-
-	public void OnDisarmArtifacts() {
-		GetArtifacts();
-		for (int i = 0; i < myArtifacts.Count; i++) {
-			var effects = myArtifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
-			for (int j = 0; j < effects.Length; j++) {
-				effects[j].Disarm();
-			}
-		}
-	}
-
-
-	public void OnArmArtifacts() {
-		GetArtifacts();
-		for (int i = 0; i < myArtifacts.Count; i++) {
-			var effects = myArtifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
-			for (int j = 0; j < effects.Length; j++) {
-				if(!effects[j].GetComponentInParent<Cart>().isDestroyed)
-					effects[j].Arm();
-			}
-		}
-	}
 
 
 	public void OnEnterShop() {

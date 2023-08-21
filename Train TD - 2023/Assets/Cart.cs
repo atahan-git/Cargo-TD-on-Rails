@@ -74,11 +74,14 @@ public class Cart : MonoBehaviour {
         GetHealthModule().ResetState(level);
 
         cartMaterial.material = LevelReferences.s.cartLevelMats[level];
-
-
+        
         var modulesWithResetStates = GetComponentsInChildren<IResetState>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
             modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
+        }
+
+        if (myAttachedArtifact != null) {
+            myAttachedArtifact.ResetState();
         }
     }
 

@@ -58,6 +58,8 @@ public class FirstTimeTutorialController : MonoBehaviour {
         DataSaver.s.GetCurrentSave().xpProgress = new DataSaver.XPProgress();
         MiniGUI_DisableTutorial.SetVal(true);
         //ShopStateController.s.BackToMainMenu();
+        
+        DataSaver.s.SaveActiveGame();
         SceneLoader.s.ForceReloadScene();
     }
 
@@ -302,7 +304,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
 
     public GameObject deliverCargoHintPrefab;
-    public void OnFinishCombat() {
+    public void OnFinishCombat(bool realCombat) {
         ClearActiveHints();
         
         if (!MiniGUI_DisableTutorial.IsTutorialActive())

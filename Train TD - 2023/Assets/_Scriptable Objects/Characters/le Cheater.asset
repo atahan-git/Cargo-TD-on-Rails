@@ -28,8 +28,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: starter_artifact
+          level: 0
       - uniqueName: cargo_mystery_0
         health: -1
         ammo: -1
@@ -41,8 +44,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: boost_damage
+          level: 0
       - uniqueName: barricade
         health: -1
         ammo: -1
@@ -54,8 +60,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: boost_damage
+          level: 0
       - uniqueName: damageboost
         health: -1
         ammo: -1
@@ -67,8 +76,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: side_gatling
         health: -1
         ammo: -1
@@ -80,8 +92,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: side_avr
         health: -1
         ammo: -1
@@ -93,8 +108,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: side_avr
         health: -1
         ammo: -1
@@ -106,8 +124,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: top_gatling
         health: -1
         ammo: -1
@@ -119,8 +140,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: side_lazer
         health: -1
         ammo: -1
@@ -132,8 +156,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: top_rockets
         health: -1
         ammo: -1
@@ -145,8 +172,11 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: shield_cart
         health: -1
         ammo: -1
@@ -158,7 +188,10 @@ MonoBehaviour:
           cargoReward: 
           cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-        attachedArtifact: 
+        attachedArtifact:
+          uniqueName: 
+          level: 0
     starterResources:
       scraps: 0

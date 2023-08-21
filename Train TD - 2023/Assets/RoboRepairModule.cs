@@ -115,6 +115,9 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     }
     
     bool DoThingInCart(Cart target, bool doImperfect) {
+        if (target == null) {
+            return false;
+        } 
         var healths = target.GetComponentsInChildren<ModuleHealth>();
         switch (myType) {
             case RoboType.repair:

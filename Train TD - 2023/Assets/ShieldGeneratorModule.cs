@@ -8,19 +8,40 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 	public int baseIncreaseMaxShieldsAmount = 500;
 	public int increasePerLevel = 500;
 	public int increaseMaxShieldsAmount = 500;
+
+	private ModuleHealth myHealth;
 	protected override void _AttachedToTrain() {
-		for (int i = 1; i < GetRange()+1; i++) {
-			ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), true);
-			ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), true);
-		}
+		myHealth = GetComponentInParent<ModuleHealth>();
+		Activation(myHealth.IsShieldActive());
+	}
+	
+	
+	public void ProtectFromDamage(float damage) {
+		GetComponentInParent<ModuleHealth>().DealDamage(damage);
+	}
+    
+	public void ProtectFromBurn(float damage) {
+		GetComponentInParent<ModuleHealth>().BurnDamage(damage);
 	}
 
 	protected override bool CanApply(Cart target) {
-		return target.GetHealthModule() != null;
+		var health = target.GetComponentInChildren<ModuleHealth>();
+		var shield = target.GetComponentInChildren<ShieldGeneratorModule>();
+		return health != null && shield == null;
 	}
 
 	protected override void _ApplyBoost(Cart target, bool doApply) {
+		var health = target.GetComponentInChildren<ModuleHealth>();
+
 		if (doApply) {
+			health.damageDefenders.Add(ProtectFromDamage);
+			health.burnDefenders.Add(ProtectFromBurn);
+		} else {
+			health.damageDefenders.Remove(ProtectFromDamage);
+			health.burnDefenders.Remove(ProtectFromBurn);
+		}
+		
+		/*if (doApply) {
 			target.GetHealthModule().maxShields += increaseMaxShieldsAmount;
 
 			if (PlayStateMaster.s.isShopOrEndGame()) {
@@ -28,16 +49,16 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 			}
 			
 			target.GetHealthModule().curShieldDelay = 1f;
-		}
+		}*/
 	}
 
 	protected override void _DetachedFromTrain() {
-		
+		myHealth = null;
 	}
 
 	
 	public string GetInfoText() {
-		return $"Adds {increaseMaxShieldsAmount} max shields to {GetRange()} nearby carts";
+		return $"Protects {GetRange()} nearby carts from damage as long as has shield";
 	}
 
 	public int baseRange = 1;
@@ -48,6 +69,8 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 		increaseMaxShieldsAmount = baseIncreaseMaxShieldsAmount + (level * increasePerLevel);
 		rangeBoost = level;
 		boostMultiplier = 1;
+		
+		GetComponentInParent<Cart>().GetComponentInChildren<PhysicalShieldBar>().SetSize(GetRange());
 	}
 
 	public void ModifyStats(int range, float value) {
@@ -62,5 +85,26 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 	[ColorUsageAttribute(true, true)] public Color boostRangeColor = Color.yellow;
 	public Color GetColor() {
 		return boostRangeColor;
+	}
+
+
+	private void Update() {
+		if (myHealth != null) {
+			if (isActive && !myHealth.IsShieldActive()) {
+				Activation(false);
+			}else if (!isActive && myHealth.IsShieldActive()) {
+				Activation(true);
+			}
+		}
+	}
+
+
+	private bool isActive;
+	void Activation(bool doActivate) {
+		isActive = doActivate;
+		for (int i = 1; i < GetRange()+1; i++) {
+			ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), doActivate);
+			ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), doActivate);
+		}
 	}
 }

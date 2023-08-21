@@ -32,7 +32,11 @@ public class PhysicalShieldBar : MonoBehaviour {
     
     public float shieldPercent;
     private void Update() {
-        shieldPercent = Mathf.Lerp(shieldPercent, myHp.GetShieldPercent(), 10 * Time.deltaTime);
+        if (!myHp.IsShieldActive()) {
+            shieldPercent = 0;
+        } else {
+            shieldPercent = Mathf.Lerp(shieldPercent, myHp.GetShieldPercent(), 10 * Time.deltaTime);
+        }
         UpdateShield(shieldPercent);
     }
 
@@ -41,6 +45,8 @@ public class PhysicalShieldBar : MonoBehaviour {
 
     private float fullIntensity = 3.5f;
     private float regularYSize = 0.19567f;
+
+    private float defaultSize = 0.19567f;
     
     public void UpdateShield(float percentage) {
         for (int i = 0; i < bars.Length; i++) {
@@ -65,6 +71,13 @@ public class PhysicalShieldBar : MonoBehaviour {
             var scale = bars[i].transform.localScale;
             scale.y = Mathf.Lerp(regularYSize/3f, regularYSize, percentage);
             bars[i].transform.localScale = scale;
+        }
+    }
+
+    public void SetSize(int size) { // 0 means covering 1 carts
+        for (int i = 0; i < bars.Length; i++) {
+            var scale =  bars[i].transform.localScale;
+            scale.z = defaultSize * ((size*2)+1.1f);
         }
     }
 }

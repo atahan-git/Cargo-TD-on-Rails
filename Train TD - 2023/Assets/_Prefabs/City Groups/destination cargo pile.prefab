@@ -179,6 +179,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   snapTransform: {fileID: 2771180930503487563}
   myLocation: 4
+  snapNothing: 0
+  onlySnapCargo: 0
+  onlySnapMysteriousCargo: 0
+  emptyShowObject: {fileID: 0}
+  snapLerpSpeed: 5
+  snapSlerpSpeed: 20
 --- !u!114 &6877992179482066633
 MonoBehaviour:
   m_ObjectHideFlags: 0
