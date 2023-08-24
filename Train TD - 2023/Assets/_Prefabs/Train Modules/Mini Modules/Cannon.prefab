@@ -96,8 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goBackDelta: 0
-  goBackStartDelta: -0.02
-  goBackDeltaAcceleration: 0.15
+  goBackStartDelta: -0.01
+  goBackDeltaAcceleration: 0.075
   frontBit: {fileID: 8592396825013126393}
   frontBitRetractedPos: {fileID: 2937005309393823754}
 --- !u!1 &2677843582063563157
@@ -176,7 +176,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.05
@@ -333,6 +333,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  directControlShakeMultiplier: 1
   isHeal: 0
   rotateSpeed: 10
   gunActive: 1
@@ -359,6 +360,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gunShakeOnShoot: 1
+  gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
@@ -368,6 +370,9 @@ MonoBehaviour:
   isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  gotShootCredits: 0
+  needShootCredits: 0
+  shootCreditsUse: 1
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -380,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 60
+  rotationSpan: 75
   range: 6
   myPossibleTargets: 00000000
   canHitFlying: 0
@@ -460,7 +465,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.05

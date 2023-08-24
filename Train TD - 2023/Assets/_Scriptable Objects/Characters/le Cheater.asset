@@ -18,59 +18,180 @@ MonoBehaviour:
     starterTrain:
       myCarts:
       - uniqueName: engine_nuclear
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: starter_artifact
+          level: 0
       - uniqueName: cargo_mystery_0
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: boost_damage
+          level: 0
       - uniqueName: barricade
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-      - uniqueName: barricade
-        cargoState:
-          cargoReward: 
-          artifactReward: 
-          isLeftCargo: 0
-      - uniqueName: top_avr
-        cargoState:
-          cargoReward: 
-          artifactReward: 
-          isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: boost_damage
+          level: 0
       - uniqueName: damageboost
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-      - uniqueName: damageboost
+        attachedArtifact:
+          uniqueName: 
+          level: 0
+      - uniqueName: side_gatling
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: side_avr
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: 
+          level: 0
       - uniqueName: side_avr
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-      - uniqueName: side_avr
+        attachedArtifact:
+          uniqueName: 
+          level: 0
+      - uniqueName: top_gatling
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
-      - uniqueName: side_avr
+        attachedArtifact:
+          uniqueName: 
+          level: 0
+      - uniqueName: side_lazer
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
         cargoState:
           cargoReward: 
+          cargoLevel: 0
           artifactReward: 
+          artifactLevel: 0
           isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: 
+          level: 0
+      - uniqueName: top_rockets
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
+        cargoState:
+          cargoReward: 
+          cargoLevel: 0
+          artifactReward: 
+          artifactLevel: 0
+          isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: 
+          level: 0
+      - uniqueName: shield_cart
+        health: -1
+        ammo: -1
+        isFire: 0
+        isSticky: 0
+        isExplosive: 0
+        level: 0
+        cargoState:
+          cargoReward: 
+          cargoLevel: 0
+          artifactReward: 
+          artifactLevel: 0
+          isLeftCargo: 0
+        attachedArtifact:
+          uniqueName: 
+          level: 0
     starterResources:
       scraps: 0

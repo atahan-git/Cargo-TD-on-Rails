@@ -118,6 +118,7 @@ public class CheatsController : MonoBehaviour
     
     void OnShopStateEnteredQuickRestartWithCheaterCharacter() {
         CharacterSelector.s.SelectCharacter(autoRestartCharacter.myCharacter);
+        CharacterSelector.s.CharSelectedAndLeave();
         PlayStateMaster.s.OnOpenCharacterSelectMenu.RemoveListener(OnShopStateEnteredQuickRestartWithCheaterCharacter);
 
         if (instantEnterPlayMode) {

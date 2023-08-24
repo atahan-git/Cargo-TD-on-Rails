@@ -24,6 +24,10 @@ PrefabInstance:
       value: Family Heirloom
       objectReference: {fileID: 0}
     - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: range
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: myRarity
       value: 3
       objectReference: {fileID: 0}
@@ -39,6 +43,10 @@ PrefabInstance:
       propertyPath: displayName
       value: Glass Carts
       objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: isGoodEffect
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4702187580605122048, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -46,7 +54,7 @@ PrefabInstance:
     - target: {fileID: 6382012039353133210, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: myTooltip.text
       value: This and connected carts have 100 health which cannot be increased.
-        They deal 500% more damage.
+        They deal 100% more damage.
       objectReference: {fileID: 0}
     - target: {fileID: 6620300279125450212, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Pivot.x
@@ -153,19 +161,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   engineOnly: 0
   cargoOnly: 0
+  applyGlobally: 0
+  glassCart: 1
+  canHaveNoShields: 0
+  reflectiveShields: 0
+  luckyCart: 0
   addShieldAsHpPercent: 0
   addShieldAmount: 0
-  fireRateMultiplier: 1
-  damageMultiplier: 5
   healthMultiplier: 1
+  shieldDecayMultiplier: 1
+  fireDecayRateMultiplier: 1
+  gatlinificator: 0
+  isHoming: 0
+  fireRateMultiplier: 1
+  damageMultiplier: 2
   ammoMultiplier: 1
   addFireDamage: 0
-  glassCart: 1
-  gatlinificator: 0
-  canHaveNoShields: 0
+  addExplosionRange: 0
   boosterRangeModification: 0
   boosterEffectMultiplier: 1
   repairEfficiency: 1
   reloadEfficiency: 1
   shieldUpEfficiency: 1
-  shieldDecayMultiplier: 1

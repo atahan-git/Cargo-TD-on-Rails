@@ -19,6 +19,7 @@ public class CameraSwitcher : MonoBehaviour {
 		if (isEngaged) {
 			MainCameraReference.s.cam.transform.position = curTarget.position;
 			MainCameraReference.s.cam.transform.rotation = curTarget.rotation;
+			CameraController.s.AfterCameraPosUpdate?.Invoke();
 		}
 	}
 

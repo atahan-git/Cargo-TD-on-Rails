@@ -310,11 +310,13 @@ public class Projectile : MonoBehaviour {
 
 
             if (!isPlayerBullet) {
-                if (train.reflectiveShields && train.currentShields > 0) {
-                    var copy = Instantiate(gameObject).GetComponent<Projectile>();
-                    copy.transform.rotation = Quaternion.Inverse(copy.transform.rotation);
-                    copy.target = copy.source.transform;
-                    copy.isPlayerBullet = true;
+                if (train != null) {
+                    if (train.reflectiveShields && train.currentShields > 0) {
+                        var copy = Instantiate(gameObject).GetComponent<Projectile>();
+                        copy.transform.rotation = Quaternion.Inverse(copy.transform.rotation);
+                        copy.target = copy.source.transform;
+                        copy.isPlayerBullet = true;
+                    }
                 }
             }
             

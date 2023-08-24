@@ -379,7 +379,7 @@ public class AutoPlaytester : MonoBehaviour {
                 var healthModule = cart.GetHealthModule();
                 var ammoModule = cart.GetComponentInChildren<ModuleAmmo>();
                 while (healthModule.GetHealthPercent() < 0.75f) {
-                    cart.GetHealthModule()?.Repair(PlayerWorldInteractionController.s.GetRepairAmount());
+                    cart.GetHealthModule()?.Repair(PlayerWorldInteractionController.s.GetRepairAmount(cart.GetHealthModule()));
                     repairCount += 1;
                     yield return new WaitForSeconds(0.1f);
                 }

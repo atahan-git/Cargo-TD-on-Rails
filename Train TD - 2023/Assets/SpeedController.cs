@@ -66,6 +66,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     public void SetMissionEndDistance(float distance) {
         missionDistance = distance;
         endTrainStation.startPos = Vector3.forward * missionDistance;
+        //Debug.LogError("Re add hex grid here");
         HexGrid.s.ResetDistance();
     }
 
@@ -116,13 +117,13 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             if (excessCarts > 0) {
                 switch (excessCarts) {
                     case 1:
-                        targetSpeed *= 0.85f;
+                        targetSpeed *= 0.95f;
                         break;
                     case 2:
-                        targetSpeed *= 0.50f;
+                        targetSpeed *= 0.85f;
                         break;
                     default: // more than 2
-                        targetSpeed *= 0.20f;
+                        targetSpeed *= 0.75f;
                         break;
                 }
             }
@@ -385,7 +386,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         }
     }
 
-    public void OnCombatFinished() {
+    public void OnCombatFinished(bool realCombat) {
         DisableLowPower();
     }
 

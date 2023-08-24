@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DamageBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster
+public class DamageBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster, IResetState
 {
     public float damageBoost = 1;
     
     protected override void _AttachedToTrain() {
-        for (int i = 1; i < (baseRange+rangeBoost)+1; i++) {
+        for (int i = 1; i < GetRange()+1; i++) {
             ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), true);
             ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), true);
         }
@@ -48,5 +48,14 @@ public class DamageBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBoost
     public void ModifyStats(int range, float value) {
         rangeBoost += range;
         boostMultiplier += value;
+    }
+    
+    public int GetRange() {
+        return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost );
+    }
+
+    [ColorUsageAttribute(true, true)] public Color boostRangeColor = Color.red;
+    public Color GetColor() {
+        return boostRangeColor;
     }
 }

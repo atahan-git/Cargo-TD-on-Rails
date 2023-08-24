@@ -120,8 +120,12 @@ public class MiniGUI_BuildingInfoCard : MonoBehaviour
         icon.sprite = artifact.mySprite;
         moduleName.text = artifact.displayName;
         moduleDescription.text = artifact.GetComponent<UITooltipDisplayer>().myTooltip.text;
-        
-        infoCardsParent.gameObject.SetActive(false);
+
+        infoCardsParent.gameObject.SetActive(true);
+        var infoCards = infoCardsParent.GetComponentsInChildren<IBuildingInfoCard>(true);
+        for (int i = 0; i < infoCards.Length; i++) {
+            infoCards[i].SetUp(artifact);
+        }
 
         sourceTransform = artifact.uiTransform;
         worldTarget.SetUp(sourceTransform);
@@ -173,4 +177,5 @@ public class MiniGUI_BuildingInfoCard : MonoBehaviour
 public interface IBuildingInfoCard {
     public void SetUp(Cart building);
     public void SetUp(EnemyHealth enemy);
+    public void SetUp(Artifact artifact);
 }

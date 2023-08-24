@@ -13,18 +13,85 @@ public class PlayStateMaster : MonoBehaviour {
     }
     
 
+    [NonSerialized]
     public UnityEvent OnMainMenuEntered = new UnityEvent();
+    [NonSerialized]
     public UnityEvent OnOpenCharacterSelectMenu = new UnityEvent();
+    [NonSerialized]
     public UnityEvent OnCharacterSelected = new UnityEvent();
+    [NonSerialized]
     public UnityEvent OnDrawWorld = new UnityEvent();
+    [NonSerialized]
     public UnityEvent OnNewWorldCreation = new UnityEvent();
+    [NonSerialized]
     public UnityEvent OnShopEntered = new UnityEvent();
+    [NonSerialized]
     public UnityEvent OnCombatEntered = new UnityEvent();
     
+    [NonSerialized]
     public UnityEvent<bool> OnCombatFinished = new UnityEvent<bool>();
+    [NonSerialized]
     public UnityEvent OnEnterMissionRewardArea = new UnityEvent();
+    [NonSerialized]
     public UnityEvent OnLeavingMissionRewardArea = new UnityEvent();
     
+    
+    void SetDefaultCallbacks() {
+        OnMainMenuEntered.AddListener(FirstTimeTutorialController.s.RemoveAllTutorialStuff);
+        
+        OnOpenCharacterSelectMenu.AddListener(CharacterSelector.s.CheckAndShowCharSelectionScreen);
+        OnOpenCharacterSelectMenu.AddListener(MainMenu.s.ExitMainMenu);
+        
+        OnCharacterSelected.AddListener(Train.s.DrawTrainBasedOnSaveData);
+        OnCharacterSelected.AddListener(UpgradesController.s.SetUpNewCharacterRarityBoosts);
+        OnCharacterSelected.AddListener(FirstTimeTutorialController.s.NewCharacterCutsceneReset);
+        
+        OnDrawWorld.AddListener(WorldMapCreator.s.GenerateWorldMap);
+        OnDrawWorld.AddListener(HexGrid.s.RefreshGrid);
+        
+        OnNewWorldCreation.AddListener(MapController.s.GenerateStarMap);
+        OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
+
+        OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
+        OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
+        OnShopEntered.AddListener(WorldMapCreator.s.ReturnToRegularMap);
+        OnShopEntered.AddListener(ShopStateController.s.OpenShopUI);
+        OnShopEntered.AddListener(FMODMusicPlayer.s.PlayMenuMusic);
+        OnShopEntered.AddListener(MainMenu.s.ExitMainMenu);
+        OnShopEntered.AddListener(Pauser.s.Unpause);
+        OnShopEntered.AddListener(HexGrid.s.RefreshGrid);
+        OnShopEntered.AddListener(CharacterSelector.s.CheckAndShowCharSelectionScreen);
+        OnShopEntered.AddListener(PlayerWorldInteractionController.s.OnEnterShopScreen);
+        OnShopEntered.AddListener(FirstTimeTutorialController.s.OnEnterShop);
+        OnShopEntered.AddListener(Train.s.OnEnterShopArea);
+        OnShopEntered.AddListener(WorldDifficultyController.s.OnShopEntered);
+        OnShopEntered.AddListener(ArtifactsController.s.OnEnterShop);
+        OnShopEntered.AddListener(UpgradesController.s.OnShopOpened);
+        
+        OnCombatEntered.AddListener(FMODMusicPlayer.s.PlayCombatMusic);
+        OnCombatEntered.AddListener(SpeedController.s.SetUpOnMissionStart);
+        OnCombatEntered.AddListener(PathSelectorController.s.SetUpPath);
+        OnCombatEntered.AddListener(FirstTimeTutorialController.s.OnEnterCombat);
+        OnCombatEntered.AddListener(TimeController.s.OnCombatStart);
+        OnCombatEntered.AddListener(PlayerWorldInteractionController.s.OnEnterCombat);
+        OnCombatEntered.AddListener(UpgradesController.s.OnCombatStart);
+        
+        OnCombatFinished.AddListener(TimeController.s.OnCombatEnd);
+        OnCombatFinished.AddListener(FirstTimeTutorialController.s.OnFinishCombat);
+        OnCombatFinished.AddListener(EncounterController.s.ResetEncounter);
+        OnCombatFinished.AddListener(SpeedController.s.OnCombatFinished);
+        OnCombatFinished.AddListener(ArtifactsController.s.OnAfterCombat);
+        OnCombatFinished.AddListener(Train.s.OnLeaveCombat);
+        OnCombatFinished.AddListener(PlayerWorldInteractionController.s.OnLeaveCombat);
+        
+        OnEnterMissionRewardArea.AddListener(FirstTimeTutorialController.s.OnEnterShop);
+        
+        OnLeavingMissionRewardArea.AddListener(MissionWinFinisher.s.CleanupWhenLeavingMissionRewardArea);
+        OnLeavingMissionRewardArea.AddListener(MapController.s.Cleanup);
+        OnLeavingMissionRewardArea.AddListener(EnemyWavesController.s.Cleanup);
+        OnLeavingMissionRewardArea.AddListener(ShopStateController.s.FinishTravellingToStar);
+        OnLeavingMissionRewardArea.AddListener(ActFinishController.s.CloseActUI);
+    }
     
     [SerializeField]
     private ConstructedLevel _currentLevel;
@@ -112,7 +179,10 @@ public class PlayStateMaster : MonoBehaviour {
     private void Start() {
         _gameState = GameState.mainMenu;
         OnMainMenuEntered?.Invoke();
+        SetDefaultCallbacks();
     }
+
+    
 
     /*void DoOpenMainMenu() {
         _gameState = GameState.mainMenu;
@@ -169,19 +239,19 @@ public class PlayStateMaster : MonoBehaviour {
 
     public void FinishCharacterSelection() {
         _gameState = GameState.shop;
-        
+
         StopAllCoroutines();
         WorldMapCreator.s.ResetWorldMapGenerationProgress();
-        StartCoroutine(Transition(true, 
+        StartCoroutine(Transition(true,
             () => {
-            OnCharacterSelected?.Invoke();
-            OnNewWorldCreation?.Invoke();
-        }, WorldGenerationProgress,
+                CharacterSelector.s.CharSelectionCompleteAndScreenGotDark();
+                OnCharacterSelected?.Invoke();
+                OnNewWorldCreation?.Invoke();
+            }, WorldGenerationProgress,
             () => {
-                OnShopEntered?.Invoke(); 
-                CharacterSelector.s.CharSelectionAndWorldGenerationComplete();
+                OnShopEntered?.Invoke();
             }
-            ));
+        ));
     }
 
     public void EnterNewAct() {

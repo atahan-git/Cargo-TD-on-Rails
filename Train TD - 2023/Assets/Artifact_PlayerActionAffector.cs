@@ -11,6 +11,7 @@ public class Artifact_PlayerActionAffector : ActivateWhenOnArtifactRow {
     public bool makeCannotSmith;
     
     protected override void _Arm() {
+        GetComponent<Artifact>().range = 100;
         PlayerWorldInteractionController.s.repairAmountMultiplier += repairAmountMultiplier -1;
         PlayerWorldInteractionController.s.reloadAmountMultiplier += reloadAmountMultiplier-1;
 

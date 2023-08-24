@@ -40,6 +40,10 @@ PrefabInstance:
       value: Bullet Feed Mechanism
       objectReference: {fileID: 0}
     - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: isGoodEffect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: isGenericArtifact
       value: 1
       objectReference: {fileID: 0}
@@ -49,7 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 502e5cabb030053458be929a43b75409, type: 3}
     - target: {fileID: 6382012039353133210, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: myTooltip.text
-      value: This and connected carts shoot 100% faster.
+      value: This and connected carts shoot 50% faster.
       objectReference: {fileID: 0}
     - target: {fileID: 6620300279125450212, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_Pivot.x
@@ -154,19 +158,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd7d8813f9924c4b8211217655eb9b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isArmed: 0
   engineOnly: 0
   cargoOnly: 0
+  applyGlobally: 0
+  glassCart: 0
+  canHaveNoShields: 0
+  reflectiveShields: 0
+  luckyCart: 0
   addShieldAsHpPercent: 0
   addShieldAmount: 0
-  fireRateMultiplier: 1
-  damageMultiplier: 1
   healthMultiplier: 1
+  shieldDecayMultiplier: 1
+  fireDecayRateMultiplier: 1
+  gatlinificator: 0
+  isHoming: 0
+  fireRateMultiplier: 1.5
+  damageMultiplier: 1
   ammoMultiplier: 1
-  canHaveNoShields: 0
+  addFireDamage: 0
+  addExplosionRange: 0
   boosterRangeModification: 0
   boosterEffectMultiplier: 1
   repairEfficiency: 1
   reloadEfficiency: 1
   shieldUpEfficiency: 1
-  shieldDecayMultiplier: 1

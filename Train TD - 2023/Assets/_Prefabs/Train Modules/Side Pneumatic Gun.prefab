@@ -281,6 +281,7 @@ MonoBehaviour:
   noAmmoPos: {fileID: 7228994314959930037}
   reloadSpawnPos: {fileID: 1650063500131326081}
   moduleAmmo: {fileID: 0}
+  isRepairAmmo: 0
 --- !u!1 &6225804440057024274
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,10 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: 'Uses steam pressure to shoot useless metal instead of ammo. No need to
-      reload but not great damage.
-
-'
+    text: No need to reload, but fires slower over time. Cannot use ammo modifiers.
   info: Pneumatic gun
 --- !u!1 &7353689250308290952
 GameObject:

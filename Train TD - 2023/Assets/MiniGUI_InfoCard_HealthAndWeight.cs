@@ -38,6 +38,10 @@ public class MiniGUI_InfoCard_HealthAndWeight : MonoBehaviour, IBuildingInfoCard
         Update();
     }
 
+    public void SetUp(Artifact artifact) {
+        gameObject.SetActive(false);
+    }
+
     private void Update() {
         if (!enemyMode) {
             health.text = $"Health: {healthModule.currentHealth}/{healthModule.maxHealth}";

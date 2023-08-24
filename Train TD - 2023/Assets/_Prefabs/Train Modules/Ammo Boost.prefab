@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2459800853535413774}
   m_Layer: 11
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 4964368836431716458}
   m_Layer: 11
   m_Name: Cube (3)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -513,7 +513,7 @@ GameObject:
   - component: {fileID: 7657403912087382203}
   m_Layer: 11
   m_Name: Cube (2)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -596,7 +596,7 @@ GameObject:
   - component: {fileID: 7746197678032756062}
   m_Layer: 11
   m_Name: Cube (1)
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1033,7 +1033,7 @@ GameObject:
   - component: {fileID: 7786165240032343434}
   m_Layer: 11
   m_Name: Attachment Thing prefab
-  m_TagString: Untagged
+  m_TagString: NoOutline
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1200,10 +1200,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 451fb5986e82b3845a1e56dc3a03582d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachmentThingParent: {fileID: 4021981235061229975}
   attachmentThing: {fileID: 5231439669197304400}
   attachmentThings: []
   isAttached: 0
+  spawnAttachmentThings: 0
   ammoBoost: 1
+  baseRange: 1
+  rangeBoost: 0
+  boostMultiplier: 1
+  boostRangeColor: {r: 10.556064, g: 9.728137, b: 0.16558532, a: 1}
 --- !u!1001 &5926245680219220562
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1290,3 +1296,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2849140471503338825, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
   m_PrefabInstance: {fileID: 5926245680219220562}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &9011912884359218676 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3399934084524781478, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+  m_PrefabInstance: {fileID: 5926245680219220562}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-6001804991178964337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9011912884359218676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1616160450, guid: 15528e9db0a6c9b45a66378f0b6c4dd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

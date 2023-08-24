@@ -40,6 +40,10 @@ PrefabInstance:
       value: Explosive bullets
       objectReference: {fileID: 0}
     - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: isGoodEffect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: isGenericArtifact
       value: 1
       objectReference: {fileID: 0}

@@ -48,6 +48,13 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 	private float shieldRegenDelay = 1;
 	public float curShieldDelay = 0;
 
+	public bool autoSetUp = false;
+
+	private void Start() {
+		if(autoSetUp)
+			SetUp();
+	}
+
 	public void DealDamage(float damage) {
 		
 		curShieldDelay = shieldRegenDelay;
@@ -247,7 +254,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 
 		var pos = aliveObject.position;
 		var rot = aliveObject.rotation;
-
+		
 		Destroy(aliveObject.gameObject);
 		Destroy(enemyUIBar.gameObject);
 		

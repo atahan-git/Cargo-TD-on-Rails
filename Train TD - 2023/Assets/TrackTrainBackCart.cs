@@ -8,11 +8,9 @@ public class TrackTrainBackCart : MonoBehaviour {
 	public Transform locationTarget;
 
 	void Update() {
-		if (locationTarget == null)
-			enabled = false;
-		
-		if (PlayStateMaster.s.isCombatFinished()) {
-			transform.position = locationTarget.position;
+		if (!PlayStateMaster.s.isCombatInProgress()) {
+			if(locationTarget != null)
+				transform.position = locationTarget.position;
 			transform.LookAt(Train.s.trainBack);
 		}
 	}

@@ -86,6 +86,9 @@ public class PathSelectorController : MonoBehaviour {
 
 		currentSegment = 0;
 		nextSegmentChangeDistance = activeLevel.mySegmentsA[0].segmentLength;
+		
+		//SplinePathMaster.s.GenerateInitialSegments();
+
 		HexGrid.s.ClearTrackSwitchDistances();
 		HexGrid.s.DoTrackSwitchAtDistance(nextSegmentChangeDistance);
 		
@@ -232,6 +235,7 @@ public class PathSelectorController : MonoBehaviour {
 
 	public List<TrackSwitchHex> myTrackSwitchHexes = new List<TrackSwitchHex>();
 	public void RegisterTrackSwitchHex(TrackSwitchHex hex) {
+		return;
 		if(MissionWinFinisher.s.isWon)
 			return;
 		

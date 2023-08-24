@@ -811,11 +811,18 @@ MonoBehaviour:
         myTrain:
           myCarts:
           - uniqueName: 
+            health: -1
+            ammo: -1
+            isFire: 0
+            isSticky: 0
+            isExplosive: 0
+            level: 0
             cargoState:
               cargoReward: 
+              cargoLevel: 0
               artifactReward: 
               isLeftCargo: 0
-        artifacts: []
+            attachedArtifact: 
         currentAct: 1
         map:
           chunks: []
@@ -830,19 +837,23 @@ MonoBehaviour:
           bonusArtifactUniqueName: 
         shopInitialized: 0
         shopState:
+          artifactStates: []
           cartStates: []
           leftCargo:
             cargoReward: 
+            cargoLevel: 0
             artifactReward: 
             isLeftCargo: 0
           rightCargo:
             cargoReward: 
+            cargoLevel: 0
             artifactReward: 
             isLeftCargo: 0
         fleaMarketRarityBoost: -0.05
         destinationRarityBoost: -0.15
         artifactRarityBoost: -0.15
         luck: 0
+        runGameVersion: 0.0.0.a
       xpProgress:
         xp: 0
         unlockedStarterArtifacts:
@@ -872,11 +883,18 @@ MonoBehaviour:
         myTrain:
           myCarts:
           - uniqueName: 
+            health: -1
+            ammo: -1
+            isFire: 0
+            isSticky: 0
+            isExplosive: 0
+            level: 0
             cargoState:
               cargoReward: 
+              cargoLevel: 0
               artifactReward: 
               isLeftCargo: 0
-        artifacts: []
+            attachedArtifact: 
         currentAct: 1
         map:
           chunks: []
@@ -891,19 +909,23 @@ MonoBehaviour:
           bonusArtifactUniqueName: 
         shopInitialized: 0
         shopState:
+          artifactStates: []
           cartStates: []
           leftCargo:
             cargoReward: 
+            cargoLevel: 0
             artifactReward: 
             isLeftCargo: 0
           rightCargo:
             cargoReward: 
+            cargoLevel: 0
             artifactReward: 
             isLeftCargo: 0
         fleaMarketRarityBoost: -0.05
         destinationRarityBoost: -0.15
         artifactRarityBoost: -0.15
         luck: 0
+        runGameVersion: 0.0.0.a
       xpProgress:
         xp: 0
         unlockedStarterArtifacts:
@@ -933,11 +955,18 @@ MonoBehaviour:
         myTrain:
           myCarts:
           - uniqueName: 
+            health: -1
+            ammo: -1
+            isFire: 0
+            isSticky: 0
+            isExplosive: 0
+            level: 0
             cargoState:
               cargoReward: 
+              cargoLevel: 0
               artifactReward: 
               isLeftCargo: 0
-        artifacts: []
+            attachedArtifact: 
         currentAct: 1
         map:
           chunks: []
@@ -952,19 +981,23 @@ MonoBehaviour:
           bonusArtifactUniqueName: 
         shopInitialized: 0
         shopState:
+          artifactStates: []
           cartStates: []
           leftCargo:
             cargoReward: 
+            cargoLevel: 0
             artifactReward: 
             isLeftCargo: 0
           rightCargo:
             cargoReward: 
+            cargoLevel: 0
             artifactReward: 
             isLeftCargo: 0
         fleaMarketRarityBoost: -0.05
         destinationRarityBoost: -0.15
         artifactRarityBoost: -0.15
         luck: 0
+        runGameVersion: 0.0.0.a
       xpProgress:
         xp: 0
         unlockedStarterArtifacts:
@@ -1338,14 +1371,14 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 50
+  far clip plane: 1000
   field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 2096951
+    m_Bits: 8388407
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

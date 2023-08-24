@@ -14,32 +14,62 @@ public class CharacterSelector : MonoBehaviour {
     }
 
     public GameObject charSelectUI;
-    public Transform charsParent;
-    public GameObject charPanelPrefab;
+
+    public GameObject carSelectorArea;
+    public GameObject startTrainArea;
+
+    public MiniGUI_DepartureChecklist departureChecklist;
     
+    public bool isInCharSelect = false;
+
+    public GateScript myGate;
+    private void Start() {
+        myGate.OnCanLeaveAndPressLeave.AddListener(CharSelectedAndLeave);
+        carSelectorArea.SetActive(false);
+        startTrainArea.SetActive(true);
+        charSelectUI.SetActive(false);
+    }
 
     public void CheckAndShowCharSelectionScreen() {
+        PlayerWorldInteractionController.s.canSelect = true;
         if (!DataSaver.s.GetCurrentSave().isInARun) {
             charSelectUI.SetActive(true);
-            PlayerWorldInteractionController.s.canSelect = false;
+            startTrainArea.SetActive(false);
+            carSelectorArea.SetActive(true);
             SetUpCharPanel();
+            isInCharSelect = true;
+            PlayerWorldInteractionController.s.canOnlySelectCharSelectStuff = true;
+            LevelReferences.s.cartHealthParent.gameObject.SetActive(false);
+            ShopStateController.s.mapOpenButton.interactable = false;
+            
+            if (DataSaver.s.GetCurrentSave().xpProgress.xp == 0) {
+                SelectCharacter(DataHolder.s.characters[0].myCharacter);
+                CharSelectedAndLeave();
+            }
         } else {
             charSelectUI.SetActive(false);
-            if (!MissionWinFinisher.s.isWon) {
-                PlayerWorldInteractionController.s.canSelect = true;
-            }
+            startTrainArea.SetActive(true);
+            carSelectorArea.SetActive(false);
+            isInCharSelect = false;
+            ShopStateController.s.mapOpenButton.interactable = true;
         }
     }
 
+
+    void CheckDepartureRequirements() {
+        //departureChecklist.UpdateStatus(new []{false, false});
+    }
+
     void SetUpCharPanel() {
-        charsParent.DeleteAllChildren();
+        Train.s.gameObject.SetActive(false);
+        
         var allChars = DataHolder.s.characters;
-        for (int i = 0; i < allChars.Length; i++) {
-            var panel = Instantiate(charPanelPrefab, charsParent).GetComponent<MiniGUI_CharSelectPanel>();
-            panel.Setup(allChars[i].myCharacter, !XPProgressionController.s.IsCharacterUnlocked(i), i==0);
-        }
+
+        selectedChar = allChars[0].myCharacter;
 
         var progress = DataSaver.s.GetCurrentSave().xpProgress;
+        
+        StarterTrainSelector.s.DrawSections();
         /*if (progress.unlockedStarterArtifacts.Count == 0) {
             progress.unlockedStarterArtifacts.Add("starter_artifact");
         }
@@ -72,51 +102,38 @@ public class CharacterSelector : MonoBehaviour {
             bonusArtifactToggle.isOn = false;
             bonusArtifactToggle.interactable = false;
         }*/
+        
+        CheckDepartureRequirements();
     }
 
+    public CharacterData selectedChar;
     public void SelectCharacter(CharacterData _data) {
+        selectedChar = _data;
+        CheckDepartureRequirements();
+    }
+
+
+    public void CharSelectedAndLeave() {
         DataSaver.s.GetCurrentSave().currentRun = new DataSaver.RunState(VersionDisplay.s.GetVersionNumber());
         DataSaver.s.GetCurrentSave().currentRun.currentAct = 1;
-        DataSaver.s.GetCurrentSave().currentRun.SetCharacter(_data);
-        DataSaver.s.GetCurrentSave().isInARun = true;
-
-        /*var saveArtifacts = new List<string>();
-        saveArtifacts.Add(selectedArtifact.uniqueName);
-        if (bonusArtifactToggle.isOn) {
-            saveArtifacts.Add(bonusArtifact.uniqueName);
-        }*/
-
-        //DataSaver.s.GetCurrentSave().currentRun.artifacts = saveArtifacts.ToArray();
+        DataSaver.s.GetCurrentSave().currentRun.SetCharacter(selectedChar);
+        
         DataSaver.s.GetCurrentSave().xpProgress.bonusArtifact = "";
-            
-            
+
         DataSaver.s.SaveActiveGame();
 
+        isInCharSelect = false;
         PlayStateMaster.s.FinishCharacterSelection();
     }
 
-    public void CharSelectionAndWorldGenerationComplete() {
+    public void CharSelectionCompleteAndScreenGotDark() {
         DataSaver.s.GetCurrentSave().isInARun = true;
-    }
-
-    public Transform starterArtifactsParent;
-    public GameObject starterWinWithItToGetMore;
-    public GameObject bonusArtifactEmpty;
-
-    public Transform bonusArtifactParent;
-
-    public GameObject startingArtifactSelectedMarker;
-
-    public Toggle bonusArtifactToggle;
-
-    public Artifact selectedArtifact;
-    public Artifact bonusArtifact;
-    public void SelectStartingArtifact(Artifact artifact) {
-        if (!DataSaver.s.GetCurrentSave().isInARun) {
-            selectedArtifact = artifact;
-            var newMarker = Instantiate(startingArtifactSelectedMarker, selectedArtifact.transform);
-            Destroy(startingArtifactSelectedMarker);
-            startingArtifactSelectedMarker = newMarker;
-        }
+        ShopStateController.s.mapOpenButton.interactable = true;
+        PlayerWorldInteractionController.s.canOnlySelectCharSelectStuff = false;
+        
+        carSelectorArea.SetActive(false);
+        startTrainArea.SetActive(true);
+        Train.s.gameObject.SetActive(true);
+        LevelReferences.s.cartHealthParent.gameObject.SetActive(true);
     }
 }

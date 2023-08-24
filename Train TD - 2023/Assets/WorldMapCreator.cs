@@ -117,6 +117,7 @@ public class WorldMapCreator : MonoBehaviour {
 
 	public UIElementFollowWorldTarget playerHereUIMarker;
 	public UIElementFollowWorldTarget yourObjectiveUIMarker;
+	public UIElementFollowWorldTarget meteorHereUIMarker;
 
 	public void OpenWorldMap() {
 		if (!worldMapOpen) {
@@ -142,6 +143,8 @@ public class WorldMapCreator : MonoBehaviour {
 			playerHereUIMarker.SetUp(playerTrainTargetTransform);
 			
 			yourObjectiveUIMarker.gameObject.SetActive(true);
+			
+			meteorHereUIMarker.gameObject.SetActive(true);
 
 			//MiniGUI_EnemyUIBar.showHealthBars = false;
 			//PlayerModuleSelector.s.DisableModuleSelecting();
@@ -175,6 +178,7 @@ public class WorldMapCreator : MonoBehaviour {
 			
 			playerHereUIMarker.gameObject.SetActive(false);
 			yourObjectiveUIMarker.gameObject.SetActive(false);
+			meteorHereUIMarker.gameObject.SetActive(false);
 
 			mapIcon.sprite = openMapIcon;
 
@@ -302,6 +306,10 @@ public class WorldMapCreator : MonoBehaviour {
 
 				if (myStar.isBoss) {
 					yourObjectiveUIMarker.SetUp(castle.transform);
+					var meteorOffset = new GameObject("Meteor Offset");
+					meteorOffset.transform.SetParent(castle.transform);
+					meteorOffset.transform.position = castle.transform.position + Vector3.forward * 4;
+					meteorHereUIMarker.SetUp(meteorOffset.transform);
 				}
 				
 				castles.Add(script);

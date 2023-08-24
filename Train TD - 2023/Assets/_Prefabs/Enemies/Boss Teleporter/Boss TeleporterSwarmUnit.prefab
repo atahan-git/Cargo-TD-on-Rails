@@ -134,9 +134,14 @@ MonoBehaviour:
   isAlive: 1
   uiTransform: {fileID: 4734297801412349416}
   cartRewardTransform: {fileID: 0}
-  healthBar: {fileID: 0}
+  enemyUIBar: {fileID: 0}
   isArmored: 0
   isComponentEnemy: 0
+  maxShields: 0
+  currentShields: 0
+  curShieldDelay: 0
+  autoSetUp: 0
+  activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
   rewardArtifactOnDeath: 0
@@ -161,6 +166,7 @@ MonoBehaviour:
   avoid: 1
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
+  enemiesTargetingMe: []
 --- !u!114 &7440264286695437326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +297,7 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+  isInitialized: 0
 --- !u!1 &3835853776607531425
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,6 +309,8 @@ GameObject:
   - component: {fileID: 3752465229101856357}
   - component: {fileID: 8955569012562612704}
   - component: {fileID: 2566350374031917171}
+  - component: {fileID: 2800294895684910687}
+  - component: {fileID: 3876232535258541731}
   m_Layer: 14
   m_Name: mini Enemy (1)
   m_TagString: Untagged
@@ -338,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7eab1db79f56c47b0647f898b7c2c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseHealth: 200
+  baseHealth: 500
   maxHealth: 500
   currentHealth: 500
   scrapReward: 10
@@ -349,9 +358,14 @@ MonoBehaviour:
   isAlive: 1
   uiTransform: {fileID: 677720628383939467}
   cartRewardTransform: {fileID: 677720628383939467}
-  healthBar: {fileID: 0}
+  enemyUIBar: {fileID: 0}
   isArmored: 0
   isComponentEnemy: 1
+  maxShields: 0
+  currentShields: 0
+  curShieldDelay: 0
+  autoSetUp: 1
+  activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
   rewardArtifactOnDeath: 0
@@ -376,6 +390,41 @@ MonoBehaviour:
   avoid: 0
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
+  enemiesTargetingMe: []
+--- !u!114 &2800294895684910687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3835853776607531425}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
+  isInitialized: 0
+--- !u!114 &3876232535258541731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3835853776607531425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip:
+    text: Side gatling unit of the boss.
+  info: Side gatling unit.
 --- !u!1 &5582219786172079475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2625,6 +2674,8 @@ GameObject:
   - component: {fileID: 2011706732972215155}
   - component: {fileID: 3800214255756046170}
   - component: {fileID: 3237756680805762530}
+  - component: {fileID: 3758188755988206903}
+  - component: {fileID: 1313788560529653195}
   m_Layer: 14
   m_Name: mini Enemy
   m_TagString: Untagged
@@ -2661,7 +2712,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7eab1db79f56c47b0647f898b7c2c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseHealth: 200
+  baseHealth: 500
   maxHealth: 500
   currentHealth: 500
   scrapReward: 10
@@ -2672,9 +2723,14 @@ MonoBehaviour:
   isAlive: 1
   uiTransform: {fileID: 90277407465082495}
   cartRewardTransform: {fileID: 90277407465082495}
-  healthBar: {fileID: 0}
+  enemyUIBar: {fileID: 0}
   isArmored: 0
   isComponentEnemy: 1
+  maxShields: 0
+  currentShields: 0
+  curShieldDelay: 0
+  autoSetUp: 1
+  activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
   rewardArtifactOnDeath: 0
@@ -2699,6 +2755,41 @@ MonoBehaviour:
   avoid: 0
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
+  enemiesTargetingMe: []
+--- !u!114 &3758188755988206903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8923485587532411922}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
+  isInitialized: 0
+--- !u!114 &1313788560529653195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8923485587532411922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip:
+    text: Side flamethrower unit of the boss.
+  info: Side flamethrower unit.
 --- !u!1001 &582367567636979020
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -87,6 +87,7 @@ public class LevelReferences : MonoBehaviour {
 
     [Space]
     public Material[] cartLevelMats;
+    public Material[] artifactLevelMats;
 
     
     public struct TargetValues {
@@ -154,6 +155,8 @@ public class LevelReferences : MonoBehaviour {
     public GameObject bullet_fire_explosive;
     public GameObject bullet_sticky_explosive;
     public GameObject bullet_fire_sticky_explosive;
+
+    public GameObject bullet_repair;
 
     /*public GameObject GetResourceParticle(ResourceTypes types) {
         switch (types) {

@@ -65,7 +65,9 @@ public class DirectControlMaster : MonoBehaviour {
 	public float directControlLock = 0;
 	public bool enterDirectControlShootLock = false;
 
-	private CursorStateChanger[] bulletTypes;
+	public GameObject isFire;
+	public GameObject isExplosive;
+	public GameObject isSticky;
 	public void AssumeDirectControl(DirectControllable source) {
 		if (!directControlInProgress && directControlLock <= 0) {
 			PlayerWorldInteractionController.s.canSelect = false;
@@ -92,6 +94,7 @@ public class DirectControlMaster : MonoBehaviour {
 
 			curCooldown = myGun.GetFireDelay();
 			enterDirectControlShootLock = true;
+			Invoke(nameof(DisableDirectControlEnterShootLock), 0.5f);
 
 			DirectControlGameObject.SetActive(true);
 			directControlInProgress = true;
@@ -137,30 +140,18 @@ public class DirectControlMaster : MonoBehaviour {
 			}
 
 			
-			bulletTypes = Train.s.GetComponentsInChildren<CursorStateChanger>(true);
 			ApplyBulletTypes();
 		}
 	}
 
+	void DisableDirectControlEnterShootLock() {
+		enterDirectControlShootLock = false;
+	}
+
 	void ApplyBulletTypes() {
-		myGun.isExplosive = false;
-		myGun.isFire = false;
-		myGun.isSticky = false;
-		for (int i = 0; i < bulletTypes.Length; i++) {
-			if (!bulletTypes[i].GetComponentInParent<Cart>().isDestroyed) {
-				switch (bulletTypes[i].targetState) {
-					case PlayerWorldInteractionController.CursorState.reload_explosive:
-						myGun.isExplosive = true;
-						break;
-					case PlayerWorldInteractionController.CursorState.reload_fire:
-						myGun.isFire = true;
-						break;
-					case PlayerWorldInteractionController.CursorState.reload_sticky:
-						myGun.isSticky = true;
-						break;
-				}
-			}
-		}
+		isFire.SetActive(myGun.isFire);
+		isExplosive.SetActive(myGun.isExplosive);
+		isSticky.SetActive(myGun.isSticky);
 	}
 
 	private void DisableDirectControl(InputAction.CallbackContext obj) {
@@ -188,6 +179,8 @@ public class DirectControlMaster : MonoBehaviour {
 
 			isSniper = false;
 			myGun.sniperDamageMultiplier = 1;
+			
+			CancelInvoke(nameof(DisableDirectControlEnterShootLock));
 		}
 	}
 
@@ -231,7 +224,7 @@ public class DirectControlMaster : MonoBehaviour {
 			RaycastHit hit;
 			bool didHit = false;
 			
-			if (Physics.Raycast(ray, out hit, 1000, lookMask)) {
+			if (Physics.Raycast(ray, out hit, 30, lookMask)) {
 				myGun.LookAtLocation(hit.point);
 				didHit = true;
 				//Debug.DrawLine(ray.origin, hit.point);
@@ -440,7 +433,8 @@ public class DirectControlMaster : MonoBehaviour {
 	void OnShoot() {
 		//if (doShake) {
 		var range = Mathf.Clamp01(myGun.projectileDamage / 10f) ;
-		range /= 4f;
+		range /= 8f;
+		range *= myGun.directControlShakeMultiplier;
 		
 		//print(range);
 		if (doShake) {
@@ -451,8 +445,11 @@ public class DirectControlMaster : MonoBehaviour {
 				Mathf.Lerp(0.1f, 0.5f, range),
 				true
 			);
-			if(!SettingsController.GamepadMode())
-				CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range*2, range*2), range*5));
+			if (!SettingsController.GamepadMode()) {
+				range /= myGun.directControlShakeMultiplier;
+				range *= 2;
+				CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range * 2, range * 2), range * 5));
+			}
 		} else {
 			/*CameraShakeController.s.ShakeCamera(
 				Mathf.Lerp(0.1f, 0.7f, range),

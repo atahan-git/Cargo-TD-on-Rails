@@ -11,6 +11,7 @@ public class Artifact_ModifyLuck : ActivateWhenOnArtifactRow {
 	public float modifyAmount = 0;
 
 	protected override void _Arm() {
+		GetComponent<Artifact>().range = 100;
 		DataSaver.s.GetCurrentSave().currentRun.luck += modifyAmount;
 	}
 

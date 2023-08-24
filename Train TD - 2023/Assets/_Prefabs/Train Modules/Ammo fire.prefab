@@ -637,14 +637,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc386fed7cd799943af2d7a59fd7a478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachmentThingParent: {fileID: 0}
   attachmentThing: {fileID: 0}
   attachmentThings: []
   isAttached: 0
   spawnAttachmentThings: 0
   boostReloadCountPerLevel: 0
-  boostFireDamageBase: 0.5
-  boostFireDamagePercentPerLevel: 0.25
+  boostFireDamageBase: 1
+  boostFireDamagePercentPerLevel: 0.5
   activeFireDamageBoost: 0
+  boostExplosionRangeBase: 0
+  boostExplosionRangePercentPerLevel: 0
+  activeExplosionRangeBoost: 0
+  myAmmoType: 0
+  baseRange: 1
+  rangeBoost: 0
+  ammoColor: {r: 10.556064, g: 0, b: 0, a: 1}
 --- !u!1 &6073088298320839589
 GameObject:
   m_ObjectHideFlags: 0
@@ -1028,6 +1036,10 @@ PrefabInstance:
     - target: {fileID: 2094104702812729048, guid: ee11766744e775843943a798f3ceb194, type: 3}
       propertyPath: m_Name
       value: Cursor State Changer
+      objectReference: {fileID: 0}
+    - target: {fileID: 2094104702812729048, guid: ee11766744e775843943a798f3ceb194, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4520012201633438021, guid: ee11766744e775843943a798f3ceb194, type: 3}
       propertyPath: m_RootOrder

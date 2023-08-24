@@ -67,4 +67,4 @@ MonoBehaviour:
     firstSpawnTime: 30
     spawnInterval: 30
     increaseInNumberInterval: 1
-  segmentCount: 3
+  segmentCount: 2

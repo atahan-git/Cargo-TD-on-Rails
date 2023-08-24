@@ -38,7 +38,6 @@ public class ActFinishController : MonoBehaviour {
     public void StartNewAct() {
         PlayerWorldInteractionController.s.canSelect = true;
         movingToNextAct = true;
-        DataSaver.s.GetCurrentSave().currentRun.currentAct += 1;
         
         if (DataSaver.s.GetCurrentSave().currentRun.currentAct == 3) {
             DataSaver.s.GetCurrentSave().currentRun = null;
@@ -47,6 +46,8 @@ public class ActFinishController : MonoBehaviour {
             ShopStateController.s.BackToMainMenu();
             return;
         }
+        
+        DataSaver.s.GetCurrentSave().currentRun.currentAct += 1;
 
         PlayStateMaster.s.EnterNewAct();
         DataSaver.s.SaveActiveGame();

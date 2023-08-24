@@ -66,8 +66,7 @@ public class Cart : MonoBehaviour {
     public MeshRenderer cartMaterial;
 
     public Transform genericParticlesParent;
-
-
+    
     public void ResetState() {
         SetUpOverlays();
         SetUpOutlines();
@@ -75,28 +74,15 @@ public class Cart : MonoBehaviour {
         GetHealthModule().ResetState(level);
 
         cartMaterial.material = LevelReferences.s.cartLevelMats[level];
-
-        var gunModules = GetComponentsInChildren<GunModule>();
-        for (int i = 0; i < gunModules.Length; i++) {
-            gunModules[i].ResetState(level);
-        }
-
-        var ammoModules = GetComponentsInChildren<ModuleAmmo>();
-        for (int i = 0; i < ammoModules.Length; i++) {
-            ammoModules[i].ResetState();
-        }
-
-        var boosterModules = GetComponentsInChildren<IBooster>();
-        for (int i = 0; i < boosterModules.Length; i++) {
-            boosterModules[i].ResetState(level);
-        }
         
-        
-        var moduleAmmoProviders = GetComponentsInChildren<ModuleAmmoProvider>();
-        for (int i = 0; i < moduleAmmoProviders.Length; i++) {
-            moduleAmmoProviders[i].ResetState(level);
+        var modulesWithResetStates = GetComponentsInChildren<IResetState>();
+        for (int i = 0; i < modulesWithResetStates.Length; i++) {
+            modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
         }
 
+        if (myAttachedArtifact != null) {
+            myAttachedArtifact.ResetState();
+        }
     }
 
     public void SetDisabledState() {
@@ -301,5 +287,9 @@ public interface IActiveDuringCombat {
 public interface IActiveDuringShopping {
     public void ActivateForShopping();
     public void Disable();
-    
+}
+
+
+public interface IResetState {
+    public void ResetState(int level);
 }

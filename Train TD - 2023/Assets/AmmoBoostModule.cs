@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AmmoBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster {
+public class AmmoBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster, IResetState {
 	public float ammoBoost = 1;
 	
 	protected override void _AttachedToTrain() {
-		for (int i = 1; i < (baseRange+rangeBoost)+1; i++) {
+		for (int i = 1; i < GetRange()+1; i++) {
 			ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), true);
 			ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), true);
 		}
@@ -40,9 +40,17 @@ public class AmmoBoostModule : ActivateWhenAttachedToTrain, IExtraInfo, IBooster
 		rangeBoost = level;
 		boostMultiplier = 1;
 	}
-
+	public int GetRange() {
+		return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
+	}
+	
 	public void ModifyStats(int range, float value) {
 		rangeBoost += range;
 		boostMultiplier += value;
+	}
+
+	[ColorUsageAttribute(true, true)] public Color boostRangeColor = Color.yellow;
+	public Color GetColor() {
+		return boostRangeColor;
 	}
 }

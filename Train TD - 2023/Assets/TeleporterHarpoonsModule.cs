@@ -251,7 +251,7 @@ public class TeleporterHarpoonsModule : MonoBehaviour
         if (currentHarpoon.target == null) {
             var doCount = 0;
             do {
-                currentHarpoon.target = Train.s.carts[Random.Range(0, Train.s.carts.Count)].GetComponent<Cart>();
+                currentHarpoon.target = Train.s.carts[Random.Range(1, Train.s.carts.Count)].GetComponent<Cart>(); // make sure it doesnt target the engine at the front
                 doCount += 1;
             } while (currentHarpoon.target == otherHarpoon.target && doCount < 20);
 
@@ -300,10 +300,10 @@ public class TeleporterHarpoonsModule : MonoBehaviour
     }
 
     private void OnEnable() {
-        Train.s.trainUpdatedThroughNonBuildingActions.AddListener(OnCartDestroyed);
+        Train.s.onTrainCartsChanged.AddListener(OnCartDestroyed);
     }
 
     private void OnDisable() {
-        Train.s.trainUpdatedThroughNonBuildingActions.RemoveListener(OnCartDestroyed);
+        Train.s.onTrainCartsChanged.RemoveListener(OnCartDestroyed);
     }
 }

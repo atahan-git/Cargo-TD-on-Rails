@@ -181,6 +181,10 @@ PrefabInstance:
       propertyPath: displayName
       value: Family Heirloom
       objectReference: {fileID: 0}
+    - target: {fileID: 3932598021525471259, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
+      propertyPath: isGoodEffect
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6382012039353133210, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: myTooltip.text
       value: Looking at this remind you of your home... and your mission.
@@ -267,10 +271,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6620300279125450212, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8444143614001758137, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8523565902544572801, guid: e5ad635d235b48243b40e94abcf52f46, type: 3}

@@ -27,6 +27,10 @@ public class MiniGUI_InfoCard_GunAndAmmo : MonoBehaviour, IBuildingInfoCard {
         SetUp(enemy.GetComponentInChildren<GunModule>(), null);
     }
 
+    public void SetUp(Artifact artifact) {
+        gameObject.SetActive(false);
+    }
+
 
     void SetUp(GunModule gun, ModuleAmmo ammo) {
         var gunModule = gun;

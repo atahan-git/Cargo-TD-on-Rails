@@ -19,6 +19,11 @@ public class OverlayCamsReference : MonoBehaviour {
     private void Start() {
         var camData = MainCameraReference.s.cam.GetUniversalAdditionalCameraData();
         camData.cameraStack.Clear();
+        //camData.cameraStack.Add(AsteroidInTheDistanceCam.s.camera);
         camData.cameraStack.Add(uiCam);
+        /*var camData = AsteroidInTheDistanceCam.s.camera.GetUniversalAdditionalCameraData();
+        camData.cameraStack.Clear();
+        camData.cameraStack.Add(MainCameraReference.s.cam);
+        camData.cameraStack.Add(uiCam);*/
     }
 }

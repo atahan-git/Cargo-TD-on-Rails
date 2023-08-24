@@ -10,6 +10,7 @@ public class Artifact_SideGunModifier : ActivateWhenOnArtifactRow {
 
 
     protected override void _Arm() {
+        GetComponent<Artifact>().range = 100;
         var carts = GetAllCarts();
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];

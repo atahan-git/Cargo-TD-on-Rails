@@ -277,6 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraParent: {fileID: 381691161858782705}
+  canUseAmmo: 1
   myMode: 1
 --- !u!1 &2483500404670794401
 GameObject:
@@ -671,11 +672,11 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 9155879028066676231, guid: 20718e1ecbf4a0a48851a1815d4ceeaa, type: 3}
   target: {fileID: 0}
   mortarRotation: 0
-  fireDelay: 3
+  fireDelay: 5
   fireBarrageCount: 1
   fireBarrageDelay: 0.5
   fireRateMultiplier: 1
-  projectileDamage: 220
+  projectileDamage: 200
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
@@ -684,6 +685,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
+  directControlShakeMultiplier: 1
   isHeal: 0
   rotateSpeed: 10
   gunActive: 1
@@ -710,6 +712,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gunShakeOnShoot: 0
+  gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
   isHoming: 0
   boostDamageOnUpgrade: 0.5
@@ -719,6 +722,9 @@ MonoBehaviour:
   isExplosive: 0
   explosionRange: 0.5
   explosionRangeBoost: 0
+  gotShootCredits: 0
+  needShootCredits: 0
+  shootCreditsUse: 1
 --- !u!114 &3530306806417391473
 MonoBehaviour:
   m_ObjectHideFlags: 0

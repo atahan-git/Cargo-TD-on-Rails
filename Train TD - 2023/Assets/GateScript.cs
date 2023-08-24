@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GateScript : MonoBehaviour {
+public class GateScript : MonoBehaviour, IClickableWorldItem {
 
     public GameObject readyToGoEffects;
-    public GameObject readyToGoEffectsUI;
+    //public GameObject readyToGoEffectsUI;
 
     public Transform gate;
 
@@ -18,9 +18,11 @@ public class GateScript : MonoBehaviour {
     public float upMoveSpeed = 1f;
     public float downMoveGravity = 10f;
     public float downCurrentSpeed = 0;
-    
+
+    public bool mouseOverAble = true;
     public bool mouseOver;
     public bool canGo;
+    public bool stuckInOpenPos = false;
 
     public Tooltip myTooltip;
     public Color canGoColor= Color.green;
@@ -31,9 +33,14 @@ public class GateScript : MonoBehaviour {
     private void Start() {
         _outline = GetComponent<Outline>();
         _outline.enabled = false;
+        if (stuckInOpenPos) {
+            gate.transform.position = gateFullOpenPos.position;
+        }
     }
 
     public void _OnMouseEnter() {
+        if(!mouseOverAble)
+            return;
         mouseOver = true;
         downCurrentSpeed = 0;
         _outline.enabled = true;
@@ -41,6 +48,8 @@ public class GateScript : MonoBehaviour {
     }
 
     public void _OnMouseExit() {
+        if(!mouseOverAble)
+            return;
         mouseOver = false;
         _outline.enabled = false;
         CancelInvoke(nameof(ShowTooltip));
@@ -52,9 +61,11 @@ public class GateScript : MonoBehaviour {
     }
 
     [HideInInspector]
-    public UnityEvent OnCanLeaveAndPressLeave;
+    public UnityEvent OnCanLeaveAndPressLeave = new UnityEvent();
 
     public void _OnMouseUpAsButton() {
+        if(!mouseOverAble)
+            return;
         if (canGo) {
             OnCanLeaveAndPressLeave?.Invoke();
             _OnMouseExit();
@@ -74,12 +85,14 @@ public class GateScript : MonoBehaviour {
 
     
     private void Update() {
+        if(!mouseOverAble)
+            return;
+        
         if (PlayStateMaster.s.isCombatInProgress()) {
             TooltipsMaster.s.HideTooltip();
             gate.transform.position = Vector3.MoveTowards(gate.transform.position, gateFullOpenPos.position, upMoveSpeed * Time.deltaTime * 3f);
             
         } else {
-            
             if (canGo) {
                 if (mouseOver) {
                     gate.transform.position = Vector3.MoveTowards(gate.transform.position, gateFullOpenPos.position, upMoveSpeed * Time.deltaTime);
@@ -101,4 +114,13 @@ public class GateScript : MonoBehaviour {
             }
         }
     }
+}
+
+public interface IClickableWorldItem {
+
+    public void _OnMouseEnter();
+
+    public void _OnMouseExit();
+
+    public void _OnMouseUpAsButton();
 }

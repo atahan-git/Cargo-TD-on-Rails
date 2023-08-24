@@ -20,6 +20,8 @@ public class PhysicalAmmoBar : MonoBehaviour {
 
     [ReadOnly]
     public ModuleAmmo moduleAmmo;
+
+    public bool isRepairAmmo = false;
     void Start() {
         moduleAmmo = GetComponentInParent<ModuleAmmo>();
         moduleAmmo.OnReload.AddListener(OnReload);
@@ -42,28 +44,34 @@ public class PhysicalAmmoBar : MonoBehaviour {
 
 
     void OnAmmoTypeChange() {
-        ammoChunk = LevelReferences.s.bullet_regular;
-        if (moduleAmmo.isFire && moduleAmmo.isSticky && moduleAmmo.isExplosive) {
-            ammoChunk = LevelReferences.s.bullet_fire_sticky_explosive;
-        }else if (moduleAmmo.isFire && moduleAmmo.isSticky) {
-            ammoChunk = LevelReferences.s.bullet_fire_sticky;
-        }else if (moduleAmmo.isFire && moduleAmmo.isExplosive) {
-            ammoChunk = LevelReferences.s.bullet_fire_explosive;
-        } else if (moduleAmmo.isSticky&& moduleAmmo.isExplosive) {
-            ammoChunk = LevelReferences.s.bullet_sticky_explosive;
-        }else if (moduleAmmo.isFire) {
-            ammoChunk = LevelReferences.s.bullet_fire;
-        }else if (moduleAmmo.isSticky) {
-            ammoChunk = LevelReferences.s.bullet_sticky;
-        }else if (moduleAmmo.isExplosive) {
-            ammoChunk = LevelReferences.s.bullet_explosive;
+        if (isRepairAmmo) {
+            ammoChunk = LevelReferences.s.bullet_repair;
+        } else {
+            ammoChunk = LevelReferences.s.bullet_regular;
+            if (moduleAmmo.isFire && moduleAmmo.isSticky && moduleAmmo.isExplosive) {
+                ammoChunk = LevelReferences.s.bullet_fire_sticky_explosive;
+            } else if (moduleAmmo.isFire && moduleAmmo.isSticky) {
+                ammoChunk = LevelReferences.s.bullet_fire_sticky;
+            } else if (moduleAmmo.isFire && moduleAmmo.isExplosive) {
+                ammoChunk = LevelReferences.s.bullet_fire_explosive;
+            } else if (moduleAmmo.isSticky && moduleAmmo.isExplosive) {
+                ammoChunk = LevelReferences.s.bullet_sticky_explosive;
+            } else if (moduleAmmo.isFire) {
+                ammoChunk = LevelReferences.s.bullet_fire;
+            } else if (moduleAmmo.isSticky) {
+                ammoChunk = LevelReferences.s.bullet_sticky;
+            } else if (moduleAmmo.isExplosive) {
+                ammoChunk = LevelReferences.s.bullet_explosive;
+            }
         }
 
         var oldAmmo = new List<GameObject>(allAmmoChunks);
         allAmmoChunks.Clear();
         
         for (int i = oldAmmo.Count-1; i >= 0; i--) {
-            allAmmoChunks.Add(Instantiate(ammoChunk, oldAmmo[i].transform.position, oldAmmo[i].transform.rotation));
+            var chunk = Instantiate(ammoChunk, oldAmmo[i].transform.position, oldAmmo[i].transform.rotation);
+            chunk.transform.SetParent(transform);
+            allAmmoChunks.Add(chunk);
             Destroy(oldAmmo[i].gameObject);
         }
         
@@ -75,6 +83,7 @@ public class PhysicalAmmoBar : MonoBehaviour {
         while ( allAmmoChunks.Count < moduleAmmo.curAmmo) {
             var newOne = Instantiate(ammoChunk, reloadSpawnPos);
             newOne.transform.position += delta + new Vector3(Random.Range(-0.005f, 0.005f), 0, Random.Range(-0.005f, 0.005f));
+            newOne.transform.SetParent(transform);
             newOne.SetActive(true);
             allAmmoChunks.Add(newOne);
             if (showEffect) {

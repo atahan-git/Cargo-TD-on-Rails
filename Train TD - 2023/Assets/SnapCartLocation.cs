@@ -31,8 +31,16 @@ public class SnapCartLocation : MonoBehaviour {
     private void Update() {
         if (snapTransform.childCount > 0) {
             var child = snapTransform.GetChild(0);
+
+            var isArtifact = child.GetComponent<Artifact>() != null;
+
+            var offset = Vector3.zero;
+
+            if (isArtifact) {
+                offset = Vector3.up*(3/4f);
+            }
             
-            child.transform.localPosition = Vector3.Lerp(child.transform.localPosition, Vector3.zero, snapLerpSpeed * Time.deltaTime);
+            child.transform.localPosition = Vector3.Lerp(child.transform.localPosition, offset, snapLerpSpeed * Time.deltaTime);
             child.transform.localRotation = Quaternion.Slerp(child.transform.localRotation, Quaternion.identity, snapSlerpSpeed * Time.deltaTime);
         }
     }

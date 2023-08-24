@@ -57,7 +57,7 @@ public class TimeController : MonoBehaviour {
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.fastForward);
     }
 
-    public void OnCombatEnd() {
+    public void OnCombatEnd(bool realCombat) {
         canFastForward = false;
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.fastForward);
     }

@@ -98,7 +98,7 @@ public class LevelArchetypeScriptable : ScriptableObject {
         }
 
         try {
-            var doDebugBuggy = Random.value < 0.00001f && DataSaver.s.GetCurrentSave().xpProgress.xp > 20;
+            var doDebugBuggy = EasterEggController.s.GetEasterEggDisplay(EasterEggController.EasterEggChances.rare5);
             if (doDebugBuggy) {
                 var mySegment = Random.Range(1, segmentCount); // first one is never debug buggy
 
@@ -185,12 +185,12 @@ public class LevelArchetypeScriptable : ScriptableObject {
         
 
         if (segment.eliteEnemy) {
-            segment.artifactRewardUniqueName = UpgradesController.s.GetRandomRegularArtifact();
+            segment.artifactRewardUniqueName = UpgradesController.s.GetRandomEliteRewardArtifact();
         }
 
         segment.segmentLength = furthestEnemyDistance + lastEnemyAndSegmentEndDistance;
         
-        segment.segmentLength += segment.segmentLength % HexGrid.s.gridSize.x;
+        //segment.segmentLength += segment.segmentLength % HexGrid.s.gridSize.x;
         //segment.segmentLength -= HexGrid.s.gridSize.x / 2;
         
         return segment;
