@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,19 +13,9 @@ public class GatlingAnimator : MonoBehaviour {
     private float warmUpTime;
     public float slowDownDelta = 900;
 
-    public AudioClip warmUpClip;
-    public AudioClip stopClip;
+    [FoldoutGroup("Audio")]
+    public FMODAudioSource revSpeaker;
     
-    
-    public AudioSource introAudioSource;
-    public AudioSource loopAudioSource;
-    
-    void PlayGunShoot () {
-        introAudioSource.clip = warmUpClip;
-        introAudioSource.Play();
-        loopAudioSource.PlayDelayed(warmUpTime);
-    }
-
     private bool easterEggSidewaysRotate = false;
     void Start() {
         _gunModule = GetComponentInParent<GunModule>();
@@ -36,7 +27,6 @@ public class GatlingAnimator : MonoBehaviour {
         }
         
         _gunModule.startWarmUpEvent.AddListener(OnWarmUp);
-        _gunModule.stopShootingEvent.AddListener(OnStopFiring);
         _gunModule.gatlingCountZeroEvent.AddListener(OnGatlingCountZero);
 
 
@@ -49,13 +39,6 @@ public class GatlingAnimator : MonoBehaviour {
         warmUpTime = _gunModule.GetFireDelay();
         angleDelta = rotationSpeed / warmUpTime;
         isRotating = true;
-        PlayGunShoot();
-    }
-
-    void OnStopFiring() {
-        introAudioSource.Stop();
-        loopAudioSource.Stop();
-        introAudioSource.PlayOneShot(stopClip);
     }
     
     void OnGatlingCountZero() {
@@ -71,6 +54,9 @@ public class GatlingAnimator : MonoBehaviour {
         } else {
             curSpeed = Mathf.MoveTowards(curSpeed, 0, slowDownDelta * Time.deltaTime);
         }
+
+        //Debug.Log(curSpeed);
+        revSpeaker.SetParamByName("GatlingRevSpeed", curSpeed / rotationSpeed);
 
         if (curSpeed > 0.1f) {
             if (easterEggSidewaysRotate) { 

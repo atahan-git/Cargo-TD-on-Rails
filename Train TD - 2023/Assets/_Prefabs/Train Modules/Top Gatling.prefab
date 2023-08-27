@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3979387188417634542}
   - component: {fileID: 5168237409944545285}
+  - component: {fileID: 81993952892900500}
   m_Layer: 11
   m_Name: Gatling Animator
   m_TagString: Untagged
@@ -53,8 +54,32 @@ MonoBehaviour:
   stopClip: {fileID: 8300000, guid: b9a7aaab9bc1a5f4b8ba1caa65a86a7b, type: 3}
   introAudioSource: {fileID: 3295060870551061255}
   loopAudioSource: {fileID: 1380296125965469630}
+  revSpeaker: {fileID: 81993952892900500}
   isRotating: 0
   curSpeed: 0
+--- !u!114 &81993952892900500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245482224028209587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -2019368889
+      Data2: 1108506655
+      Data3: -1358686531
+      Data4: 1711656359
+    Path: event:/SFX/Gun SFX/Enemy Gatling Rev
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!1 &1705558334360770801
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,7 +1040,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Volume
-      value: 0.8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_PlayOnAwake
@@ -1098,7 +1123,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Volume
-      value: 0.6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_audioClip
