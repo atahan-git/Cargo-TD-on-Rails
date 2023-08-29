@@ -16,23 +16,36 @@ public class AudioManager : MonoBehaviour
     [FoldoutGroup("Unity Mixer")]
     public AudioMixer unityMixer;
 
+    [FoldoutGroup("Unity Mixer")]
+    public float targetUnitySfxVolume = 0;
+
     private void UpdateUnityMixer()
     {
         unityMixer.GetFloat("EnemyEngineVol", out float enemyEngineVol);
-        unityMixer.SetFloat("EnemyEngineVol", Mathf.Lerp(enemyEngineVol, TimeController.s.isPaused ? -80 : 0, Time.unscaledDeltaTime * 20f));
+        unityMixer.SetFloat("EnemyEngineVol", Mathf.Lerp(enemyEngineVol, TimeController.s.isPaused ? -80 : targetUnitySfxVolume, Time.unscaledDeltaTime * 20f));
+        
+        unityMixer.GetFloat("VoiceVol", out float voiceVol);
+        unityMixer.SetFloat("VoiceVol", Mathf.Lerp(voiceVol, targetUnitySfxVolume, Time.unscaledDeltaTime * 20f));
+        
+        unityMixer.GetFloat("SfxVol", out float sfxVol);
+        unityMixer.SetFloat("SfxVol", Mathf.Lerp(sfxVol, targetUnitySfxVolume, Time.unscaledDeltaTime * 20f));
+        
+        unityMixer.GetFloat("PlayerEngineVol", out float playerEngineVol);
+        unityMixer.SetFloat("PlayerEngineVol", Mathf.Lerp(playerEngineVol, TimeController.s.isPaused ? -80 : targetUnitySfxVolume, Time.unscaledDeltaTime * 20f));
     }
     #endregion
 
     #region FMOD Mixer
     [FoldoutGroup("FMOD Mixer")]
-    public Bus masterBus, musicBus;
+    public Bus masterBus, musicBus, sfxBus;
 
     [FoldoutGroup("FMOD Mixer")]
-    [PropertyRange(-80f, 10f)] public float masterBusVolume, musicBusVolume;
+    [PropertyRange(-80f, 10f)] public float masterBusVolume, musicBusVolume, sfxBusVolume;
     private void UpdateBus()
     {
         masterBus.setVolume(masterBusVolume);
         musicBus.setVolume(musicBusVolume);
+        sfxBus.setVolume(sfxBusVolume);
     }
     #endregion
 
@@ -88,6 +101,7 @@ public class AudioManager : MonoBehaviour
     {
         masterBus = RuntimeManager.GetBus("bus:/");
         musicBus = RuntimeManager.GetBus("bus:/Music");
+        sfxBus = RuntimeManager.GetBus("bus:/SFX");
     }
 
 

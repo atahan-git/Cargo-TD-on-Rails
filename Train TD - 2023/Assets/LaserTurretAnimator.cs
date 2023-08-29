@@ -1,3 +1,5 @@
+using FMODUnity;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,17 +10,27 @@ public class LaserTurretAnimator : MonoBehaviour
 
     private float warmUpTime;
 
-    public AudioClip warmUpClip;
-    public AudioClip stopClip;
-    
-    
-    public AudioSource introAudioSource;
-    public AudioSource loopAudioSource;
+    // Merxon: replaced by FMOD logic
+    // public AudioClip warmUpClip;
+    // public AudioClip stopClip;
+
+    // public AudioSource introAudioSource;
+    // public AudioSource loopAudioSource;
+
+    #region FMOD Clip Handling
+    [FoldoutGroup("FMOD SFX Handling")]
+    public EventReference warmUpRef, stopRef;
+
+    [FoldoutGroup("FMOD SFX Handling")]
+    public FMODAudioSource loopAudioSource, onesShotSource;
+    #endregion
 
     public GeroBeam myBeam;
     void PlayGunShoot () {
-        introAudioSource.clip = warmUpClip;
-        introAudioSource.Play();
+        // introAudioSource.clip = warmUpClip;
+        // introAudioSource.Play();
+        // loopAudioSource.PlayDelayed(warmUpTime);
+        onesShotSource.LoadClip(warmUpRef, true);
         loopAudioSource.PlayDelayed(warmUpTime);
     }
     // Start is called before the first frame update
@@ -43,9 +55,11 @@ public class LaserTurretAnimator : MonoBehaviour
     }
 
     void OnStopShooting() {
-        introAudioSource.Stop();
+        // introAudioSource.Stop();
+        // loopAudioSource.Stop();
+        // introAudioSource.PlayOneShot(stopClip);
         loopAudioSource.Stop();
-        introAudioSource.PlayOneShot(stopClip);
+        onesShotSource.LoadClip(stopRef, true);
         
         myBeam.DisableBeam();
     }

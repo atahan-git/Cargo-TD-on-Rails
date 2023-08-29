@@ -3,25 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
-using FMOD;
+using Sirenix.OdinInspector;
 
 public class FMODAudioSource : MonoBehaviour
 {
+    [FoldoutGroup("Clip")]
     public EventReference clip;
+
+
+    [FoldoutGroup("Play settings")]
     public bool pauseOnGamePause = true;
+
+    [FoldoutGroup("Play settings")]
     public bool playOnStart = true;
-    [Range(0f, 3f)]public float volume = 1;
+
+    [FoldoutGroup("Play settings")]
+    public bool instantiateInstanceOnStart = true;
+
+
+    [FoldoutGroup("Play settings")]
+    [Range(0f, 3f)]
+    public float volume = 1;
 
     private EventInstance soundInstance;
     private int pausedPosition;
 
     private void Start()
     {
-        if(!clip.Equals(default(EventReference)))
+        if (!clip.Equals(default(EventReference)) && instantiateInstanceOnStart)
+        {
             soundInstance = AudioManager.CreateFmodEventInstance(clip);
+        }
 
         if (playOnStart)
             Play();
+
+        if (pauseOnGamePause)
+        {
+            TimeController.PausedEvent.AddListener(OnPause);
+        }
     }
 
     private void Update()
@@ -31,15 +51,16 @@ public class FMODAudioSource : MonoBehaviour
 
     private void OnEnable()
     {
-        if(pauseOnGamePause)
-            TimeController.PausedEvent.AddListener(OnPause);
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         Stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        if(pauseOnGamePause)
+        soundInstance.release();
+        if (pauseOnGamePause)
+        {
             TimeController.PausedEvent.RemoveListener(OnPause);
+        }
     }
 
 
@@ -61,6 +82,17 @@ public class FMODAudioSource : MonoBehaviour
             UnPause();
         }
     }
+
+    [HorizontalGroup("Play control")]
+    [ShowInInspector]
+    private bool isPlaying { 
+        get {
+            soundInstance.getPlaybackState(out PLAYBACK_STATE state);
+            return state != PLAYBACK_STATE.STOPPED;
+                } }
+
+    [ButtonGroup("Play control/Pause")]
+    [Button]
     public void Pause()
     {
         soundInstance.setPaused(true);
@@ -71,6 +103,8 @@ public class FMODAudioSource : MonoBehaviour
         soundInstance.setPaused(true);
     }
 
+    [ButtonGroup("Play control/Pause")]
+    [Button]
     public void UnPause()
     {
         soundInstance.setPaused(false);
@@ -89,11 +123,20 @@ public class FMODAudioSource : MonoBehaviour
         return isPaused;
     }
 
+    [ButtonGroup("Play control/Play")]
+    [Button]
     public void Play()
     {
         soundInstance.start();
     }
 
+    public void PlayDelayed(float delayTime)
+    {
+        Invoke("Play", delayTime);
+    }
+
+    [ButtonGroup("Play control/Play")]
+    [Button]
     public void Stop(FMOD.Studio.STOP_MODE stopMode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT)
     {
         soundInstance.stop(stopMode);

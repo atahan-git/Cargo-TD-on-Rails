@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{e4bbe215-0975-4e28-8558-da054461ef40}">
+		<property name="assetPath">
+			<value>Gun Sounds/Procedural Gun SFX/Mechs.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>22.289833333333334</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{91efd2a6-c39c-40dc-a364-71eda5276c1d}</destination>
+		</relationship>
+	</object>
+</objects>

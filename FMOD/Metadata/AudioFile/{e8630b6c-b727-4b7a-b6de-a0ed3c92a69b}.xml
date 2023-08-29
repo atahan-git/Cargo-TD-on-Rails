@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{e8630b6c-b727-4b7a-b6de-a0ed3c92a69b}">
+		<property name="assetPath">
+			<value>Gun Sounds/Procedural Gun SFX/Transient 1.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.42856250000000001</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{91efd2a6-c39c-40dc-a364-71eda5276c1d}</destination>
+		</relationship>
+	</object>
+</objects>

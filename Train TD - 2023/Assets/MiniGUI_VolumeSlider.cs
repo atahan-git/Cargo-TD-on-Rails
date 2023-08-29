@@ -23,12 +23,23 @@ public class MiniGUI_VolumeSlider : MonoBehaviour, IInitRequired
 
     void SetVol(float sliderVal) {
         sliderVal = Mathf.Clamp(sliderVal, 0.001f, 1f);
-        
+
         // influencing FMOD mixer
-        if (exposedName == "MusicVol")
-            AudioManager.instance.musicBusVolume = sliderVal;
-        else if (exposedName == "MasterVol")
-            AudioManager.instance.masterBusVolume = sliderVal;
+        switch (exposedName) 
+        {
+            case "MasterVol":
+                AudioManager.instance.masterBusVolume = sliderVal;
+                mixer.SetFloat("MasterVol", Mathf.Log(sliderVal) * 20);
+                break;
+            case "MusicVol":
+                AudioManager.instance.musicBusVolume = sliderVal;
+                mixer.SetFloat("MusicVol", Mathf.Log(sliderVal) * 20);
+                break;
+            case "SFXVol":
+                AudioManager.instance.targetUnitySfxVolume = Mathf.Log(sliderVal) * 20;
+                AudioManager.instance.sfxBusVolume = sliderVal;
+                break;
+        }
 
 
         mixer.SetFloat(exposedName, Mathf.Log(sliderVal) * 20);

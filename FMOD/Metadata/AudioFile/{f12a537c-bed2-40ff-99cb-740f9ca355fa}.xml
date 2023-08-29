@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{f12a537c-bed2-40ff-99cb-740f9ca355fa}">
+		<property name="assetPath">
+			<value>Gun Sounds/Procedural Gun SFX/Steyr_TMP_9mm_foley_distant_MKH418S_S_cocking_&amp;_dry_fire.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>49.778666666666666</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{91efd2a6-c39c-40dc-a364-71eda5276c1d}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -156,8 +156,8 @@ public class EngineFireController : MonoBehaviour {
 
 	void UpdateLocomotiveSound()
 	{
-        speaker.SetParamByName("LocomotiveSpeed", LevelReferences.s.speed * 0.1f);
+        speaker.SetParamByName("LocomotiveSpeed", LevelReferences.s.speed * 0.2f);
 
-		speaker.volume = Mathf.Lerp(speaker.volume, FMODMusicPlayer.s.numOfEngagingWave == 0 ? 1 : 0, Time.unscaledDeltaTime * 3);
+		speaker.volume = Mathf.Lerp(speaker.volume, FMODMusicPlayer.s.numOfEngagingWave == 0 ? 0.8f : 0.5f, Time.unscaledDeltaTime * 3);
 	}
 }

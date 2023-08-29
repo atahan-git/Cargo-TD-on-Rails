@@ -44,16 +44,16 @@ public class FMODMusicPlayer : MonoBehaviour
     [FoldoutGroup("Dynamics")]
     public int numOfEngagingWave;
 
-    [HorizontalGroup("Dynamics")]
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float bassIndex { get { return speaker.GetParamByName("bassIndex"); } }
-    [HorizontalGroup("Dynamics")]
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float drumIndex { get { return speaker.GetParamByName("drumIndex"); } }
-    [HorizontalGroup("Dynamics")]
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float melodyIndex { get { return speaker.GetParamByName("melodyIndex"); } }
-    [HorizontalGroup("Dynamics")]
+    [FoldoutGroup("Dynamics")]
     [ShowInInspector]
     public float backingIndex { get { return speaker.GetParamByName("backingIndex"); } }
 

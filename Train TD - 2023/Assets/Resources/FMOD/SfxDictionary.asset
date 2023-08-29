@@ -40,7 +40,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 9
+      Data: 10
     - Name: 
       Entry: 7
       Data: 
@@ -359,6 +359,42 @@ MonoBehaviour:
     - Name: Path
       Entry: 1
       Data: event:/SFX/UI SFX/CloseMap
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 9
+    - Name: $v
+      Entry: 7
+      Data: FMODUnity.EventReference, FMODUnity
+    - Name: Guid
+      Entry: 7
+      Data: FMOD.GUID, FMODUnity
+    - Name: Data1
+      Entry: 3
+      Data: -793650340
+    - Name: Data2
+      Entry: 3
+      Data: 1099969971
+    - Name: Data3
+      Entry: 3
+      Data: -413762657
+    - Name: Data4
+      Entry: 3
+      Data: -1439912681
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Path
+      Entry: 1
+      Data: event:/SFX/Game SFX/OnTrackSwitch
     - Name: 
       Entry: 8
       Data: 

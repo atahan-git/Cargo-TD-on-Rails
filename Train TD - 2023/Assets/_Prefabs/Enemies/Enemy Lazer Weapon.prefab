@@ -225,10 +225,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 999c6561ce127b44291669a238481e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  warmUpClip: {fileID: 8300000, guid: 7534d63ca093bcc4b8333f6afa83e5b9, type: 3}
-  stopClip: {fileID: 8300000, guid: b9a7aaab9bc1a5f4b8ba1caa65a86a7b, type: 3}
-  introAudioSource: {fileID: 5786353801585220972}
-  loopAudioSource: {fileID: 2456346903945662483}
+  warmUpRef:
+    Guid:
+      Data1: -317840440
+      Data2: 1268847448
+      Data3: 743713173
+      Data4: -948296097
+    Path: event:/SFX/Gun SFX/Enemy Laser Start
+  stopRef:
+    Guid:
+      Data1: -285801506
+      Data2: 1140407118
+      Data3: 1480735902
+      Data4: 1874634270
+    Path: event:/SFX/Gun SFX/Enemy Laser Stop
+  loopAudioSource: {fileID: 4575563038608902681}
+  onesShotSource: {fileID: 8649068333732421670}
   myBeam: {fileID: 4285273189305123158}
 --- !u!1 &5458596299577149048
 GameObject:
@@ -574,6 +586,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 17
       objectReference: {fileID: 0}
+    - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Pitch
       value: 2
@@ -581,6 +597,10 @@ PrefabInstance:
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Volume
       value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_PlayOnAwake
@@ -593,11 +613,34 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 3098287685203657517}
   m_PrefabAsset: {fileID: 0}
---- !u!82 &5786353801585220972 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+--- !u!1 &4865947932161222168 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 3098287685203657517}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8649068333732421670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4865947932161222168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  pauseOnGamePause: 1
+  playOnStart: 0
+  instantiateInstanceOnStart: 0
+  volume: 1
 --- !u!1001 &4285273189315277328
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -742,6 +785,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4497639127482069680, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Name
       value: SloopingPlay
@@ -763,6 +810,10 @@ PrefabInstance:
       value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 68083cb7293e4ab49a7025e66fe2c808, type: 3}
@@ -772,11 +823,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8efcec949564d542be472d1728bed81, type: 3}
---- !u!82 &2456346903945662483 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+--- !u!1 &3592924189683362663 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 6387410926801260114}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4575563038608902681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3592924189683362663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: 623750727
+      Data2: 1328561508
+      Data3: -541553754
+      Data4: -2062128239
+    Path: event:/SFX/Gun SFX/Enemy Laser Loop
+  pauseOnGamePause: 1
+  playOnStart: 0
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!4 &5128495196222150250 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}

@@ -15,7 +15,7 @@ public class GigaGatlingAnimator : MonoBehaviour
 
     private void Update() {
         var curSpeed = 1f/_gunModule.GetFireDelay();
-        
+
 
         if (curSpeed > 0.1f) {
             rotatingBit.Rotate(0, curSpeed * Time.deltaTime * rotationSpeedMultiplier, 0);

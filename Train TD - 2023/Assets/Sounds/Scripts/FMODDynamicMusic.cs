@@ -21,7 +21,7 @@ public class FMODDynamicMusic : ScriptableObject
     public void UpdatePhase(FMODAudioSource speaker)
     {
         int numOfEngagingWave = FMODMusicPlayer.s.numOfEngagingWave;
-        Debug.Log("Update FMOD Phase with NumOfEngagingWave=" +numOfEngagingWave.ToString());
+        //Debug.Log("Update FMOD Phase with NumOfEngagingWave=" +numOfEngagingWave.ToString());
 
         switch (numOfEngagingWave)
         {

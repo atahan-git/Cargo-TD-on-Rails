@@ -1,3 +1,5 @@
+using FMODUnity;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,8 +23,11 @@ public class PathSelectorController : MonoBehaviour {
 	private List<MiniGUI_TrackPath> _tracks = new List<MiniGUI_TrackPath>();
 	private List<MiniGUI_TrackLever> _levers = new List<MiniGUI_TrackLever>();
 
-	public AudioSource trainCrossingAudioSource;
-	public AudioClip trackSwitchSound;
+	// public AudioSource trainCrossingAudioSource;
+	// public AudioClip trackSwitchSound;
+	// Merxon: replaced by FMOD
+	[FoldoutGroup("FMOD train crossing sound")]
+	public FMODAudioSource trainCrossingSpeaker;
 
 	public ManualHorizontalLayoutGroup layoutGroup;
 
@@ -40,7 +45,12 @@ public class PathSelectorController : MonoBehaviour {
 		trackSwitchAction.action.performed += TrackSwitch;
 	}
 
-	private void TrackSwitch(InputAction.CallbackContext obj) {
+    private void Start()
+    {
+		trainCrossingSpeaker = GetComponent<FMODAudioSource>();
+    }
+
+    private void TrackSwitch(InputAction.CallbackContext obj) {
 		if (nextLever != null && !nextLever.isLocked) {
 			nextLever.LeverClicked();
 		}
@@ -130,8 +140,9 @@ public class PathSelectorController : MonoBehaviour {
 		}
 
 		ReCalculateMissionLength();
-		
-		trainCrossingAudioSource.PlayOneShot(trackSwitchSound);
+
+		// trainCrossingAudioSource.PlayOneShot(trackSwitchSound);
+		AudioManager.PlayOneShot(SfxTypes.OnTrackSwitch);
 	}
 
 	public void ShowTrackInfo(int id) {
@@ -160,15 +171,19 @@ public class PathSelectorController : MonoBehaviour {
 	private void Update() {
 		if (PlayStateMaster.s.isCombatInProgress()) {
 			if (SpeedController.s.currentDistance + trackSwitchWarningDistance > nextSegmentChangeDistance && !isPlayingTrackSwitchWarning) {
-				trainCrossingAudioSource.Play();
-				isPlayingTrackSwitchWarning = true;
+				//trainCrossingAudioSource.Play();
+				trainCrossingSpeaker.Play();
+
+                isPlayingTrackSwitchWarning = true;
 				_levers[currentSegment].SetTrackSwitchWarningState(true);
 				_tracks[currentSegment].doubleLever.SetTrackSwitchWarningState(true);
 			}
 			
 			
 			if (nextSegmentChangeDistance > 0 && SpeedController.s.currentDistance > nextSegmentChangeDistance) {
-				trainCrossingAudioSource.Stop();
+                //trainCrossingAudioSource.Stop();
+                trainCrossingSpeaker.Stop();
+
 				isPlayingTrackSwitchWarning = false;
 				
 				_tracks[currentSegment].LockTrackState();

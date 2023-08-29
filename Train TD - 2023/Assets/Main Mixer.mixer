@@ -55,6 +55,10 @@ AudioMixerController:
     name: MasterVol
   - guid: 613e04608d19dcb4686a73be3dc96bf2
     name: MusicVol
+  - guid: fe36342ecae922441bf02a38d678b9fd
+    name: PlayerEngineVol
+  - guid: c00c5709cb8fd05438485a5cdb2dad35
+    name: SfxVol
   - guid: 6827c5716cb29fd4da36ec97808868e7
     name: VoiceVol
   m_AudioMixerGroupViews:

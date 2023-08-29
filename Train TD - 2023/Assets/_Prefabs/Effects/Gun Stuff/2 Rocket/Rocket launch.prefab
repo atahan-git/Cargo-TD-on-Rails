@@ -14785,6 +14785,7 @@ GameObject:
   - component: {fileID: 8578842416011710788}
   - component: {fileID: 3061543063259921690}
   - component: {fileID: 9134260232741162202}
+  - component: {fileID: 3532466757449247687}
   m_Layer: 0
   m_Name: Sound
   m_TagString: Untagged
@@ -14827,7 +14828,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7488778217834440293}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 6205370731591766685, guid: 660d07ac376d6214b99c5d084e20d01f, type: 2}
   m_audioClip: {fileID: 8300000, guid: c8678622e277d904ab76733eb148920c, type: 3}
@@ -14916,6 +14917,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3532466757449247687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7488778217834440293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 012b31bfceac5bd4bb3eb412c037b2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -70694350
+      Data2: 1319387400
+      Data3: 1356619963
+      Data4: -1118362743
+    Path: event:/SFX/Gun SFX/Enemy Rocket
+  playOnStart: 1
 --- !u!1 &9155879028066676231
 GameObject:
   m_ObjectHideFlags: 0

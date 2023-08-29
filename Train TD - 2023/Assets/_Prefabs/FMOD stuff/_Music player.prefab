@@ -199,4 +199,5 @@ MonoBehaviour:
     Path: event:/Music/GameMusic
   pauseOnGamePause: 1
   playOnStart: 1
+  instantiateInstanceOnStart: 0
   volume: 1
