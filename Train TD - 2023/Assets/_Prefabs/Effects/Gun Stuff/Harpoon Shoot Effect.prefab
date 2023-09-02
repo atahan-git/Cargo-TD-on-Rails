@@ -14873,6 +14873,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4497639127482069680, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Name
       value: Sound (1)
@@ -14886,11 +14890,40 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 96a10f57fff1f5d43b34e50fe2e4fabe, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8efcec949564d542be472d1728bed81, type: 3}
+--- !u!1 &3554833109964151554 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
+  m_PrefabInstance: {fileID: 6353813848012226103}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3128004447963351222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3554833109964151554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 012b31bfceac5bd4bb3eb412c037b2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -462244684
+      Data2: 1177779412
+      Data3: -1397695346
+      Data4: 1062909079
+    Path: event:/SFX/Gun SFX/Harpoon Shoot
+  playOnStart: 1
 --- !u!4 &5162813298031699471 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}

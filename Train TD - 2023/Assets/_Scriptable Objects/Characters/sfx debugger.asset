@@ -49,7 +49,7 @@ MonoBehaviour:
         attachedArtifact:
           uniqueName: boost_damage
           level: 0
-      - uniqueName: side_lazer
+      - uniqueName: top_lazer
         health: -1
         ammo: -1
         isFire: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
         attachedArtifact:
           uniqueName: 
           level: 0
-      - uniqueName: top_lazer
+      - uniqueName: shield_cart
         health: -1
         ammo: -1
         isFire: 0
