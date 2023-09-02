@@ -10,28 +10,22 @@ public class LaserTurretAnimator : MonoBehaviour
 
     private float warmUpTime;
 
-    // Merxon: replaced by FMOD logic
-    // public AudioClip warmUpClip;
-    // public AudioClip stopClip;
-
-    // public AudioSource introAudioSource;
-    // public AudioSource loopAudioSource;
-
     #region FMOD Clip Handling
     [FoldoutGroup("FMOD SFX Handling")]
     public EventReference warmUpRef, stopRef;
 
     [FoldoutGroup("FMOD SFX Handling")]
-    public FMODAudioSource loopAudioSource, onesShotSource;
+    public FMODAudioSource loopAudioSource;
+
+    [FoldoutGroup("FMOD SFX Handling")]
+    [ReadOnly, ShowInInspector]
+    private float laserPower, targetLaserPower;
     #endregion
 
     public GeroBeam myBeam;
     void PlayGunShoot () {
-        // introAudioSource.clip = warmUpClip;
-        // introAudioSource.Play();
-        // loopAudioSource.PlayDelayed(warmUpTime);
-        onesShotSource.LoadClip(warmUpRef, true);
-        loopAudioSource.PlayDelayed(warmUpTime);
+        AudioManager.PlayOneShot(warmUpRef);
+        targetLaserPower = 1;
     }
     // Start is called before the first frame update
     void Start() {
@@ -48,6 +42,12 @@ public class LaserTurretAnimator : MonoBehaviour
         _gunModule.stopShootingEvent.AddListener(OnStopShooting);
     }
 
+    private void Update()
+    {
+        laserPower = Mathf.MoveTowards(laserPower, targetLaserPower, Time.deltaTime * (1 / warmUpTime));
+        loopAudioSource.SetParamByName("LaserPower", laserPower);
+    }
+
     void OnWarmUp() {
         warmUpTime = _gunModule.GetFireDelay();
         PlayGunShoot();
@@ -55,12 +55,9 @@ public class LaserTurretAnimator : MonoBehaviour
     }
 
     void OnStopShooting() {
-        // introAudioSource.Stop();
-        // loopAudioSource.Stop();
-        // introAudioSource.PlayOneShot(stopClip);
-        loopAudioSource.Stop();
-        onesShotSource.LoadClip(stopRef, true);
-        
+        AudioManager.PlayOneShot(stopRef);
+        targetLaserPower = 0;
+
         myBeam.DisableBeam();
     }
 }

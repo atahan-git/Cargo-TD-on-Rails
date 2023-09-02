@@ -49,23 +49,7 @@ MonoBehaviour:
         attachedArtifact:
           uniqueName: boost_damage
           level: 0
-      - uniqueName: top_avr
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: top_flame
+      - uniqueName: side_lazer
         health: -1
         ammo: -1
         isFire: 0
@@ -82,70 +66,6 @@ MonoBehaviour:
           uniqueName: 
           level: 0
       - uniqueName: top_lazer
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: top_cannon
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: top_gatling
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: top_rockets
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: top_pneumatic
         health: -1
         ammo: -1
         isFire: 0

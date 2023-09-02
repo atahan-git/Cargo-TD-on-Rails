@@ -782,6 +782,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 3214340997545362078, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+      propertyPath: revSpeaker
+      value: 
+      objectReference: {fileID: 7558424274615740843}
     - target: {fileID: 3248300930352555991, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -838,6 +842,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 5086972968634411420, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+      propertyPath: m_Volume
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6148149114187289320, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
       propertyPath: m_Layer
       value: 11
@@ -858,12 +866,44 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 8648365468774477093, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+      propertyPath: m_Volume
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8793443569306674401, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+--- !u!1 &858435057200105358 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7768491033930585681, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+  m_PrefabInstance: {fileID: 6928505784025928159}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7558424274615740843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 858435057200105358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -2019368889
+      Data2: 1108506655
+      Data3: -1358686531
+      Data4: 1711656359
+    Path: event:/SFX/Gun SFX/Enemy Gatling Rev
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!4 &5562709911443797512 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3248300930352555991, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
@@ -900,6 +940,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 3214340997545362078, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+      propertyPath: revSpeaker
+      value: 
+      objectReference: {fileID: 1829703932263607531}
     - target: {fileID: 3248300930352555991, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -956,6 +1000,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 5086972968634411420, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+      propertyPath: m_Volume
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6148149114187289320, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
       propertyPath: m_Layer
       value: 11
@@ -976,12 +1024,44 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 8648365468774477093, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+      propertyPath: m_Volume
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8793443569306674401, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+--- !u!1 &2283025905708146125 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7768491033930585681, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+  m_PrefabInstance: {fileID: 8386219932626635676}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1829703932263607531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2283025905708146125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -2019368889
+      Data2: 1108506655
+      Data3: -1358686531
+      Data4: 1711656359
+    Path: event:/SFX/Gun SFX/Enemy Gatling Rev
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!4 &6446233147393633355 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3248300930352555991, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}

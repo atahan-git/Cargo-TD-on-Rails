@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{49f0aa19-de92-4aaa-9059-82f8df861cc9}">
+		<property name="name">
+			<value>LaserPower</value>
+		</property>
+		<relationship name="folder">
+			<destination>{6646dcc1-62a3-4c3e-aed8-0c2eaae38a1e}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{7de769c2-cdfe-4204-8102-9465fee4c674}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{7de769c2-cdfe-4204-8102-9465fee4c674}">
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

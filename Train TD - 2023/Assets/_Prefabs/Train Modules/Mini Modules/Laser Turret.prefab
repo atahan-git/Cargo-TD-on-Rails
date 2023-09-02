@@ -537,10 +537,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 999c6561ce127b44291669a238481e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  warmUpClip: {fileID: 8300000, guid: 7534d63ca093bcc4b8333f6afa83e5b9, type: 3}
-  stopClip: {fileID: 8300000, guid: b9a7aaab9bc1a5f4b8ba1caa65a86a7b, type: 3}
-  introAudioSource: {fileID: 5064316917476377635}
-  loopAudioSource: {fileID: 3752590550379153756}
+  warmUpRef:
+    Guid:
+      Data1: -317840440
+      Data2: 1268847448
+      Data3: 743713173
+      Data4: -948296097
+    Path: event:/SFX/Gun SFX/Enemy Laser Start
+  stopRef:
+    Guid:
+      Data1: -285801506
+      Data2: 1140407118
+      Data3: 1480735902
+      Data4: 1874634270
+    Path: event:/SFX/Gun SFX/Enemy Laser Stop
+  loopAudioSource: {fileID: 6130106576908916646}
   myBeam: {fileID: 3277787122501687321}
 --- !u!1 &8793443569306674401
 GameObject:
@@ -851,6 +862,10 @@ PrefabInstance:
       value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_PlayOnAwake
       value: 0
       objectReference: {fileID: 0}
@@ -859,11 +874,6 @@ PrefabInstance:
 --- !u!4 &2554297644885197402 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}
-  m_PrefabInstance: {fileID: 4393832617230834274}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &5064316917476377635 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 4393832617230834274}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5666081534938552093
@@ -938,6 +948,10 @@ PrefabInstance:
       value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 68083cb7293e4ab49a7025e66fe2c808, type: 3}
@@ -947,11 +961,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8efcec949564d542be472d1728bed81, type: 3}
---- !u!82 &3752590550379153756 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
+--- !u!1 &2871593161973936680 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 5666081534938552093}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6130106576908916646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2871593161973936680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: 623750727
+      Data2: 1328561508
+      Data3: -541553754
+      Data4: -2062128239
+    Path: event:/SFX/Gun SFX/Enemy Laser Loop
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!4 &5848276449941245733 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}
