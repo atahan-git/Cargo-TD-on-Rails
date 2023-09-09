@@ -65,7 +65,7 @@ MonoBehaviour:
         attachedArtifact:
           uniqueName: 
           level: 0
-      - uniqueName: top_gatling
+      - uniqueName: top_lazer
         health: -1
         ammo: -1
         isFire: 0

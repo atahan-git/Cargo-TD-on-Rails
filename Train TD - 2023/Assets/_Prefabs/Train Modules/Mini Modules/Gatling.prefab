@@ -712,6 +712,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6637031524188555893}
   - component: {fileID: 3214340997545362078}
+  - component: {fileID: 2323390346110032259}
   m_Layer: 17
   m_Name: Gatling Animator
   m_TagString: Untagged
@@ -751,12 +752,32 @@ MonoBehaviour:
   rotatingBit: {fileID: 700796818490774129}
   rotationSpeed: 1800
   slowDownDelta: 900
-  warmUpClip: {fileID: 8300000, guid: 7534d63ca093bcc4b8333f6afa83e5b9, type: 3}
-  stopClip: {fileID: 8300000, guid: b9a7aaab9bc1a5f4b8ba1caa65a86a7b, type: 3}
-  introAudioSource: {fileID: 5086972968634411420}
-  loopAudioSource: {fileID: 8648365468774477093}
+  revSpeaker: {fileID: 2323390346110032259}
   isRotating: 0
   curSpeed: 0
+--- !u!114 &2323390346110032259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515037017782385448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -2019368889
+      Data2: 1108506655
+      Data3: -1358686531
+      Data4: 1711656359
+    Path: event:/SFX/Gun SFX/Enemy Gatling Rev
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!1 &8793443569306674401
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,11 +1061,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 195691669376562020}
   m_PrefabAsset: {fileID: 0}
---- !u!82 &8648365468774477093 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
-  m_PrefabInstance: {fileID: 195691669376562020}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4335445737015359453
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1117,10 +1133,5 @@ PrefabInstance:
 --- !u!4 &2567667229112299493 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2272267569948678200, guid: b8efcec949564d542be472d1728bed81, type: 3}
-  m_PrefabInstance: {fileID: 4335445737015359453}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &5086972968634411420 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
   m_PrefabInstance: {fileID: 4335445737015359453}
   m_PrefabAsset: {fileID: 0}
