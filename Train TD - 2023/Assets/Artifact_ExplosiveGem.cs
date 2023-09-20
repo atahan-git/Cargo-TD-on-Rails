@@ -1,0 +1,99 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Artifact_ExplosiveGem: ActivateWhenOnArtifactRow, IResetStateArtifact
+{
+    
+    //[Space]
+    public float boostExplosionRangeBase = 0.01f;
+    public float boostExplosionRangeLevelIncrease = 0.005f;
+    public float activeRangeBoost = 0;
+    
+    public float explosiveRepairBase = 0.25f;
+    public float explosiveRepairIncreasePerLevel = 0.25f;
+    public float activeExplosiveRepair = 0;
+
+    public GameObject[] shieldMiniExplosions;
+
+    public GameObject currentShieldExplosion;
+    
+    public GameObject[] trainGigaExplosions;
+    public GameObject currentGigaExplosion;
+    
+    
+    public GameObject[] trainMiniExplosions;
+    public GameObject currentMiniExplosion;
+    
+    protected override void _Arm() {
+        var range = GetComponent<Artifact>().range;
+        ApplyBoost(Train.s.GetNextBuilding(0, GetComponentInParent<Cart>()));
+        for (int i = 1; i < range+1; i++) {
+            ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
+            ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+        }
+    }
+
+    void ApplyBoost(Cart target) {
+        if(target == null)
+            return;
+        
+        bool didApply = false;
+        
+        foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
+            gunModule.regularToRangeConversionMultiplier += activeRangeBoost;
+            didApply = true;
+        }
+
+        foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
+            moduleAmmo.ApplyBulletEffect(ModuleAmmo.AmmoEffects.explosive);
+            didApply = true;
+        }
+        
+        foreach (var directControllable in target.GetComponentsInChildren<DirectControllable>()) {
+            directControllable.ApplyBulletEffect(ModuleAmmo.AmmoEffects.explosive);
+            didApply = true;
+        }
+
+        foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {
+            roboRepair.explosiveRepair = true;
+            roboRepair.explosiveRepairAmount = activeExplosiveRepair;
+            didApply = true;
+        }
+        
+        foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
+            if (target.isMainEngine) {
+                trainGemBridge.prefabToSpawnWhenSpeedBoostActivates.Add(currentGigaExplosion);
+                SpeedController.s.boostEffectMultiplier = -100; // no boost at all with explosive
+            } else {
+                trainGemBridge.prefabToSpawnWhenSpeedBoostActivates.Add(currentMiniExplosion);
+            }
+            didApply = true;
+        }
+        
+        foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
+            shieldGenerator.prefabToSpawnWhenShieldIsDestroyed.Add(currentShieldExplosion);
+            didApply = true;
+        }
+
+        if (didApply) {
+            GetComponent<Artifact>()._ApplyToTarget(target);
+        }
+    }
+
+    protected override void _Disarm() {
+        // do nothing
+    }
+
+    public void ResetState(int level) {
+        activeRangeBoost = boostExplosionRangeBase + (boostExplosionRangeLevelIncrease * level);
+        currentShieldExplosion = shieldMiniExplosions[level];
+        currentGigaExplosion = trainGigaExplosions[level];
+        currentMiniExplosion = trainMiniExplosions[level];
+        activeExplosiveRepair = explosiveRepairBase + (explosiveRepairIncreasePerLevel * level);
+    }
+
+    /*public string GetInfoText() {
+        return "When leveled up deals more fire damage and causes bigger bursts";
+    }*/
+}

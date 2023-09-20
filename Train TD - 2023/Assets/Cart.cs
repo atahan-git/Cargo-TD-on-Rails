@@ -19,6 +19,8 @@ public class Cart : MonoBehaviour {
     public Artifact myAttachedArtifact;
 
     public Transform artifactParent;
+    public bool canAcceptComponentArtifact = false;
+    public Transform artifactChunkTransform;
     
     public bool isBeingDisabled = false;
 
@@ -72,16 +74,18 @@ public class Cart : MonoBehaviour {
         SetUpOutlines();
         genericParticlesParent.DeleteAllChildren();
         GetHealthModule().ResetState(level);
+        
+        artifactChunkTransform.DeleteAllChildren();
 
         cartMaterial.material = LevelReferences.s.cartLevelMats[level];
+        
+        if (myAttachedArtifact != null) {
+            myAttachedArtifact.ResetState();
+        }
         
         var modulesWithResetStates = GetComponentsInChildren<IResetState>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
             modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
-        }
-
-        if (myAttachedArtifact != null) {
-            myAttachedArtifact.ResetState();
         }
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Artifact : MonoBehaviour
@@ -16,7 +17,7 @@ public class Artifact : MonoBehaviour
 
     public UpgradesController.CartRarity myRarity;
     
-    public bool isGenericArtifact;
+    public bool isComponent;
 
     public Transform uiTransform;
 
@@ -24,36 +25,37 @@ public class Artifact : MonoBehaviour
     public GameObject attachedToCartPart;
 
     public Sprite mySprite;
-    
-    [NonSerialized]
-    public int range = -1;
-    public bool isGoodEffect;
-    
+
     public bool isAttached = false;
 
-
     public MeshRenderer outerShellMaterial;
-    
-    private void Start() {
-        ApplyNameAndSprite();
-    }
+
+    public int range = 0;
     
     public void ResetState() {
         outerShellMaterial.material = LevelReferences.s.artifactLevelMats[level];
+
+        var artifactRangeBooster = GetComponentInParent<Cart>()?.GetComponentInChildren<GemBooster>();
+        if (artifactRangeBooster) {
+            range = artifactRangeBooster.GetRange();
+        }
         
         var modulesWithResetStates = GetComponentsInChildren<IResetStateArtifact>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
             modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
         }
+        
+        ApplyToTarget.RemoveAllListeners();
     }
 
-    [Button]
-    private void ApplyNameAndSprite() {
-        foreach (var spriteRenderer in GetComponentsInChildren<SpriteRenderer>(true)) {
-            spriteRenderer.sprite = mySprite;
-        }
+    public void _ApplyToTarget(Cart target) {
+        ApplyToTarget?.Invoke(target);
     }
 
+    
+    
+    [HideInInspector]
+    public UnityEvent<Cart> ApplyToTarget = new UnityEvent<Cart>();
 
     public void AttachToSnapLoc(SnapCartLocation loc, bool doSave=true) {
         myLocation = loc.myLocation;
@@ -76,7 +78,7 @@ public class Artifact : MonoBehaviour
         isAttached = false;
     }
 
-    public void AttachToCart(Cart cart, bool doSave = true) {
+    public void AttachToCart(Cart cart, bool doSave = true, bool doTriggerChange = true) {
         myLocation = UpgradesController.CartLocation.train;
         UpgradesController.s.RemoveArtifactFromShop(this, doSave);
         var oldCart = GetComponentInParent<Cart>();
@@ -96,7 +98,7 @@ public class Artifact : MonoBehaviour
         worldPart.SetActive(false);
         
         
-        if(cart.GetComponentInParent<Train>() != null)
+        if(cart.GetComponentInParent<Train>() != null && doTriggerChange)
             cart.GetComponentInParent<Train>().ArtifactsChanged();
 
         isAttached = true;

@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 467089894935609292}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.131, y: 0.19, z: 0}
+  m_LocalPosition: {x: 0.131, y: 0.19, z: 0}
   m_LocalScale: {x: 0.19349502, y: 0.03190268, z: 0.19349502}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -560,11 +560,18 @@ MonoBehaviour:
   myType: 0
   delay: 2
   amount: 50
+  amountMultiplier: 1
+  amountDivider: 1
+  firerateMultiplier: 1
+  firerateDivider: 1
+  explosiveRepair: 0
+  explosiveRepairAmount: 0
   countPerCycle: 2
   hasAmmo: 1
   OnRepaired:
     m_PersistentCalls:
       m_Calls: []
+  extraPrefabToSpawnOnAffected: []
   baseRange: 2
   rangeBoost: 0
   boostMultiplier: 1
@@ -6346,7 +6353,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5349173183550112761}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.1198, y: 0.19, z: 0}
+  m_LocalPosition: {x: -0.1198, y: 0.19, z: 0}
   m_LocalScale: {x: 0.19349502, y: 0.03190268, z: 0.19349502}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7740,6 +7747,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: isCriticalComponent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: canAcceptComponentArtifact
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

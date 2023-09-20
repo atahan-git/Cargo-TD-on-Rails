@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7815276636867538482}
   - component: {fileID: 9064711660582981173}
   - component: {fileID: 7161732464502477237}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Canvas (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2324040796563688489}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: poof loc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 2324040796688955327}
   - component: {fileID: 2324040796688955326}
   - component: {fileID: 5689714444262399904}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Smithery
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: 7312581253038675242}
   - component: {fileID: 1645993309624057582}
   - component: {fileID: 6896480124635083605}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,7 +372,7 @@ GameObject:
   - component: {fileID: 1928540661486500436}
   - component: {fileID: 5783590388212472444}
   - component: {fileID: 7879868166260572754}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Cube (22)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -469,6 +469,10 @@ PrefabInstance:
       propertyPath: myLocation
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 125092640893447260, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 215879253984743416, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -514,6 +518,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 227412436026931347, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 227412436026931347, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -521,10 +529,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrainStation cargo pile
       objectReference: {fileID: 0}
+    - target: {fileID: 306314920436432784, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1816612166926575565, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 2797045820774754306, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 4407341416883028821, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: b5894732dc8d7724881aff1896533ff2, type: 2}
+    - target: {fileID: 6188556271074446542, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7595722670865929240, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
@@ -599,6 +623,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Smithery_done
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 444dcf6c5c7562543809e072c1ab3817, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 444dcf6c5c7562543809e072c1ab3817, type: 3}
 --- !u!4 &2867138987615429766 stripped
@@ -616,6 +644,10 @@ PrefabInstance:
     - target: {fileID: 1912479898, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
       propertyPath: myLocation
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 125092640893447260, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 215879253984743416, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
       propertyPath: m_RootOrder
@@ -662,6 +694,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 227412436026931347, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 227412436026931347, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -669,10 +705,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrainStation cargo pile (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 306314920436432784, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1816612166926575565, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 2797045820774754306, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 4407341416883028821, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: b5894732dc8d7724881aff1896533ff2, type: 2}
+    - target: {fileID: 6188556271074446542, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7595722670865929240, guid: 8513132e94b4d714983e2b80444884b9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8513132e94b4d714983e2b80444884b9, type: 3}

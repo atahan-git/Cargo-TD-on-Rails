@@ -20,9 +20,6 @@ MonoBehaviour:
       - uniqueName: engine_nuclear
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -31,30 +28,11 @@ MonoBehaviour:
           artifactLevel: 0
           isLeftCargo: 0
         attachedArtifact:
-          uniqueName: boost_damage
+          uniqueName: 
           level: 0
       - uniqueName: cargo_mystery_0
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: boost_damage
-          level: 0
-      - uniqueName: shield_cart
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -65,44 +43,9 @@ MonoBehaviour:
         attachedArtifact:
           uniqueName: 
           level: 0
-      - uniqueName: top_lazer
+      - uniqueName: top_avr
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: side_flames
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: top_flame
-        health: -1
-        ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -116,9 +59,6 @@ MonoBehaviour:
       - uniqueName: side_avr
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -127,14 +67,11 @@ MonoBehaviour:
           artifactLevel: 0
           isLeftCargo: 0
         attachedArtifact:
-          uniqueName: boost_shield
-          level: 1
-      - uniqueName: top_avr
+          uniqueName: 
+          level: 0
+      - uniqueName: gem_booster
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -143,7 +80,7 @@ MonoBehaviour:
           artifactLevel: 0
           isLeftCargo: 0
         attachedArtifact:
-          uniqueName: boost_shield
-          level: 1
+          uniqueName: 
+          level: 0
     starterResources:
       scraps: 0

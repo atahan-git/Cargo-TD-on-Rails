@@ -1,0 +1,366 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &173826446847505142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2893979338381950562}
+  - component: {fileID: 6756862330848675185}
+  - component: {fileID: 8208254134768468884}
+  m_Layer: 0
+  m_Name: Prop_Crystal_Purple_01 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2893979338381950562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173826446847505142}
+  m_LocalRotation: {x: 6.1232336e-17, y: 6.1232336e-17, z: 6.1232336e-17, w: 1}
+  m_LocalPosition: {x: 0, y: -0.081, z: 0}
+  m_LocalScale: {x: 0.31768844, y: 0.31768844, z: 0.31768844}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5849939500389742599}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &6756862330848675185
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173826446847505142}
+  m_Mesh: {fileID: -1886221501101854005, guid: 1f8b3ed461ac32346907e215919f71c2, type: 3}
+--- !u!23 &8208254134768468884
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173826446847505142}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 257
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 6ca3a9b458582ea4393e43cacf61cf55, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4481572697315499290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5402483118361764037}
+  - component: {fileID: 8433548596013765877}
+  - component: {fileID: 7265272452120826842}
+  m_Layer: 0
+  m_Name: Prop_Crystal_Purple_01 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5402483118361764037
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4481572697315499290}
+  m_LocalRotation: {x: 6.1232336e-17, y: 6.1232336e-17, z: 6.1232336e-17, w: 1}
+  m_LocalPosition: {x: 0, y: -0.081, z: 0}
+  m_LocalScale: {x: 0.31768844, y: 0.31768844, z: 0.31768844}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2246442075675210437}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &8433548596013765877
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4481572697315499290}
+  m_Mesh: {fileID: -1886221501101854005, guid: 1f8b3ed461ac32346907e215919f71c2, type: 3}
+--- !u!23 &7265272452120826842
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4481572697315499290}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 257
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 6ca3a9b458582ea4393e43cacf61cf55, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6964512817382796574
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2246442075675210437}
+  m_Layer: 0
+  m_Name: Crystal decor (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2246442075675210437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6964512817382796574}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5402483118361764037}
+  m_Father: {fileID: 8031456230174456653}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7168302170150113022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5849939500389742599}
+  m_Layer: 0
+  m_Name: Crystal decor (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5849939500389742599
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7168302170150113022}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2893979338381950562}
+  m_Father: {fileID: 283698765719430380}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &9162864045857254800
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1182013964502472724, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: myTooltip.text
+      value: Every shield reflects enemy bullets back. But they take 2x damage in
+        the process.
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.3648529
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.488
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.8207147
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4686409788300702077, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: m_Name
+      value: Reflective Shields
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: myRarity
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: mySprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b3d579c7cc690394992de7a657493779, type: 3}
+    - target: {fileID: 9107765271094784149, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: uniqueName
+      value: reflective_shields
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: displayName
+      value: Reflective Shields
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+--- !u!4 &283698765719430380 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8991136264881785212, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+  m_PrefabInstance: {fileID: 9162864045857254800}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4476701805951491309 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4686409788300702077, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+  m_PrefabInstance: {fileID: 9162864045857254800}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7463209583778154200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4476701805951491309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbd7d8813f9924c4b8211217655eb9b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engineOnly: 0
+  cargoOnly: 0
+  applyGlobally: 1
+  levelIncreasesRange: 0
+  glassCart: 0
+  canHaveNoShields: 0
+  reflectiveShields: 1
+  luckyCart: 0
+  addShieldAsHpPercent: 0
+  addShieldAmount: 0
+  addShieldAmountPerLevel: 0
+  healthMultiplier: 1
+  shieldDecayMultiplier: 1
+  fireDecayRateMultiplier: 1
+  gatlinificator: 0
+  isHoming: 0
+  fireRateMultiplier: 1
+  damageMultiplier: 1
+  ammoMultiplier: 1
+  addFireDamage: 0
+  addExplosionRange: 0
+  boosterRangeModification: 0
+  boosterEffectMultiplier: 1
+  repairEfficiency: 1
+  reloadEfficiency: 1
+  shieldUpEfficiency: 1
+  baseRange: 1
+  rangeBoost: 0
+  boostMultiplier: 1
+--- !u!4 &8031456230174456653 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1178956488490637021, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+  m_PrefabInstance: {fileID: 9162864045857254800}
+  m_PrefabAsset: {fileID: 0}

@@ -338,13 +338,13 @@ public class DataSaver {
 			[HideInInspector]
 			public int health = -1;
 			[HideInInspector]
-			public int ammo = -1;
+			public int ammo = -1;/*
 			[HideInInspector]
 			public bool isFire = false;
 			[HideInInspector]
 			public bool isSticky = false;
 			[HideInInspector]
-			public bool isExplosive = false;
+			public bool isExplosive = false;*/
 
 			public int level = 0;
 
@@ -393,9 +393,9 @@ public class DataSaver {
 				level = 0;
 				health = -1;
 				ammo = -1;
-				isFire = false;
+				/*isFire = false;
 				isSticky = false;
-				isExplosive = false;
+				isExplosive = false;*/
 				attachedArtifact = new ArtifactState();
 				/*cargoCost = -1;
 				cargoReward = -1;*/
@@ -427,9 +427,9 @@ public class DataSaver {
 				copyState.level = level;
 				copyState.health = health;
 				copyState.ammo = ammo;
-				copyState.isFire = isFire;
+				/*copyState.isFire = isFire;
 				copyState.isSticky = isSticky;
-				copyState.isExplosive = isExplosive;
+				copyState.isExplosive = isExplosive;*/
 				copyState.attachedArtifact = attachedArtifact;
 				copyState.cargoState = new CargoState(cargoState.cargoReward, cargoState.artifactReward, cargoState.isLeftCargo, cargoState.cargoLevel, cargoState.artifactLevel);
 				return copyState;

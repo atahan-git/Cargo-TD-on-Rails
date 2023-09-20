@@ -68,7 +68,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public int fireBarrageCount = 5;
     public float fireBarrageDelay = 0.1f;// dont use this
-    public float fireRateMultiplier = 1f;
+    public float fireRateMultiplier = 1f; // higher means GOOD
+    public float fireRateDivider = 1f; // higher means BAD
     public float GetFireBarrageDelay() { return fireBarrageDelay * GetAttackSpeedMultiplier();}
     public float projectileDamage = 2f; // dont use this
     public float burnDamage = 0; // dont use this
@@ -77,6 +78,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float sniperDamageMultiplier = 1f;
     public float burnDamageMultiplier = 1f;
     public float regularToBurnDamageConversionMultiplier = 0;
+    //public float regularToIceDamageConversionMultiplier = 0;
     public float regularToRangeConversionMultiplier = 0;
     public bool dontGetAffectByMultipliers = false;
 
@@ -152,6 +154,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         damageMultiplier = 1 + (boostDamageOnUpgrade*level);
         sniperDamageMultiplier = 1;
         fireRateMultiplier = 1;
+        fireRateDivider = 1;
         burnDamageMultiplier = 1;
         bonusBurnDamage = 0;
         regularToBurnDamageConversionMultiplier = 0;
@@ -271,6 +274,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     float GetAttackSpeedMultiplier() {
         var boost = 1f/fireRateMultiplier;
+        boost *= fireRateDivider;
 
         if (isPlayer) {
             boost /= TweakablesMaster.s.myTweakables.playerFirerateBoost;
@@ -388,6 +392,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             var position = barrelEnd.position;
             var rotation = barrelEnd.rotation;
             var bullet = Instantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
+            bullet.transform.localScale = Vector3.one*(damageMultiplier*1.5f);
+            SetColors(bullet);
             var muzzleFlash = Instantiate(muzzleFlashPrefab, position, rotation);
             var projectile = bullet.GetComponent<Projectile>();
             projectile.myOriginObject = this.transform.root.gameObject;
@@ -500,9 +506,26 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public void ShootBarrageDebug() {
         StartCoroutine(_ShootBarrage(true));
     }
+
     [Button]
     public void ShootBarrageContinuousDebug() {
-        StartCoroutine(ShootCycle());
+        if (Application.isPlaying) {
+            gunShakeOnShoot = false;
+            StartCoroutine(DebugShootingCycle());
+        }
+    }
+
+    IEnumerator DebugShootingCycle() {
+        while (true) {
+            while (waitTimer > 0) {
+                waitTimer -= Time.deltaTime;
+                yield return null;
+            }
+            
+            StartCoroutine(_ShootBarrage(true));
+
+            waitTimer = GetFireDelay();
+        }
     }
     
     public void ShootBarrage(bool isFree, GenericCallback shotCallback, GenericCallback onHitCallback, GenericCallback onMissCallback) {
@@ -524,6 +547,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
 
     private int lastIndex = -1;
+    private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+
     public TransformWithActivation GetShootTransform() {
         List<TransformWithActivation> activeTransforms = new List<TransformWithActivation>();
 
@@ -606,5 +631,99 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public void Disable() {
         this.enabled = false;
+    }
+
+    void SetColors(GameObject bullet) {
+        if (regularToBurnDamageConversionMultiplier <= 0) {
+            return;
+        }
+
+        var mainColor = HeatToColor(regularToBurnDamageConversionMultiplier);
+        var emissiveColor = HeatToColor(regularToBurnDamageConversionMultiplier, true);
+
+        foreach (var meshRenderer in bullet.GetComponentsInChildren<MeshRenderer>()) {
+            meshRenderer.material.color = mainColor;
+            meshRenderer.material.SetColor(EmissionColor, emissiveColor);
+        }
+
+        foreach (var particleSystem in bullet.GetComponentsInChildren<ParticleSystem>()) {
+            var main = particleSystem.main;
+            main.startColor = mainColor;
+        }
+    }
+
+    Color HeatToColor(float temperature, bool isEmissive = false) {
+
+        var initialTemperature = temperature;
+        
+        // conversion to temperature
+        // 0.5 -> 1000
+        // 1 -> 2000
+        // 2 -> 10000
+        // brought to you by desmos graphing approximation
+        temperature /= 2f;
+        temperature = Mathf.Pow(4.84f, (temperature-1.043f))*1000;
+        
+        // algorithm
+        // https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
+        temperature = temperature / 100f;
+
+
+        var red = 0f;
+        var green = 0f;
+        var blue = 0f;
+        
+        // red
+        if (temperature <= 66) {
+            red = 255f;
+        } else {
+            red = temperature - 60;
+            red = 329.698727446f * Mathf.Pow(red,-0.1332047592f);
+        }
+        
+        // green
+        if (temperature <= 66) {
+            green = temperature;
+            green = 99.4708025861f * Mathf.Log(green) - 161.1195681661f;
+        } else {
+            green = temperature - 60;
+            green = 288.1221695283f * Mathf.Pow(green, -0.0755148492f);
+        }
+        
+        // blue
+        if (temperature >= 66) {
+            blue = 255f;
+        } else {
+            if (temperature <= 19) {
+                blue = 0f;
+            } else {
+                blue = temperature - 10;
+                blue = 138.5177312231f * Mathf.Log(blue) - 305.0447927307f;
+            }
+        }
+
+        // convert to unity color
+        red = red/255f;
+        red = Mathf.Clamp01(red);
+        green = green/255f;
+        green = Mathf.Clamp01(green);
+        blue = blue/255f;
+        blue = Mathf.Clamp01(blue);
+
+        if (isEmissive) {
+            var _intensity = (red +green + blue) / 3f;
+            var intensity = 0.25f;
+            float factor = intensity / _intensity;
+            red *= factor;
+            green *= factor;
+            blue *= factor;
+        }
+
+        var color = new Color(red, green, blue);
+        Color.RGBToHSV(color, out float H, out float S, out float V);
+        if(initialTemperature > 4)
+            S = S * initialTemperature;
+
+        return Color.HSVToRGB(H,S,V);
     }
 }

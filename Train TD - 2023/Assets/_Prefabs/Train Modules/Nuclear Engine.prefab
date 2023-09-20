@@ -24664,6 +24664,55 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &2244108854991139816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7977331889687525774}
+  - component: {fileID: 4525660578375370003}
+  m_Layer: 11
+  m_Name: Train Gem Bridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7977331889687525774
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244108854991139816}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.254}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1249084498607748609}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4525660578375370003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244108854991139816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffe3f465c3bb60c48ad77ad8df3c3d37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraPrefabToSpawnOnAffected: []
+  uranium: {fileID: 0}
+  uraniumDelayReduction: 0
+  curDelay: 2
+  curUraniumDelay: 0
 --- !u!1 &2433361463336023373
 GameObject:
   m_ObjectHideFlags: 0
@@ -34485,7 +34534,7 @@ Transform:
   - {fileID: 4452212020003395653}
   - {fileID: 1497503387203753718}
   m_Father: {fileID: 6701000451342358796}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3054586876699333278
 GameObject:
@@ -63921,6 +63970,7 @@ Transform:
   - {fileID: 5001050300237298092}
   - {fileID: 7365516295943151646}
   - {fileID: 6949617140534203832}
+  - {fileID: 7977331889687525774}
   m_Father: {fileID: 8481526207145170715}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -63937,7 +63987,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedAdd: 3
+  extraSpeedAdd: 1
   enginePower: 10
+  extraEnginePower: 0
   OnEngineStart:
     m_PersistentCalls:
       m_Calls: []
@@ -88915,7 +88967,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1691629272263448227, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1724777744574298011, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.151
+      objectReference: {fileID: 0}
+    - target: {fileID: 1724777744574298011, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.268
       objectReference: {fileID: 0}
     - target: {fileID: 2564255422046077385, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: maxHealth
@@ -88935,7 +88995,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3344921567547956732, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3399934084524781478, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: m_Name
@@ -89003,6 +89063,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: isMainEngine
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: canAcceptComponentArtifact
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

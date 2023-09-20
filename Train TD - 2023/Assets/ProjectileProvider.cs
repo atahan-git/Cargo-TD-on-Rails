@@ -48,7 +48,7 @@ public class ProjectileProvider : MonoBehaviour {
 	    }
 	    
 	    var result = combo.regularBullet;
-	    if (isFire && isSticky) {
+	    /*if (isFire && isSticky) {
 		    result = combo.fireAndStickyBullet;
 	    }else if (isFire) {
 		    result =  combo.fireBullet;
@@ -56,7 +56,7 @@ public class ProjectileProvider : MonoBehaviour {
 		    result =  combo.stickyBullet;
 	    } else {
 		    result =  combo.regularBullet;
-	    }
+	    }*/
 
 	    if (result == null) {
 		    result = combo.regularBullet;

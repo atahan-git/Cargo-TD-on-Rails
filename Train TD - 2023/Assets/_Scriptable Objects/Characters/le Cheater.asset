@@ -20,9 +20,6 @@ MonoBehaviour:
       - uniqueName: engine_nuclear
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -36,9 +33,6 @@ MonoBehaviour:
       - uniqueName: cargo_mystery_0
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -47,14 +41,11 @@ MonoBehaviour:
           artifactLevel: 0
           isLeftCargo: 0
         attachedArtifact:
-          uniqueName: boost_damage
+          uniqueName: 
           level: 0
-      - uniqueName: barricade
+      - uniqueName: gem_booster
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -63,14 +54,11 @@ MonoBehaviour:
           artifactLevel: 0
           isLeftCargo: 0
         attachedArtifact:
-          uniqueName: boost_damage
+          uniqueName: 
           level: 0
-      - uniqueName: damageboost
+      - uniqueName: miniEngine
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -84,9 +72,6 @@ MonoBehaviour:
       - uniqueName: side_gatling
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -100,9 +85,6 @@ MonoBehaviour:
       - uniqueName: side_avr
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -116,9 +98,6 @@ MonoBehaviour:
       - uniqueName: side_avr
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -132,9 +111,6 @@ MonoBehaviour:
       - uniqueName: top_gatling
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -148,9 +124,6 @@ MonoBehaviour:
       - uniqueName: side_lazer
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -164,9 +137,6 @@ MonoBehaviour:
       - uniqueName: top_rockets
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -180,9 +150,6 @@ MonoBehaviour:
       - uniqueName: shield_cart
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 

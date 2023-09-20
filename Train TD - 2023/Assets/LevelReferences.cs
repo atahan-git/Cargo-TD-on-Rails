@@ -116,6 +116,7 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask cartSnapLocationsLayer;
     public LayerMask gateMask;
     public LayerMask artifactLayer;
+    public LayerMask meepleLayer;
 
     [Space]
     public SingleUnityLayer playerBulletLayer;
@@ -158,6 +159,11 @@ public class LevelReferences : MonoBehaviour {
 
     public GameObject bullet_repair;
 
+    [Space] public float smallEffectFirstActivateTimeAfterCombatStarts = 10f;
+    public float bigEffectFirstActivateTimeAfterCombatStarts = 15;
+    public GameObject radiationDamagePrefab;
+    public GameObject growthEffectPrefab;
+    
     /*public GameObject GetResourceParticle(ResourceTypes types) {
         switch (types) {
             case ResourceTypes.scraps:

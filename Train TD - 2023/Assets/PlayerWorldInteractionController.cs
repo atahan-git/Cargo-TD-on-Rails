@@ -20,8 +20,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         s = null;
     }
 
+
+    public IPlayerHoldable selectedThing;
     public EnemyHealth selectedEnemy;
     public Artifact selectedArtifact;
+    public Meeple selectedMeeple;
     
     public Cart selectedCart;
     public Vector3 dragBasePos;
@@ -140,9 +143,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             if(selectedArtifact == null)
                 CastRayToOutlineCart();
             
-            
             if(PlayStateMaster.s.isCombatInProgress())
                 CastRayToOutlineEnemy();
+            
+            if(selectedArtifact == null && selectedCart == null)
+                CastRayToOutlineMeeple();
         }
 
 
@@ -462,9 +467,74 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             DoCartDrag();
         }else if (selectedArtifact != null) {
             DoArtifactDrag();
+        }else if (selectedMeeple != null) {
+            DoMeepleDrag();
         }
         
         UpdateTrainCartPositionsSlowly();
+    }
+    
+    private void DoMeepleDrag() {
+        if (!isToggleDragStarted) {
+            if (clickCart.action.WasPressedThisFrame()) {
+                HideInfo();
+                    isHoldDragStarted = true;
+                    BeginMeepleDrag();
+            }
+
+            if (isHoldDragStarted) {
+                if (clickCart.action.IsPressed()) {
+                    CheckIfMeepleSnapping();
+                    if (!isSnapping) {
+                        selectedMeeple.transform.position = GetMousePositionOnPlane() + offset;
+                        selectedMeeple.transform.rotation = Quaternion.Slerp(selectedMeeple.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
+                        offset = Vector3.Lerp(offset, Vector3.up/2f, lerpSpeed * Time.deltaTime);
+                    }
+                } else {
+                    EndMeepleDrag();
+                }
+            }
+        }
+        
+        if (!isHoldDragStarted) {
+            if (!isToggleDragStarted) {
+                if (dragClick.action.WasPerformedThisFrame()) {
+                    HideInfo();
+                        isToggleDragStarted = true;
+                        BeginMeepleDrag();
+                }
+            }else{
+                CheckIfMeepleSnapping();
+                if (!isSnapping) {
+                    selectedMeeple.transform.position = GetMousePositionOnPlane() + offset;
+                    selectedMeeple.transform.rotation = Quaternion.Slerp(selectedMeeple.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
+                    offset = Vector3.Lerp(offset, Vector3.zero, lerpSpeed * Time.deltaTime);
+                }
+                
+                if (dragClick.action.WasPerformedThisFrame()) {
+                    EndMeepleDrag();
+                } 
+            }
+        }
+    }
+
+    private void BeginMeepleDrag() {
+        isSnapping = false;
+        selectedMeeple.SetHandlingState(true);
+
+        dragBasePos = selectedMeeple.transform.position;
+        offset = dragBasePos - GetMousePositionOnPlane();
+    }
+
+    void CheckIfMeepleSnapping() {
+        // meeples cannot snap ever
+    }
+
+    
+    
+    private void EndMeepleDrag() {
+        isHoldDragStarted = false;
+        selectedMeeple.SetHandlingState(false);
     }
 
     private void DoArtifactDrag() {
@@ -544,7 +614,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }*/
     }
 
-
+    bool CanAttachToCart(Cart cart, Artifact artifact) {
+        return !artifact.isComponent || cart.canAcceptComponentArtifact;
+    }
+    
     public Artifact swapArtifact;
     public Cart swapCart;
     void CheckIfArtifactSnapping() {
@@ -574,13 +647,14 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                             swapCart = null;
                             swapArtifact = null;
                         }
-                        
-                        if (cart.myAttachedArtifact == null) {
+
+                        if (cart.myAttachedArtifact == null && CanAttachToCart(cart, selectedArtifact)) {
                             selectedArtifact.AttachToCart(cart);
                             PhysicalRangeShower.s.ShowArtifactRange(selectedArtifact, false);
+                            isSnapping = true;
 
                         } else {
-                            var canBeSwapped = CanDragArtifact(cart.myAttachedArtifact);
+                            var canBeSwapped = CanDragArtifact(cart.myAttachedArtifact) && CanAttachToCart(cart, selectedArtifact);
 
                             if (canBeSwapped) {
                                 if (sourceSnapCart != null) {
@@ -594,59 +668,66 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                                     if (swapArtifact != null) {
                                         swapCart = cart;
                                         swapArtifact.DetachFromCart();
-                                        swapArtifact.transform.position += Vector3.up/2f;
+                                        swapArtifact.transform.position += Vector3.up / 2f;
                                         //swapArtifact.transform.position = dragBasePos;
                                     }
                                 }
 
                                 selectedArtifact.AttachToCart(cart);
                                 PhysicalRangeShower.s.ShowArtifactRange(selectedArtifact, false);
+                                isSnapping = true;
                             }
                         }
-                        
-                        AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
+
+                        if (isSnapping) {
+                            AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
+                        }
+                    } else {
+                        isSnapping = true;
                     }
 
-                    
-                    isSnapping = true;
-                    if (PlayStateMaster.s.isShop()) {
-                        UpgradesController.s.UpdateCartShopHighlights();
-                    } else {
-                        UpgradesController.s.UpdateCargoHighlights();
+                    if (isSnapping) {
+                        if (PlayStateMaster.s.isShop()) {
+                            UpgradesController.s.UpdateCartShopHighlights();
+                        } else {
+                            UpgradesController.s.UpdateCargoHighlights();
+                        }
+
+                        return;
                     }
-                    return;
                 }
+            }
+        } 
+        
+        // snap to snap locations
+        
+        RaycastHit hit;
+        Ray ray = GetRay();
+        if (Physics.Raycast(ray, out hit, 100f, LevelReferences.s.cartSnapLocationsLayer)) {
+            var snapLocation = hit.collider.gameObject.GetComponentInParent<SnapCartLocation>();
+
+            var snapLocationValidAndNew = snapLocation != null && snapLocation != currentSnapLoc;
+            var snapLocationCanAcceptCart = !snapLocation.onlySnapCargo  && !snapLocation.onlySnapMysteriousCargo;
+            var snapLocationEmpty = snapLocation.snapTransform.childCount == 0;
+            var canSnap = snapLocationValidAndNew && snapLocationCanAcceptCart && snapLocationEmpty && !snapLocation.snapNothing;
+
+            if (canSnap) {
+                isSnapping = true;
+                selectedArtifact.AttachToSnapLoc(snapLocation);
+                currentSnapLoc = snapLocation;
+                print("snapping to location");
+            } else {
+                //print("cant snap to location");
+                isSnapping = currentSnapLoc != null;
             }
         } else {
-            // snap to snap locations
-            
-            RaycastHit hit;
-            Ray ray = GetRay();
-            if (Physics.Raycast(ray, out hit, 100f, LevelReferences.s.cartSnapLocationsLayer)) {
-                var snapLocation = hit.collider.gameObject.GetComponentInParent<SnapCartLocation>();
-
-                var snapLocationValidAndNew = snapLocation != null && snapLocation != currentSnapLoc;
-                var snapLocationCanAcceptCart = !snapLocation.onlySnapCargo  && !snapLocation.onlySnapMysteriousCargo;
-                var snapLocationEmpty = snapLocation.snapTransform.childCount == 0;
-                var canSnap = snapLocationValidAndNew && snapLocationCanAcceptCart && snapLocationEmpty && !snapLocation.snapNothing;
-
-                if (canSnap) {
-                    isSnapping = true;
-                    selectedArtifact.AttachToSnapLoc(snapLocation);
-                    currentSnapLoc = snapLocation;
-                    print("snapping to location");
-                } else {
-                    //print("cant snap to location");
-                    isSnapping = currentSnapLoc != null;
-                }
-            } else {
-                isSnapping = false;
-                if (currentSnapLoc != null) {
-                    print("stopped snapping");
-                    currentSnapLoc = null;
-                }
+            isSnapping = false;
+            if (currentSnapLoc != null) {
+                print("stopped snapping");
+                currentSnapLoc = null;
             }
         }
+        
 
         if (!isSnapping) {
             PhysicalRangeShower.s.HideRange();
@@ -1308,6 +1389,37 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
 
+    private float meepleHoldTime = 0;
+    void CastRayToOutlineMeeple() {
+        RaycastHit hit;
+        Ray ray = GetRay();
+
+        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.meepleLayer)) {
+            var meeple = hit.collider.GetComponentInParent<Meeple>();
+            //print($"{artifact} - {selectedArtifact}");
+            if (meeple != null) {
+                meepleHoldTime += Time.deltaTime;
+                if (meeple != selectedMeeple) {
+                    meepleHoldTime = 0;
+                    SelectMeeple(meeple, true);
+                } else {
+                    if (showDetailClick.action.WasPerformedThisFrame() || 
+                        DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired)||
+                        meepleHoldTime > 1f) {
+                        selectedMeeple.ShowChat();
+                        //ShowSelectedThingInfo();
+                    }
+                }
+            }
+        } else {
+            meepleHoldTime = 0;
+            if (selectedMeeple != null)
+                Deselect();
+        }
+        
+    }
+
+
     private bool infoCardActive = false;
     void ShowSelectedThingInfo() {
         if (!infoCardActive) {
@@ -1348,6 +1460,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             var artifact = selectedArtifact;
             selectedArtifact = null;
             SelectArtifact(artifact, false);
+        }
+
+        if (selectedMeeple != null) {
+            var meeple = selectedMeeple;
+            selectedMeeple = null;
+            SelectMeeple(meeple, false);
         }
         
         HideInfo();
@@ -1422,6 +1540,27 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
 
         OnSelectArtifact?.Invoke(artifact, isSelecting);
+    }
+    
+    void SelectMeeple(Meeple meeple, bool isSelecting) {
+        Deselect();
+
+        Outline outline = null;
+        if(meeple != null)
+            outline = meeple.GetComponentInChildren<Outline>();
+        
+        if (isSelecting) {
+            selectedMeeple = meeple;
+            
+            //GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
+        } else {
+            
+           //GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+        }
+
+        if (outline != null) {
+            outline.enabled = isSelecting;
+        }
     }
 
     bool CanShield(Cart cart) {
@@ -1558,6 +1697,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 ranges[i].ChangeVisualizerEdgeShowState(isSelecting);
             }
 
+
+            foreach (var artifactSlot in building.GetComponentsInChildren<VisualizeArtifactSlot>()) {
+                artifactSlot.SetState(isSelecting);
+            }
         }
 
         OnSelectBuilding?.Invoke(building, isSelecting);
@@ -1637,6 +1780,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
+}
+
+public interface IPlayerHoldable {
+    
 }
 
 

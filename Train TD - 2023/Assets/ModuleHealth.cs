@@ -17,6 +17,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     public float currentShields = 0;
     private float shieldRegenRate = 50;
     private float shieldRegenDelay = 5;
+    public float shieldRegenDelayMultiplier = 1f;
+    public float shieldRegenDelayDivider = 1f;
+    public float shieldRegenRateMultiplier = 1f;
+    public float shieldRegenRateDivider = 1f;
     public float curShieldDelay = 0;
 
 
@@ -88,6 +92,11 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         maxShields = baseShields;
         canHaveShields = true;
         isShieldActive = maxShields > 0;
+
+        shieldRegenDelayMultiplier = 1;
+        shieldRegenDelayDivider = 1;
+        shieldRegenRateMultiplier = 1;
+        shieldRegenRateDivider = 1;
         
         if (PlayStateMaster.s.isCombatInProgress()) {
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
@@ -114,7 +123,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         if(isImmune || invincible)
             return;
 
-        if (Random.value < DataSaver.s.GetCurrentSave().currentRun.luck) {
+        if (luckyCart && Random.value < DataSaver.s.GetCurrentSave().currentRun.luck) {
             Instantiate(LevelReferences.s.luckyNegate, transform.position, Quaternion.identity);
             return;
         }
@@ -131,7 +140,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             damage *= damageReductionMultiplier;
             var shieldsWasMoreThan100 = currentShields > 100;
             if (isShieldActive && currentShields > 0) {
-                curShieldDelay = shieldRegenDelay;
+                curShieldDelay = shieldRegenDelay* (1f/shieldRegenDelayMultiplier) * shieldRegenDelayDivider;
                 currentShields -= damage;
                 damage = 0;
                 if (currentShields <= 0) {
@@ -147,6 +156,11 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                     currentShields -= damage;
                     if (currentShields < 0)
                         currentShields = 0;
+                }
+
+                var shieldGen = GetComponentInChildren<ShieldGeneratorModule>();
+                if (shieldGen != null) {
+                    shieldGen.SpawnGemEffect(this);
                 }
             }
             
@@ -263,7 +277,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             }
         }
 
-        curShieldDelay = shieldRegenDelay;
+        curShieldDelay = shieldRegenDelay* (1f/shieldRegenDelayMultiplier) *shieldRegenDelayDivider;
     }
 
     public void SetHealth(float health) {
@@ -441,7 +455,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                     isShieldActive = currentShields >= (maxShields / 2f);
                 }
 
-                currentShields += shieldRegenRate * Time.deltaTime;
+                currentShields += shieldRegenRate * shieldRegenRateMultiplier * Time.deltaTime * (1/shieldRegenRateDivider);
             } else {
                 curShieldDelay -= Time.deltaTime;
             }
@@ -590,6 +604,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
 
     public bool IsPlayer() {
         return true;
+    }
+    
+    public bool IsAlive() {
+        return !isDead;
     }
 
     public GameObject GetGameObject() {

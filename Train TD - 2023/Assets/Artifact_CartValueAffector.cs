@@ -53,7 +53,7 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
     protected override void _Arm() {
         var targets = new List<Cart>();
         if (!applyGlobally) {
-            GetComponent<Artifact>().range = GetRange();
+            //GetComponent<Artifact>().range = GetRange();
             var myCart = GetComponentInParent<Cart>();
 
             targets.Add(myCart);
@@ -62,7 +62,7 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
                 targets.Add(Train.s.GetNextBuilding(-i, myCart));
             }
         } else {
-            GetComponent<Artifact>().range = 100;
+            //GetComponent<Artifact>().range = 100;
             targets = Train.s.carts;
         }
 

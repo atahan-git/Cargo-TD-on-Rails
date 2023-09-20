@@ -15,7 +15,15 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     private float curDelay = 0.5f;
     public float delay = 2;
     public float amount = 25;
+
+    public float amountMultiplier = 1f;
+    public float amountDivider = 1f;
+    public float firerateMultiplier = 1f;
+    public float firerateDivider = 1f;
     //public float steamUsePerRepair = 0.5f;
+
+    public bool explosiveRepair = false;
+    public float explosiveRepairAmount = 0;
 
     public int countPerCycle = 2;
 
@@ -27,12 +35,22 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
 
     [HideInInspector]
     public UnityEvent OnRepaired = new UnityEvent();
+
+    public List<GameObject> extraPrefabToSpawnOnAffected = new List<GameObject>();
     private void Start() {
         myTrain = GetComponentInParent<Train>();
         myCart = GetComponentInParent<Cart>();
         
         if (myTrain == null)
             this.enabled = false;
+    }
+
+    float GetAmount() {
+        return amount * amountMultiplier * (1/amountDivider);
+    }
+
+    float GetDelay() {
+        return delay * (1 / firerateMultiplier) * firerateDivider;
     }
 
     void Update() {
@@ -48,7 +66,7 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
                 if (BreadthFirstRepairSearch()) {
                     OnRepaired.Invoke();
                 }
-                curDelay = delay;
+                curDelay = GetDelay();
             } else {
                 curDelay -= Time.deltaTime;
             }
@@ -56,7 +74,7 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     }
 
     public string GetInfoText() {
-        return $"Repairs {amount*2} per {curDelay:F1} seconds {GetRange()} nearby carts";
+        return $"Repairs {GetAmount()*2} per {GetDelay():F1} seconds {GetRange()} nearby carts";
     }
     public void InstantRepair(bool doRepair) {
         if (doRepair) {
@@ -124,10 +142,15 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
                 if (healths.Length > 0) {
                     for (int i = 0; i < healths.Length; i++) {
                         var canRepair = (healths[i].currentHealth < healths[i].maxHealth && doImperfect) ||
-                                        healths[i].currentHealth <= healths[i].maxHealth - amount;
+                                        healths[i].currentHealth <= healths[i].maxHealth - GetAmount();
 
                         if (canRepair) {
-                            healths[i].Repair(amount);
+                            healths[i].Repair(GetAmount());
+                            if (explosiveRepair) {
+                                Train.s.GetNextBuilding(1, healths[i].myCart)?.GetHealthModule().Repair(GetAmount()*explosiveRepairAmount);
+                                Train.s.GetNextBuilding(-1, healths[i].myCart)?.GetHealthModule().Repair(GetAmount()*explosiveRepairAmount);
+                            }
+                            SpawnGemEffect(healths[i]);
                             return true;
                         }
                     }
@@ -139,11 +162,16 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
                         var canShield = healths[i].maxShields > 0 && 
                                         (
                                             (healths[i].currentShields < healths[i].maxShields && doImperfect) ||
-                                        healths[i].currentShields <= healths[i].maxShields - amount
+                                        healths[i].currentShields <= healths[i].maxShields - GetAmount()
                                             );
 
                         if (canShield) {
-                            healths[i].ShieldUp(amount);
+                            healths[i].ShieldUp(GetAmount());
+                            if (explosiveRepair) {
+                                Train.s.GetNextBuilding(1, healths[i].myCart)?.GetHealthModule().ShieldUp(GetAmount()*explosiveRepairAmount);
+                                Train.s.GetNextBuilding(-1, healths[i].myCart)?.GetHealthModule().ShieldUp(GetAmount()*explosiveRepairAmount);
+                            }
+                            SpawnGemEffect(healths[i]);
                             return true;
                         }
                     }
@@ -155,10 +183,15 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
                 if (ammos.Length > 0) {
                     for (int i = 0; i < ammos.Length; i++) {
                         var canReload = (ammos[i].curAmmo < ammos[i].maxAmmo && doImperfect) ||
-                                        ammos[i].curAmmo <= ammos[i].maxAmmo - amount;
+                                        ammos[i].curAmmo <= ammos[i].maxAmmo - GetAmount();
 
                         if (canReload) {
-                            ammos[i].Reload(amount);
+                            ammos[i].Reload(GetAmount());
+                            if (explosiveRepair) {
+                                Train.s.GetNextBuilding(1, target)?.GetComponentInChildren<ModuleAmmo>()?.Reload(GetAmount()*explosiveRepairAmount);
+                                Train.s.GetNextBuilding(-1, target)?.GetComponentInChildren<ModuleAmmo>()?.Reload(GetAmount()*explosiveRepairAmount);
+                            }
+                            SpawnGemEffect(healths[i]);
                             return true;
                         }
                     }
@@ -167,6 +200,22 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
         }
 
         return false;
+    }
+
+    void SpawnGemEffect(ModuleHealth target) {
+        StartCoroutine(_SpawnGemEffect(target));
+    }
+
+    IEnumerator _SpawnGemEffect(ModuleHealth target) {
+        foreach (var prefab in extraPrefabToSpawnOnAffected) {
+            if (target == null) {
+                yield break;
+            }
+            
+            Instantiate(prefab, target.GetUITransform());
+
+            yield return new WaitForSeconds(0.2f);
+        }
     }
 
     public void ActivateForCombat() {
@@ -221,6 +270,13 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     public void ResetState(int level) {
         rangeBoost = level;
         boostMultiplier = 1;
+        extraPrefabToSpawnOnAffected.Clear();
+        firerateMultiplier = 1;
+        amountMultiplier = 1;
+        firerateDivider = 1;
+        explosiveRepair = false;
+        explosiveRepairAmount = 0;
+        amountDivider = 0;
     }
 
     public void ModifyStats(int range, float value) {

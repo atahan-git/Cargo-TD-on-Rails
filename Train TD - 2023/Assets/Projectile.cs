@@ -7,7 +7,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Projectile : MonoBehaviour {
-    private float curSpeed = 0;
+    public float curSpeed = 0;
     private float curSeekStrength = 0;
     public float acceleration = 5f;
     public float seekAcceleration = 200f;
@@ -72,8 +72,8 @@ public class Projectile : MonoBehaviour {
                 break;
             
             case HitType.Rocket:
-                curSpeed = 0;
-                curSeekStrength = 0;
+                //curSpeed = 0;
+                //curSeekStrength = 0;
                 break;
             
             case HitType.Mortar:

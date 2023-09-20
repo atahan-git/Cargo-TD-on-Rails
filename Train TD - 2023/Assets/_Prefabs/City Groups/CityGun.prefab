@@ -93,8 +93,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 670146105460545952}
-  - component: {fileID: 927801297817853532}
-  - component: {fileID: 7061259691595616814}
   m_Layer: 15
   m_Name: AVR
   m_TagString: Untagged
@@ -118,109 +116,6 @@ Transform:
   m_Father: {fileID: 3471547340169187097}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &927801297817853532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1149012262648195528}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gunSprite: {fileID: 0}
-  isGigaGatling: 0
-  gatlinificator: 0
-  maxFireRateReduction: 0.875
-  gatlingAmount: 0
-  maxGatlingAmount: 8
-  rotateTransforms:
-  - transform: {fileID: 6642262453467038229}
-  rotateTransform:
-    anchor: {fileID: 7478297696049433922}
-    xAxis: {fileID: 5263733004433851935}
-    yAxis: {fileID: 3886058793516739665}
-    centerBarrelEnd: {fileID: 7898032241604503470}
-  barrelEndTransforms:
-  - transform: {fileID: 7898032241604503470}
-  projectileSpawnOffset: 0.2
-  useProviderBullet: 1
-  myType: 0
-  bulletPrefab: {fileID: 4908573584345181807, guid: 98bc522f3c4ff4b44a93406dcf01c13c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3a4d3fe2abd806c46964330e5993cfa2, type: 3}
-  target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 1
-  fireBarrageCount: 2
-  fireBarrageDelay: 0.25
-  fireRateMultiplier: 1
-  projectileDamage: 20
-  burnDamage: 0
-  bonusBurnDamage: 0
-  damageMultiplier: 1
-  sniperDamageMultiplier: 1
-  burnDamageMultiplier: 1
-  regularToBurnDamageConversionMultiplier: 0
-  regularToRangeConversionMultiplier: 0
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 0
-  rotateSpeed: 10
-  gunActive: 1
-  IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
-  isPlayer: 1
-  rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
-  canPenetrateArmor: 0
-  steamUsePerShot: 0
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stopShootingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gatlingCountZeroEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gunShakeOnShoot: 1
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isHoming: 0
-  boostDamageOnUpgrade: 0.5
-  waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
-  explosionRange: 0
-  explosionRangeBoost: 0
-  gotShootCredits: 0
-  needShootCredits: 0
-  shootCreditsUse: 1
---- !u!114 &7061259691595616814
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1149012262648195528}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpan: 180
-  range: 5
-  myPossibleTargets: 
-  canHitFlying: 1
 --- !u!1 &2514695646180955280
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,14 +234,14 @@ MonoBehaviour:
   gatlingAmount: 0
   maxGatlingAmount: 0
   rotateTransforms:
-  - transform: {fileID: 0}
+  - transform: {fileID: 7478297696049433922}
   rotateTransform:
-    anchor: {fileID: 0}
-    xAxis: {fileID: 0}
-    yAxis: {fileID: 0}
-    centerBarrelEnd: {fileID: 0}
+    anchor: {fileID: 7478297696049433922}
+    xAxis: {fileID: 5263733004433851935}
+    yAxis: {fileID: 3886058793516739665}
+    centerBarrelEnd: {fileID: 7898032241604503470}
   barrelEndTransforms:
-  - transform: {fileID: 0}
+  - transform: {fileID: 7898032241604503470}
   projectileSpawnOffset: 0.2
   useProviderBullet: 0
   myType: 0
@@ -419,7 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 90
+  rotationSpan: 80
   range: 6
   myPossibleTargets: 00000000
   canHitFlying: 0

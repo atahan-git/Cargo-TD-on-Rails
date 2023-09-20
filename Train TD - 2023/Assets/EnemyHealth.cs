@@ -281,6 +281,10 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 		return false;
 	}
 
+	public bool IsAlive() {
+		return isAlive;
+	}
+	
 	public GameObject GetGameObject() {
 		return gameObject;
 	}
@@ -359,6 +363,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 
 
 public interface IHealth {
+	public bool IsAlive();
 	public void DealDamage(float damage);
 	public void Repair(float heal);
 	public void BurnDamage(float damage);

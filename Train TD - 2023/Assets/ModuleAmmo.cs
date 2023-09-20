@@ -123,17 +123,12 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         UpdateConnectedModules();
     }
     
-    public void SetAmmo(int amount, bool _isFire, bool _isSticky, bool _isExplosive) {
+    public void SetAmmo(int amount) {
         curAmmo = amount;
         curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
 
-        isFire = _isFire;
-        isSticky = _isSticky;
-        isExplosive = _isExplosive;
-        
         UpdateConnectedModules();
-        
-        
+
         OnAmmoTypeChange?.Invoke();
         UpdateModuleState();
         OnReload?.Invoke(false);

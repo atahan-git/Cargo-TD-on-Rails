@@ -20,12 +20,12 @@ public class UpgradesController : MonoBehaviour {
 	}
 
 	[ValueDropdown("GetAllModuleNames")]
-	public List<string> tier1Buildings = new List<string>();
-	[ValueDropdown("GetAllModuleNames")]
 	public List<string> firstShopCarts = new List<string>();
-
-	public List<string> regularArtifacts = new List<string>();
-	public List<string> bossArtifacts = new List<string>();
+	
+	
+	private List<string> tier1Buildings = new List<string>();
+	private List<string> regularArtifacts = new List<string>();
+	private List<string> bossArtifacts = new List<string>();
 
 	public SnapCartLocation[] fleaMarketLocations;
 	public Transform shopableComponentsParent;
@@ -65,7 +65,7 @@ public class UpgradesController : MonoBehaviour {
 					bossArtifacts.Add(allArtifacts[i].uniqueName);
 				}
 			} else if (allArtifacts[i].myRarity != CartRarity.special) {
-				if (allArtifacts[i].isGenericArtifact || myArtifacts.FindIndex(a => a.uniqueName == allArtifacts[i].uniqueName) == -1) {
+				if (!allArtifacts[i].isComponent || myArtifacts.FindIndex(a => a.uniqueName == allArtifacts[i].uniqueName) == -1) {
 					regularArtifacts.Add(allArtifacts[i].uniqueName);
 				}
 			}
@@ -73,6 +73,17 @@ public class UpgradesController : MonoBehaviour {
 		
 		recentArtifacts.Clear();
 		recentBuildings.Clear();
+
+		if (!hasArtifactsGeneratedOnce) {
+			tier1Buildings.Clear();
+
+			for (int i = 0; i < DataHolder.s.buildings.Length; i++) {
+				var building = DataHolder.s.buildings[i];
+				if (building.myRarity != CartRarity.special) {
+					tier1Buildings.Add(building.uniqueName);
+				}
+			}
+		}
 
 		hasArtifactsGeneratedOnce = true;
 	}
@@ -420,12 +431,12 @@ public class UpgradesController : MonoBehaviour {
 	}
 
 	public int fleaMarketLocationCount = 3;
-	public bool rewardDestinationArtifact = true;
+	public bool rewardDestinationArtifact = false;
 	public bool rewardDestinationCart = true;
 
 	public void ResetFleaMarketAndDestCargoValues() {
 		fleaMarketLocationCount = 3;
-		rewardDestinationArtifact = true;
+		rewardDestinationArtifact = false;
 		rewardDestinationCart = true;
 	}
 	void SpawnShopItems() {
@@ -809,10 +820,16 @@ public class UpgradesController : MonoBehaviour {
 	}
 
 	public string GetRandomBuildingCargoForDestinationReward(ref bool didRollEpic) {
+		if(!hasArtifactsGeneratedOnce)
+			OnShopOpened();
+		
 		return _GetRandomBuildingCargo(tier1Buildings, ref DataSaver.s.GetCurrentSave().currentRun.destinationRarityBoost, destinationRarity, ref didRollEpic);
 	}
 
 	public string GetRandomBuildingCargoForFleaMarket(ref bool didRollEpic) {
+		if(!hasArtifactsGeneratedOnce)
+			OnShopOpened();
+		
 		List<string> rollSource = tier1Buildings;
 
 		if (DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().starChunk == 0) {
