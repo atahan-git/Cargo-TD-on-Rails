@@ -590,11 +590,17 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         }
     }
 
-    private void OnDisable() {
+    /*private void OnDisable() {
         if(myUIBar != null)
             if(myUIBar.gameObject != null)
-                Destroy(myUIBar.gameObject);
+                myUIBar.gameObject.SetActive(false);
     }
+
+    private void OnEnable() {
+        if(myUIBar != null)
+            if(myUIBar.gameObject != null)
+                myUIBar.gameObject.SetActive(true);
+    }*/
 
     private void OnDestroy() {
         if(myUIBar != null)

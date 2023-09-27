@@ -416,10 +416,12 @@ public class Train : MonoBehaviour {
             }
             
             for (int i = 0; i < UpgradesController.s.shopCarts.Count; i++) {
-                UpgradesController.s.shopCarts[i].ResetState();
+                if(UpgradesController.s.shopCarts[i] != null && UpgradesController.s.shopCarts[i].gameObject != null)
+                    UpgradesController.s.shopCarts[i].ResetState();
             }
             for (int i = 0; i < UpgradesController.s.shopArtifacts.Count; i++) {
-                UpgradesController.s.shopArtifacts[i].ResetState();
+                if(UpgradesController.s.shopArtifacts[i] != null && UpgradesController.s.shopArtifacts[i].gameObject != null)
+                    UpgradesController.s.shopArtifacts[i].ResetState();
             }
             
             //HpBarsCleanup(false);
@@ -650,9 +652,12 @@ public class Train : MonoBehaviour {
     }
     
 
-    public void UpdateTrainCartsBasedOnRotation(float rotationStartZ, float rotationEndZ, float maxXOffset, float arcLength, bool isGoingLeft) {// rotation angle is 45 degrees
+    public bool UpdateTrainCartsBasedOnRotation(float rotationStartZ, float rotationEndZ, float maxXOffset, float arcLength, bool isGoingLeft) {// rotation angle is 45 degrees
         StopShake();
         shakeBlock = 1f;
+
+
+        bool hasRotatedAtAll = false; // not super accurate
 
         if (rotationStartZ > 0) { // before we start rotating the ground
             for (int i = 0; i < carts.Count; i++) {
@@ -680,6 +685,8 @@ public class Train : MonoBehaviour {
 
                     curCart.transform.position = pos;
                     curCart.transform.rotation = Quaternion.Euler(0,angle*(isGoingLeft ? -1 : 1),0);
+
+                    hasRotatedAtAll = true;
                 } // rest of the carts are flat
             }
         }else if (rotationEndZ > 0) { // before we stop rotating
@@ -760,6 +767,7 @@ public class Train : MonoBehaviour {
             }
         }
 
+        return hasRotatedAtAll;
     }
 
 

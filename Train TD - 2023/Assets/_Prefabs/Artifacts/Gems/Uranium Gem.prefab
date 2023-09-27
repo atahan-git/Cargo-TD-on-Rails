@@ -146,5 +146,5 @@ MonoBehaviour:
   radiationDelayReduction: 1
   radiationDelayReductionPerLevel: 0.5
   curRadiationDelayReduction: 0
-  radiationDamageDelay: {x: 1, y: 3}
+  radiationDamageDelay: {x: 3, y: 6}
   radiationDamageAmount: {x: 50, y: 300}

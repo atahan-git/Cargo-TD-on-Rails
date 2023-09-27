@@ -1699,7 +1699,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
 
             foreach (var artifactSlot in building.GetComponentsInChildren<VisualizeArtifactSlot>()) {
-                artifactSlot.SetState(isSelecting);
+                artifactSlot.SetState(isSelecting && PlayStateMaster.s.isShopOrEndGame());
             }
         }
 

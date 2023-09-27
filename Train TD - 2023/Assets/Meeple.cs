@@ -32,8 +32,8 @@ public class Meeple : MonoBehaviour {
         
         // instant go to a location
         myPos = myZone.GetPointInZone();
-        transform.position = GetGroundPosition(myPos);
-        targetActualPos = transform.position;
+        transform.localPosition = GetGroundPosition(myPos);
+        targetActualPos = transform.localPosition;
         targetActualRot = transform.rotation;
     }
 
@@ -44,7 +44,7 @@ public class Meeple : MonoBehaviour {
             GetComponent<Rigidbody>().velocity = Vector3.zero;
             isBeingHandled = false;
             myPos = transform.localPosition;
-            targetActualPos = transform.position;
+            targetActualPos = transform.localPosition;
             targetActualRot = transform.rotation;
             myPos.y = 0;
         }
@@ -94,7 +94,7 @@ public class Meeple : MonoBehaviour {
                 }
             }
 
-            transform.position = Vector3.Lerp(transform.position, targetActualPos, 5 * Time.deltaTime);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, targetActualPos, 5 * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetActualRot, 20 * Time.deltaTime);
         }
     }
@@ -139,14 +139,17 @@ public class Meeple : MonoBehaviour {
     }
 
 
-    //in local pos, out global pos
+    //in local pos, out local pos
     Vector3 GetGroundPosition(Vector3 pos) {
         pos = myZone.transform.position + pos;
-        
+
+        var outPos = Vector3.zero;
         if (Physics.Raycast(pos + Vector3.up * 3, Vector3.down, out RaycastHit hit, 10, LevelReferences.s.groundLayer | LevelReferences.s.buildingLayer)) {
-            return hit.point;
+            outPos= hit.point;
         } else {
-            return pos + Vector3.up * MeepleZone.groundLevel;
+            outPos= pos + Vector3.up * MeepleZone.groundLevel;
         }
+
+        return myZone.transform.InverseTransformPoint(outPos);
     }
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7239420598153868562}
   - component: {fileID: 1812373998343152517}
+  - component: {fileID: -8475290823920918441}
   m_Layer: 13
   m_Name: Map Ground Grasslands
   m_TagString: Ground
@@ -46,10 +47,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myCells: []
-  foreignObjects: []
   adjustPosition: 1
   batchSize: 1023
   drawChunk: 0
+--- !u!114 &-8475290823920918441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5193842732475139983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a13c762c57ef3f349a9769b3e6cb55b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myLength: 25
 --- !u!1001 &8164085488900783066
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -79,7 +92,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 10c08cf247fdd30469ad3fe887e23f3c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 12.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 10c08cf247fdd30469ad3fe887e23f3c, type: 3}
       propertyPath: m_LocalRotation.w
