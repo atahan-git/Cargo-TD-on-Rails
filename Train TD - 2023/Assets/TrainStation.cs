@@ -6,7 +6,7 @@ using UnityEngine;
 public class TrainStation : MonoBehaviour {
     public Vector3 startPos;
     private void Start() {
-        startPos = transform.position;
+        //startPos = transform.position;
     }
 
     void Update() {

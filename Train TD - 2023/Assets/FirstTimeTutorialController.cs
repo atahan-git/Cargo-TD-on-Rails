@@ -55,7 +55,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
         //TutorialComplete();
         DataSaver.s.GetCurrentSave().isInARun = false;
         DataSaver.s.GetCurrentSave().tutorialProgress = new DataSaver.TutorialProgress();
-        DataSaver.s.GetCurrentSave().xpProgress = new DataSaver.XPProgress();
+        DataSaver.s.GetCurrentSave().metaProgress = new DataSaver.MetaProgress();
         MiniGUI_DisableTutorial.SetVal(true);
         //ShopStateController.s.BackToMainMenu();
         

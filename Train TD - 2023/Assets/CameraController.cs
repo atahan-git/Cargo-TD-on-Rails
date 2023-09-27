@@ -125,6 +125,10 @@ public class CameraController : MonoBehaviour {
         }
     }
 
+    public void MoveToCharSelectArea() {
+        cameraCenter.position = Vector3.back*5;
+    }
+
     
     public  bool cannotSelectButCanMoveOverride = false;
     private bool snappedToTrainLastFrame = false;

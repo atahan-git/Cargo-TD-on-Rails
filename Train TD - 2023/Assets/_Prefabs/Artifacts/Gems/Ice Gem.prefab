@@ -17,15 +17,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.67007005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.722
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.2533858
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -94,3 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc6bca375ae64234bb2c3dec86483747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boostIceDamageBase: 1
+  boostIceDamageIncreasePerLevel: 0.5
+  activeIceDamageBoost: 0
+  iceShards: []
+  currentIceShard: {fileID: 0}

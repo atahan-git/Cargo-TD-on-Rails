@@ -197,6 +197,19 @@ public class HexGrid : MonoBehaviour {
 			hex.transform.position = transform.position - (Vector3.forward* currentBiome.cityPrefab.GetComponent<HexTrackSegment>().myLength/2);
 			trackSegments.Add(hex.GetComponent<TrackSwitchHex>());
 		//}
+		print("made first chunk");
+	}
+
+	public void CreateEndAreaChunk() {
+		var prefab = GetCurrentBiome().groundPrefab;
+		var parentSegment = trackSegments[0].segmentA;
+
+		while (parentSegment.myLength < 120) {
+			parentSegment.AttachSegment(Instantiate(prefab).GetComponent<HexTrackSegment>());
+		}
+
+		parentSegment.transform.position += Vector3.forward* (SpeedController.s.missionDistance-40);
+		print("Made end area chunk");
 	}
 
 	Biome GetCurrentBiome() {
@@ -236,12 +249,13 @@ public class HexGrid : MonoBehaviour {
 			Destroy(obj);
 		}
 		hexParents.Clear();*/
-		var count = trackSegments.Count;
+		/*var count = trackSegments.Count;
 		for (int i =  count-1; i >= 0; i--) {
 			var obj = trackSegments[i].gameObject;
 			Destroy(obj);
-		}
+		}*/
 		trackSegments.Clear();
+		transform.DeleteAllChildren();
 	}
 	
 	/*void ClearGridsEditor() {
@@ -342,10 +356,12 @@ public class HexGrid : MonoBehaviour {
 
 	public List<TrackSwitchHex> trackSegments = new List<TrackSwitchHex>();
 	private void Update() {
+		if(PlayStateMaster.s.isShop())
+			return;
 		var delta = SpeedController.s.currentDistance - lastRealDistance;
 		lastRealDistance = SpeedController.s.currentDistance;
 		if (trackSegments.Count > 0) {
-			trackSegments[0].transform.position += Vector3.back * delta;
+			trackSegments[0].transform.position += Vector3.back*delta;
 		}
 	}
 
@@ -359,19 +375,20 @@ public class HexGrid : MonoBehaviour {
 	}
 
 	[Button]
-	public void AddTrackSwitch(bool lastSelectedSide, float segmentADistance, float segmentBDistance, bool isLastSegment) {
-		StartCoroutine(_AddTrackSwitch(lastSelectedSide, segmentADistance, segmentBDistance, isLastSegment));
+	public void AddTrackSwitch(bool lastSelectedSide, float segmentADistance, float segmentBDistance, bool isLastSegment, bool isGoingLeft) {
+		StartCoroutine(_AddTrackSwitch(lastSelectedSide, segmentADistance, segmentBDistance, isLastSegment, isGoingLeft));
 	}
 
-	IEnumerator _AddTrackSwitch(bool lastSelectedSide, float segmentADistance, float segmentBDistance, bool isLastSegment) {
+	IEnumerator _AddTrackSwitch(bool lastSelectedSide, float segmentADistance, float segmentBDistance, bool isLastSegment, bool isGoingLeft) {
 		while (makingFirstTrackLock) {
 			yield return null;
 		}
 
-		var lastSegmentPadding = isLastSegment ? 80 : 0;
+		var lastSegmentPadding = isLastSegment ? 120 : 0;
 		
 		var prefab = GetCurrentBiome().groundPrefab;
 		var switchHex = Instantiate(GetCurrentBiome().groundTrackSwitchPrefab).GetComponent<TrackSwitchHex>();
+		switchHex.isGoingLeft = isGoingLeft;
 
 		var prevSwitch = trackSegments[trackSegments.Count - 1];
 		var parentSegment = lastSelectedSide ? prevSwitch.segmentA : prevSwitch.segmentB;
@@ -388,9 +405,12 @@ public class HexGrid : MonoBehaviour {
 			yield return null;
 		}
 
-		if (trackSegments.Count >= 3) {
+		//switchHex.transform.SetParent(transform);
+		trackSegments.Add(switchHex);
+		if (trackSegments.Count > 3) {
 			var toBeDeleted = trackSegments[0];
 			trackSegments.RemoveAt(0);
+			trackSegments[0].transform.SetParent(transform);
 			Destroy(toBeDeleted.gameObject);
 		}
 	}

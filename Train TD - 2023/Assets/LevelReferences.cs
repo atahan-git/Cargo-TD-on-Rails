@@ -163,7 +163,8 @@ public class LevelReferences : MonoBehaviour {
     public float bigEffectFirstActivateTimeAfterCombatStarts = 15;
     public GameObject radiationDamagePrefab;
     public GameObject growthEffectPrefab;
-    
+
+    [Space] public GameObject coinDrop;
     /*public GameObject GetResourceParticle(ResourceTypes types) {
         switch (types) {
             case ResourceTypes.scraps:

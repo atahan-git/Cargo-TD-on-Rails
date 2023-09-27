@@ -309,11 +309,11 @@ public class Train : MonoBehaviour {
         
         StopShake();
 
+        
         var index = carts.IndexOf(cart);
 
         if (index > -1) {
-            carts.Remove(cart);
-            UpdateCartPositions();
+            RemoveCart(cart);
         } /*else {
             Debug.Log($"Cart with illegal index {index} {cart} {cart.gameObject.name}");
         }*/
@@ -336,7 +336,11 @@ public class Train : MonoBehaviour {
         var lostGame = carts.Count <= 0 || !hasEngine || !hasCriticalComponent;
 
         if (lostGame && PlayStateMaster.s.isCombatInProgress()) {
-            MissionLoseFinisher.s.MissionLost();
+            if (!hasEngine) {
+                MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noEngine);
+            } else {
+                MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noMysteryCargo);
+            }
         }
 
         // draw train already calls this

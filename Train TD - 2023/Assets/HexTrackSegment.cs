@@ -16,5 +16,6 @@ public class HexTrackSegment : MonoBehaviour {
     public void AttachSwitch(TrackSwitchHex toAttach) {
 	    toAttach.transform.SetParent(transform);
 	    toAttach.transform.position = transform.position + transform.forward * (myLength + toAttach.trackSwitchLength/2f);
+	    toAttach.transform.rotation = transform.rotation;
     }
 }

@@ -91,7 +91,6 @@ public class PathSelectorController : MonoBehaviour {
 
 		HexGrid.s.ClearTrackSwitchDistances();
 		HexGrid.s.MakeFirstPath(nextSegmentChangeDistance);
-		HexGrid.s.AddTrackSwitch(true, activeLevel.mySegmentsA[1].segmentLength, activeLevel.mySegmentsB[1].segmentLength, activeLevel.mySegmentsA.Length == 2);
 		//HexGrid.s.DoTrackSwitchAtDistance(nextSegmentChangeDistance);
 		
 		for (int i = 0; i < activeLevel.mySegmentsA.Length - 1; i++) {
@@ -113,6 +112,11 @@ public class PathSelectorController : MonoBehaviour {
 			_track.doubleLever.SetButtonPromptState(false);
 			_tracks.Add(_track);
 		}
+		
+		HexGrid.s.AddTrackSwitch(true, activeLevel.mySegmentsA[1].segmentLength, activeLevel.mySegmentsB[1].segmentLength, 
+			activeLevel.mySegmentsA.Length == 2,
+			_levers[currentSegment].currentState
+		);
 
 		for (int i = 0; i < _tracks.Count; i++) {
 			_tracks[i].SetTrackState(_tracks[i].currentState, true);
@@ -207,7 +211,8 @@ public class PathSelectorController : MonoBehaviour {
 			var isLastSegment = currentSegment >= _tracks.Count - 2;
 			HexGrid.s.AddTrackSwitch(_levers[currentSegment].currentState, 
 				activeLevel.mySegmentsA[currentSegment + 1].segmentLength, activeLevel.mySegmentsB[currentSegment + 1].segmentLength, 
-				isLastSegment);
+				isLastSegment,_levers[currentSegment+1].currentState
+				);
 		} else {
 			nextSegmentChangeDistance += 10000000;
 		}

@@ -81,7 +81,7 @@ public class CheatsController : MonoBehaviour
             }
 
             if (playerDealMaxDamage) {
-                TweakablesMaster.s.myTweakables.playerDamageMultiplier = 10000;
+                TweakablesMaster.s.myTweakables.playerDamageMultiplier = 20;
                 TweakablesMaster.s.ApplyTweakableChange();
             }
 

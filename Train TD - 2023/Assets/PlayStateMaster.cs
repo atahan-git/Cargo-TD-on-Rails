@@ -52,14 +52,15 @@ public class PlayStateMaster : MonoBehaviour {
         OnNewWorldCreation.AddListener(MapController.s.GenerateStarMap);
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
 
+        OnShopEntered.AddListener(SpeedController.s.ResetDistance);
         OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
         OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
         OnShopEntered.AddListener(WorldMapCreator.s.ReturnToRegularMap);
+        OnShopEntered.AddListener(HexGrid.s.RefreshGrid);
         OnShopEntered.AddListener(ShopStateController.s.OpenShopUI);
         OnShopEntered.AddListener(FMODMusicPlayer.s.PlayMenuMusic);
         OnShopEntered.AddListener(MainMenu.s.ExitMainMenu);
         OnShopEntered.AddListener(Pauser.s.Unpause);
-        OnShopEntered.AddListener(HexGrid.s.RefreshGrid);
         OnShopEntered.AddListener(CharacterSelector.s.CheckAndShowCharSelectionScreen);
         OnShopEntered.AddListener(PlayerWorldInteractionController.s.OnEnterShopScreen);
         OnShopEntered.AddListener(FirstTimeTutorialController.s.OnEnterShop);

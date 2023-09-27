@@ -250,6 +250,20 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 				ArtifactsController.s.GetBonusArtifact(bonusArtifactUIStar, artifactRewardUniqueName);
 				bonusArtifactUIStar = null;
 			}
+
+			var rewardMoney = 0;
+			if (maxHealth >= 40) {
+				var rewardMoneyMax = Mathf.Log(maxHealth / 20, 2); // ie 40 = 1, 80 = 2, 400~= 4
+				rewardMoney = Mathf.RoundToInt(Random.Range(0, rewardMoneyMax));
+			} else {
+				if (Random.value < maxHealth / 80) {
+					rewardMoney = 1;
+				}
+			}
+
+			if (rewardMoney > 0) {
+				Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(uiTransform.position, rewardMoney);
+			}
 		}
 
 		var pos = aliveObject.position;

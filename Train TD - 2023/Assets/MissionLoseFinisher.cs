@@ -20,6 +20,7 @@ public class MissionLoseFinisher : MonoBehaviour {
     public GameObject loseUI;
 
     public TMP_Text tipText;
+    public TMP_Text loseReasonText;
 
     public string[] loseTips;
 
@@ -27,11 +28,31 @@ public class MissionLoseFinisher : MonoBehaviour {
 
     public GameObject loseContinueButton;
 
-    public void MissionLost() {
+    public enum MissionLoseReason {
+        noEngine, noMysteryCargo, abandon
+    }
+    
+    public void MissionLost(MissionLoseReason loseReason) {
         if (isMissionLost)
             return;
 
         tipText.text = loseTips[Random.Range(0, loseTips.Length)];
+
+        switch (loseReason) {
+            case MissionLoseReason.noEngine:
+                loseReasonText.text = "You cannot continue further without your main engine.";
+                break;
+            case MissionLoseReason.noMysteryCargo:
+                loseReasonText.text = "Your mission is useless without the mysterious cargo.";
+                break;
+            case MissionLoseReason.abandon:
+                loseReasonText.text = "You abandoned your mission.";
+                break;
+            default:
+                loseReasonText.text = "You cannot continue for unknown reasons (the programmer needs to fill this in!.";
+                Debug.Log($"Unknown mission lose reason {loseReason}");
+                break;
+        }
 
 
         isMissionLost = true;
@@ -63,7 +84,7 @@ public class MissionLoseFinisher : MonoBehaviour {
         }
 
         if (eligibleBossArtifacts.Count > 0) {
-            DataSaver.s.GetCurrentSave().xpProgress.bonusArtifact = eligibleBossArtifacts[Random.Range(0, eligibleBossArtifacts.Count)].uniqueName;
+            DataSaver.s.GetCurrentSave().metaProgress.bonusArtifact = eligibleBossArtifacts[Random.Range(0, eligibleBossArtifacts.Count)].uniqueName;
         }
 
         DataSaver.s.GetCurrentSave().isInARun = false;

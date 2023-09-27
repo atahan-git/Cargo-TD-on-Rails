@@ -60,14 +60,26 @@ public class UIElementFollowWorldTarget : MonoBehaviour {
     }
 
     void SetPosition() {
+        if (transformMode)
+            sourceLocation = sourceTransform.position;
+        
+        SetPosition(sourceLocation);
+    }
+
+    public void OneTimeSetPosition(Vector3 target) {
+        CanvasRect = transform.root.GetComponent<RectTransform>();
+        UIRect = GetComponent<RectTransform>();
+        ParentRect = transform.parent.GetComponent<RectTransform>();
+        mainCam = LevelReferences.s.mainCam;
+        SetPosition(target);
+    }
+    void SetPosition(Vector3 target) {
         //then you calculate the position of the UI element
         //0,0 for the canvas is at the center of the screen, whereas WorldToViewPortPoint
         //treats the lower left corner as 0,0. Because of this, you need to subtract the height / width of the canvas * 0.5 to get the correct position.
         //SetOffset(); // for debugging
-        if (transformMode)
-            sourceLocation = sourceTransform.position;
         
-        Vector3 ViewportPosition = mainCam.WorldToViewportPoint(sourceLocation);
+        Vector3 ViewportPosition = mainCam.WorldToViewportPoint(target);
 
         if (ViewportPosition.z > 0) {
             // if the object is within our view
@@ -93,6 +105,8 @@ public class UIElementFollowWorldTarget : MonoBehaviour {
             UIRect.anchoredPosition = new Vector2(100000, 100000);
         }
     }
+    
+    
 
     private void OnEnable() {
         this.enabled = sourceTransform != null;

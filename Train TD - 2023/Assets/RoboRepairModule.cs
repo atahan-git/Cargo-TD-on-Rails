@@ -79,7 +79,7 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     public void InstantRepair(bool doRepair) {
         if (doRepair) {
             BreadthFirstRepairSearch();
-            BreadthFirstRepairSearch();
+            //BreadthFirstRepairSearch();
         }
     }
 

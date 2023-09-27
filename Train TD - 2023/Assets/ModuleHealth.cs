@@ -524,7 +524,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         
         var emptyCart = Instantiate(LevelReferences.s.emptyCart).GetComponent<Cart>();
         
-        Train.s.RemoveCart(myCart);
+        Train.s.CartDestroyed(myCart);
         Train.s.AddCartAtIndex(myCart.trainIndex, emptyCart);
         
         Destroy(gameObject);

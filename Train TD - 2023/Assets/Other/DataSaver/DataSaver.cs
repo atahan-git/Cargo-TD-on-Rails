@@ -217,17 +217,18 @@ public class DataSaver {
 		public bool isInARun = false;
 		public RunState currentRun = new RunState("0.0.0.a"); // assumed to be never null
 
-		public XPProgress xpProgress = new XPProgress();
+		public MetaProgress metaProgress = new MetaProgress();
 		public TutorialProgress tutorialProgress = new TutorialProgress();
 	}
 
 	[Serializable]
-	public class XPProgress {
-		public int xp = 0;
+	public class MetaProgress {
+		public int castlesTraveled = 0;
+		public int money = 0;
 		public List<string> unlockedStarterArtifacts = new List<string>();
 		public string bonusArtifact = "";
 
-		public XPProgress() {
+		public MetaProgress() {
 			unlockedStarterArtifacts.Add("starter_artifact");
 		}
 	}

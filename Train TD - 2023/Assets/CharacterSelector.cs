@@ -41,8 +41,9 @@ public class CharacterSelector : MonoBehaviour {
             PlayerWorldInteractionController.s.canOnlySelectCharSelectStuff = true;
             LevelReferences.s.cartHealthParent.gameObject.SetActive(false);
             ShopStateController.s.mapOpenButton.interactable = false;
+            CameraController.s.MoveToCharSelectArea();
             
-            if (DataSaver.s.GetCurrentSave().xpProgress.xp == 0) {
+            if (DataSaver.s.GetCurrentSave().metaProgress.castlesTraveled == 0) {
                 SelectCharacter(DataHolder.s.characters[0].myCharacter);
                 CharSelectedAndLeave();
             }
@@ -67,7 +68,7 @@ public class CharacterSelector : MonoBehaviour {
 
         selectedChar = allChars[0].myCharacter;
 
-        var progress = DataSaver.s.GetCurrentSave().xpProgress;
+        var progress = DataSaver.s.GetCurrentSave().metaProgress;
         
         StarterTrainSelector.s.DrawSections();
         /*if (progress.unlockedStarterArtifacts.Count == 0) {
@@ -118,7 +119,7 @@ public class CharacterSelector : MonoBehaviour {
         DataSaver.s.GetCurrentSave().currentRun.currentAct = 1;
         DataSaver.s.GetCurrentSave().currentRun.SetCharacter(selectedChar);
         
-        DataSaver.s.GetCurrentSave().xpProgress.bonusArtifact = "";
+        DataSaver.s.GetCurrentSave().metaProgress.bonusArtifact = "";
 
         DataSaver.s.SaveActiveGame();
 

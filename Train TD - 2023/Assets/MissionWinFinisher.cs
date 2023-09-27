@@ -60,8 +60,8 @@ public class MissionWinFinisher : MonoBehaviour {
 		EnemyWavesController.s.Cleanup();
 		PlayerWorldInteractionController.s.canSelect = false;
 		//EnemyHealth.winSelfDestruct?.Invoke(false);
-		
-		
+
+
 
 		for (int i = 0; i < scriptsToDisable.Length; i++) {
 			scriptsToDisable[i].enabled = false;
@@ -141,13 +141,13 @@ public class MissionWinFinisher : MonoBehaviour {
 		eligibleBossArtifacts.Shuffle();
 
 		if (eligibleBossArtifacts.Count > 0) {
-			DataSaver.s.GetCurrentSave().xpProgress.bonusArtifact = eligibleBossArtifacts[Random.Range(0, eligibleBossArtifacts.Count)].uniqueName;
+			DataSaver.s.GetCurrentSave().metaProgress.bonusArtifact = eligibleBossArtifacts[Random.Range(0, eligibleBossArtifacts.Count)].uniqueName;
 		}
 		
 		if (current_act >= 2) {
 			for (int i = 0; i < eligibleBossArtifacts.Count; i++) {
-				if (!DataSaver.s.GetCurrentSave().xpProgress.unlockedStarterArtifacts.Contains(eligibleBossArtifacts[i].uniqueName)) {
-					DataSaver.s.GetCurrentSave().xpProgress.unlockedStarterArtifacts.Add(eligibleBossArtifacts[i].uniqueName);
+				if (!DataSaver.s.GetCurrentSave().metaProgress.unlockedStarterArtifacts.Contains(eligibleBossArtifacts[i].uniqueName)) {
+					DataSaver.s.GetCurrentSave().metaProgress.unlockedStarterArtifacts.Add(eligibleBossArtifacts[i].uniqueName);
 					break;
 				}
 			}
@@ -173,7 +173,7 @@ public class MissionWinFinisher : MonoBehaviour {
 		var playerStar = mySave.currentRun.map.GetPlayerStar();
 
 		Train.s.SaveTrainState();
-		mySave.xpProgress.xp += 1;
+		mySave.metaProgress.castlesTraveled += 1;
 	}
 
 	

@@ -319,7 +319,7 @@ public class UpgradesController : MonoBehaviour {
 		var artifactCount = 0;
 
 
-		if (DataSaver.s.GetCurrentSave().xpProgress.xp > 2) {
+		if (DataSaver.s.GetCurrentSave().metaProgress.castlesTraveled > 2) {
 			var artifactRoll = Random.value;
 			if (artifactRoll < 0.2f) {
 				// 2 artifacts

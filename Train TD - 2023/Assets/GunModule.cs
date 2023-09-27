@@ -319,6 +319,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         while (true) {
             while (!IsBarrelPointingCorrectly || !hasAmmo || waitTimer > 0) {
                 waitTimer -= Time.deltaTime;
+                //print(IsBarrelPointingCorrectly);
                 yield return null;
             }
             
