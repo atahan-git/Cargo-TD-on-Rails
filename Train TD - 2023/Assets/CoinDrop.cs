@@ -4,20 +4,53 @@ using UnityEngine;
 
 public class CoinDrop : MonoBehaviour {
     private Vector2 randomDir;
+
+    public GameObject[] coins;
+    
     public void SetUp(Vector3 source, int _amount, bool isMiniCoin = false) {
         amount = _amount;
         GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(source);
+        
+        for (int i = 0; i < coins.Length; i++) {
+            coins[i].SetActive(false);
+        }
         //GetComponentInChildren<MoneyUIDisplay>().SetAmount(amount);
         if (!isMiniCoin) {
             StartCoroutine(SpawnMiniCoins(source, _amount));
+        } else {
+            switch (amount) {
+                case 1:
+                    coins[0].SetActive(true);
+                    break;
+                case 10:
+                    coins[1].SetActive(true);
+                    break;
+                case 100:
+                    coins[2].SetActive(true);
+                    break;
+                case 1000:
+                    coins[3].SetActive(true);
+                    break;
+            }
         }
 
         randomDir = Random.insideUnitCircle;
     }
 
     IEnumerator SpawnMiniCoins(Vector3 source, int count) {
-        for (int i = 0; i < count; i++) {
-            Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(source /*+ Random.insideUnitSphere * 0.5f*/, 1, true);
+        while(count > 0) {
+            var am = 1;
+            if (count >= 1000) {
+                am = 1000;
+            }else if (count >= 100) {
+                am = 100;
+            }else if (count >= 10) {
+                am = 10;
+            }
+
+            Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(source /*+ Random.insideUnitSphere * 0.5f*/, am, true);
+
+            count -= am;
             //yield return new WaitForSeconds(Random.Range(0.05f, 0.15f));
         }
 

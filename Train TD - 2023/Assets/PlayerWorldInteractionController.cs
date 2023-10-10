@@ -130,11 +130,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 HideInfo();
             }
         }
-        
-        if (canOnlySelectCharSelectStuff) { 
-            CheckGate();
-            return;       
-        }
 
         if (!isDragging() && !infoCardActive) {
             if(PlayStateMaster.s.isShopOrEndGame())
@@ -155,7 +150,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             CheckAndDoClick();
             //CheckAndDoDragCombat();
         } else {
-            CheckAndDoDrag();
+            if (!canOnlySelectCharSelectStuff) {
+                CheckAndDoDrag();
+            }
+
             CheckGate();
         }
     }
@@ -451,10 +449,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     bool CanDragArtifact(Artifact artifact) {
-        return true; //we might have artifacts later that are permanently glued to a cart.
+        return !canOnlySelectCharSelectStuff; //we might have artifacts later that are permanently glued to a cart.
     }
     bool CanDragCart(Cart cart) {
-        return !cart.isMainEngine && cart.canPlayerDrag;
+        return (!cart.isMainEngine && cart.canPlayerDrag) && !canOnlySelectCharSelectStuff;
     }
 
     public bool isToggleDragStarted = false;
@@ -521,6 +519,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     private void BeginMeepleDrag() {
         isSnapping = false;
         selectedMeeple.SetHandlingState(true);
+        selectedMeeple.GetClicked();
 
         dragBasePos = selectedMeeple.transform.position;
         offset = dragBasePos - GetMousePositionOnPlane();
@@ -1148,6 +1147,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
 
     private bool shielding = false;
+    private float holdTimer;
     void CheckAndDoClick() {
         if (!isDragging()) {
             if (selectedCart != null) {
@@ -1163,43 +1163,57 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     HideInfo();
                     TryRepairCart(selectedCart);
                 } else*/ if (clickCart.action.WasPerformedThisFrame() && DirectControlMaster.s.directControlLock <= 0) {
-                    
-                    SelectBuilding(selectedCart, true, false);
-                    
-                    switch (currentSelectMode) {
-                        case SelectMode.cart:
-                            //TryRepairShieldCart(selectedCart);
 
-                            break;
-                        case SelectMode.directControl:
-                        case SelectMode.topButton:
-                            //var stateChanger = selectedCart.GetComponentInChildren<CursorStateChanger>();
-                            var directControllable = selectedCart.GetComponentInChildren<DirectControllable>();
+                    PerformClick();
 
-                            if (directControllable) {
-                                DirectControlMaster.s.AssumeDirectControl(selectedCart.GetComponentInChildren<DirectControllable>());
-                            } /*else if (stateChanger) {
-                            SetCursorState(stateChanger.targetState, stateChanger.color);
-                        }*/
-                            break;
-                        case SelectMode.reload:
-                            var moduleAmmo = selectedCart.GetComponentInChildren<ModuleAmmo>();
-                            if (moduleAmmo) {
-                                moduleAmmo.Reload(GetReloadAmount());
-                            }
-
-                            break;
-                        case SelectMode.engineBoost:
-                            SpeedController.s.ActivateBoost();
-                            break;
+                }else if (clickCart.action.IsInProgress()) {
+                    holdTimer -= Time.deltaTime;
+                    if (holdTimer <= 0) {
+                        holdTimer = 0.25f;
+                        PerformClick();
                     }
-                    
+                } else {
+                    holdTimer = 1f;
                 }
             } else if (selectedEnemy != null) {
                 if (clickCart.action.WasPerformedThisFrame()) {
                     HideInfo();
                 }
             }
+        } else {
+            holdTimer = 1f;
+        }
+    }
+
+    void PerformClick() {
+        SelectBuilding(selectedCart, true, false);
+                    
+        switch (currentSelectMode) {
+            case SelectMode.cart:
+                //TryRepairShieldCart(selectedCart);
+
+                break;
+            case SelectMode.directControl:
+            case SelectMode.topButton:
+                //var stateChanger = selectedCart.GetComponentInChildren<CursorStateChanger>();
+                var directControllable = selectedCart.GetComponentInChildren<DirectControllable>();
+
+                if (directControllable) {
+                    DirectControlMaster.s.AssumeDirectControl(selectedCart.GetComponentInChildren<DirectControllable>());
+                } /*else if (stateChanger) {
+                            SetCursorState(stateChanger.targetState, stateChanger.color);
+                        }*/
+                break;
+            case SelectMode.reload:
+                var moduleAmmo = selectedCart.GetComponentInChildren<ModuleAmmo>();
+                if (moduleAmmo) {
+                    moduleAmmo.Reload(GetReloadAmount());
+                }
+
+                break;
+            case SelectMode.engineBoost:
+                SpeedController.s.ActivateBoost();
+                break;
         }
     }
 
@@ -1554,8 +1568,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             
             //GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
         } else {
-            
-           //GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+            meeple.shownChat = false;
+            //GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
         }
 
         if (outline != null) {

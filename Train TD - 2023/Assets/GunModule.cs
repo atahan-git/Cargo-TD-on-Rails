@@ -290,9 +290,10 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
+            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().metaProgress.damageUpgradesBought * 0.2f);
             dmgMul *= sniperDamageMultiplier;
         } else {
-            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMutliplier + WorldDifficultyController.s.currentDamageIncrease;
+            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
         }
 
         return dmgMul;
@@ -303,8 +304,9 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
+            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().metaProgress.damageUpgradesBought * 0.2f);
         } else {
-            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMutliplier + WorldDifficultyController.s.currentDamageIncrease;
+            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
         }
         
 

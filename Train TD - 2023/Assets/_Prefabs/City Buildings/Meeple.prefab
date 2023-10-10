@@ -405,6 +405,8 @@ MonoBehaviour:
   moveSpeed: {x: 0.1, y: 0.2}
   isBeingHandled: 0
   heroSound: {fileID: 867836357618813570}
+  myPrevBubble: {fileID: 0}
+  clickPromptPrefab: {fileID: 2541092566763966253, guid: 186c8db1cc3a7474fb01c0e1651e3545, type: 3}
 --- !u!54 &3991012697969985994
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -605,3 +607,6 @@ MonoBehaviour:
   minBrightness: 0.3
   maxBrightness: 0.8
   tilingRanges: {x: 0.8, y: 1.4}
+  forceColors: 0
+  forcedColor1: {r: 1, g: 0, b: 1, a: 1}
+  forcedColor2: {r: 0, g: 0, b: 0, a: 1}

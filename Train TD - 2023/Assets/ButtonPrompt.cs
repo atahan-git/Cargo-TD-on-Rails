@@ -20,12 +20,15 @@ public class ButtonPrompt : MonoBehaviour {
     [HideIf("gamepadModeOnly")]
     public Sprite keyboardSprite;
 
+    
+    public bool alwaysActive = false;
+
     public void SetState(bool isOn, bool gamepadMode) {
-        if (!isOn || (gamepadModeOnly && !gamepadMode)) {
+        if ((isOn && (!gamepadModeOnly || gamepadMode)) || alwaysActive) {
+            gameObject.SetActive(true);
+        } else {
             gameObject.SetActive(false);
             return;
-        } else {
-            gameObject.SetActive(true);
         }
 
         if (gamepadMode) {
@@ -41,11 +44,12 @@ public class ButtonPrompt : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        if(GamepadControlsHelper.s != null)
+        if (GamepadControlsHelper.s != null)
             GamepadControlsHelper.s.buttonPrompts.Remove(this);
+        
     }
 
-    
+
     [Button]
     void Debug_ApplyGamepadSprite() {
         keyPrompt.sprite = gamepadSprite;

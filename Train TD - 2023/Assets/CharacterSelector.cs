@@ -30,8 +30,13 @@ public class CharacterSelector : MonoBehaviour {
         charSelectUI.SetActive(false);
     }
 
+    private bool showWakeUp = false;
     public void CheckAndShowCharSelectionScreen() {
         PlayerWorldInteractionController.s.canSelect = true;
+        if (showWakeUp) {
+            WakeUpAnimation.s.Engage();
+        }
+        
         if (!DataSaver.s.GetCurrentSave().isInARun) {
             charSelectUI.SetActive(true);
             startTrainArea.SetActive(false);
@@ -46,7 +51,12 @@ public class CharacterSelector : MonoBehaviour {
             if (DataSaver.s.GetCurrentSave().metaProgress.castlesTraveled == 0) {
                 SelectCharacter(DataHolder.s.characters[0].myCharacter);
                 CharSelectedAndLeave();
+                PlayStateMaster.s.supressFadeOut = true;
+                showWakeUp = true;
+            } else {
+                WakeUpAnimation.s.Engage();
             }
+            
         } else {
             charSelectUI.SetActive(false);
             startTrainArea.SetActive(true);
@@ -119,7 +129,9 @@ public class CharacterSelector : MonoBehaviour {
         DataSaver.s.GetCurrentSave().currentRun.currentAct = 1;
         DataSaver.s.GetCurrentSave().currentRun.SetCharacter(selectedChar);
         
-        DataSaver.s.GetCurrentSave().metaProgress.bonusArtifact = "";
+        DataSaver.s.GetCurrentSave().metaProgress.bonusComponent = "";
+        DataSaver.s.GetCurrentSave().metaProgress.bonusGem = "";
+        DataSaver.s.GetCurrentSave().metaProgress.bonusCart = "";
 
         DataSaver.s.SaveActiveGame();
 

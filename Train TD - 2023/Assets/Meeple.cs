@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 public class Meeple : MonoBehaviour {
@@ -21,7 +23,23 @@ public class Meeple : MonoBehaviour {
     public bool isBeingHandled = false;
 
     public MeepleSound heroSound;
-    public GameObject chatPrefab;
+    [ReadOnly]
+    public MeepleSpeechBubble myPrevBubble;
+
+
+    public bool isSpecialMeeple = false;
+    public float basePitch = 1.4f;
+
+
+    private void Start() {
+        if (isSpecialMeeple) {
+            targetActualPos = transform.localPosition;
+            targetActualRot = transform.rotation;
+            myPos = targetActualPos;
+            target = targetActualPos;
+            lookRotation = targetActualRot;
+        }
+    }
 
     public void SetUp(MeepleZone zone) {
         myZone = zone;
@@ -44,20 +62,27 @@ public class Meeple : MonoBehaviour {
             GetComponent<Rigidbody>().velocity = Vector3.zero;
             isBeingHandled = false;
             myPos = transform.localPosition;
+            myPos.y = 0;
             targetActualPos = transform.localPosition;
             targetActualRot = transform.rotation;
-            myPos.y = 0;
-        }
-        
-        
-        if (!isMoving) {
-            curSpeed = Random.Range(moveSpeed.x, moveSpeed.y);
-            target = myZone.GetPointInZone();
-            isMoving = true;
-            lookRotation = Quaternion.LookRotation(target - myPos);
         }
 
-        Invoke(nameof(PickNewTarget), Random.Range(moveTimes.x, moveTimes.y)*4);
+
+        if (!isMoving) {
+            curSpeed = Random.Range(moveSpeed.x, moveSpeed.y);
+            if (!isSpecialMeeple) {
+                target = myZone.GetPointInZone();
+                lookRotation = Quaternion.LookRotation(target - myPos);
+            }
+
+            if (Vector3.Distance(targetActualPos, target) > 0.5f) {
+                isMoving = true;
+            }
+        }
+
+        if (!isSpecialMeeple) {
+            Invoke(nameof(PickNewTarget), Random.Range(moveTimes.x, moveTimes.y) * 4);
+        }
     }
 
     private bool cycle;
@@ -134,14 +159,19 @@ public class Meeple : MonoBehaviour {
     }
 
 
+    public bool shownChat = false;
+
     public void ShowChat() {
-        heroSound.PlayClip();
+        if (!shownChat && !isSpecialMeeple) {
+            heroSound.PlayClip();
+            shownChat = true;
+        }
     }
 
 
     //in local pos, out local pos
     Vector3 GetGroundPosition(Vector3 pos) {
-        pos = myZone.transform.position + pos;
+        pos = transform.parent.position + pos;
 
         var outPos = Vector3.zero;
         if (Physics.Raycast(pos + Vector3.up * 3, Vector3.down, out RaycastHit hit, 10, LevelReferences.s.groundLayer | LevelReferences.s.buildingLayer)) {
@@ -150,6 +180,46 @@ public class Meeple : MonoBehaviour {
             outPos= pos + Vector3.up * MeepleZone.groundLevel;
         }
 
-        return myZone.transform.InverseTransformPoint(outPos);
+        return transform.parent.InverseTransformPoint(outPos);
+    }
+
+    Action callAfterClick;
+    public void SpecialMeepleSpeak(string text, Action _callAfterClick) {
+        MeepleSpeechMaster.s.Speak(this,text);
+        ShowClickPrompt(true);
+        callAfterClick = _callAfterClick;
+    }
+
+    public GameObject clickPromptPrefab;
+    private GameObject currentClickPrompt;
+    public void ShowClickPrompt(bool state) {
+        if (currentClickPrompt == null) {
+            currentClickPrompt = Instantiate(clickPromptPrefab, LevelReferences.s.uiDisplayParent);
+            currentClickPrompt.GetComponent<UIElementFollowWorldTarget>().SetUp(transform);
+        }
+        
+        currentClickPrompt.SetActive(state);
+    }
+
+    private string[] speech = new[] {
+        "Stop pushing me.",
+        "What are you doing?",
+        "How's your day going?",
+        "It's a long way to the meteor.",
+    };
+    public void GetClicked() {
+        if (isSpecialMeeple) {
+            if (MeepleSpeechMaster.s.RemoveBubble(this)) {
+                ShowClickPrompt(false);
+                callAfterClick?.Invoke();
+                callAfterClick = null;
+            }
+        } else {
+            if (myPrevBubble != null) {
+                MeepleSpeechMaster.s.RemoveBubble(this);
+            } else {
+                MeepleSpeechMaster.s.Speak(this, speech[Random.Range(0, speech.Length)]);
+            }
+        }
     }
 }

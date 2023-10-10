@@ -87,7 +87,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         reflectiveShields = false;
         
         damageDefenders.Clear();
-        maxHealth = baseHealth * (1+(boostHealthOnUpgrade*level));
+        maxHealth = baseHealth * (1+(boostHealthOnUpgrade*level)) * (0.6f + (DataSaver.s.GetCurrentSave().metaProgress.armorUpgradesBought* 0.2f));
         
         maxShields = baseShields;
         canHaveShields = true;
@@ -110,10 +110,8 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             currentShields = maxShields;
         }
         
-
         glassCart = false;
 
-        
         UpdateHpState();
     }
 
@@ -590,13 +588,13 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         }
     }
 
-    /*private void OnDisable() {
+    private void OnDisable() {
         if(myUIBar != null)
             if(myUIBar.gameObject != null)
                 myUIBar.gameObject.SetActive(false);
     }
 
-    private void OnEnable() {
+    /*private void OnEnable() {
         if(myUIBar != null)
             if(myUIBar.gameObject != null)
                 myUIBar.gameObject.SetActive(true);

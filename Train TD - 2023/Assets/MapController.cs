@@ -15,10 +15,10 @@ public class MapController : MonoBehaviour {
 	}
 
 	public int firstLevelDistance = 1;
-	public int bossDistance = 8;
+	private int bossDistance = 5;
 
-	public int minStarCount = 12;
-    public int maxStarCount = 18;
+	private int minStarCount = 8;
+	private int maxStarCount = 15;
 
     public int currentAct;
     
@@ -57,7 +57,7 @@ public class MapController : MonoBehaviour {
 	    Cleanup();
 	    var myMap = new List<MapChunk>();
 
-	    currentAct = DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
+	    currentAct = DataSaver.s.GetCurrentSave().currentRun.currentAct;
 	    
 	    GenerateMapWithWaveCollapse(myMap);
 	    
@@ -77,7 +77,7 @@ public class MapController : MonoBehaviour {
     }
 
     ActData GetCurrentAct() {
-	    return acts[currentAct];
+	    return acts[currentAct-1];
     }
     
 
@@ -140,7 +140,6 @@ public class MapController : MonoBehaviour {
 	readonly string[] suffixes = new []{"ford", "hill", "ville", "wood", "burg", "bridge", "ton"};
 	private HashSet<string> givenStarNames = new HashSet<string>();
 
-	public float cityRewardVariance = 0.1f;
     private StarState CreateStarState(int starChunk) {
 	    var actData = GetCurrentAct();
 	    
@@ -161,44 +160,39 @@ public class MapController : MonoBehaviour {
 
 	    CityData city;
 	    if (starChunk <= 1) {
-		    city = actData.firstCities[Random.Range(0, actData.firstCities.Length)].cityData;
+		    city = GetCityData(actData.firstCities).cityData;
 	    } else {
-		    city = actData.remainingCities[Random.Range(0, actData.remainingCities.Length)].cityData;
+		    city = GetCityData(actData.remainingCities).cityData;
 	    }
 	    
 	    var info = new StarState($"{potentialStarName} {city.nameSuffix}");
 	    
 	    info.city = city;
 
-
-	    /*for (int i = 0; i < cargoTiers.Length; i++) {
-		    var cost = cargoTiers[i].cost * (1 + Random.Range(-cargoTiers[i].costVariance, + cargoTiers[i].costVariance));
-		    var reward = cargoTiers[i].reward * (1 + Random.Range(-cargoTiers[i].rewardVariance, + cargoTiers[i].rewardVariance));
-		    
-		    info.cargoData.Add(new CargoDeliverMissionData(){cost =  (int)cost, reward = (int)reward});
-	    }*/
-
-
-	    /*if (starChunk % 2 == 1) {
-		    info.rewardCart = 1;
-	    } */
-	    
-	    // now we get a reward cart every level if the train is shorter than 8 and an extra one for boss levels.
-	    // setting this to 1 will give player a cart no matter their train length.
-	    //info.rewardCart = 1; 
-
-	    info.rewardMoney = (int)(city.rewardAmount * (1 + Random.Range(-cityRewardVariance, cityRewardVariance)));
-
 	    info.starChunk = starChunk;
 
-	    info.biome = currentAct;
+	    info.currentAct = currentAct;
+	    info.biome = currentAct - 1;
 
-	    if (starChunk >= 7) {
+	    if (starChunk >= bossDistance) {
 		    info.biome += 1;
 		    info.biome = Mathf.Clamp(info.biome, 0, 2);
 	    }
 	    
 	    return info;
+    }
+
+
+    public CityDataScriptable GetCityData(CityDataScriptable[] pool) {
+	    var weights = new List<NumberWithWeights>();
+
+	    for (int i = 0; i < pool.Length; i++) {
+		    weights.Add(new NumberWithWeights(){number=i, weight = pool[i].cityData.cityRarity});
+	    }
+
+	    var randIndex = NumberWithWeights.WeightedRandomRoll(weights.ToArray());
+
+	    return pool[randIndex];
     }
 
     /*private List<int> MakeShops(StarMapState starMapState) {
@@ -564,7 +558,7 @@ public class MapController : MonoBehaviour {
 					    }
 					    break;
 				    case 3: // a = 3, b = 3
-					    switch (randomLayout % 5) {
+					    switch (randomLayout % 4) {
 								// all possibilities
 							    /*ConnectStars(aStars[0], bStars[0]);
 							    ConnectStars(aStars[0], bStars[1]);
@@ -578,28 +572,28 @@ public class MapController : MonoBehaviour {
 							    ConnectStars(aStars[1], bStars[1]);
 							    ConnectStars(aStars[2], bStars[2]);
 							    break;
-						    case 1:
+						    /*case 1:
 							    ConnectStars(aStars[0], bStars[0]);
 							    ConnectStars(aStars[1], bStars[0]);
 							    ConnectStars(aStars[1], bStars[1]);
 							    ConnectStars(aStars[1], bStars[2]);
 							    ConnectStars(aStars[2], bStars[2]);
-							    break;
-						    case 2:
+							    break;*/
+						    case 1:
 							    ConnectStars(aStars[0], bStars[0]);
 							    ConnectStars(aStars[0], bStars[1]);
 							    ConnectStars(aStars[1], bStars[1]);
 							    ConnectStars(aStars[1], bStars[2]);
 							    ConnectStars(aStars[2], bStars[2]);
 							    break;
-						    case 3:
+						    case 2:
 							    ConnectStars(aStars[0], bStars[0]);
 							    ConnectStars(aStars[1], bStars[0]);
 							    ConnectStars(aStars[1], bStars[1]);
 							    ConnectStars(aStars[2], bStars[1]);
 							    ConnectStars(aStars[2], bStars[2]);
 							    break;
-						    case 4:
+						    case 3:
 							    ConnectStars(aStars[0], bStars[0]);
 							    ConnectStars(aStars[0], bStars[1]);
 							    ConnectStars(aStars[1], bStars[1]);
@@ -726,6 +720,7 @@ public class StarState {
 	public int rewardCart = 0;
 	public int rewardMoney = 0;
 	
+	public int currentAct = 0;
 	public int biome = 0;
 
 	public List<string> outgoingConnections = new List<string>();

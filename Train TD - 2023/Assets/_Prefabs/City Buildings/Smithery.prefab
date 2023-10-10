@@ -223,6 +223,7 @@ MonoBehaviour:
   location2: {fileID: 2324040797928470448}
   allParent: {fileID: 2324040796688955323}
   smithery: {fileID: 2324040796688955326}
+  scrapCart: scrap_cart
   rotateSpeed: 20
   rotateAcceleration: 20
 --- !u!1 &2337394209519916565

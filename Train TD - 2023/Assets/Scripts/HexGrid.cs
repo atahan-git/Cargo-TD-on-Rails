@@ -219,7 +219,7 @@ public class HexGrid : MonoBehaviour {
 
 		Biome currentBiome;
 		if (biomeOverride < 0) {
-			var targetBiome = currentSave.currentRun.map.GetPlayerStar().biome;
+			var targetBiome = currentSave.currentRun.map.GetPlayerStar().currentAct-1;
 			if (targetBiome < 0 || targetBiome > biomes.Length) {
 				Debug.LogError($"Illegal biome {targetBiome}");
 				targetBiome = 0;

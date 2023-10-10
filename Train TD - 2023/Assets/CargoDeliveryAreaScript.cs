@@ -45,6 +45,10 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
         SetColliderStatus(rotatingPlatform.gameObject, false);
 
         //yield return null; //wait a frame for good luck
+        
+        //give reward money
+        var rewardMoney = 10 * DataSaver.s.GetCurrentSave().currentRun.currentAct;
+        Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(fullPlatform.transform.position, rewardMoney);
 
         var cargoModule = fullPlatform.GetComponentInChildren<CargoModule>();
         GameObject rewardCart = null;

@@ -9,8 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: myTooltip.text
-      value: Adds a uranium effect to the attached cart. Beware, the cart will also
-        slowly take damage.
+      value: Makes the cart faster. But it also slowly takes damage.
       objectReference: {fileID: 0}
     - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: m_RootOrder

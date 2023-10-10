@@ -381,6 +381,10 @@ public class Train : MonoBehaviour {
     }
 
     public void HpBarsCleanup(bool activate) {
+        for (int i = 0; i < LevelReferences.s.cartHealthParent.childCount; i++) {
+            LevelReferences.s.cartHealthParent.GetChild(0).gameObject.SetActive(false);
+        }
+        
         for (int i = 0; i < carts.Count; i++) {
             carts[i].transform.SetSiblingIndex((carts.Count - 1) - i);
         }
@@ -440,6 +444,9 @@ public class Train : MonoBehaviour {
     }
 
     void SetArtifactStatus(bool isArm) {
+        if (this != Train.s) {
+            return;
+        }
         var artifacts = new List<Artifact>();
 
         for (int i = 0; i < Train.s.carts.Count; i++) {
@@ -451,7 +458,7 @@ public class Train : MonoBehaviour {
             var effects = artifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
             if (effects != null) {
                 for (int j = 0; j < effects.Length; j++) {
-                    if (!effects[j].GetComponentInParent<Cart>().isDestroyed) {
+                    if (effects[j].GetComponentInParent<Cart>() != null && !effects[j].GetComponentInParent<Cart>().isDestroyed) {
                         if (isArm) {
                             effects[j].Arm();
                         } else {

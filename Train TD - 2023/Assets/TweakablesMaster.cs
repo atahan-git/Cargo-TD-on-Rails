@@ -26,9 +26,17 @@ public class TweakablesMaster : MonoBehaviour {
 
 
     public void ApplyTweakableChange() {
+        CalculateArmorAndHealthValues();
         tweakableChanged?.Invoke();
         
         //myTweakables.GetType().GetField("yeet").SetValue();
+    }
+
+
+    private void CalculateArmorAndHealthValues() {
+        var metaProgress = DataSaver.s.GetCurrentSave().metaProgress;
+        ResetTweakable();
+        myTweakables.playerMagazineSizeMultiplier *= 0.7f + (metaProgress.ammoUpgradesBought * 0.15f);
     }
 }
 
@@ -38,14 +46,14 @@ public class Tweakables {
     public float scrapEnemyRewardMultiplier = 1f;
 
     
-    public float enemyDamageMutliplier = 2.2f;
-    public float playerDamageMultiplier = 2f;
+    public float enemyDamageMultiplier = 1f;
+    public float playerDamageMultiplier = 1f;
 
-    public float enemyFirerateBoost = 0.5f;
-    public float playerFirerateBoost = 0.5f;
+    public float enemyFirerateBoost = 1f;
+    public float playerFirerateBoost = 1f;
 
     
-    public float magazineSizeMultiplier = 1f;
+    public float playerMagazineSizeMultiplier = 1f;
     public float gunSteamUseMultiplier = 1f;
     
     public float engineOverloadDamageMultiplier = 1f;

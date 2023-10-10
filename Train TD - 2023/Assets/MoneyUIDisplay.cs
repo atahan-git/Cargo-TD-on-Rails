@@ -16,11 +16,23 @@ public class MoneyUIDisplay : MonoBehaviour {
         }
     }
 
+    public void OnCharLoad() {
+        if (autoUpdateBasedOnSaveData) {
+            amount = DataSaver.s.GetCurrentSave().metaProgress.money;
+        }
+    }
+
     private float amount;
     void Update() {
         //var money = DataSaver.s.GetCurrentSave().metaProgress.money;
         if (autoUpdateBasedOnSaveData) {
-            amount = Mathf.MoveTowards(amount, DataSaver.s.GetCurrentSave().metaProgress.money, 5 * Time.deltaTime);
+            var target = DataSaver.s.GetCurrentSave().metaProgress.money;
+            if (Mathf.Abs(target - amount) > 20) {
+                amount = Mathf.Lerp(amount,target, 1f * Time.deltaTime);
+            } else {
+                amount = Mathf.MoveTowards(amount, target, 5 * Time.deltaTime);
+            }
+
             SetAmount(Mathf.CeilToInt(amount));
         }
     }

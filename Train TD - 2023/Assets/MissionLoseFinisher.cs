@@ -72,20 +72,50 @@ public class MissionLoseFinisher : MonoBehaviour {
         }
         
         loseUI.SetActive(true);
-        
-        
-        var allArtifacts = ArtifactsController.s.myArtifacts;
 
-        var eligibleBossArtifacts = new List<Artifact>();
-        for (int i = 1; i < allArtifacts.Count; i++) {
-            if (allArtifacts[i].myRarity == UpgradesController.CartRarity.boss) {
-                eligibleBossArtifacts.Add(allArtifacts[i]);
+
+        /*if (DataSaver.s.GetCurrentSave().currentRun.currentAct >= 2) { // only award recovered artifacts if player beats the first boss
+            var allArtifacts = ArtifactsController.s.myArtifacts;
+
+            var eligibleComponents = new List<Artifact>();
+            var eligibleGems = new List<Artifact>();
+            for (int i = 0; i < allArtifacts.Count; i++) {
+                switch (allArtifacts[i].myRarity) {
+                    case UpgradesController.CartRarity.common:
+                    case UpgradesController.CartRarity.rare:
+                    case UpgradesController.CartRarity.epic:
+                        eligibleGems.Add(allArtifacts[i]);
+                        break;
+                    case UpgradesController.CartRarity.boss:
+                        eligibleComponents.Add(allArtifacts[i]);
+                        break;
+                    case UpgradesController.CartRarity.special:
+                        // do nothing. We never recover special artifacts
+                        break;
+                }
             }
-        }
 
-        if (eligibleBossArtifacts.Count > 0) {
-            DataSaver.s.GetCurrentSave().metaProgress.bonusArtifact = eligibleBossArtifacts[Random.Range(0, eligibleBossArtifacts.Count)].uniqueName;
-        }
+            var eligibleCarts = new List<Cart>();
+
+            for (int i = 0; i < Train.s.carts.Count; i++) {
+                var cart = Train.s.carts[i];
+                if (!cart.isCargo && !cart.isMainEngine && !cart.isMysteriousCart && cart.myRarity != UpgradesController.CartRarity.special) {
+                    eligibleCarts.Add(cart);
+                }
+            }
+
+            if (eligibleComponents.Count > 0) {
+                DataSaver.s.GetCurrentSave().metaProgress.bonusComponent = eligibleComponents[Random.Range(0, eligibleComponents.Count)].uniqueName;
+            }
+
+            if (eligibleGems.Count > 0) {
+                DataSaver.s.GetCurrentSave().metaProgress.bonusGem = eligibleGems[Random.Range(0, eligibleGems.Count)].uniqueName;
+            }
+
+            if (eligibleCarts.Count > 0) {
+                DataSaver.s.GetCurrentSave().metaProgress.bonusCart = eligibleCarts[Random.Range(0, eligibleCarts.Count)].uniqueName;
+            }
+        }*/
 
         DataSaver.s.GetCurrentSave().isInARun = false;
         

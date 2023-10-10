@@ -9,6 +9,11 @@ using UnityEngine.UI;
 
 public class Artifact : MonoBehaviour
 {
+    
+    public bool needsToBeBought = false;
+    [ShowIf("needsToBeBought")]
+    public int buyCost = 50;
+    
     public UpgradesController.CartLocation myLocation = UpgradesController.CartLocation.train;
     public int level = 0;
     

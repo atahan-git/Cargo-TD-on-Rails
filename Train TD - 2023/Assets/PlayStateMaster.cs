@@ -45,6 +45,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCharacterSelected.AddListener(Train.s.DrawTrainBasedOnSaveData);
         OnCharacterSelected.AddListener(UpgradesController.s.SetUpNewCharacterRarityBoosts);
         OnCharacterSelected.AddListener(FirstTimeTutorialController.s.NewCharacterCutsceneReset);
+        OnCharacterSelected.AddListener(MoneyUIDisplay.totalMoney.OnCharLoad);
         
         OnDrawWorld.AddListener(WorldMapCreator.s.GenerateWorldMap);
         OnDrawWorld.AddListener(HexGrid.s.RefreshGrid);
@@ -289,6 +290,7 @@ public class PlayStateMaster : MonoBehaviour {
     public CanvasGroup canvasGroup;
     public float currentFadeValue;
     public float fadeTime = 0.2f;
+    public bool supressFadeOut = false;
     IEnumerator Transition(bool showLoading, Action toCallInTheMiddle, LoadDelegate loadProgress = null, Action toCallAtTheEnd = null) {
         isLoading = true;
         loadingProgress = 0;
@@ -312,7 +314,11 @@ public class PlayStateMaster : MonoBehaviour {
 
         if(toCallAtTheEnd != null)
             toCallAtTheEnd();
-        
+
+        if (supressFadeOut) {
+            supressFadeOut = false;
+            yield break;
+        }
 
         yield return StartCoroutine(FadeLoadingScreen(1,0, fadeTime));
         loadingScreen.SetActive(false);

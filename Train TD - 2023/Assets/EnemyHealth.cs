@@ -252,13 +252,17 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 			}
 
 			var rewardMoney = 0;
-			if (maxHealth >= 40) {
-				var rewardMoneyMax = Mathf.Log(maxHealth / 20, 2); // ie 40 = 1, 80 = 2, 400~= 4
+			if (maxHealth >= 80) {
+				var rewardMoneyMax = Mathf.Log(maxHealth / 40, 2); // ie 80 = 1, 160 = 2, 800~= 4
 				rewardMoney = Mathf.RoundToInt(Random.Range(0, rewardMoneyMax));
 			} else {
-				if (Random.value < maxHealth / 80) {
+				if (Random.value < maxHealth / 160) {
 					rewardMoney = 1;
 				}
+			}
+
+			if (rewardArtifactOnDeath) {
+				rewardMoney += DataSaver.s.GetCurrentSave().currentRun.currentAct*2;
 			}
 
 			if (rewardMoney > 0) {

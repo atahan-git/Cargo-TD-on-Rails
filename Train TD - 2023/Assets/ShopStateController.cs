@@ -104,7 +104,7 @@ public class ShopStateController : MonoBehaviour {
 		gateScript.SetCanGoStatus(true, allGoodToGoTooltip);
 
 		var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-		var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(playerStar.outgoingConnections[0]);
+		var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(playerStar.outgoingConnections[1]);
 		SelectLevel(targetStar);
 	}
 

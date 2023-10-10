@@ -225,11 +225,21 @@ public class DataSaver {
 	public class MetaProgress {
 		public int castlesTraveled = 0;
 		public int money = 0;
-		public List<string> unlockedStarterArtifacts = new List<string>();
-		public string bonusArtifact = "";
+
+		public List<string> unlockedThings = new List<string>();
+
+		public string bonusComponent = "";
+		public string bonusGem = "";
+		public string bonusCart = "";
+
+		public int armorUpgradesBought = 0;
+		public int damageUpgradesBought = 0;
+		public int ammoUpgradesBought = 0;
+
+		public int recoveryUpgradesBought = 0;
 
 		public MetaProgress() {
-			unlockedStarterArtifacts.Add("starter_artifact");
+			//unlockedStarterArtifacts.Add("starter_artifact");
 		}
 	}
 	
@@ -252,7 +262,7 @@ public class DataSaver {
 
 		public TrainState myTrain = new TrainState();
 
-		public int currentAct = 1;
+		public int currentAct = 1; // 1,2,3
 		
 		public StarMapState map = new StarMapState();
 		public string targetStar;

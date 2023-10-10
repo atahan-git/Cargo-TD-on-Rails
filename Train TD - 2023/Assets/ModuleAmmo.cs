@@ -37,7 +37,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         /*if (myGunModule.beingDirectControlled)
             ammoUse /= DirectControlMaster.s.directControlAmmoConservationBoost;*/
 
-        ammoUse /= TweakablesMaster.s.myTweakables.magazineSizeMultiplier;
+        ammoUse /= TweakablesMaster.s.myTweakables.playerMagazineSizeMultiplier;
 
         return ammoUse;
     }
@@ -46,8 +46,10 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         ammoPerBarrageMultiplier = 1;
         maxAmmoMultiplier = 1;
         reloadEfficiency = 1;
-        
-        
+
+        maxAmmoMultiplier = 0.7f + (DataSaver.s.GetCurrentSave().metaProgress.ammoUpgradesBought * 0.15f);
+
+
         isFire = false;
         isExplosive = false;
         isSticky = false;
@@ -163,7 +165,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
         if (myUINoAmmoWarningThing == null) {
             myUINoAmmoWarningThing = Instantiate(LevelReferences.s.noAmmoWarning, LevelReferences.s.uiDisplayParent);
-            myUINoAmmoWarningThing.GetComponent<UIElementFollowWorldTarget>().SetUp(GetComponentInParent<Cart>().GetUITargetTransform());
+            myUINoAmmoWarningThing.GetComponent<UIElementFollowWorldTarget>().SetUp(GetComponentInParent<Cart>(true).GetUITargetTransform());
         }
         
         myUINoAmmoWarningThing.SetActive(!hasAmmo);

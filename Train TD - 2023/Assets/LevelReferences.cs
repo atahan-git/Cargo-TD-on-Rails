@@ -183,6 +183,10 @@ public class LevelReferences : MonoBehaviour {
         }
     }*/
     
+    
+    public AnimationCurve selectMarkerPulseCurve;
+    public AnimationCurve alphaPulseCurve;
+    
     private void Awake() {
         s = this;
         
