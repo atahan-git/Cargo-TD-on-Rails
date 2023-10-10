@@ -35,6 +35,7 @@ public class CharacterSelector : MonoBehaviour {
         PlayerWorldInteractionController.s.canSelect = true;
         if (showWakeUp) {
             WakeUpAnimation.s.Engage();
+            showWakeUp = false;
         }
         
         if (!DataSaver.s.GetCurrentSave().isInARun) {

@@ -48,7 +48,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
     }
 
     public void NewCharacterCutsceneReset() {
-        _progress.initialCutscenePlayed = !MiniGUI_DisableTutorial.IsTutorialActive();
+        //_progress.initialCutscenePlayed = !MiniGUI_DisableTutorial.IsTutorialActive();
     }
 
     public void ReDoTutorial() {

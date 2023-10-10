@@ -386,6 +386,7 @@ GameObject:
   - component: {fileID: 6100512549037973903}
   - component: {fileID: 8793490560118244039}
   - component: {fileID: 1647636875514510046}
+  - component: {fileID: 404589247197566837}
   m_Layer: 18
   m_Name: Unlock Things slot
   m_TagString: Untagged
@@ -400,7 +401,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3752878331899378913}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.671, y: 0.42850482, z: -0.18999958}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -422,7 +423,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3752878331899378913}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ac17413fb3673444be9aada24aadb18, type: 3}
   m_Name: 
@@ -454,6 +455,25 @@ MonoBehaviour:
   canNoLongerBuy: {fileID: 5265761495159339796}
   moneyPot: {fileID: 5160555943329178937}
   isEmpty: 1
+--- !u!114 &404589247197566837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3752878331899378913}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
+  isInitialized: 0
 --- !u!1 &5655601702686344627
 GameObject:
   m_ObjectHideFlags: 0

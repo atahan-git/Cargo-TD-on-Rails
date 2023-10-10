@@ -719,7 +719,11 @@ public class UpgradesController : MonoBehaviour {
 					fleaMarketCount += 1;
 				}
 			}
+
 			shopArea_fleaMarketFull = fleaMarketCount >= fleaMarketLocationCount;
+
+			if (!marketZone.activeSelf)
+				shopArea_fleaMarketFull = true;
 			
 			if (leftCargo.myLocation == CartLocation.train) {
 				shopArea_destinationSelected = true;
