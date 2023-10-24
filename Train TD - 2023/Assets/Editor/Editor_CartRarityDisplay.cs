@@ -74,11 +74,46 @@ public class Editor_CartRarityDisplay {
 
         
 
+        
+
+        GUI.Label(GetRect(true, selectionRect), icon);
+
+        var needsToBeBought = false;
+        var cost = 0;
+        if (cart != null) {
+            needsToBeBought = cart.needsToBeBought;
+            cost = cart.buyCost;
+        }
+
+        if (artifact != null) {
+            needsToBeBought = artifact.needsToBeBought;
+            cost = artifact.buyCost;
+        }
+        
+        if (needsToBeBought) {
+            icon = EditorGUIUtility.IconContent("sv_icon_dot10_pix16_gizmo");
+            if (cost > 50) {
+                icon = EditorGUIUtility.IconContent("sv_icon_dot12_pix16_gizmo");
+            }
+            if (cost > 500) {
+                icon = EditorGUIUtility.IconContent("sv_icon_dot13_pix16_gizmo");
+            }
+                
+            GUI.Label(GetRect(false, selectionRect), icon);
+        }
+    }
+
+   static Rect GetRect(bool isOnRight, Rect selectionRect) {
         Vector2 selectionPosition = selectionRect.position;
         Vector2 selectionSize = selectionRect.size;
 
-        // The x position should be a little left of the right edge.
-        float xPosition = selectionPosition.x + selectionSize.x - selectionSize.x / 3.5f;
+        float xPosition;
+        if (isOnRight) {
+            // The x position should be a little left of the right edge.
+            xPosition = selectionPosition.x + selectionSize.x - selectionSize.x / 3.5f;
+        } else {
+            xPosition = selectionPosition.x ;
+        }
 
         // The y position should be a little above of the bottom edge.
         float yPosition = selectionPosition.y + selectionSize.y - selectionSize.y / 2;
@@ -91,6 +126,6 @@ public class Editor_CartRarityDisplay {
         // This is a nice number to reduce the size of the rect by to make the icon smaller
         newRect.size /= 3.5f;
 
-        GUI.Label(newRect, icon);
+        return newRect;
     }
 }

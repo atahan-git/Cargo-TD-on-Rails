@@ -227,6 +227,10 @@ public class DataSaver {
 		public int money = 0;
 
 		public List<string> unlockedThings = new List<string>();
+		
+		
+		public string justBoughtCart = "";
+		public string justBoughtArtifact = "";
 
 		public string bonusComponent = "";
 		public string bonusGem = "";
@@ -245,6 +249,7 @@ public class DataSaver {
 	
 	[Serializable]
 	public class TutorialProgress {
+		public bool showTutorials;
 		public bool firstCityTutorialDone;
 		public bool initialCutscenePlayed;
 		public bool cameraDone;

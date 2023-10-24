@@ -67,6 +67,10 @@ PrefabInstance:
       propertyPath: displayName
       value: Fire Gem
       objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: needsToBeBought
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
 --- !u!1 &1509524458239976382 stripped

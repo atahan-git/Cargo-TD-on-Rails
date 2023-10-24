@@ -39,8 +39,8 @@ public class DirectControllable : MonoBehaviour, IShowButtonOnCartUIDisplay, IRe
 	}
 	
 	public void ApplyBulletEffect(ModuleAmmo.AmmoEffects effect) {
-		if (!canUseAmmo)
-			return;
+		/*if (!canUseAmmo)
+			return;*/
 		
 		switch (effect) {
 			case ModuleAmmo.AmmoEffects.fire:

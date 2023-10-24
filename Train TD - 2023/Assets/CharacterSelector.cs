@@ -123,16 +123,36 @@ public class CharacterSelector : MonoBehaviour {
         selectedChar = _data;
         CheckDepartureRequirements();
     }
-
-
+    
     public void CharSelectedAndLeave() {
-        DataSaver.s.GetCurrentSave().currentRun = new DataSaver.RunState(VersionDisplay.s.GetVersionNumber());
-        DataSaver.s.GetCurrentSave().currentRun.currentAct = 1;
-        DataSaver.s.GetCurrentSave().currentRun.SetCharacter(selectedChar);
+        var currentSave = DataSaver.s.GetCurrentSave();
+        currentSave.currentRun = new DataSaver.RunState(VersionDisplay.s.GetVersionNumber());
+        currentSave.currentRun.currentAct = 1;
+        currentSave.currentRun.SetCharacter(selectedChar);
         
-        DataSaver.s.GetCurrentSave().metaProgress.bonusComponent = "";
-        DataSaver.s.GetCurrentSave().metaProgress.bonusGem = "";
-        DataSaver.s.GetCurrentSave().metaProgress.bonusCart = "";
+        currentSave.metaProgress.bonusComponent = "";
+        currentSave.metaProgress.bonusGem = "";
+        currentSave.metaProgress.bonusCart = "";
+
+
+        if (currentSave.metaProgress.justBoughtArtifact.Length > 0) {
+            currentSave.currentRun.myTrain.myCarts[1].attachedArtifact =
+                Train.GetStateFromArtifact(
+                    DataHolder.s.GetArtifact(currentSave.metaProgress.justBoughtArtifact)
+                );
+
+            currentSave.metaProgress.justBoughtArtifact = "";
+        }
+
+        if (currentSave.metaProgress.justBoughtCart.Length > 0) {
+            currentSave.currentRun.myTrain.myCarts.Add(
+                Train.GetStateFromCart(
+                    DataHolder.s.GetCart(currentSave.metaProgress.justBoughtCart)
+                )
+            );
+
+            currentSave.metaProgress.justBoughtCart = "";
+        }
 
         DataSaver.s.SaveActiveGame();
 

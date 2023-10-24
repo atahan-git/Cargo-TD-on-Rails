@@ -239,7 +239,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
         rotateTransform.yAxis.rotation = Quaternion.Euler(0, realRotation.eulerAngles.y, 0);
         rotateTransform.xAxis.rotation = Quaternion.Euler(realRotation.eulerAngles.x, realRotation.eulerAngles.y, 0);
-        rotateTransform.centerBarrelEnd.rotation = realRotation;
+        if(!mortarRotation)
+            rotateTransform.centerBarrelEnd.rotation = realRotation;
     }
 
 
@@ -399,7 +400,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             SetColors(bullet);
             var muzzleFlash = Instantiate(muzzleFlashPrefab, position, rotation);
             var projectile = bullet.GetComponent<Projectile>();
-            projectile.myOriginObject = this.transform.root.gameObject;
+            projectile.myOriginObject = this.GetComponentInParent<Rigidbody>().gameObject;
             projectile.projectileDamage = GetDamage();
             projectile.burnDamage = GetBurnDamage();
             projectile.target = target;
@@ -462,7 +463,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
                 bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
                 if (!isElite) {
                     needShootCredits = true;
-                    gotShootCredits = true;
+                    EnemyTargetAssigner.s.shootRequesters.Enqueue(this);
+                    //gotShootCredits = true;
                 }
             } 
         }

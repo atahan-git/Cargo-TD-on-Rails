@@ -70,7 +70,7 @@ public class Cart : MonoBehaviour {
 
     public Material cartOverlayMaterial;
 
-    public MeshRenderer cartMaterial;
+    public MeshRenderer[] cartMaterial;
 
     public Transform genericParticlesParent;
     
@@ -82,7 +82,9 @@ public class Cart : MonoBehaviour {
         
         artifactChunkTransform.DeleteAllChildren();
 
-        cartMaterial.material = LevelReferences.s.cartLevelMats[level];
+        for (int i = 0; i < cartMaterial.Length; i++) {
+            cartMaterial[i].material = LevelReferences.s.cartLevelMats[level];
+        }
         
         if (myAttachedArtifact != null) {
             myAttachedArtifact.ResetState();

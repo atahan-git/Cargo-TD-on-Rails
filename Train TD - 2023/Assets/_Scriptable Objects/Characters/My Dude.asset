@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: My Dude
   m_EditorClassIdentifier: 
   myCharacter:
-    uniqueName: Jason Thatcher
+    uniqueName: My Dude
     description: After spending his entire life training to be a Nuclear Train pilot,
       his dreams shattered when a anti-nuclear activist infltrated and destroyed
       the research facility. As the sole survivor he took the train and decided to
@@ -23,9 +23,6 @@ MonoBehaviour:
       - uniqueName: engine_nuclear
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -39,9 +36,6 @@ MonoBehaviour:
       - uniqueName: cargo_mystery_0
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -55,9 +49,6 @@ MonoBehaviour:
       - uniqueName: top_avr
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -71,9 +62,6 @@ MonoBehaviour:
       - uniqueName: empty
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 

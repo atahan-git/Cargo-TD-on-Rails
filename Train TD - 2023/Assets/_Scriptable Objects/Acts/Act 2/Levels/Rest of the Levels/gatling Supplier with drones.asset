@@ -22,17 +22,21 @@ MonoBehaviour:
       distanceOnPath: 45
       isLeft: 0
       hasReward: 0
+      useAsIcon: 1
     - enemyIdentifier:
         enemyUniqueName: DroneAVC
         enemyCount: 3
       distanceOnPath: 30
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: DroneCannon
         enemyCount: 5
       distanceOnPath: 70
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     segmentLength: 200
     artifactRewardUniqueName: 
+    artifactRewardLevel: 0

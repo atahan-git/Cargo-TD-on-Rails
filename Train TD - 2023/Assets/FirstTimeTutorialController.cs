@@ -36,7 +36,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
         if (!_progress.initialCutscenePlayed && !initialCutsceneEngaged) {
             EngageInitialCutscene();
-        }else if (!_progress.firstCityTutorialDone) {
+        }else if (!_progress.firstCityTutorialDone && _progress.showTutorials) {
             tutorialUI.SetActive(true);
             
             leaveTheCity.SetActive(true);

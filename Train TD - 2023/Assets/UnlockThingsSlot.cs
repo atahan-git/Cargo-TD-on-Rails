@@ -18,6 +18,7 @@ public class UnlockThingsSlot : MonoBehaviour {
     private StarterShopButton _starterShopButton;
     private int curCost = 0;
     private string curUniqueName;
+    private bool isCart = true;
     private void Start() {
         _starterShopButton = GetComponent<StarterShopButton>();
         _starterShopButton.OnPress.AddListener(TryPurchase);
@@ -30,6 +31,7 @@ public class UnlockThingsSlot : MonoBehaviour {
         curUniqueName = artifact.uniqueName;
         _starterShopButton.myTooltip = new Tooltip() { text = $"Buy: {artifact.displayName}" };
         isEmpty = false;
+        isCart = false;
     }
 
     public void SetUp(Cart cart) {
@@ -39,6 +41,7 @@ public class UnlockThingsSlot : MonoBehaviour {
         curUniqueName = cart.uniqueName;
         _starterShopButton.myTooltip = new Tooltip() { text = $"Buy: {cart.displayName}" };
         isEmpty = false;
+        isCart = true;
     }
 
 
@@ -84,7 +87,15 @@ public class UnlockThingsSlot : MonoBehaviour {
             if (curCost <= DataSaver.s.GetCurrentSave().metaProgress.money) {
                 DataSaver.s.GetCurrentSave().metaProgress.money -= curCost;
                 DataSaver.s.GetCurrentSave().metaProgress.unlockedThings.Add(curUniqueName);
+
+                if (isCart) {
+                    DataSaver.s.GetCurrentSave().metaProgress.justBoughtCart = curUniqueName;
+                } else {
+                    DataSaver.s.GetCurrentSave().metaProgress.justBoughtArtifact = curUniqueName;
+                }
+                
                 DataSaver.s.SaveActiveGame();
+                
                 Sold();
             }
         }

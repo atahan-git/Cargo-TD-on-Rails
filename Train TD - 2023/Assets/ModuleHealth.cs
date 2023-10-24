@@ -115,6 +115,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         UpdateHpState();
     }
 
+    private float invincibilityTime = 0;
     [Button]
     public void DealDamage(float damage) {
         Assert.IsTrue(damage > 0);
@@ -126,6 +127,9 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             return;
         }
 
+        if (invincibilityTime > 0) {
+            return;
+        }
 
         myCart = GetComponent<Cart>();
         if (!isDead && (myCart == null || !myCart.isDestroyed)) {
@@ -162,9 +166,28 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                 }
             }
             
+            var prevHpPercent = currentHealth / maxHealth;
+
+            if (!myCart.isRepairable) { // lose less hp the less hp you have if this is a critical cart
+                damage *= Mathf.Clamp(prevHpPercent*2,0.1f,1f);
+            }
+            
+            
             currentHealth -= damage;
 
-            var hpPercent = currentHealth / maxHealth;
+            if (!myCart.isRepairable) { // never be able to get one shot lose a critical cart
+                if (prevHpPercent > 0.1f) {
+                    if (currentHealth <= 0) {
+                        currentHealth = Mathf.Min(5, Mathf.CeilToInt(maxHealth*0.1f));
+                    }
+
+                    invincibilityTime = 1f;
+                }
+            }
+
+            if (myCart.loseGameIfYouLoseThis) {
+                Train.s.CriticalComponentHealthModified();
+            }
             
             if(currentHealth <= 0) {
                 if (myCart.isRepairable) {
@@ -460,6 +483,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         }
 
         currentShields = Mathf.Clamp(currentShields, 0, maxShields);
+
+        if (invincibilityTime > 0) {
+            invincibilityTime -= Time.deltaTime;
+        }
     }
 
     void SelfDamage() {
@@ -594,11 +621,12 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                 myUIBar.gameObject.SetActive(false);
     }
 
-    /*private void OnEnable() {
+    private void OnEnable() {
         if(myUIBar != null)
             if(myUIBar.gameObject != null)
-                myUIBar.gameObject.SetActive(true);
-    }*/
+                if(GetComponentInParent<Train>() != null)
+                    myUIBar.gameObject.SetActive(true);
+    }
 
     private void OnDestroy() {
         if(myUIBar != null)

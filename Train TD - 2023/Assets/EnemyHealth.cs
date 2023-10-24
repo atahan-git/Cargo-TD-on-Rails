@@ -312,7 +312,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 	}
 
 	public bool HasArmor() {
-		return isArmored;
+		return false;
 	}
 
 	public float GetHealthPercent() {

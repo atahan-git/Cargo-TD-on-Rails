@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ms Steamy
   m_EditorClassIdentifier: 
   myCharacter:
-    uniqueName: Asha Desai
+    uniqueName: Ms Steamy
     description: Mostly unaffected by the loss of technology, Asha was a steam train
       enthusiast before <color=#AE2FBA>The Cataclysm</color>. Before, they called
       her eccentric, but with people back to steam age her value grew. As she liked
@@ -24,9 +24,6 @@ MonoBehaviour:
       - uniqueName: engine_steam
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -40,9 +37,6 @@ MonoBehaviour:
       - uniqueName: cargo_mystery_0
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -56,9 +50,6 @@ MonoBehaviour:
       - uniqueName: top_pneumatic
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -72,9 +63,6 @@ MonoBehaviour:
       - uniqueName: side_pneumatic
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 

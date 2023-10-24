@@ -26,17 +26,5 @@ MonoBehaviour:
   possibleEncounters:
   - {fileID: 3295736480921032522, guid: e5b4698d874016b4886952250af6da6e, type: 3}
   - {fileID: 1727440949419904987, guid: a4edeca98fdb5064a8186ddbb921430e, type: 3}
-  possibleDynamicSpawns:
-  - enemyIdentifier:
-      enemyUniqueName: BuggyPneumatic
-      enemyCount: 1
-    firstSpawnTime: 30
-    spawnInterval: 45
-    increaseInNumberInterval: 2
-  - enemyIdentifier:
-      enemyUniqueName: Biker
-      enemyCount: 2
-    firstSpawnTime: 30
-    spawnInterval: 30
-    increaseInNumberInterval: 2
+  possibleDynamicSpawns: []
   segmentCount: 2

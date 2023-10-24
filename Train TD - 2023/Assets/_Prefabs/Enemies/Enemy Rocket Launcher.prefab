@@ -372,6 +372,7 @@ MonoBehaviour:
   fireBarrageCount: 1
   fireBarrageDelay: 0.2
   fireRateMultiplier: 1
+  fireRateDivider: 1
   projectileDamage: 140
   burnDamage: 0
   bonusBurnDamage: 0
@@ -420,7 +421,7 @@ MonoBehaviour:
   explosionRangeBoost: 0
   gotShootCredits: 0
   needShootCredits: 0
-  shootCreditsUse: 1
+  shootCreditsUse: 3
 --- !u!114 &6042444706114320447
 MonoBehaviour:
   m_ObjectHideFlags: 0

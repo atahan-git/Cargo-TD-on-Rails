@@ -382,7 +382,7 @@ public class Train : MonoBehaviour {
 
     public void HpBarsCleanup(bool activate) {
         for (int i = 0; i < LevelReferences.s.cartHealthParent.childCount; i++) {
-            LevelReferences.s.cartHealthParent.GetChild(0).gameObject.SetActive(false);
+            LevelReferences.s.cartHealthParent.GetChild(i).gameObject.SetActive(false);
         }
         
         for (int i = 0; i < carts.Count; i++) {
@@ -415,6 +415,8 @@ public class Train : MonoBehaviour {
             for (int i = 0; i < carts.Count; i++) {
                 carts[i].GetHealthModule().UpdateHpState();
             }
+
+            CriticalComponentHealthModified();
         } else {
             SetArtifactStatus(false);
             
@@ -660,6 +662,19 @@ public class Train : MonoBehaviour {
 
     public void TrainUpdated() {
         onTrainCartsChanged?.Invoke();
+    }
+
+    public void CriticalComponentHealthModified() {
+        var lowestPercent = 1.0f;
+
+        for (int i = 0; i < carts.Count; i++) {
+            if (carts[i].loseGameIfYouLoseThis) {
+                lowestPercent = Mathf.Min(lowestPercent, carts[i].GetHealthModule().GetHealthPercent());
+            }
+        }
+
+        lowestPercent = 1-Mathf.Clamp01(lowestPercent * 2);
+        VignetteController.s.SetVignette(lowestPercent);
     }
     
 
