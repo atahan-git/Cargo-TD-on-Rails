@@ -43,7 +43,7 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
         
 
         var maxSize = GetComponent<RectTransform>().rect.width;
-        var idealSize = maxHealth/6000*maxSize;
+        var idealSize = maxHealth/7000*maxSize;
         if (idealSize > maxSize*0.8f) {
             var excess = idealSize - maxSize;
             excess = Mathf.Log(excess + 1);
@@ -62,12 +62,16 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
     }
 
     public void HealthChanged() {
-        health = 0;
+        var newhealth = 0f;
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i].GetHealthModule();
             if (!cart.invincible) {
-                health += cart.currentHealth;
+                newhealth += cart.currentHealth;
             }
+        }
+
+        if (Math.Abs(newhealth - health) < 0.1f) {
+            return;
         }
 
 
@@ -81,11 +85,16 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
     }
 
 
-    private float changeAlphaLerp = 0.25f;
+    public float changeAlphaLerp = 0.25f;
     private void Update() {
         lerpMaxHealth = Mathf.Lerp(lerpMaxHealth, maxHealth, 7 * Time.deltaTime);
         lerpHealth = Mathf.Lerp(lerpHealth, health, 7 * Time.deltaTime);
-        changeAlphaLerp = Mathf.Lerp(changeAlphaLerp, 0.25f, Time.deltaTime);
+        if (PlayStateMaster.s.isCombatInProgress()) {
+            changeAlphaLerp = Mathf.Lerp(changeAlphaLerp, 0.25f, Time.deltaTime);
+        } else {
+            changeAlphaLerp = Mathf.Lerp(changeAlphaLerp, 1, Time.deltaTime);
+        }
+
         SetHealthBarValue();
     }
 
@@ -97,7 +106,7 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
         percent = Mathf.Clamp(percent, 0, 1f);
 
         var totalLength = -mainRect.rect.x*2;
-        print(totalLength*(1-percent));
+        //print(totalLength*(1-percent));
         
         healthBar.SetRight(totalLength*(1-percent));
         var healthColor = GetHealthColor(percent);

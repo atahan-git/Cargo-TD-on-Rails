@@ -29,7 +29,7 @@ public class MissionLoseFinisher : MonoBehaviour {
     public GameObject loseContinueButton;
 
     public enum MissionLoseReason {
-        noEngine, noMysteryCargo, abandon
+        noEngine, noMysteryCargo, abandon, everyCartExploded
     }
     
     public void MissionLost(MissionLoseReason loseReason) {
@@ -47,6 +47,9 @@ public class MissionLoseFinisher : MonoBehaviour {
                 break;
             case MissionLoseReason.abandon:
                 loseReasonText.text = "You abandoned your mission.";
+                break;
+            case MissionLoseReason.everyCartExploded:
+                loseReasonText.text = "Your entire train is broken.";
                 break;
             default:
                 loseReasonText.text = "You cannot continue for unknown reasons (the programmer needs to fill this in!.";

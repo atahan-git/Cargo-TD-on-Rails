@@ -320,7 +320,7 @@ public class Train : MonoBehaviour {
         
         RestartShake();
 
-        var hasEngine = false;
+        /*var hasEngine = false;
         var hasCriticalComponent = false;
 
         for (int i = 0; i < carts.Count; i++) {
@@ -341,6 +341,18 @@ public class Train : MonoBehaviour {
             } else {
                 MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noMysteryCargo);
             }
+        }*/
+        
+        var health = 0f;
+        for (int i = 0; i < carts.Count; i++) {
+            var _cart = carts[i].GetHealthModule();
+            if (!_cart.invincible) {
+                health += _cart.currentHealth;
+            }
+        }
+
+        if (health <= 0) {
+            MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.everyCartExploded);
         }
 
         // draw train already calls this
@@ -671,17 +683,6 @@ public class Train : MonoBehaviour {
     
     public void HealthModified() {
         MiniGUI_TrainOverallHealthBar.s.HealthChanged();
-        var health = 0f;
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            var cart = Train.s.carts[i].GetHealthModule();
-            if (!cart.invincible) {
-                health += cart.currentHealth;
-            }
-        }
-
-        if (health == 0) {
-            
-        }
     }
     
 
