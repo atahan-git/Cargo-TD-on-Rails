@@ -185,10 +185,6 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                 }
             }
 
-            if (myCart.loseGameIfYouLoseThis) {
-                Train.s.CriticalComponentHealthModified();
-            }
-            
             if(currentHealth <= 0) {
                 if (myCart.isRepairable) {
                     GetDestroyed();
@@ -211,6 +207,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     }
 
     public void UpdateHpState() {
+        Train.s.HealthModified();
         UpdateHPCriticalIndicators();
         SetBuildingShaderHealth();
     }

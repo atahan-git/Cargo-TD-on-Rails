@@ -416,7 +416,7 @@ public class Train : MonoBehaviour {
                 carts[i].GetHealthModule().UpdateHpState();
             }
 
-            CriticalComponentHealthModified();
+            MaxHealthModified();
         } else {
             SetArtifactStatus(false);
             
@@ -664,17 +664,24 @@ public class Train : MonoBehaviour {
         onTrainCartsChanged?.Invoke();
     }
 
-    public void CriticalComponentHealthModified() {
-        var lowestPercent = 1.0f;
 
-        for (int i = 0; i < carts.Count; i++) {
-            if (carts[i].loseGameIfYouLoseThis) {
-                lowestPercent = Mathf.Min(lowestPercent, carts[i].GetHealthModule().GetHealthPercent());
+    public void MaxHealthModified() {
+        MiniGUI_TrainOverallHealthBar.s.MaxHealthChanged();
+    }
+    
+    public void HealthModified() {
+        MiniGUI_TrainOverallHealthBar.s.HealthChanged();
+        var health = 0f;
+        for (int i = 0; i < Train.s.carts.Count; i++) {
+            var cart = Train.s.carts[i].GetHealthModule();
+            if (!cart.invincible) {
+                health += cart.currentHealth;
             }
         }
 
-        lowestPercent = 1-Mathf.Clamp01(lowestPercent * 2);
-        VignetteController.s.SetVignette(lowestPercent);
+        if (health == 0) {
+            
+        }
     }
     
 
