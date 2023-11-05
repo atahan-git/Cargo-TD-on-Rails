@@ -10,6 +10,8 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public int enginePower = 100;
    public int extraEnginePower = 0;
 
+   public bool isHalfPower = false;
+
    public UnityEvent OnEngineStart = new UnityEvent();
    public UnityEvent OnEngineStop = new UnityEvent();
 

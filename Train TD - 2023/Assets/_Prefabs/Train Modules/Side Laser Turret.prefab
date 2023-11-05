@@ -196,8 +196,16 @@ PrefabInstance:
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: buyCost
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: myRarity
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: isFragile
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: uniqueName
@@ -206,6 +214,10 @@ PrefabInstance:
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: displayName
       value: Side Lazers
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: needsToBeBought
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}

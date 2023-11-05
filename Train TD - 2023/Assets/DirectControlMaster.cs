@@ -149,9 +149,9 @@ public class DirectControlMaster : MonoBehaviour {
 	}
 
 	void ApplyBulletTypes() {
-		isFire.SetActive(myGun.isFire);
-		isExplosive.SetActive(myGun.isExplosive);
-		isSticky.SetActive(myGun.isSticky);
+		isFire.SetActive(myGun.GetBurnDamage() > 0);
+		isExplosive.SetActive(myGun.GetExplosionRange() > 0);
+		isSticky.SetActive(false);
 	}
 
 	private void DisableDirectControl(InputAction.CallbackContext obj) {

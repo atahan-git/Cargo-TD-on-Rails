@@ -51,9 +51,6 @@ public class LevelReferences : MonoBehaviour {
     [Space]
     
     public GameObject reloadEffect_regular;
-    public GameObject reloadEffect_fire;
-    public GameObject reloadEffect_sticky;
-    public GameObject reloadEffect_explosive;
     
     [Space]
 
@@ -141,6 +138,7 @@ public class LevelReferences : MonoBehaviour {
 
     [Space]
     public GameObject emptyCart;
+    public GameObject scrapCart;
 
     [Space]
     public GameObject noAmmoWarning;
@@ -150,14 +148,6 @@ public class LevelReferences : MonoBehaviour {
 
     [Space] 
     public GameObject bullet_regular;
-    public GameObject bullet_fire;
-    public GameObject bullet_sticky;
-    public GameObject bullet_explosive;
-    public GameObject bullet_fire_sticky;
-    public GameObject bullet_fire_explosive;
-    public GameObject bullet_sticky_explosive;
-    public GameObject bullet_fire_sticky_explosive;
-
     public GameObject bullet_repair;
 
     [Space] public float smallEffectFirstActivateTimeAfterCombatStarts = 10f;

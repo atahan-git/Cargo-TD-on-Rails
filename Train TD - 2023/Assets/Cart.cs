@@ -33,9 +33,8 @@ public class Cart : MonoBehaviour {
 
     public int cartSize = 1;
 
-    public bool isRepairable => !isMainEngine && !isCargo && !isMysteriousCart;
-    public bool loseGameIfYouLoseThis => isMainEngine || isMysteriousCart;
-    //public bool isRepairable => !isCargo;
+    public bool isFragile = false;
+    public bool isSturdy = false;
 
     public UpgradesController.CartLocation myLocation = UpgradesController.CartLocation.train;
 
@@ -104,8 +103,12 @@ public class Cart : MonoBehaviour {
 
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
-                engineModule.enabled = false;
-                GetComponentInChildren<EngineFireController>().StopEngineFire();
+                if (isSturdy) {
+                    engineModule.OnEngineLowPower?.Invoke(true);
+                } else {
+                    engineModule.enabled = false;
+                    GetComponentInChildren<EngineFireController>().StopEngineFire();
+                }
             }
 
             var gunModules = GetComponentsInChildren<GunModule>();

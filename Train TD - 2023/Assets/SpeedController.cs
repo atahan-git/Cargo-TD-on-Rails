@@ -102,8 +102,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         cartCapacity = 0;
         targetSpeed = 0;
         for (int i = 0; i < engines.Count; i++) {
-            cartCapacity += engines[i].enginePower + engines[i].extraEnginePower;
-            targetSpeed += engines[i].speedAdd + engines[i].extraSpeedAdd;
+            cartCapacity += (int)((engines[i].enginePower + engines[i].extraEnginePower) * (engines[i].isHalfPower ? 0.5f : 1f));
+            targetSpeed += (int)((engines[i].speedAdd + engines[i].extraSpeedAdd) * (engines[i].isHalfPower ? 0.5f : 1f));
         }
 
         targetSpeed += speedAmount;

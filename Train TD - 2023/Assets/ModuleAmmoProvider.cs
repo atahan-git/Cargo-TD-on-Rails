@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Now obsolete
+/// </summary>
 public class ModuleAmmoProvider : ActivateWhenAttachedToTrain,IBooster, IResetState {
 
     public int boostReloadCountPerLevel = 1;
@@ -24,8 +28,6 @@ public class ModuleAmmoProvider : ActivateWhenAttachedToTrain,IBooster, IResetSt
         rangeBoost = level;
     }
 
-    public ModuleAmmo.AmmoEffects myAmmoType;
-
     protected override void _AttachedToTrain() {
         for (int i = 1; i < GetRange()+1; i++) {
             ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), true);
@@ -44,13 +46,6 @@ public class ModuleAmmoProvider : ActivateWhenAttachedToTrain,IBooster, IResetSt
                 gunModule.regularToRangeConversionMultiplier += activeExplosionRangeBoost;
             }
 
-            foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
-                moduleAmmo.ApplyBulletEffect(myAmmoType);
-            }
-            
-            foreach (var directControllable in target.GetComponentsInChildren<DirectControllable>()) {
-                directControllable.ApplyBulletEffect(myAmmoType);
-            }
         }
     }
 

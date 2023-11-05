@@ -168,14 +168,14 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             
             var prevHpPercent = currentHealth / maxHealth;
 
-            if (!myCart.isRepairable) { // lose less hp the less hp you have if this is a critical cart
+            if (myCart.isFragile) { // lose less hp the less hp you have if this is a fragile cart
                 damage *= Mathf.Clamp(prevHpPercent*2,0.1f,1f);
             }
             
             
             currentHealth -= damage;
 
-            if (!myCart.isRepairable) { // never be able to get one shot lose a critical cart
+            if (!myCart.isFragile) { // never be able to get one shot lose a fragile cart
                 if (prevHpPercent > 0.1f) {
                     if (currentHealth <= 0) {
                         currentHealth = Mathf.Min(5, Mathf.CeilToInt(maxHealth*0.1f));
@@ -186,7 +186,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             }
 
             if(currentHealth <= 0) {
-                if (myCart.isRepairable) {
+                if (!myCart.isFragile) {
                     GetDestroyed();
                 } else {
                     if(!unDying)
@@ -544,7 +544,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         
         dieEvent?.Invoke();
         
-        var emptyCart = Instantiate(LevelReferences.s.emptyCart).GetComponent<Cart>();
+        var emptyCart = Instantiate(LevelReferences.s.scrapCart).GetComponent<Cart>();
         
         Train.s.CartDestroyed(myCart);
         Train.s.AddCartAtIndex(myCart.trainIndex, emptyCart);
@@ -556,7 +556,6 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     public void GetDestroyed() {
         myCart.isDestroyed = true;
         myCart.SetDisabledState();
-        
 
         SetBuildingShaderAlive(false);
 

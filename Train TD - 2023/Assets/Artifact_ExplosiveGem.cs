@@ -45,16 +45,6 @@ public class Artifact_ExplosiveGem: ActivateWhenOnArtifactRow, IResetStateArtifa
             didApply = true;
         }
 
-        foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
-            moduleAmmo.ApplyBulletEffect(ModuleAmmo.AmmoEffects.explosive);
-            didApply = true;
-        }
-        
-        foreach (var directControllable in target.GetComponentsInChildren<DirectControllable>()) {
-            directControllable.ApplyBulletEffect(ModuleAmmo.AmmoEffects.explosive);
-            didApply = true;
-        }
-
         foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {
             roboRepair.explosiveRepair = true;
             roboRepair.explosiveRepairAmount = activeExplosiveRepair;

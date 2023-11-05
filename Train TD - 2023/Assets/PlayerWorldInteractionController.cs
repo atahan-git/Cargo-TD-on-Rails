@@ -1205,7 +1205,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                         }*/
                 break;
             case SelectMode.reload:
-                var moduleAmmo = selectedCart.GetComponentInChildren<ModuleAmmo>();
+                var moduleAmmo = selectedCart.GetComponentInChildren<ModuleAmmo>(true);
                 if (moduleAmmo) {
                     moduleAmmo.Reload(GetReloadAmount());
                 }
@@ -1289,7 +1289,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
-    public MiniGUI_BuildingInfoCard infoCard;
+    public MiniGUI_BuildingInfoCard buildingInfoCard;
+    public MiniGUI_BuildingInfoCard enemyInfoCard;
+    public MiniGUI_BuildingInfoCard artifactInfoCard;
     [ReadOnly]
     public Color selectingTopButtonColor;
 
@@ -1439,11 +1441,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (!infoCardActive) {
             infoCardActive = true;
             if(selectedCart != null)
-                infoCard.SetUp(selectedCart);
+                buildingInfoCard.SetUp(selectedCart);
             else if (selectedEnemy != null)
-                infoCard.SetUp(selectedEnemy);
+                enemyInfoCard.SetUp(selectedEnemy);
             else if (selectedArtifact != null)
-                infoCard.SetUp(selectedArtifact);
+                artifactInfoCard.SetUp(selectedArtifact);
             else
                 infoCardActive = false;
 
@@ -1454,7 +1456,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
     void HideInfo() {
         infoCardActive = false;
-        infoCard.Hide();
+        buildingInfoCard.Hide();
+        enemyInfoCard.Hide();
+        artifactInfoCard.Hide();
     }
 
     public void Deselect() {

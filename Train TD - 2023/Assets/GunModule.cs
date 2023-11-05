@@ -96,15 +96,13 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     
     public float GetBurnDamage() {
         var burnBulletAddonDamage = 0f;
-        
-        if (isFire) {
-            if (projectileDamage > 0) {
-                burnBulletAddonDamage = projectileDamage * regularToBurnDamageConversionMultiplier;
-            } else {
-                burnBulletAddonDamage = burnDamage * regularToBurnDamageConversionMultiplier;
-            }
+
+        if (projectileDamage > 0) {
+            burnBulletAddonDamage = projectileDamage * regularToBurnDamageConversionMultiplier;
+        } else {
+            burnBulletAddonDamage = burnDamage * regularToBurnDamageConversionMultiplier;
         }
-        
+
         if (dontGetAffectByMultipliers) {
             return burnDamage + burnBulletAddonDamage;
         } else {
@@ -342,19 +340,18 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         isWarmedUp = false;
     }
 
-    public bool isFire;
-    public bool isSticky;
-    public bool isExplosive;
+    
     public float explosionRange = 0;
     public float explosionRangeBoost = 0;
 
-    float GetExplosionRange() {
+    public float GetExplosionRange() {
         var damageToRangeConversion = 0f;
-        if (isExplosive) {
+
+        if (regularToRangeConversionMultiplier > 0) {
             damageToRangeConversion = 0.25f;
             damageToRangeConversion += projectileDamage * regularToRangeConversionMultiplier;
         }
-        
+
         return explosionRange + explosionRangeBoost +damageToRangeConversion;
     }
     
@@ -387,8 +384,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         for (int i = 0; i < fireBarrageCount; i++) {
             //if (!isPlayer || AreThereEnoughMaterialsToShoot() || isFree) {
             if (useProviderBullet) {
-                bulletPrefab = ProjectileProvider.s.GetProjectile(myType, isFire || bonusBurnDamage > 0, isSticky);
-                muzzleFlashPrefab = ProjectileProvider.s.GetMuzzleFlash(myType, isGigaGatling, isFire || bonusBurnDamage > 0, isSticky);
+                bulletPrefab = ProjectileProvider.s.GetProjectile(myType);
+                muzzleFlashPrefab = ProjectileProvider.s.GetMuzzleFlash(myType, isGigaGatling);
             }
 
 

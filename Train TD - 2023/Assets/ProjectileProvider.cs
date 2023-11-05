@@ -29,16 +29,10 @@ public class ProjectileProvider : MonoBehaviour {
 	    public GameObject regularBullet;
 	    [HorizontalGroup("row1")]
 	    public GameObject gatlingMuzzleFlash;
-	    [HorizontalGroup("row2")]
-	    public GameObject fireBullet;
-	    [HorizontalGroup("row2")]
-	    public GameObject stickyBullet;
-	    [HorizontalGroup("row2")]
-	    public GameObject fireAndStickyBullet;
     }
 
 
-    public GameObject GetProjectile(ProjectileTypes myType, bool isFire, bool isSticky) {
+    public GameObject GetProjectile(ProjectileTypes myType) {
 	    var combo = projectiles[0];
 	    for (int i = 0; i < projectiles.Length; i++) {
 		    if (projectiles[i].myType == myType) {
@@ -48,15 +42,6 @@ public class ProjectileProvider : MonoBehaviour {
 	    }
 	    
 	    var result = combo.regularBullet;
-	    /*if (isFire && isSticky) {
-		    result = combo.fireAndStickyBullet;
-	    }else if (isFire) {
-		    result =  combo.fireBullet;
-	    }else if (isSticky) {
-		    result =  combo.stickyBullet;
-	    } else {
-		    result =  combo.regularBullet;
-	    }*/
 
 	    if (result == null) {
 		    result = combo.regularBullet;
@@ -65,7 +50,7 @@ public class ProjectileProvider : MonoBehaviour {
 	    return result;
     }
     
-    public GameObject GetMuzzleFlash (ProjectileTypes myType, bool isGatling, bool isFire, bool isSticky) {
+    public GameObject GetMuzzleFlash (ProjectileTypes myType, bool isGatling) {
 	    var combo = projectiles[0];
 	    for (int i = 0; i < projectiles.Length; i++) {
 		    if (projectiles[i].myType == myType) {

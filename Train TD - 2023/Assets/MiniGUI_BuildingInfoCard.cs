@@ -69,25 +69,6 @@ public class MiniGUI_BuildingInfoCard : MonoBehaviour
         isLerping = false;
     }
 
-    public void SetUp(PowerUpScriptable powerUp) {
-        Start();
-        Show();
-        armorPenetrationIcon.gameObject.SetActive(false);
-
-        icon.sprite = powerUp.icon;
-        moduleName.text = powerUp.name;
-        
-        //sourceTransform = powerUp.GetUITargetTransform();
-
-        moduleDescription.text = powerUp.description;
-        
-        infoCardsParent.gameObject.SetActive(false);
-        worldTarget.SetUp(sourceTransform);
-        transform.SetParent(lerpTarget);
-        transform.localPosition = Vector3.zero;
-        isLerping = false;
-    }
-    
     public void SetUp(EnemyHealth enemy) {
         Start();
         Show();

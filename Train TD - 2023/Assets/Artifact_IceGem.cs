@@ -34,16 +34,6 @@ public class Artifact_IceGem : ActivateWhenOnArtifactRow, IResetStateArtifact
             didApply = true;
         }
 
-        foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
-            moduleAmmo.ApplyBulletEffect(ModuleAmmo.AmmoEffects.fire);
-            didApply = true;
-        }
-        
-        foreach (var directControllable in target.GetComponentsInChildren<DirectControllable>()) {
-            directControllable.ApplyBulletEffect(ModuleAmmo.AmmoEffects.fire);
-            didApply = true;
-        }
-
         foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {
             roboRepair.extraPrefabToSpawnOnAffected.Add(currentIceShard);
             didApply = true;

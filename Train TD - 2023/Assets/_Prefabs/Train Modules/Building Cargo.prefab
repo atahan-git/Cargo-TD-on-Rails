@@ -5436,6 +5436,7 @@ MonoBehaviour:
     cargoReward: 
     cargoLevel: 0
     artifactReward: 
+    artifactLevel: 0
     isLeftCargo: 0
   icons:
   - {fileID: 6859864511925905042}
@@ -5835,6 +5836,10 @@ PrefabInstance:
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: myRarity
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: isFragile
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: uniqueName

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1029716251911642360}
   - component: {fileID: 1029716251911642366}
   - component: {fileID: 1029716251911642361}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4825,6 +4825,51 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &3124356125824711626
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8585977792772692477}
+  - component: {fileID: 1674878987026342422}
+  m_Layer: 14
+  m_Name: sphere collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8585977792772692477
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124356125824711626}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7110668419382630653}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &1674878987026342422
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124356125824711626}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.04
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3627069075709842125
 GameObject:
   m_ObjectHideFlags: 0
@@ -4837,7 +4882,7 @@ GameObject:
   - component: {fileID: 805000500164640546}
   - component: {fileID: 3545889438311254073}
   - component: {fileID: 7734991791265660523}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4935,7 +4980,7 @@ GameObject:
   - component: {fileID: 5922119055675395942}
   - component: {fileID: 5922119055675395936}
   - component: {fileID: 5922119055675395943}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9760,7 +9805,7 @@ GameObject:
   - component: {fileID: 2844261504086809453}
   - component: {fileID: 4009479359516741227}
   - component: {fileID: 7802768070903836652}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14573,7 +14618,9 @@ GameObject:
   - component: {fileID: 7110668419382630653}
   - component: {fileID: 2274362668352155433}
   - component: {fileID: 1887827696573373486}
-  m_Layer: 12
+  - component: {fileID: 1037119141951987301}
+  - component: {fileID: 1200985300037230527}
+  m_Layer: 14
   m_Name: Rocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14595,6 +14642,7 @@ Transform:
   - {fileID: 2844261504086809453}
   - {fileID: 5922119055675395942}
   - {fileID: 7775540503082373215}
+  - {fileID: 8585977792772692477}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14657,6 +14705,46 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &1037119141951987301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7110668419382630654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1940b6412626dab4a97ec600df57f31f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseHealth: 20
+  maxHealth: 20
+  currentHealth: 20
+  deathPrefab: {fileID: 8898146867772866954, guid: 10c15c0783a7a5c42941c0a73b1acd41, type: 3}
+  isAlive: 1
+  enemyUIBar: {fileID: 0}
+  activeBurnEffects: []
+  currentBurn: 0
+  burnSpeed: 0
+--- !u!114 &1200985300037230527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7110668419382630654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 457bc320c770c7e419cae2d477ce9623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myId: 0
+  myType: 0
+  targetTransform: {fileID: 7110668419382630653}
+  avoid: 0
+  flying: 1
+  velocity: {x: 0, y: 0, z: 0}
+  enemiesTargetingMe: []
 --- !u!1 &8603700864539081039
 GameObject:
   m_ObjectHideFlags: 0
@@ -14669,7 +14757,7 @@ GameObject:
   - component: {fileID: 101292006410704169}
   - component: {fileID: 4481249636619348710}
   - component: {fileID: 8914705555171474490}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -72,6 +72,8 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
 
         if (Math.Abs(newhealth - health) < 0.1f) {
             return;
+        } else {
+            health = newhealth;
         }
 
 

@@ -50,9 +50,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxAmmo: 5
   maxAmmoMultiplier: 1
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   ammoPerBarrage: 1
   ammoPerBarrageMultiplier: 1
   myGunModules: []
@@ -64,7 +61,7 @@ MonoBehaviour:
   OnReload:
     m_PersistentCalls:
       m_Calls: []
-  OnAmmoTypeChange:
+  roboRepairInstantRepair:
     m_PersistentCalls:
       m_Calls: []
   myUINoAmmoWarningThing: {fileID: 0}
@@ -529,6 +526,10 @@ PrefabInstance:
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: buyCost
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: myRarity
       value: 2
       objectReference: {fileID: 0}
@@ -539,6 +540,10 @@ PrefabInstance:
     - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
       propertyPath: displayName
       value: Side Rocket Launcher
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139748349479078024, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}
+      propertyPath: needsToBeBought
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 86c82cfee32788c49a35e2e0e34bf7b7, type: 3}

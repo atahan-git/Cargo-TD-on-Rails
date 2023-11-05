@@ -65,7 +65,6 @@ public static class ExtensionMethods {
     public static void SetRight(this RectTransform rt, float right)
     {
         rt.offsetMax = new Vector2(-right, rt.offsetMax.y);
-        Debug.Log(rt.offsetMax);
     }
  
     public static void SetTop(this RectTransform rt, float top)
