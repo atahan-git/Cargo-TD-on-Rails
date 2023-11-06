@@ -125,6 +125,10 @@ public class CameraController : MonoBehaviour {
         }
     }
 
+    public void MoveToCharSelectArea() {
+        cameraCenter.position = Vector3.back*5;
+    }
+
     
     public  bool cannotSelectButCanMoveOverride = false;
     private bool snappedToTrainLastFrame = false;
@@ -195,7 +199,8 @@ public class CameraController : MonoBehaviour {
     public MiniGUI_LineBetweenObjects miniGUILine;
 
     void ProcessVelocityPredictionAndAimAssist() {
-        var targets = EnemyWavesController.s.allEnemyTargetables;
+        var allTargets = LevelReferences.allTargetValues;
+        var allTargetsReal = LevelReferences.allTargets;
  
         var myPosition =  mainCamera.transform.position;
         var myForward = mainCamera.transform.forward;
@@ -210,15 +215,15 @@ public class CameraController : MonoBehaviour {
         var curTargetVelocityLocation = Vector3.zero;
         bool hasTarget = false;
 
-        for (int i = 0; i < targets.Length; i++) {
-            if(targets[i] == null || targets[i].gameObject == null || targets[i].myType != PossibleTarget.Type.enemy)
+        for (int i = 0; i < allTargets.Length; i++) {
+            if(allTargets[i].type != PossibleTarget.Type.enemy)
                 continue;
 
-            var targetDistance = Vector3.Distance(targets[i].targetTransform.position, myPosition);
-            var targetRealLocation = targets[i].targetTransform.position;
+            var targetDistance = Vector3.Distance(allTargets[i].position, myPosition);
+            var targetRealLocation = allTargets[i].position;
             var targetLocation = targetRealLocation;
             if (velocityAdjustment) {
-                targetLocation += targets[i].velocity * targetDistance * 0.05f;
+                targetLocation += allTargetsReal[i].velocity * targetDistance * 0.05f;
             }
             
             //Debug.DrawLine( targets[i].targetTransform.position, targetLocation);
@@ -679,8 +684,6 @@ public class CameraController : MonoBehaviour {
     }
     
     public void ProcessDirectControl(Vector2 processedInput) {
-        
-
         rotTarget += processedInput;
 
         Quaternion xQuaternion = Quaternion.AngleAxis (rotTarget.x, Vector3.up);
@@ -703,7 +706,7 @@ public class CameraController : MonoBehaviour {
     public void ActivateDirectControl(Transform target) {
         directControlTransform = target;
         directControlActive = true;
-        rotTarget = Vector2.zero;
+        rotTarget = new Vector2(target.rotation.eulerAngles.y, -target.rotation.eulerAngles.x);
         rotLerping = true;
         Cursor.lockState = CursorLockMode.Locked;
     }

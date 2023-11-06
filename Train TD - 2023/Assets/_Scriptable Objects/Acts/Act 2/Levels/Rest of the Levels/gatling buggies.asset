@@ -22,11 +22,14 @@ MonoBehaviour:
       distanceOnPath: 45
       isLeft: 0
       hasReward: 0
+      useAsIcon: 1
     - enemyIdentifier:
         enemyUniqueName: TeleportingBuggyAVC
         enemyCount: 6
       distanceOnPath: 75
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     segmentLength: 200
     artifactRewardUniqueName: 
+    artifactRewardLevel: 0

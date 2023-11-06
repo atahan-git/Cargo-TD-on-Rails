@@ -70,6 +70,26 @@ public class MiniGUI_TrackPath : MonoBehaviour {
             if (segment.isEncounter)
                 icon = LevelReferences.s.encounterIcon;
             
+            
+            // better icons
+            if (!segment.isEncounter) {
+                icon = DataHolder.s.GetEnemy(segment.enemiesOnPath[0].enemyIdentifier.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
+
+                for (int i = 0; i < segment.enemiesOnPath.Length; i++) {
+                    var enemy = segment.enemiesOnPath[i];
+                    
+                    if (enemy.useAsIcon) {
+                        icon = DataHolder.s.GetEnemy(enemy.enemyIdentifier.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
+                        break;
+                    } else {
+                        if (enemy.hasReward) {
+                            icon = DataHolder.s.GetEnemy(enemy.enemyIdentifier.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
+                        } 
+                    }
+                }
+            }
+            
+            
             unit.GetComponent<MiniGUI_RadarUnit>().SetUp(icon, percentage, segment.eliteEnemy, segment.isEncounter);
             
         /*} else {

@@ -61,26 +61,15 @@ public class DataHolder : MonoBehaviour {
         Debug.LogError($"Can't find level {levelUniqueName}");
         return null;
     }
-    
-    public Sprite GetCitySprite(string cityNameSuffix) {
+
+    public CityDataScriptable GetCityScriptable(string cityUniqueName) {
         for (int i = 0; i < cities.Length; i++) {
-            if (PreProcess(cities[i].cityData.nameSuffix) == PreProcess(cityNameSuffix)) {
-                return cities[i].sprite;
+            if (PreProcess(cities[i].cityData.uniqueName) == PreProcess(cityUniqueName)) {
+                return cities[i];
             }
         }
 
-        Debug.LogError($"Can't find city {cityNameSuffix}");
-        return null;
-    }
-    
-    public GameObject GetCityPrefab(string cityNameSuffix) {
-        for (int i = 0; i < cities.Length; i++) {
-            if (PreProcess(cities[i].cityData.nameSuffix) == PreProcess(cityNameSuffix)) {
-                return cities[i].worldMapCastle;
-            }
-        }
-
-        Debug.LogError($"Can't find city {cityNameSuffix}");
+        Debug.LogError($"Can't find city {cityUniqueName}");
         return null;
     }
 

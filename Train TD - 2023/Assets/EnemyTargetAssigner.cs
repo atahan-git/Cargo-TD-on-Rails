@@ -43,7 +43,7 @@ public class EnemyTargetAssigner : MonoBehaviour {
                 result.gotShootCredits = true;
                 shootCredit -= result.shootCreditsUse;
 
-                if (shootCredit < -maxShootCredit) {
+                if (shootCredit < 0) {
                     return;
                 }
             }

@@ -17,6 +17,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     public float currentShields = 0;
     private float shieldRegenRate = 50;
     private float shieldRegenDelay = 5;
+    public float shieldRegenDelayMultiplier = 1f;
+    public float shieldRegenDelayDivider = 1f;
+    public float shieldRegenRateMultiplier = 1f;
+    public float shieldRegenRateDivider = 1f;
     public float curShieldDelay = 0;
 
 
@@ -83,11 +87,16 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         reflectiveShields = false;
         
         damageDefenders.Clear();
-        maxHealth = baseHealth * (1+(boostHealthOnUpgrade*level));
+        maxHealth = baseHealth * (1+(boostHealthOnUpgrade*level)) * (0.6f + (DataSaver.s.GetCurrentSave().metaProgress.armorUpgradesBought* 0.2f));
         
         maxShields = baseShields;
         canHaveShields = true;
         isShieldActive = maxShields > 0;
+
+        shieldRegenDelayMultiplier = 1;
+        shieldRegenDelayDivider = 1;
+        shieldRegenRateMultiplier = 1;
+        shieldRegenRateDivider = 1;
         
         if (PlayStateMaster.s.isCombatInProgress()) {
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
@@ -101,24 +110,26 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             currentShields = maxShields;
         }
         
-
         glassCart = false;
 
-        
         UpdateHpState();
     }
 
+    private float invincibilityTime = 0;
     [Button]
     public void DealDamage(float damage) {
         Assert.IsTrue(damage > 0);
         if(isImmune || invincible)
             return;
 
-        if (Random.value < DataSaver.s.GetCurrentSave().currentRun.luck) {
+        if (luckyCart && Random.value < DataSaver.s.GetCurrentSave().currentRun.luck) {
             Instantiate(LevelReferences.s.luckyNegate, transform.position, Quaternion.identity);
             return;
         }
 
+        if (invincibilityTime > 0) {
+            return;
+        }
 
         myCart = GetComponent<Cart>();
         if (!isDead && (myCart == null || !myCart.isDestroyed)) {
@@ -131,7 +142,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             damage *= damageReductionMultiplier;
             var shieldsWasMoreThan100 = currentShields > 100;
             if (isShieldActive && currentShields > 0) {
-                curShieldDelay = shieldRegenDelay;
+                curShieldDelay = shieldRegenDelay* (1f/shieldRegenDelayMultiplier) * shieldRegenDelayDivider;
                 currentShields -= damage;
                 damage = 0;
                 if (currentShields <= 0) {
@@ -148,14 +159,34 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                     if (currentShields < 0)
                         currentShields = 0;
                 }
+
+                var shieldGen = GetComponentInChildren<ShieldGeneratorModule>();
+                if (shieldGen != null) {
+                    shieldGen.SpawnGemEffect(this);
+                }
             }
+            
+            var prevHpPercent = currentHealth / maxHealth;
+
+            if (myCart.isFragile) { // lose less hp the less hp you have if this is a fragile cart
+                damage *= Mathf.Clamp(prevHpPercent*2,0.1f,1f);
+            }
+            
             
             currentHealth -= damage;
 
-            var hpPercent = currentHealth / maxHealth;
-            
+            if (!myCart.isFragile) { // never be able to get one shot lose a fragile cart
+                if (prevHpPercent > 0.1f) {
+                    if (currentHealth <= 0) {
+                        currentHealth = Mathf.Min(5, Mathf.CeilToInt(maxHealth*0.1f));
+                    }
+
+                    invincibilityTime = 1f;
+                }
+            }
+
             if(currentHealth <= 0) {
-                if (myCart.isRepairable) {
+                if (!myCart.isFragile) {
                     GetDestroyed();
                 } else {
                     if(!unDying)
@@ -176,6 +207,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     }
 
     public void UpdateHpState() {
+        Train.s.HealthModified();
         UpdateHPCriticalIndicators();
         SetBuildingShaderHealth();
     }
@@ -263,7 +295,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             }
         }
 
-        curShieldDelay = shieldRegenDelay;
+        curShieldDelay = shieldRegenDelay* (1f/shieldRegenDelayMultiplier) *shieldRegenDelayDivider;
     }
 
     public void SetHealth(float health) {
@@ -441,13 +473,17 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                     isShieldActive = currentShields >= (maxShields / 2f);
                 }
 
-                currentShields += shieldRegenRate * Time.deltaTime;
+                currentShields += shieldRegenRate * shieldRegenRateMultiplier * Time.deltaTime * (1/shieldRegenRateDivider);
             } else {
                 curShieldDelay -= Time.deltaTime;
             }
         }
 
         currentShields = Mathf.Clamp(currentShields, 0, maxShields);
+
+        if (invincibilityTime > 0) {
+            invincibilityTime -= Time.deltaTime;
+        }
     }
 
     void SelfDamage() {
@@ -508,9 +544,9 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         
         dieEvent?.Invoke();
         
-        var emptyCart = Instantiate(LevelReferences.s.emptyCart).GetComponent<Cart>();
+        var emptyCart = Instantiate(LevelReferences.s.scrapCart).GetComponent<Cart>();
         
-        Train.s.RemoveCart(myCart);
+        Train.s.CartDestroyed(myCart);
         Train.s.AddCartAtIndex(myCart.trainIndex, emptyCart);
         
         Destroy(gameObject);
@@ -520,7 +556,6 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     public void GetDestroyed() {
         myCart.isDestroyed = true;
         myCart.SetDisabledState();
-        
 
         SetBuildingShaderAlive(false);
 
@@ -579,7 +614,14 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     private void OnDisable() {
         if(myUIBar != null)
             if(myUIBar.gameObject != null)
-                Destroy(myUIBar.gameObject);
+                myUIBar.gameObject.SetActive(false);
+    }
+
+    private void OnEnable() {
+        if(myUIBar != null)
+            if(myUIBar.gameObject != null)
+                if(GetComponentInParent<Train>() != null)
+                    myUIBar.gameObject.SetActive(true);
     }
 
     private void OnDestroy() {
@@ -590,6 +632,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
 
     public bool IsPlayer() {
         return true;
+    }
+    
+    public bool IsAlive() {
+        return !isDead;
     }
 
     public GameObject GetGameObject() {

@@ -17,7 +17,6 @@ public class EnemyWavesController : MonoBehaviour {
 	public GameObject enemyWavePrefab;
 
 	public List<EnemyWave> waves = new List<EnemyWave>();
-	public PossibleTarget[] allEnemyTargetables;
 
 	public bool enemiesInitialized = false;
 
@@ -37,12 +36,16 @@ public class EnemyWavesController : MonoBehaviour {
 
 	public void SetUpLevel() {
 		Cleanup();
-		pursuerTimerObject.SetUp(PlayStateMaster.s.currentLevel.dynamicSpawnData);
-
+		
+		
 		pursuerTimerObject.gameObject.SetActive(false);
-
-		var curDynamicSpawn = PlayStateMaster.s.currentLevel.dynamicSpawnData;
-		curDynamicSpawn.curTime = curDynamicSpawn.firstSpawnTime;
+		
+		if (PlayStateMaster.s.currentLevel.dynamicSpawnData != null) {
+			pursuerTimerObject.SetUp(PlayStateMaster.s.currentLevel.dynamicSpawnData);
+			
+			var curDynamicSpawn = PlayStateMaster.s.currentLevel.dynamicSpawnData;
+			curDynamicSpawn.curTime = curDynamicSpawn.firstSpawnTime;
+		}
 	}
 
 	public void SpawnEnemiesOnSegment(float segmentStartDistance, LevelSegment segment) {
@@ -85,7 +88,7 @@ public class EnemyWavesController : MonoBehaviour {
 		wave.transform.SetParent(transform);
 		wave.SetUp(enemyIdentifier, distance, startMoving, isLeft, artifact);
 		waves.Add(wave);
-		UpdateEnemyTargetables();
+		//UpdateEnemyTargetables();
 		OnEnemyWaveSpawn.Invoke(enemyIdentifier);
 	}
 
@@ -104,11 +107,6 @@ public class EnemyWavesController : MonoBehaviour {
 				artifact);
 		}
 	}
-
-	public void UpdateEnemyTargetables() {
-		allEnemyTargetables = GetComponentsInChildren<PossibleTarget>();
-	}
-
 
 	public void PhaseOutExistingEnemies() {
 		for (int i = 0; i < waves.Count; i++) {
@@ -137,8 +135,9 @@ public class EnemyWavesController : MonoBehaviour {
 				}
 				
 				//for (int i = 0; i < SceneLoader.s.currentLevel.dynamicSpawnEnemies.Length; i++) {
+				if (PlayStateMaster.s.currentLevel.dynamicSpawnData != null) {
 					var dynamicSpawnEnemy = PlayStateMaster.s.currentLevel.dynamicSpawnData;
-					
+
 					if (dynamicSpawnEnemy.curTime <= 0) {
 						SpawnEnemy(dynamicSpawnEnemy.enemyIdentifier, playerDistance - EnemyDynamicSpawnData.distanceFromTrain, true, Random.value > 0.5f);
 						dynamicSpawnEnemy.curTime = dynamicSpawnEnemy.spawnInterval;
@@ -151,6 +150,7 @@ public class EnemyWavesController : MonoBehaviour {
 					}
 
 					dynamicSpawnEnemy.curTime -= Time.deltaTime;
+				}
 				//}
 			}
 		} else {
@@ -164,7 +164,6 @@ public class EnemyWavesController : MonoBehaviour {
 
 	public void RemoveWave(EnemyWave toRemove) {
 		waves.Remove(toRemove);
-		UpdateEnemyTargetables();
 		OnEnemyWaveCleared.Invoke(toRemove.myEnemy);
 	}
 

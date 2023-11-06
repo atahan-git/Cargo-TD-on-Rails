@@ -813,16 +813,16 @@ MonoBehaviour:
           - uniqueName: 
             health: -1
             ammo: -1
-            isFire: 0
-            isSticky: 0
-            isExplosive: 0
             level: 0
             cargoState:
               cargoReward: 
               cargoLevel: 0
               artifactReward: 
+              artifactLevel: 0
               isLeftCargo: 0
-            attachedArtifact: 
+            attachedArtifact:
+              uniqueName: 
+              level: 0
         currentAct: 1
         map:
           chunks: []
@@ -843,15 +843,19 @@ MonoBehaviour:
             cargoReward: 
             cargoLevel: 0
             artifactReward: 
+            artifactLevel: 0
             isLeftCargo: 0
           rightCargo:
             cargoReward: 
             cargoLevel: 0
             artifactReward: 
+            artifactLevel: 0
             isLeftCargo: 0
         fleaMarketRarityBoost: -0.05
         destinationRarityBoost: -0.15
-        artifactRarityBoost: -0.15
+        fleaMarketArtifactRarityBoost: -0.05
+        destinationArtifactRarityBoost: -0.15
+        eliteArtifactRarityBoost: -0.05
         luck: 0
         runGameVersion: 0.0.0.a
       xpProgress:
@@ -885,16 +889,16 @@ MonoBehaviour:
           - uniqueName: 
             health: -1
             ammo: -1
-            isFire: 0
-            isSticky: 0
-            isExplosive: 0
             level: 0
             cargoState:
               cargoReward: 
               cargoLevel: 0
               artifactReward: 
+              artifactLevel: 0
               isLeftCargo: 0
-            attachedArtifact: 
+            attachedArtifact:
+              uniqueName: 
+              level: 0
         currentAct: 1
         map:
           chunks: []
@@ -915,15 +919,19 @@ MonoBehaviour:
             cargoReward: 
             cargoLevel: 0
             artifactReward: 
+            artifactLevel: 0
             isLeftCargo: 0
           rightCargo:
             cargoReward: 
             cargoLevel: 0
             artifactReward: 
+            artifactLevel: 0
             isLeftCargo: 0
         fleaMarketRarityBoost: -0.05
         destinationRarityBoost: -0.15
-        artifactRarityBoost: -0.15
+        fleaMarketArtifactRarityBoost: -0.05
+        destinationArtifactRarityBoost: -0.15
+        eliteArtifactRarityBoost: -0.05
         luck: 0
         runGameVersion: 0.0.0.a
       xpProgress:
@@ -957,16 +965,16 @@ MonoBehaviour:
           - uniqueName: 
             health: -1
             ammo: -1
-            isFire: 0
-            isSticky: 0
-            isExplosive: 0
             level: 0
             cargoState:
               cargoReward: 
               cargoLevel: 0
               artifactReward: 
+              artifactLevel: 0
               isLeftCargo: 0
-            attachedArtifact: 
+            attachedArtifact:
+              uniqueName: 
+              level: 0
         currentAct: 1
         map:
           chunks: []
@@ -987,15 +995,19 @@ MonoBehaviour:
             cargoReward: 
             cargoLevel: 0
             artifactReward: 
+            artifactLevel: 0
             isLeftCargo: 0
           rightCargo:
             cargoReward: 
             cargoLevel: 0
             artifactReward: 
+            artifactLevel: 0
             isLeftCargo: 0
         fleaMarketRarityBoost: -0.05
         destinationRarityBoost: -0.15
-        artifactRarityBoost: -0.15
+        fleaMarketArtifactRarityBoost: -0.05
+        destinationArtifactRarityBoost: -0.15
+        eliteArtifactRarityBoost: -0.05
         luck: 0
         runGameVersion: 0.0.0.a
       xpProgress:
@@ -1378,7 +1390,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 8388407
+    m_Bits: 16777015
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

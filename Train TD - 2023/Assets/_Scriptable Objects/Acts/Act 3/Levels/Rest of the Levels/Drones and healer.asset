@@ -22,23 +22,28 @@ MonoBehaviour:
       distanceOnPath: 0
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: DroneGatling
         enemyCount: 2
       distanceOnPath: 40
       isLeft: 0
       hasReward: 0
+      useAsIcon: 1
     - enemyIdentifier:
         enemyUniqueName: DroneCannon
         enemyCount: 2
       distanceOnPath: 45
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: Healer
         enemyCount: 1
       distanceOnPath: 20
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     segmentLength: 200
     artifactRewardUniqueName: 
+    artifactRewardLevel: 0

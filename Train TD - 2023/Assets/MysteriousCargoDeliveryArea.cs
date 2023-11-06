@@ -65,6 +65,9 @@ public class MysteriousCargoDeliveryArea : MonoBehaviour
         isEngaged = true;
         PlayerWorldInteractionController.s.Deselect();
 
+        //give reward money
+        var rewardMoney = 50 * DataSaver.s.GetCurrentSave().currentRun.currentAct;
+        Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(deliverPlatform.transform.position, rewardMoney);
         
         deliverPlatform.SetEmptyStatus(false);
 

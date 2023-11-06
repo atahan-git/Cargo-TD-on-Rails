@@ -11,9 +11,6 @@ public class MiniGUI_CartUIBar : MonoBehaviour {
     public RectTransform mainRect;
     
     public RectTransform ammoBar;
-    public GameObject fireAmmo;
-    public GameObject stickyAmmo;
-    public GameObject explosiveAmmo;
     public RectTransform healthBar;
     public Image healthFill;
     
@@ -175,10 +172,6 @@ public class MiniGUI_CartUIBar : MonoBehaviour {
         percent = Mathf.Clamp(percent, 0, 1f);
         
         ammoBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Lerp(ammoMinHeight, ammoMaxHeight, percent));
-        
-        fireAmmo.gameObject.SetActive(myAmmo.isFire);
-        stickyAmmo.gameObject.SetActive(myAmmo.isSticky);
-        explosiveAmmo.gameObject.SetActive(myAmmo.isExplosive);
     }
     
     void SetBoostBarValue() {

@@ -29,6 +29,7 @@ public class PhysicalRangeShower : MonoBehaviour {
     public bool isBooster;
 
     public void ShowArtifactRange(Artifact artifact, bool resetPos) {
+        return;
         var cart = artifact.GetComponentInParent<Cart>();
         if (cart != null) {
             isArtifact = true;
@@ -43,7 +44,7 @@ public class PhysicalRangeShower : MonoBehaviour {
 
         var artifactColor = Color.white;
         if (isArtifact) {
-            artifactColor = artifact.isGoodEffect ? artifactGoodColor : artifactBadColor;
+            //artifactColor = artifact.isGoodEffect ? artifactGoodColor : artifactBadColor;
             var range = artifact.range;
             
             artifactFrontCart = Train.s.GetNextBuilding(range, cart);

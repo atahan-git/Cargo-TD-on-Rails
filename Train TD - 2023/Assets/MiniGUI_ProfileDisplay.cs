@@ -34,7 +34,7 @@ public class MiniGUI_ProfileDisplay : MonoBehaviour {
             
             scrapsText.text = $"{MoneyController.s.scraps:F0}";
 
-            xpText.text = mySave.xpProgress.xp.ToString();
+            xpText.text = mySave.metaProgress.castlesTraveled.ToString();
 
             for (int i = 0; i < mySave.currentRun.powerUps.Count; i++) {
                 myProfilePowerUpDisplays[i].UpdatePowerUpDisplay(mySave.currentRun.powerUps[i]);

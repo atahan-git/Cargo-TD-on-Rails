@@ -10,7 +10,7 @@ public class Artifact_CapacityAndSpeedAffector : ActivateWhenOnArtifactRow {
     public bool delicateMachinery = false;
 
     protected override void _Arm() {
-        GetComponent<Artifact>().range = 100;
+        //GetComponent<Artifact>().range = 100;
         SpeedController.s.cartCapacityModifier += capacityBoost;
         SpeedController.s.speedMultiplier += speedMultiplier;
         SpeedController.s.speedAmount += speedAmount;

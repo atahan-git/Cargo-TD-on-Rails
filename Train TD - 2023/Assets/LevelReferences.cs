@@ -35,6 +35,7 @@ public class LevelReferences : MonoBehaviour {
     public GameObject mortarMiniHitPrefab;
     public GameObject waveDisplayPrefab;
     public GameObject enemyHealthPrefab;
+    public GameObject bulletHealthPrefab;
     public GameObject cartHealthPrefab;
     public Transform cartHealthParent;
     public GameObject damageNumbersPrefab;
@@ -50,9 +51,6 @@ public class LevelReferences : MonoBehaviour {
     [Space]
     
     public GameObject reloadEffect_regular;
-    public GameObject reloadEffect_fire;
-    public GameObject reloadEffect_sticky;
-    public GameObject reloadEffect_explosive;
     
     [Space]
 
@@ -116,6 +114,7 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask cartSnapLocationsLayer;
     public LayerMask gateMask;
     public LayerMask artifactLayer;
+    public LayerMask meepleLayer;
 
     [Space]
     public SingleUnityLayer playerBulletLayer;
@@ -139,6 +138,7 @@ public class LevelReferences : MonoBehaviour {
 
     [Space]
     public GameObject emptyCart;
+    public GameObject scrapCart;
 
     [Space]
     public GameObject noAmmoWarning;
@@ -148,16 +148,14 @@ public class LevelReferences : MonoBehaviour {
 
     [Space] 
     public GameObject bullet_regular;
-    public GameObject bullet_fire;
-    public GameObject bullet_sticky;
-    public GameObject bullet_explosive;
-    public GameObject bullet_fire_sticky;
-    public GameObject bullet_fire_explosive;
-    public GameObject bullet_sticky_explosive;
-    public GameObject bullet_fire_sticky_explosive;
-
     public GameObject bullet_repair;
 
+    [Space] public float smallEffectFirstActivateTimeAfterCombatStarts = 10f;
+    public float bigEffectFirstActivateTimeAfterCombatStarts = 15;
+    public GameObject radiationDamagePrefab;
+    public GameObject growthEffectPrefab;
+
+    [Space] public GameObject coinDrop;
     /*public GameObject GetResourceParticle(ResourceTypes types) {
         switch (types) {
             case ResourceTypes.scraps:
@@ -175,6 +173,10 @@ public class LevelReferences : MonoBehaviour {
                 return null;
         }
     }*/
+    
+    
+    public AnimationCurve selectMarkerPulseCurve;
+    public AnimationCurve alphaPulseCurve;
     
     private void Awake() {
         s = this;

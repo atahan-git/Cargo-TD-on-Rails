@@ -4,9 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping {
+public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState {
    public float speedAdd = 6;
+   public float extraSpeedAdd = 1;
    public int enginePower = 100;
+   public int extraEnginePower = 0;
+
+   public bool isHalfPower = false;
 
    public UnityEvent OnEngineStart = new UnityEvent();
    public UnityEvent OnEngineStop = new UnityEvent();
@@ -43,5 +47,10 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 
    public void Disable() {
       this.enabled = false;
+   }
+
+   public void ResetState(int level) {
+      extraSpeedAdd = 0;
+      extraEnginePower = 0;
    }
 }

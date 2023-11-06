@@ -4861,11 +4861,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed22b7720cff2244a8c914a8c7f08ab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  curSpeed: 0
   acceleration: 0
   seekAcceleration: 100
   speed: 2
-  damage: 5
-  mortarRange: 2
+  projectileDamage: 20
+  burnDamage: 0
+  explosionRange: 0
+  isHeal: 0
   hitForceMultiplier: 300
   lifetime: 1.25
   myOriginObject: {fileID: 0}
@@ -4873,14 +4876,17 @@ MonoBehaviour:
   seekStrength: 20
   isPlayerBullet: 0
   canPenetrateArmor: 0
+  target: {fileID: 0}
   source: {fileID: 0}
+  ballistaHitEffect: 0
   myHitType: 0
   mortarGravity: {x: 0, y: -9.81, z: 0}
   mortarAimPredictTime: 1
   mortarVelocityMultiplier: 0.5
   myLine: {fileID: 0}
   isPhaseThrough: 0
-  isBurnDamage: 1
+  isSlowDamage: 0
+  isHoming: 0
   hitScanLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -5180,7 +5186,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 0
-  looping: 0
+  looping: 1
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -5999,7 +6005,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 10
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -6504,10 +6510,10 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 1, g: 1, b: 1, a: 1}
-        key2: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
-        key3: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 0}
+        key0: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 0}
+        key1: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
+        key2: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 1}
+        key3: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 0}
         key4: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}

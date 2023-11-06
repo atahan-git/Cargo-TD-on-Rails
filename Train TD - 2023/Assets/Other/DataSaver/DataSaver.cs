@@ -217,23 +217,39 @@ public class DataSaver {
 		public bool isInARun = false;
 		public RunState currentRun = new RunState("0.0.0.a"); // assumed to be never null
 
-		public XPProgress xpProgress = new XPProgress();
+		public MetaProgress metaProgress = new MetaProgress();
 		public TutorialProgress tutorialProgress = new TutorialProgress();
 	}
 
 	[Serializable]
-	public class XPProgress {
-		public int xp = 0;
-		public List<string> unlockedStarterArtifacts = new List<string>();
-		public string bonusArtifact = "";
+	public class MetaProgress {
+		public int castlesTraveled = 0;
+		public int money = 0;
 
-		public XPProgress() {
-			unlockedStarterArtifacts.Add("starter_artifact");
+		public List<string> unlockedThings = new List<string>();
+		
+		
+		public string justBoughtCart = "";
+		public string justBoughtArtifact = "";
+
+		public string bonusComponent = "";
+		public string bonusGem = "";
+		public string bonusCart = "";
+
+		public int armorUpgradesBought = 0;
+		public int damageUpgradesBought = 0;
+		public int ammoUpgradesBought = 0;
+
+		public int recoveryUpgradesBought = 0;
+
+		public MetaProgress() {
+			//unlockedStarterArtifacts.Add("starter_artifact");
 		}
 	}
 	
 	[Serializable]
 	public class TutorialProgress {
+		public bool showTutorials;
 		public bool firstCityTutorialDone;
 		public bool initialCutscenePlayed;
 		public bool cameraDone;
@@ -251,7 +267,7 @@ public class DataSaver {
 
 		public TrainState myTrain = new TrainState();
 
-		public int currentAct = 1;
+		public int currentAct = 1; // 1,2,3
 		
 		public StarMapState map = new StarMapState();
 		public string targetStar;
@@ -338,13 +354,13 @@ public class DataSaver {
 			[HideInInspector]
 			public int health = -1;
 			[HideInInspector]
-			public int ammo = -1;
+			public int ammo = -1;/*
 			[HideInInspector]
 			public bool isFire = false;
 			[HideInInspector]
 			public bool isSticky = false;
 			[HideInInspector]
-			public bool isExplosive = false;
+			public bool isExplosive = false;*/
 
 			public int level = 0;
 
@@ -393,9 +409,9 @@ public class DataSaver {
 				level = 0;
 				health = -1;
 				ammo = -1;
-				isFire = false;
+				/*isFire = false;
 				isSticky = false;
-				isExplosive = false;
+				isExplosive = false;*/
 				attachedArtifact = new ArtifactState();
 				/*cargoCost = -1;
 				cargoReward = -1;*/
@@ -427,9 +443,9 @@ public class DataSaver {
 				copyState.level = level;
 				copyState.health = health;
 				copyState.ammo = ammo;
-				copyState.isFire = isFire;
+				/*copyState.isFire = isFire;
 				copyState.isSticky = isSticky;
-				copyState.isExplosive = isExplosive;
+				copyState.isExplosive = isExplosive;*/
 				copyState.attachedArtifact = attachedArtifact;
 				copyState.cargoState = new CargoState(cargoState.cargoReward, cargoState.artifactReward, cargoState.isLeftCargo, cargoState.cargoLevel, cargoState.artifactLevel);
 				return copyState;

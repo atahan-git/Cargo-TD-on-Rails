@@ -39,6 +39,7 @@ public class EnemyOnPathData {
 	public bool isLeft = false;
 
 	public bool hasReward = false;
+	public bool useAsIcon = false;
 }
 
 [Serializable]

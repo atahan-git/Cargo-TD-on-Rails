@@ -141,9 +141,9 @@ public class Train : MonoBehaviour {
             
             if (ammo != null) {
                 buildingState.ammo = (int)ammo.curAmmo;
-                buildingState.isFire = ammo.isFire;
+                /*buildingState.isFire = ammo.isFire;
                 buildingState.isSticky = ammo.isSticky;
-                buildingState.isExplosive = ammo.isExplosive;
+                buildingState.isExplosive = ammo.isExplosive;*/
             } else {
                 buildingState.ammo = -1;
             }
@@ -178,7 +178,7 @@ public class Train : MonoBehaviour {
         if (cartState.ammo >= 0) {
             var ammo = cart.GetComponentInChildren<ModuleAmmo>();
             if (ammo != null) 
-                ammo.SetAmmo(cartState.ammo, cartState.isFire, cartState.isSticky, cartState.isExplosive);
+                ammo.SetAmmo(cartState.ammo);
             
         }/*else if (cartState.ammo == -2) {
             var ammo = cart.GetComponentInChildren<ModuleAmmo>();
@@ -199,7 +199,7 @@ public class Train : MonoBehaviour {
         if (cartState.attachedArtifact != null && cartState.attachedArtifact.uniqueName!= null && cartState.attachedArtifact.uniqueName.Length > 0) {
             var artifact = Instantiate( DataHolder.s.GetArtifact(cartState.attachedArtifact.uniqueName).gameObject).GetComponent<Artifact>();
             ApplyStateToArtifact(artifact, cartState.attachedArtifact);
-            artifact.AttachToCart(cart);
+            artifact.AttachToCart(cart, false,false);
         }
         
         cart.ResetState();
@@ -292,8 +292,8 @@ public class Train : MonoBehaviour {
             cart.trainIndex = index;
             cartDefPositions[i] = cart.transform.localPosition;
 
-            if (cart.artifactParent.childCount > 0) {
-                cart.artifactParent.GetChild(0).ResetTransformation();
+            if (cart.artifactParent.childCount > 1) {
+                cart.artifactParent.GetChild(1).ResetTransformation();
             }
         }
         
@@ -309,18 +309,18 @@ public class Train : MonoBehaviour {
         
         StopShake();
 
+        
         var index = carts.IndexOf(cart);
 
         if (index > -1) {
-            carts.Remove(cart);
-            UpdateCartPositions();
+            RemoveCart(cart);
         } /*else {
             Debug.Log($"Cart with illegal index {index} {cart} {cart.gameObject.name}");
         }*/
         
         RestartShake();
 
-        var hasEngine = false;
+        /*var hasEngine = false;
         var hasCriticalComponent = false;
 
         for (int i = 0; i < carts.Count; i++) {
@@ -336,7 +336,23 @@ public class Train : MonoBehaviour {
         var lostGame = carts.Count <= 0 || !hasEngine || !hasCriticalComponent;
 
         if (lostGame && PlayStateMaster.s.isCombatInProgress()) {
-            MissionLoseFinisher.s.MissionLost();
+            if (!hasEngine) {
+                MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noEngine);
+            } else {
+                MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noMysteryCargo);
+            }
+        }*/
+        
+        var health = 0f;
+        for (int i = 0; i < carts.Count; i++) {
+            var _cart = carts[i].GetHealthModule();
+            if (!_cart.invincible) {
+                health += _cart.currentHealth;
+            }
+        }
+
+        if (health <= 0) {
+            MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.everyCartExploded);
         }
 
         // draw train already calls this
@@ -377,6 +393,10 @@ public class Train : MonoBehaviour {
     }
 
     public void HpBarsCleanup(bool activate) {
+        for (int i = 0; i < LevelReferences.s.cartHealthParent.childCount; i++) {
+            LevelReferences.s.cartHealthParent.GetChild(i).gameObject.SetActive(false);
+        }
+        
         for (int i = 0; i < carts.Count; i++) {
             carts[i].transform.SetSiblingIndex((carts.Count - 1) - i);
         }
@@ -407,6 +427,8 @@ public class Train : MonoBehaviour {
             for (int i = 0; i < carts.Count; i++) {
                 carts[i].GetHealthModule().UpdateHpState();
             }
+
+            MaxHealthModified();
         } else {
             SetArtifactStatus(false);
             
@@ -416,10 +438,12 @@ public class Train : MonoBehaviour {
             }
             
             for (int i = 0; i < UpgradesController.s.shopCarts.Count; i++) {
-                UpgradesController.s.shopCarts[i].ResetState();
+                if(UpgradesController.s.shopCarts[i] != null && UpgradesController.s.shopCarts[i].gameObject != null)
+                    UpgradesController.s.shopCarts[i].ResetState();
             }
             for (int i = 0; i < UpgradesController.s.shopArtifacts.Count; i++) {
-                UpgradesController.s.shopArtifacts[i].ResetState();
+                if(UpgradesController.s.shopArtifacts[i] != null && UpgradesController.s.shopArtifacts[i].gameObject != null)
+                    UpgradesController.s.shopArtifacts[i].ResetState();
             }
             
             //HpBarsCleanup(false);
@@ -428,10 +452,15 @@ public class Train : MonoBehaviour {
             PlayerWorldInteractionController.s.ResetValues();
             SpeedController.s.ResetMultipliers();
             SpeedController.s.CalculateSpeedBasedOnCartCapacity();
+            if(DataSaver.s.GetCurrentSave().isInARun)
+                DataSaver.s.GetCurrentSave().currentRun.luck = 0;
         }
     }
 
     void SetArtifactStatus(bool isArm) {
+        if (this != Train.s) {
+            return;
+        }
         var artifacts = new List<Artifact>();
 
         for (int i = 0; i < Train.s.carts.Count; i++) {
@@ -441,12 +470,14 @@ public class Train : MonoBehaviour {
         }
         for (int i = 0; i < artifacts.Count; i++) {
             var effects = artifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
-            for (int j = 0; j < effects.Length; j++) {
-                if (!effects[j].GetComponentInParent<Cart>().isDestroyed) {
-                    if (isArm) {
-                        effects[j].Arm();
-                    } else {
-                        effects[j].Disarm();
+            if (effects != null) {
+                for (int j = 0; j < effects.Length; j++) {
+                    if (effects[j].GetComponentInParent<Cart>() != null && !effects[j].GetComponentInParent<Cart>().isDestroyed) {
+                        if (isArm) {
+                            effects[j].Arm();
+                        } else {
+                            effects[j].Disarm();
+                        }
                     }
                 }
             }
@@ -644,11 +675,23 @@ public class Train : MonoBehaviour {
     public void TrainUpdated() {
         onTrainCartsChanged?.Invoke();
     }
+
+
+    public void MaxHealthModified() {
+        MiniGUI_TrainOverallHealthBar.s.MaxHealthChanged();
+    }
+    
+    public void HealthModified() {
+        MiniGUI_TrainOverallHealthBar.s.HealthChanged();
+    }
     
 
-    public void UpdateTrainCartsBasedOnRotation(float rotationStartZ, float rotationEndZ, float maxXOffset, float arcLength, bool isGoingLeft) {// rotation angle is 45 degrees
+    public bool UpdateTrainCartsBasedOnRotation(float rotationStartZ, float rotationEndZ, float maxXOffset, float arcLength, bool isGoingLeft) {// rotation angle is 45 degrees
         StopShake();
         shakeBlock = 1f;
+
+
+        bool hasRotatedAtAll = false; // not super accurate
 
         if (rotationStartZ > 0) { // before we start rotating the ground
             for (int i = 0; i < carts.Count; i++) {
@@ -676,6 +719,8 @@ public class Train : MonoBehaviour {
 
                     curCart.transform.position = pos;
                     curCart.transform.rotation = Quaternion.Euler(0,angle*(isGoingLeft ? -1 : 1),0);
+
+                    hasRotatedAtAll = true;
                 } // rest of the carts are flat
             }
         }else if (rotationEndZ > 0) { // before we stop rotating
@@ -756,6 +801,7 @@ public class Train : MonoBehaviour {
             }
         }
 
+        return hasRotatedAtAll;
     }
 
 

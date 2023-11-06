@@ -60,8 +60,8 @@ public class MissionWinFinisher : MonoBehaviour {
 		EnemyWavesController.s.Cleanup();
 		PlayerWorldInteractionController.s.canSelect = false;
 		//EnemyHealth.winSelfDestruct?.Invoke(false);
-		
-		
+
+
 
 		for (int i = 0; i < scriptsToDisable.Length; i++) {
 			scriptsToDisable[i].enabled = false;
@@ -131,27 +131,53 @@ public class MissionWinFinisher : MonoBehaviour {
 	void OnActCleared(int current_act) {//eg if you finish act 1 this number will be equal to 1
 		var allArtifacts = ArtifactsController.s.myArtifacts;
 
-		var eligibleBossArtifacts = new List<Artifact>();
-		for (int i = 1; i < allArtifacts.Count; i++) {
-			if (allArtifacts[i].myRarity == UpgradesController.CartRarity.boss) {
-				eligibleBossArtifacts.Add(allArtifacts[i]);
+		var eligibleComponents = new List<Artifact>();
+		var eligibleGems = new List<Artifact>();
+		for (int i = 0; i < allArtifacts.Count; i++) {
+			switch (allArtifacts[i].myRarity) {
+				case UpgradesController.CartRarity.common:
+				case UpgradesController.CartRarity.rare:
+				case UpgradesController.CartRarity.epic:
+					eligibleGems.Add(allArtifacts[i]);
+					break;
+				case UpgradesController.CartRarity.boss:
+					eligibleComponents.Add(allArtifacts[i]);
+					break;
+				case UpgradesController.CartRarity.special:
+					// do nothing. We never recover special artifacts
+					break;
 			}
 		}
-		
-		eligibleBossArtifacts.Shuffle();
 
-		if (eligibleBossArtifacts.Count > 0) {
-			DataSaver.s.GetCurrentSave().xpProgress.bonusArtifact = eligibleBossArtifacts[Random.Range(0, eligibleBossArtifacts.Count)].uniqueName;
+		var eligibleCarts = new List<Cart>();
+
+		for (int i = 0; i < Train.s.carts.Count; i++) {
+			var cart = Train.s.carts[i];
+			if (!cart.isCargo && !cart.isMainEngine && !cart.isMysteriousCart && cart.myRarity != UpgradesController.CartRarity.special) {
+				eligibleCarts.Add(cart);
+			}
+		}
+
+		if (eligibleComponents.Count > 0) {
+			DataSaver.s.GetCurrentSave().metaProgress.bonusComponent = eligibleComponents[Random.Range(0, eligibleComponents.Count)].uniqueName;
+		}
+
+		if (eligibleGems.Count > 0) {
+			DataSaver.s.GetCurrentSave().metaProgress.bonusGem = eligibleGems[Random.Range(0, eligibleGems.Count)].uniqueName;
+		}
+
+		if (eligibleCarts.Count > 0) {
+			DataSaver.s.GetCurrentSave().metaProgress.bonusCart = eligibleCarts[Random.Range(0, eligibleCarts.Count)].uniqueName;
 		}
 		
-		if (current_act >= 2) {
+		/*if (current_act >= 2) {
 			for (int i = 0; i < eligibleBossArtifacts.Count; i++) {
-				if (!DataSaver.s.GetCurrentSave().xpProgress.unlockedStarterArtifacts.Contains(eligibleBossArtifacts[i].uniqueName)) {
-					DataSaver.s.GetCurrentSave().xpProgress.unlockedStarterArtifacts.Add(eligibleBossArtifacts[i].uniqueName);
+				if (!DataSaver.s.GetCurrentSave().metaProgress.unlockedStarterArtifacts.Contains(eligibleBossArtifacts[i].uniqueName)) {
+					DataSaver.s.GetCurrentSave().metaProgress.unlockedStarterArtifacts.Add(eligibleBossArtifacts[i].uniqueName);
 					break;
 				}
 			}
-		}
+		}*/
 	}
 
 	void ChangeRangeShowState(bool state) {
@@ -173,7 +199,7 @@ public class MissionWinFinisher : MonoBehaviour {
 		var playerStar = mySave.currentRun.map.GetPlayerStar();
 
 		Train.s.SaveTrainState();
-		mySave.xpProgress.xp += 1;
+		mySave.metaProgress.castlesTraveled += 1;
 	}
 
 	

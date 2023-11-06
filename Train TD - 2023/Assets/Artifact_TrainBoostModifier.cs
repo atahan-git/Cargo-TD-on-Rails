@@ -7,7 +7,7 @@ public class Artifact_TrainBoostModifier : ActivateWhenOnArtifactRow {
 	public bool engineBoostDamageInstead = false;
 
 	protected override void _Arm() {
-		GetComponent<Artifact>().range = 100;
+		//GetComponent<Artifact>().range = 100;
 		if (engineBoostDamageInstead) {
 			PlayerWorldInteractionController.s.engineBoostDamageInstead = true;
 		}

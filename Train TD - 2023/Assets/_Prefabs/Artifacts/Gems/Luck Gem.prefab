@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6195704730702566083
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: myTooltip.text
+      value: Increase luck slightly. Attached cart has a chance to completely negate
+        the damage taken based on luck. Also makes you get better drops.
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2887714300150370317, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 50209999546734483, guid: 803cddc98ad0a8141a7108151df687f2, type: 3}
+    - target: {fileID: 2966999489241683928, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 23deb4c9da514274e8d8999b21dce1d7, type: 2}
+    - target: {fileID: 3000658176013270734, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 50209999546734483, guid: 803cddc98ad0a8141a7108151df687f2, type: 3}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.1273491
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.1273491
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.1273491
+      objectReference: {fileID: 0}
+    - target: {fileID: 4150176515199512765, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 23deb4c9da514274e8d8999b21dce1d7, type: 2}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.1273491
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.1273491
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.1273491
+      objectReference: {fileID: 0}
+    - target: {fileID: 4686409788300702077, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Name
+      value: Luck Gem
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: myRarity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: uniqueName
+      value: luck_gem
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: displayName
+      value: Luck Gem
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+--- !u!1 &1509524458239976382 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4686409788300702077, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+  m_PrefabInstance: {fileID: 6195704730702566083}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-2838642648938871861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509524458239976382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fff1e144b315d14c89ca98e4bddf080, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modifyAmount: 0.05
+  modifyIncreasePerLevel: 0.025
+  curModifyAmount: 0

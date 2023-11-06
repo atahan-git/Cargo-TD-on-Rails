@@ -52,7 +52,7 @@ public class WorldMapHexGrid : MonoBehaviour {
 		var totalIntervalsCount = (gridSize.x * gridSize.y * gridCount)/pauseInterval;
 		var percentIncrease = (1f / 3f) / totalIntervalsCount;
 		if (biomeOverride < 0) {
-			var targetBiome = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().biome;
+			var targetBiome = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().currentAct-1;
 			if (targetBiome < 0 || targetBiome > biomes.Length) {
 				Debug.LogError($"Illegal biome {targetBiome}");
 				targetBiome = 0;

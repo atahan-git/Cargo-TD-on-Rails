@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class PulseAlpha : MonoBehaviour {
 
-    public AnimationCurve curve;
     public float speed = 1f;
 
     private float curTime = 0;
@@ -30,7 +29,7 @@ public class PulseAlpha : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        _color.a = curve.Evaluate(curTime);
+        _color.a = LevelReferences.s.alphaPulseCurve.Evaluate(curTime);
         curTime += Time.deltaTime * speed;
         if (isImage) {
             _image.color = _color;

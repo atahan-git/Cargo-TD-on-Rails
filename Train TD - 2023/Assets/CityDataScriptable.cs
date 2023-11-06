@@ -13,29 +13,13 @@ public class CityDataScriptable : ScriptableObject {
 
 [Serializable]
 public class CityData {
+	public float cityRarity = 1f;
+
+	public string uniqueName;
 	public string nameSuffix;
 
-	public SupplyPrice[] prices;
-
-	public bool canBuyCart = false;
-
-	public int rewardAmount = 50;
-}
-
-[Serializable]
-public class SupplyPrice {
-	public ResourceTypes type;
-	public int basePrice = 25;
-	//public float variance = 0.2f;
-	public float priceIncrease = 1.2f;
-
-	public SupplyPrice Copy() {
-		var copy = new SupplyPrice() {
-			type = type,
-			basePrice = basePrice,
-			//variance = variance,
-			priceIncrease = priceIncrease
-		};
-		return copy;
+	public List<BuildingType> myBuildings;
+	public enum BuildingType {
+		fleaMarket=0, fleaMarket_artifactOnly=1, smithy=2, recycler=3, scrapper=4
 	}
 }

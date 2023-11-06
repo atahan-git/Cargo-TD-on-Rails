@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +24,8 @@ public class HexGrid : MonoBehaviour {
 	
 	[System.Serializable]
 	public class Biome {
+		public GameObject starterAreaPrefab;
+		public GameObject cityPrefab;
 		public GameObject groundPrefab;
 		public GameObject groundTrackSwitchPrefab;
 		public PrefabWithWeights[] sideDecor;
@@ -29,14 +33,7 @@ public class HexGrid : MonoBehaviour {
 		public SkyboxParametersScriptable skybox;
 	}
 
-	public List<Transform> hexParents = new List<Transform>();
-
-	public void ClearGrid(Transform hexParent) {
-		int childCount = hexParent.childCount;
-		for (int i = childCount-1; i >= 0; i--) {
-			DestroyImmediate(hexParent.GetChild(i).gameObject);
-		}
-	}
+	//public List<Transform> hexParents = new List<Transform>();
 
 	public Vector2Int gridSize = new Vector2Int(40, 40);
 
@@ -46,10 +43,8 @@ public class HexGrid : MonoBehaviour {
 			//return gridSize.x * HexMetrics.outerRadius * 1.1f;
 		}
 	}
-	
-	
 
-	public float decorSpread = 1f;
+	/*public float decorSpread = 1f;
 
 	public int biomeOverride = -1;
 	public void CreateCells(Transform hexParent) {
@@ -101,7 +96,7 @@ public class HexGrid : MonoBehaviour {
 				
 				var pos = HexCoordinates.HexToPosition(HexCoordinates.OrdinalToHex(new Vector2Int(x, z)), y);
 				/*var hex = hexChunk.GetCell( x+(gridSize.x/2),z+(gridSize.x/2));
-				hex.transform.localPosition = pos;*/
+				hex.transform.localPosition = pos;#1#
 
 				guideObj.transform.localPosition = pos;
 				
@@ -150,7 +145,7 @@ public class HexGrid : MonoBehaviour {
 		
 		hexChunk.FinalizeBatches();
 		//UpdateGrid(hexParent);
-	}
+	}*/
 
 	/*public void UpdateGrid(Transform hexParent) {
 		var hexChunk = hexParent.gameObject.GetComponent<HexChunk>();
@@ -174,7 +169,7 @@ public class HexGrid : MonoBehaviour {
 	private void Start() {
 		RefreshGrid();
 	}
-
+	public int biomeOverride = -1;
 	[Button]
 	void RefreshGridDebugRUNTIMEONLY(int biome) {
 		biomeOverride = biome;
@@ -182,7 +177,7 @@ public class HexGrid : MonoBehaviour {
 	}
 	public void RefreshGrid() {
 		ClearGrids();
-		CreateChunks();
+		CreateFirstChunk();
 		Invoke(nameof(MakeProbe), 0.01f);
 	}
 
@@ -191,14 +186,40 @@ public class HexGrid : MonoBehaviour {
 	}
 
 	public Vector2 zRangesToFill;
-	Biome currentBiome;
-	void CreateChunks() {
+	void CreateFirstChunk() {
+		var currentBiome = GetCurrentBiome();
+		
+		//gridCount = Mathf.FloorToInt(Mathf.Abs(zRangesToFill.x - zRangesToFill.y) / gridSize.x);
+		
+		//for (int i = 0; i < gridCount; i++) {
+			var hex = Instantiate(currentBiome.cityPrefab, transform);
+			//CreateCells(hex.transform);
+			hex.transform.position = transform.position - (Vector3.forward* currentBiome.cityPrefab.GetComponent<HexTrackSegment>().myLength/2);
+			trackSegments.Add(hex.GetComponent<TrackSwitchHex>());
+		//}
+		print("made first chunk");
+	}
+
+	public void CreateEndAreaChunk() {
+		var prefab = GetCurrentBiome().groundPrefab;
+		var parentSegment = trackSegments[0].segmentA;
+
+		while (parentSegment.myLength < 120) {
+			parentSegment.AttachSegment(Instantiate(prefab).GetComponent<HexTrackSegment>());
+		}
+
+		parentSegment.transform.position += Vector3.forward* (SpeedController.s.missionDistance-40);
+		print("Made end area chunk");
+	}
+
+	Biome GetCurrentBiome() {
 		var currentSave = DataSaver.s.GetCurrentSave();
 		if (!currentSave.isInARun || !currentSave.isRealSaveFile || currentSave.currentRun.map.GetPlayerStar() == null)
 			biomeOverride = 0;
 
+		Biome currentBiome;
 		if (biomeOverride < 0) {
-			var targetBiome = currentSave.currentRun.map.GetPlayerStar().biome;
+			var targetBiome = currentSave.currentRun.map.GetPlayerStar().currentAct-1;
 			if (targetBiome < 0 || targetBiome > biomes.Length) {
 				Debug.LogError($"Illegal biome {targetBiome}");
 				targetBiome = 0;
@@ -215,29 +236,29 @@ public class HexGrid : MonoBehaviour {
 
 		currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
 
-		gridCount = Mathf.FloorToInt(Mathf.Abs(zRangesToFill.x - zRangesToFill.y) / gridSize.x);
-		
-		for (int i = 0; i < gridCount; i++) {
-			var hex = Instantiate(currentBiome.groundPrefab, transform);
-			//CreateCells(hex.transform);
-			hex.transform.position = Vector3.forward * (i-1) * (gridOffset) + transform.position;
-			hexParents.Add(hex.transform);
-		}
-	}
+		return currentBiome;
+	} 
 
 	[ReadOnly]
 	public int gridCount;
 
 	void ClearGrids() {
-		var count = hexParents.Count;
+		/*var count = hexParents.Count;
 		for (int i =  count-1; i >= 0; i--) {
 			var obj = hexParents[i].gameObject;
 			Destroy(obj);
 		}
-		hexParents.Clear();
+		hexParents.Clear();*/
+		/*var count = trackSegments.Count;
+		for (int i =  count-1; i >= 0; i--) {
+			var obj = trackSegments[i].gameObject;
+			Destroy(obj);
+		}*/
+		trackSegments.Clear();
+		transform.DeleteAllChildren();
 	}
 	
-	void ClearGridsEditor() {
+	/*void ClearGridsEditor() {
 		var count = hexParents.Count;
 		for (int i =  count-1; i >= 0; i--) {
 			var obj = hexParents[i].gameObject;
@@ -245,7 +266,7 @@ public class HexGrid : MonoBehaviour {
 		}
 		
 		hexParents.Clear();
-	}
+	}*/
 
 	public float lastRealDistance = 0;
 	//public float distance = 0;
@@ -253,7 +274,7 @@ public class HexGrid : MonoBehaviour {
 
 	private TrackSwitchHex toAttachTo;
 	private bool doubleNextOne = false;
-	private void Update() {
+	/*private void Update() {
 		var delta = SpeedController.s.currentDistance - lastRealDistance;
 		lastRealDistance = SpeedController.s.currentDistance;
 		//distance += delta;
@@ -331,6 +352,17 @@ public class HexGrid : MonoBehaviour {
 			hexParents.Insert(0, lastHex);
 		}
 
+	}*/
+
+	public List<TrackSwitchHex> trackSegments = new List<TrackSwitchHex>();
+	private void Update() {
+		if(PlayStateMaster.s.isShop())
+			return;
+		var delta = SpeedController.s.currentDistance - lastRealDistance;
+		lastRealDistance = SpeedController.s.currentDistance;
+		if (trackSegments.Count > 0) {
+			trackSegments[0].transform.position += Vector3.back*delta;
+		}
 	}
 
 
@@ -340,6 +372,67 @@ public class HexGrid : MonoBehaviour {
 	[Button]
 	public void DoTrackSwitchAtDistance(float trackSwitchDistance) {
 		trackSwitchDistances.Add(trackSwitchDistance-(gridSize.x/2));
+	}
+
+	[Button]
+	public void AddTrackSwitch(bool lastSelectedSide, float segmentADistance, float segmentBDistance, bool isLastSegment, bool isGoingLeft) {
+		StartCoroutine(_AddTrackSwitch(lastSelectedSide, segmentADistance, segmentBDistance, isLastSegment, isGoingLeft));
+	}
+
+	IEnumerator _AddTrackSwitch(bool lastSelectedSide, float segmentADistance, float segmentBDistance, bool isLastSegment, bool isGoingLeft) {
+		while (makingFirstTrackLock) {
+			yield return null;
+		}
+
+		var lastSegmentPadding = isLastSegment ? 120 : 0;
+		
+		var prefab = GetCurrentBiome().groundPrefab;
+		var switchHex = Instantiate(GetCurrentBiome().groundTrackSwitchPrefab).GetComponent<TrackSwitchHex>();
+		switchHex.isGoingLeft = isGoingLeft;
+
+		var prevSwitch = trackSegments[trackSegments.Count - 1];
+		var parentSegment = lastSelectedSide ? prevSwitch.segmentA : prevSwitch.segmentB;
+
+		parentSegment.AttachSwitch(switchHex);
+
+		while (switchHex.segmentA.myLength < (segmentADistance-(switchHex.trackSwitchLength)) + lastSegmentPadding) {
+			switchHex.segmentA.AttachSegment(Instantiate(prefab).GetComponent<HexTrackSegment>());
+			yield return null;
+		}
+		
+		while (switchHex.segmentB.myLength < (segmentBDistance-(switchHex.trackSwitchLength)) + lastSegmentPadding) {
+			switchHex.segmentB.AttachSegment(Instantiate(prefab).GetComponent<HexTrackSegment>());
+			yield return null;
+		}
+
+		//switchHex.transform.SetParent(transform);
+		trackSegments.Add(switchHex);
+		if (trackSegments.Count > 3) {
+			var toBeDeleted = trackSegments[0];
+			trackSegments.RemoveAt(0);
+			trackSegments[0].transform.SetParent(transform);
+			Destroy(toBeDeleted.gameObject);
+		}
+	}
+
+	[Button]
+	public void MakeFirstPath(float distance) {
+		StartCoroutine(_MakeFirstPath(distance));
+	}
+
+
+	private bool makingFirstTrackLock = false;
+	IEnumerator _MakeFirstPath(float distance) {
+		makingFirstTrackLock = true;
+		var prefab = GetCurrentBiome().groundPrefab;
+		var parentSegment = trackSegments[0].segmentA;
+
+		while (parentSegment.myLength < distance) {
+			parentSegment.AttachSegment(Instantiate(prefab).GetComponent<HexTrackSegment>());
+			yield return null;
+		}
+
+		makingFirstTrackLock = false;
 	}
 
 	public void ResetDistance() {

@@ -36,7 +36,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
         if (!_progress.initialCutscenePlayed && !initialCutsceneEngaged) {
             EngageInitialCutscene();
-        }else if (!_progress.firstCityTutorialDone) {
+        }else if (!_progress.firstCityTutorialDone && _progress.showTutorials) {
             tutorialUI.SetActive(true);
             
             leaveTheCity.SetActive(true);
@@ -48,14 +48,14 @@ public class FirstTimeTutorialController : MonoBehaviour {
     }
 
     public void NewCharacterCutsceneReset() {
-        _progress.initialCutscenePlayed = !MiniGUI_DisableTutorial.IsTutorialActive();
+        //_progress.initialCutscenePlayed = !MiniGUI_DisableTutorial.IsTutorialActive();
     }
 
     public void ReDoTutorial() {
         //TutorialComplete();
         DataSaver.s.GetCurrentSave().isInARun = false;
         DataSaver.s.GetCurrentSave().tutorialProgress = new DataSaver.TutorialProgress();
-        DataSaver.s.GetCurrentSave().xpProgress = new DataSaver.XPProgress();
+        DataSaver.s.GetCurrentSave().metaProgress = new DataSaver.MetaProgress();
         MiniGUI_DisableTutorial.SetVal(true);
         //ShopStateController.s.BackToMainMenu();
         
@@ -92,10 +92,123 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
     public AnimationCurve worldMapLerp;
     public float worldMapLerpSpeed = 1f;
-    
-    IEnumerator _PlayObjectiveAnimation() {
 
+    public GameObject regularMeeples;
+    public GameObject firstRunMeeples;
+
+    public Meeple collectiveMeeple;
+    public Meeple crewMeeple;
+
+    private bool clickComplete = false;
+    void OnClicked() {
+        clickComplete = true;
+    }
+    IEnumerator _PlayObjectiveAnimation() {
+        WakeUpAnimation.s.Engage();
+        
         Cart cargo = null;
+        emptyCart = null;
+
+        for (int i = 0; i < Train.s.carts.Count; i++) {
+            if (Train.s.carts[i].isMysteriousCart) {
+                cargo = Train.s.carts[i];
+            }
+
+            if (Train.s.carts[i].modulesParent.childCount == 0) {
+                emptyCart = Train.s.carts[i];
+            }
+        }
+        thisIsYourCargo.GetComponent<UIElementFollowWorldTarget>().SetUp(cargo.uiTargetTransform);
+        if (emptyCart != null) {
+            getRidOfEmpty.GetComponent<UIElementFollowWorldTarget>().SetUp(emptyCart.uiTargetTransform);
+        }
+        
+        //ShopStateController.s.mapOpenButton.gameObject.SetActive(false);
+        ShopStateController.s.starterUI.SetActive(false);
+        
+        regularMeeples.SetActive(false);
+        firstRunMeeples.SetActive(true);
+
+        yield return new WaitForSeconds(2f);
+        
+        crewMeeple.SpecialMeepleSpeak("Captain are you okay? You seemed out of it for a second.", OnClicked);
+
+        yield return new WaitUntil(() => clickComplete);
+        clickComplete = false;
+        yield return new WaitForSeconds(0.1f);
+        
+        
+        collectiveMeeple.SpecialMeepleSpeak("Well I'm glad you're back on track. <color=#f694ff>The Collective</color> is forever in your debt for carrying our special cargo.", OnClicked);
+        float timer = 4.0f;
+        while (timer >=0 && !clickComplete) {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        thisIsYourCargo.SetActive(true);
+
+        yield return new WaitUntil(() => clickComplete);
+        clickComplete = false;
+        yield return new WaitForSeconds(0.1f);
+        
+        yield return new WaitForSeconds(1f);
+        thisIsYourCargo.SetActive(false);
+        
+        crewMeeple.SpecialMeepleSpeak("Don't get too full of yourselves. We are just helping you because our goals align.", OnClicked);
+        
+        yield return new WaitUntil(() => clickComplete);
+        clickComplete = false;
+        yield return new WaitForSeconds(0.1f);
+        
+        crewMeeple.SpecialMeepleSpeak("I really hope that cargo of yours won't explode.", OnClicked);
+        
+        yield return new WaitUntil(() => clickComplete);
+        clickComplete = false;
+        yield return new WaitForSeconds(0.1f);
+        
+        collectiveMeeple.SpecialMeepleSpeak("Yes, yes of course. <i>We</i> made sure it's safe.", OnClicked);
+        
+        yield return new WaitUntil(() => clickComplete);
+        clickComplete = false;
+        yield return new WaitForSeconds(0.1f);
+
+        if (emptyCart != null) {
+            collectiveMeeple.SpecialMeepleSpeak("Before you leave we recommend you trade away your empty cart in the <b>Flea Market</b>. It will help your mission.", OnClicked);
+            timer = 4f;
+            while (timer >=0 && !clickComplete) {
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+            getRidOfEmpty.SetActive(true);
+            emptyCartThingActive = true;
+
+            if (!_progress.cameraDone) {
+                yield return new WaitForSeconds(2f);
+                ShowCameraControls();
+            }
+
+
+            yield return new WaitUntil(() => clickComplete);
+            clickComplete = false;
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+        collectiveMeeple.SpecialMeepleSpeak("When you are ready pick some extra cargo next to the gate to deliver along your way and go.", OnClicked);
+        yield return new WaitForSeconds(0.5f);
+        leaveTheCity.SetActive(true);
+        ShopStateController.s.starterUI.SetActive(true);
+
+        yield return new WaitForSeconds(1f);
+        
+        hoverOverThingsToGetInfo.SetActive(true);
+
+
+        yield return new WaitUntil(() => clickComplete);
+        clickComplete = false;
+        yield return new WaitForSeconds(0.1f);
+        
+        
+
+        /*Cart cargo = null;
         emptyCart = null;
 
         for (int i = 0; i < Train.s.carts.Count; i++) {
@@ -197,7 +310,9 @@ public class FirstTimeTutorialController : MonoBehaviour {
         
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.cutsceneSkip);
         
-        InitialCutsceneComplete();
+        InitialCutsceneComplete();*/
+
+        yield return null;
     }
 
     IEnumerator WaitForSecondsSmart(float toWait) {
@@ -259,6 +374,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
     public GameObject reloadHintPrefab;
     public GameObject directControlHint;
     public void OnEnterCombat() {
+        InitialCutsceneComplete();
         _progress.firstCityTutorialDone = true;
         ClearActiveHints();
         
@@ -347,7 +463,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
     void InitialCutsceneComplete() {
         initialCutsceneEngaged = false;
         DataSaver.s.GetCurrentSave().tutorialProgress.initialCutscenePlayed = true;
-        DataSaver.s.SaveActiveGame();
+        //DataSaver.s.SaveActiveGame();
     }
     
 

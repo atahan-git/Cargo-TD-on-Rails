@@ -7,7 +7,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Projectile : MonoBehaviour {
-    private float curSpeed = 0;
+    public float curSpeed = 0;
     private float curSeekStrength = 0;
     public float acceleration = 5f;
     public float seekAcceleration = 200f;
@@ -72,8 +72,8 @@ public class Projectile : MonoBehaviour {
                 break;
             
             case HitType.Rocket:
-                curSpeed = 0;
-                curSeekStrength = 0;
+                //curSpeed = 0;
+                //curSeekStrength = 0;
                 break;
             
             case HitType.Mortar:
@@ -93,6 +93,9 @@ public class Projectile : MonoBehaviour {
                 targetPos += randomOffset;
                 
                 float angle = 90- Vector3.Angle(Vector3.up, transform.forward);
+                if (angle <= 0) {
+                    angle = 0.1f;
+                }
 
                 //print(transform.forward);
                 var predictedDirection = targetPos - transform.position;
@@ -101,7 +104,7 @@ public class Projectile : MonoBehaviour {
                 predictedDirection = Quaternion.AngleAxis(angle, rotAxis) * predictedDirection;
                 transform.rotation = Quaternion.LookRotation(predictedDirection);
                 //print(transform.forward);
-                
+
                 float gx = mortarGravity.y * Vector3.Distance(transform.position, targetPos);
                 float sinVal = 0.5f* Mathf.Sin(angle);
                 float velocity = Mathf.Sqrt(Mathf.Abs(gx / sinVal));
@@ -116,7 +119,7 @@ public class Projectile : MonoBehaviour {
                 break;
         }
     }
-
+    
     public void SetIsPlayer(bool isPlayer) {
         if (isHeal)
             isPlayer = !isPlayer;
@@ -127,7 +130,8 @@ public class Projectile : MonoBehaviour {
         if (isPlayer) {
             layer = LevelReferences.s.playerBulletLayer.LayerIndex;
         } else {
-            layer = LevelReferences.s.enemyBulletLayer.LayerIndex;
+            if(GetComponent<BulletHealth>() == null)
+                layer = LevelReferences.s.enemyBulletLayer.LayerIndex;
         }
 
         var children = GetComponentsInChildren<Transform>(includeInactive: true);
@@ -143,7 +147,7 @@ public class Projectile : MonoBehaviour {
         var hitPrefab = LevelReferences.s.laserHitPrefab;
 
         if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, hitScanRange, hitScanLayerMask)) {
-            if (hit.transform.root.gameObject != myOriginObject) {
+            if (hit.rigidbody.gameObject != myOriginObject) {
                 var otherProjectile = hit.transform.root.GetComponent<Projectile>();
                 if (otherProjectile != null) {
                     if (otherProjectile.isPlayerBullet == isPlayerBullet) {
@@ -280,7 +284,7 @@ public class Projectile : MonoBehaviour {
                     DealDamage(health);
                 }
             } else {
-                MortarDamage();
+                MortarDamage(null);
             }
 
             if (hitPrefab != null) {
@@ -294,24 +298,25 @@ public class Projectile : MonoBehaviour {
 
     private void OnCollisionEnter(Collision other) {
         if (!isDead) {
-            var train = other.transform.GetComponentInParent<ModuleHealth>();
+            var health = other.gameObject.GetComponentInParent<IHealth>();
 
-            if (train != null && isPlayerBullet) {
-                // make player bullets dont hit the player
-                return;
-            }
+            if (health != null) {
+                if (isPlayerBullet && health.IsPlayer()) {
+                    // make player bullets dont hit the player
+                    return;
+                }
 
-            var enemy = other.transform.GetComponentInParent<EnemyHealth>();
-            
-            if (enemy != null && !isPlayerBullet) {
-                // make enemy projectiles not hit other enemies
-                return;
+                if (!isPlayerBullet && !health.IsPlayer()) {
+                    // make enemy projectiles not hit other enemies
+                    return;
+                }
             }
 
 
             if (!isPlayerBullet) {
-                if (train != null) {
-                    if (train.reflectiveShields && train.currentShields > 0) {
+                var moduleHealth = other.gameObject.GetComponentInParent<ModuleHealth>();
+                if (moduleHealth != null) {
+                    if (moduleHealth.reflectiveShields && moduleHealth.currentShields > 0) {
                         var copy = Instantiate(gameObject).GetComponent<Projectile>();
                         copy.transform.rotation = Quaternion.Inverse(copy.transform.rotation);
                         copy.target = copy.source.transform;
@@ -332,7 +337,7 @@ public class Projectile : MonoBehaviour {
                     ExplosiveDamage(other);
                     break;
                 case HitType.Mortar:
-                    MortarDamage();
+                    MortarDamage(other);
                     break;
             }
 
@@ -342,7 +347,7 @@ public class Projectile : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other) {
         if (!isDead) {
-            if (other.transform.root.gameObject != myOriginObject) {
+            if (other.attachedRigidbody.gameObject != myOriginObject) {
                 var otherProjectile = other.transform.root.GetComponent<Projectile>();
                 if (otherProjectile != null) {
                     if (otherProjectile.isPlayerBullet == isPlayerBullet) {
@@ -384,20 +389,42 @@ public class Projectile : MonoBehaviour {
         }
     }
 
-    private void MortarDamage() {
+    private void MortarDamage(Collision other) {
         GameObject hitPrefab = LevelReferences.s.mortarExplosionEffectPrefab;
         GameObject miniHitPrefab = LevelReferences.s.mortarMiniHitPrefab;
 
         var targets = Physics.OverlapSphere(transform.position, explosionRange);
 
         var healthsInRange = new List<IHealth>();
+
+        if (other != null) {
+            var contactHealth = other.gameObject.GetComponentInParent<IHealth>();
+            if (isPlayerBullet) {
+                if (contactHealth != null && !contactHealth.IsPlayer()) {
+                    healthsInRange.Add(contactHealth);
+                }
+            } else {
+                if (contactHealth != null && contactHealth.IsPlayer()) {
+                    healthsInRange.Add(contactHealth);
+                }
+            }
+        }
+
         for (int i = 0; i < targets.Length; i++) {
             var target = targets[i];
             
             var health = target.gameObject.GetComponentInParent<IHealth>();
-            if (health != null && !health.IsPlayer()) {
-                if (!healthsInRange.Contains(health)) {
-                    healthsInRange.Add(health);
+            if (isPlayerBullet) {
+                if (health != null && !health.IsPlayer()) {
+                    if (!healthsInRange.Contains(health)) {
+                        healthsInRange.Add(health);
+                    }
+                }
+            } else {
+                if (health != null && health.IsPlayer()) {
+                    if (!healthsInRange.Contains(health)) {
+                        healthsInRange.Add(health);
+                    }
                 }
             }
         }

@@ -9,12 +9,31 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 	public int increasePerLevel = 500;
 	public int increaseMaxShieldsAmount = 500;
 
+	public List<GameObject> prefabToSpawnWhenShieldIsHit = new List<GameObject>();
+	public List<GameObject> prefabToSpawnWhenShieldIsDestroyed = new List<GameObject>();
+
 	private ModuleHealth myHealth;
 	protected override void _AttachedToTrain() {
 		myHealth = GetComponentInParent<ModuleHealth>();
+		myHealth.maxShields = increaseMaxShieldsAmount;
 		Activation(myHealth.IsShieldActive());
 	}
 	
+	public void SpawnGemEffect(ModuleHealth target) {
+		StartCoroutine(_SpawnGemEffect(target));
+	}
+
+	IEnumerator _SpawnGemEffect(ModuleHealth target) {
+		foreach (var prefab in prefabToSpawnWhenShieldIsHit) {
+			if (target == null) {
+				yield break;
+			}
+            
+			Instantiate(prefab, target.GetUITransform());
+
+			yield return new WaitForSeconds(0.1f);
+		}
+	}
 	
 	public void ProtectFromDamage(float damage) {
 		GetComponentInParent<ModuleHealth>().DealDamage(damage);
@@ -70,6 +89,9 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 		rangeBoost = level;
 		boostMultiplier = 1;
 		
+		prefabToSpawnWhenShieldIsHit.Clear();
+		prefabToSpawnWhenShieldIsDestroyed.Clear();
+
 		GetComponentInParent<Cart>().GetComponentInChildren<PhysicalShieldBar>().SetSize(GetRange());
 	}
 

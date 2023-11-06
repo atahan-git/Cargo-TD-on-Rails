@@ -15,9 +15,17 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     private float curDelay = 0.5f;
     public float delay = 2;
     public float amount = 25;
+
+    public float amountMultiplier = 1f;
+    public float amountDivider = 1f;
+    public float firerateMultiplier = 1f;
+    public float firerateDivider = 1f;
     //public float steamUsePerRepair = 0.5f;
 
-    public int countPerCycle = 2;
+    public bool explosiveRepair = false;
+    public float explosiveRepairAmount = 0;
+
+    private int countPerCycle = 1;
 
     public bool hasAmmo = true;
     
@@ -27,6 +35,8 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
 
     [HideInInspector]
     public UnityEvent OnRepaired = new UnityEvent();
+
+    public List<GameObject> extraPrefabToSpawnOnAffected = new List<GameObject>();
     private void Start() {
         myTrain = GetComponentInParent<Train>();
         myCart = GetComponentInParent<Cart>();
@@ -35,6 +45,14 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
             this.enabled = false;
     }
 
+    float GetAmount() {
+        return amount * amountMultiplier * (1/amountDivider);
+    }
+
+    float GetDelay() {
+        return delay * (1 / firerateMultiplier) * firerateDivider;
+    }
+    
     void Update() {
         myTrain = GetComponentInParent<Train>();
         myCart = GetComponentInParent<Cart>();
@@ -45,10 +63,10 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
             if (curDelay <= 0 && !myCart.isDestroyed && hasAmmo) {
                 /*if(BreadthFirstRepairSearch())
                     SpeedController.s.UseSteam(steamUsePerRepair);*/
-                if (BreadthFirstRepairSearch()) {
+                if (BreadthFirstRepairSearch(GetAmount())) {
                     OnRepaired.Invoke();
                 }
-                curDelay = delay;
+                curDelay = GetDelay();
             } else {
                 curDelay -= Time.deltaTime;
             }
@@ -56,33 +74,40 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     }
 
     public string GetInfoText() {
-        return $"Repairs {amount*2} per {curDelay:F1} seconds {GetRange()} nearby carts";
+        return $"Repairs {GetAmount()*countPerCycle} per {GetDelay():F1} seconds {GetRange()} nearby carts";
     }
-    public void InstantRepair(bool doRepair) {
-        if (doRepair) {
-            BreadthFirstRepairSearch();
-            BreadthFirstRepairSearch();
+    public void InstantRepair(bool fullRepair) {
+        if (myCart.isSturdy || !myCart.isDestroyed) {
+            if (fullRepair) {
+                BreadthFirstRepairSearch(GetAmount() / 2f);
+            } else {
+                BreadthFirstRepairSearch(GetAmount() / 10f);
+            }
         }
     }
 
 
-    bool BreadthFirstRepairSearch() {
+    bool BreadthFirstRepairSearch(float amount) {
         var repairCount = 0;
         
         // always repair self first
-        if (DoThingInCart(myCart, true)) {
+        if (DoThingInCart(myCart, true, amount)) {
             repairCount += 1;
+        }
+        
+        if (repairCount >= countPerCycle) {
+            return true;
         }
         
         
         for (int i = 1; i < GetRange()+1; i++) {
-            if (DoThingInCart(Train.s.GetNextBuilding(i, myCart), false)) {
+            if (DoThingInCart(Train.s.GetNextBuilding(i, myCart), false, amount)) {
                 repairCount += 1;
             }
             if (repairCount >= countPerCycle) {
                 return true;
             }
-            if (DoThingInCart(Train.s.GetNextBuilding(-i, myCart), false)) {
+            if (DoThingInCart(Train.s.GetNextBuilding(-i, myCart), false, amount)) {
                 repairCount += 1;
             }
             if (repairCount >= countPerCycle) {
@@ -93,13 +118,13 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
         
         
         for (int i = 1; i < GetRange()+1; i++) {
-            if (DoThingInCart(Train.s.GetNextBuilding(i, myCart), true)) {
+            if (DoThingInCart(Train.s.GetNextBuilding(i, myCart), true, amount)) {
                 repairCount += 1;
             }
             if (repairCount >= countPerCycle) {
                 return true;
             }
-            if (DoThingInCart(Train.s.GetNextBuilding(-i, myCart), true)) {
+            if (DoThingInCart(Train.s.GetNextBuilding(-i, myCart), true, amount)) {
                 repairCount += 1;
             }
             if (repairCount >= countPerCycle) {
@@ -114,7 +139,7 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
         return false;
     }
     
-    bool DoThingInCart(Cart target, bool doImperfect) {
+    bool DoThingInCart(Cart target, bool doImperfect, float amount) {
         if (target == null) {
             return false;
         } 
@@ -128,6 +153,11 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
 
                         if (canRepair) {
                             healths[i].Repair(amount);
+                            if (explosiveRepair) {
+                                Train.s.GetNextBuilding(1, healths[i].myCart)?.GetHealthModule().Repair(amount*explosiveRepairAmount);
+                                Train.s.GetNextBuilding(-1, healths[i].myCart)?.GetHealthModule().Repair(amount*explosiveRepairAmount);
+                            }
+                            SpawnGemEffect(healths[i]);
                             return true;
                         }
                     }
@@ -144,6 +174,11 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
 
                         if (canShield) {
                             healths[i].ShieldUp(amount);
+                            if (explosiveRepair) {
+                                Train.s.GetNextBuilding(1, healths[i].myCart)?.GetHealthModule().ShieldUp(amount*explosiveRepairAmount);
+                                Train.s.GetNextBuilding(-1, healths[i].myCart)?.GetHealthModule().ShieldUp(amount*explosiveRepairAmount);
+                            }
+                            SpawnGemEffect(healths[i]);
                             return true;
                         }
                     }
@@ -159,6 +194,11 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
 
                         if (canReload) {
                             ammos[i].Reload(amount);
+                            if (explosiveRepair) {
+                                Train.s.GetNextBuilding(1, target)?.GetComponentInChildren<ModuleAmmo>()?.Reload(amount*explosiveRepairAmount);
+                                Train.s.GetNextBuilding(-1, target)?.GetComponentInChildren<ModuleAmmo>()?.Reload(amount*explosiveRepairAmount);
+                            }
+                            SpawnGemEffect(healths[i]);
                             return true;
                         }
                     }
@@ -167,6 +207,22 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
         }
 
         return false;
+    }
+
+    void SpawnGemEffect(ModuleHealth target) {
+        StartCoroutine(_SpawnGemEffect(target));
+    }
+
+    IEnumerator _SpawnGemEffect(ModuleHealth target) {
+        foreach (var prefab in extraPrefabToSpawnOnAffected) {
+            if (target == null) {
+                yield break;
+            }
+            
+            Instantiate(prefab, target.GetUITransform());
+
+            yield return new WaitForSeconds(0.2f);
+        }
     }
 
     public void ActivateForCombat() {
@@ -221,6 +277,13 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     public void ResetState(int level) {
         rangeBoost = level;
         boostMultiplier = 1;
+        extraPrefabToSpawnOnAffected.Clear();
+        firerateMultiplier = 1;
+        amountMultiplier = 1;
+        firerateDivider = 1;
+        explosiveRepair = false;
+        explosiveRepairAmount = 0;
+        amountDivider = 1;
     }
 
     public void ModifyStats(int range, float value) {

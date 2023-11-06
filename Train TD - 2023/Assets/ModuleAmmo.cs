@@ -11,14 +11,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public float curAmmo { get; private set; }
     public int _maxAmmo = 100;
     public float maxAmmoMultiplier = 1f;
-    public bool isFire;
-    public bool isSticky;
-    public bool isExplosive;
 
-    public enum AmmoEffects {
-        fire, sticky, explosive
-    }
-    
     public int maxAmmo {
         get { return Mathf.RoundToInt(_maxAmmo * maxAmmoMultiplier); }
     }
@@ -37,7 +30,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         /*if (myGunModule.beingDirectControlled)
             ammoUse /= DirectControlMaster.s.directControlAmmoConservationBoost;*/
 
-        ammoUse /= TweakablesMaster.s.myTweakables.magazineSizeMultiplier;
+        ammoUse /= TweakablesMaster.s.myTweakables.playerMagazineSizeMultiplier;
 
         return ammoUse;
     }
@@ -46,13 +39,10 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         ammoPerBarrageMultiplier = 1;
         maxAmmoMultiplier = 1;
         reloadEfficiency = 1;
+
+        maxAmmoMultiplier = 0.7f + (DataSaver.s.GetCurrentSave().metaProgress.ammoUpgradesBought * 0.15f);
         
-        
-        isFire = false;
-        isExplosive = false;
-        isSticky = false;
         UpdateConnectedModules();
-        OnAmmoTypeChange?.Invoke();
         
         ChangeMaxAmmo(0);
         UpdateModuleState();
@@ -76,65 +66,36 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
     [Button]
     public void Reload(float amount = -1, bool showEffect = true) {
-        amount *= reloadEfficiency;
-        if (curAmmo < maxAmmo) {
-            if (amount < 0) {
-                amount = maxAmmo;
+        if (enabled) {
+            amount *= reloadEfficiency;
+            if (curAmmo < maxAmmo) {
+                if (amount < 0) {
+                    amount = maxAmmo;
+                }
+
+                if (showEffect)
+                    Instantiate(LevelReferences.s.reloadEffect_regular, transform);
+
+                curAmmo += amount;
+                curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
+
+                UpdateModuleState();
+                OnReload?.Invoke(showEffect);
+                if(showEffect)
+                    roboRepairInstantRepair?.Invoke(true);
             }
-
-            if (showEffect)
-                Instantiate(LevelReferences.s.reloadEffect_regular, transform);
-
-            curAmmo += amount;
-            curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
-            
+        } else {
+            if(showEffect)
+                roboRepairInstantRepair?.Invoke(false);
         }
-
-        UpdateModuleState();
-        OnReload?.Invoke(showEffect);
     }
 
-    public void ApplyBulletEffect(AmmoEffects effect) {
-        switch (effect) {
-            case AmmoEffects.fire:
-                if (!isFire) {
-                    Instantiate(LevelReferences.s.reloadEffect_fire, transform);
-                    isFire = true;
-                    OnAmmoTypeChange?.Invoke();
-                }
-
-                break;
-            case AmmoEffects.sticky:
-                if (!isSticky) {
-                    Instantiate(LevelReferences.s.reloadEffect_sticky, transform);
-                    isSticky = true;
-                    OnAmmoTypeChange?.Invoke();
-                }
-                break;
-            case AmmoEffects.explosive:
-                if (!isExplosive) {
-                    Instantiate(LevelReferences.s.reloadEffect_explosive, transform);
-                    isExplosive = true;
-                    OnAmmoTypeChange?.Invoke();
-                }
-                break;
-        }
-        
-        UpdateConnectedModules();
-    }
-    
-    public void SetAmmo(int amount, bool _isFire, bool _isSticky, bool _isExplosive) {
+    public void SetAmmo(int amount) {
         curAmmo = amount;
         curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
 
-        isFire = _isFire;
-        isSticky = _isSticky;
-        isExplosive = _isExplosive;
-        
         UpdateConnectedModules();
-        
-        
-        OnAmmoTypeChange?.Invoke();
+
         UpdateModuleState();
         OnReload?.Invoke(false);
     }
@@ -156,7 +117,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
     public UnityEvent OnUse;
     public UnityEvent<bool> OnReload;
-    public UnityEvent OnAmmoTypeChange;
+    public UnityEvent<bool> roboRepairInstantRepair;
     public bool hasAmmo => curAmmo >= AmmoUseWithMultipliers();
 
     [ReadOnly]
@@ -168,7 +129,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
         if (myUINoAmmoWarningThing == null) {
             myUINoAmmoWarningThing = Instantiate(LevelReferences.s.noAmmoWarning, LevelReferences.s.uiDisplayParent);
-            myUINoAmmoWarningThing.GetComponent<UIElementFollowWorldTarget>().SetUp(GetComponentInParent<Cart>().GetUITargetTransform());
+            myUINoAmmoWarningThing.GetComponent<UIElementFollowWorldTarget>().SetUp(GetComponentInParent<Cart>(true).GetUITargetTransform());
         }
         
         myUINoAmmoWarningThing.SetActive(!hasAmmo);
@@ -204,14 +165,13 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         myGunModules = GetComponentsInChildren<GunModule>();
         myRoboRepairModules = GetComponentsInChildren<RoboRepairModule>();
         if (!listenerAdded) {
-
             for (int i = 0; i < myGunModules.Length; i++) {
                 myGunModules[i].barrageShot.AddListener(UseAmmo);
             }
 
             for (int i = 0; i < myRoboRepairModules.Length; i++) {
                 myRoboRepairModules[i].OnRepaired.AddListener(UseAmmo);
-                OnReload.AddListener(myRoboRepairModules[i].InstantRepair);
+                roboRepairInstantRepair.AddListener(myRoboRepairModules[i].InstantRepair);
             }
             
             listenerAdded = true;
@@ -228,6 +188,9 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public void Disable() {
         this.enabled = false;
         myGunModules = GetComponentsInChildren<GunModule>();
+        curAmmo = 0;
+        UpdateModuleState();
+        OnUse?.Invoke();
     }
 
 
@@ -247,14 +210,6 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         for (int i = 0; i < myRoboRepairModules.Length; i++) {
             myRoboRepairModules[i].hasAmmo = _hasAmmo;
         }
-        
-        
-        for (int i = 0; i < myGunModules.Length; i++) {
-            myGunModules[i].isFire = isFire;
-            myGunModules[i].isSticky = isSticky;
-            myGunModules[i].isExplosive = isExplosive;
-        }
-        
     }
     
 

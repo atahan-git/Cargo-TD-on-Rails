@@ -45,6 +45,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCharacterSelected.AddListener(Train.s.DrawTrainBasedOnSaveData);
         OnCharacterSelected.AddListener(UpgradesController.s.SetUpNewCharacterRarityBoosts);
         OnCharacterSelected.AddListener(FirstTimeTutorialController.s.NewCharacterCutsceneReset);
+        OnCharacterSelected.AddListener(MoneyUIDisplay.totalMoney.OnCharLoad);
         
         OnDrawWorld.AddListener(WorldMapCreator.s.GenerateWorldMap);
         OnDrawWorld.AddListener(HexGrid.s.RefreshGrid);
@@ -52,14 +53,15 @@ public class PlayStateMaster : MonoBehaviour {
         OnNewWorldCreation.AddListener(MapController.s.GenerateStarMap);
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
 
+        OnShopEntered.AddListener(SpeedController.s.ResetDistance);
         OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
         OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
         OnShopEntered.AddListener(WorldMapCreator.s.ReturnToRegularMap);
+        OnShopEntered.AddListener(HexGrid.s.RefreshGrid);
         OnShopEntered.AddListener(ShopStateController.s.OpenShopUI);
         OnShopEntered.AddListener(FMODMusicPlayer.s.PlayMenuMusic);
         OnShopEntered.AddListener(MainMenu.s.ExitMainMenu);
         OnShopEntered.AddListener(Pauser.s.Unpause);
-        OnShopEntered.AddListener(HexGrid.s.RefreshGrid);
         OnShopEntered.AddListener(CharacterSelector.s.CheckAndShowCharSelectionScreen);
         OnShopEntered.AddListener(PlayerWorldInteractionController.s.OnEnterShopScreen);
         OnShopEntered.AddListener(FirstTimeTutorialController.s.OnEnterShop);
@@ -67,6 +69,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnShopEntered.AddListener(WorldDifficultyController.s.OnShopEntered);
         OnShopEntered.AddListener(ArtifactsController.s.OnEnterShop);
         OnShopEntered.AddListener(UpgradesController.s.OnShopOpened);
+        OnShopEntered.AddListener(VignetteController.s.ResetVignette);
         
         OnCombatEntered.AddListener(FMODMusicPlayer.s.PlayCombatMusic);
         OnCombatEntered.AddListener(SpeedController.s.SetUpOnMissionStart);
@@ -84,6 +87,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatFinished.AddListener(Train.s.OnLeaveCombat);
         OnCombatFinished.AddListener(PlayerWorldInteractionController.s.OnLeaveCombat);
         
+        OnEnterMissionRewardArea.AddListener(VignetteController.s.ResetVignette);
         OnEnterMissionRewardArea.AddListener(FirstTimeTutorialController.s.OnEnterShop);
         
         OnLeavingMissionRewardArea.AddListener(MissionWinFinisher.s.CleanupWhenLeavingMissionRewardArea);
@@ -288,6 +292,7 @@ public class PlayStateMaster : MonoBehaviour {
     public CanvasGroup canvasGroup;
     public float currentFadeValue;
     public float fadeTime = 0.2f;
+    public bool supressFadeOut = false;
     IEnumerator Transition(bool showLoading, Action toCallInTheMiddle, LoadDelegate loadProgress = null, Action toCallAtTheEnd = null) {
         isLoading = true;
         loadingProgress = 0;
@@ -311,7 +316,11 @@ public class PlayStateMaster : MonoBehaviour {
 
         if(toCallAtTheEnd != null)
             toCallAtTheEnd();
-        
+
+        if (supressFadeOut) {
+            supressFadeOut = false;
+            yield break;
+        }
 
         yield return StartCoroutine(FadeLoadingScreen(1,0, fadeTime));
         loadingScreen.SetActive(false);

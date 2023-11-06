@@ -30,8 +30,14 @@ public class CharacterSelector : MonoBehaviour {
         charSelectUI.SetActive(false);
     }
 
+    private bool showWakeUp = false;
     public void CheckAndShowCharSelectionScreen() {
         PlayerWorldInteractionController.s.canSelect = true;
+        if (showWakeUp) {
+            WakeUpAnimation.s.Engage();
+            showWakeUp = false;
+        }
+        
         if (!DataSaver.s.GetCurrentSave().isInARun) {
             charSelectUI.SetActive(true);
             startTrainArea.SetActive(false);
@@ -41,11 +47,17 @@ public class CharacterSelector : MonoBehaviour {
             PlayerWorldInteractionController.s.canOnlySelectCharSelectStuff = true;
             LevelReferences.s.cartHealthParent.gameObject.SetActive(false);
             ShopStateController.s.mapOpenButton.interactable = false;
+            CameraController.s.MoveToCharSelectArea();
             
-            if (DataSaver.s.GetCurrentSave().xpProgress.xp == 0) {
+            if (DataSaver.s.GetCurrentSave().metaProgress.castlesTraveled == 0) {
                 SelectCharacter(DataHolder.s.characters[0].myCharacter);
                 CharSelectedAndLeave();
+                PlayStateMaster.s.supressFadeOut = true;
+                showWakeUp = true;
+            } else {
+                WakeUpAnimation.s.Engage();
             }
+            
         } else {
             charSelectUI.SetActive(false);
             startTrainArea.SetActive(true);
@@ -67,7 +79,7 @@ public class CharacterSelector : MonoBehaviour {
 
         selectedChar = allChars[0].myCharacter;
 
-        var progress = DataSaver.s.GetCurrentSave().xpProgress;
+        var progress = DataSaver.s.GetCurrentSave().metaProgress;
         
         StarterTrainSelector.s.DrawSections();
         /*if (progress.unlockedStarterArtifacts.Count == 0) {
@@ -111,14 +123,36 @@ public class CharacterSelector : MonoBehaviour {
         selectedChar = _data;
         CheckDepartureRequirements();
     }
-
-
+    
     public void CharSelectedAndLeave() {
-        DataSaver.s.GetCurrentSave().currentRun = new DataSaver.RunState(VersionDisplay.s.GetVersionNumber());
-        DataSaver.s.GetCurrentSave().currentRun.currentAct = 1;
-        DataSaver.s.GetCurrentSave().currentRun.SetCharacter(selectedChar);
+        var currentSave = DataSaver.s.GetCurrentSave();
+        currentSave.currentRun = new DataSaver.RunState(VersionDisplay.s.GetVersionNumber());
+        currentSave.currentRun.currentAct = 1;
+        currentSave.currentRun.SetCharacter(selectedChar);
         
-        DataSaver.s.GetCurrentSave().xpProgress.bonusArtifact = "";
+        currentSave.metaProgress.bonusComponent = "";
+        currentSave.metaProgress.bonusGem = "";
+        currentSave.metaProgress.bonusCart = "";
+
+
+        if (currentSave.metaProgress.justBoughtArtifact.Length > 0) {
+            currentSave.currentRun.myTrain.myCarts[1].attachedArtifact =
+                Train.GetStateFromArtifact(
+                    DataHolder.s.GetArtifact(currentSave.metaProgress.justBoughtArtifact)
+                );
+
+            currentSave.metaProgress.justBoughtArtifact = "";
+        }
+
+        if (currentSave.metaProgress.justBoughtCart.Length > 0) {
+            currentSave.currentRun.myTrain.myCarts.Add(
+                Train.GetStateFromCart(
+                    DataHolder.s.GetCart(currentSave.metaProgress.justBoughtCart)
+                )
+            );
+
+            currentSave.metaProgress.justBoughtCart = "";
+        }
 
         DataSaver.s.SaveActiveGame();
 

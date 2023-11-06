@@ -41,10 +41,13 @@ public class CastleWorldScript : MonoBehaviour {
     public void Initialize(StarState info) {
         myInfo = info;
 
-        Instantiate(DataHolder.s.GetCityPrefab(info.city.nameSuffix), gfxParent);
+        var cityScriptable = DataHolder.s.GetCityScriptable(info.city.uniqueName);
+        Instantiate(cityScriptable.worldMapCastle, gfxParent);
         outline = GetComponentInChildren<Outline>();
         
         playerIndicator.SetActive(false);
+        
+        GetComponentInChildren<MiniGUI_CityIcons>().SetState(cityScriptable.cityData);
 
         /*if(myInfo.isPlayerHere)
             SetPlayerHere();*/

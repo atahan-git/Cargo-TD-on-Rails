@@ -16,12 +16,11 @@ public class MiniGUI_ShowButtonHints : MonoBehaviour, IInitRequired
     }
 
     public void OnToggleUpdated() {
-        PlayerPrefs.SetInt(exposedName, myToggle.isOn ? 1 : 0);
         SetVal(myToggle.isOn);
     }
 
     void SetVal(bool val) {
-        DataSaver.s.GetCurrentSave().tutorialProgress.firstCityTutorialDone = !val;
+        PlayerPrefs.SetInt(exposedName, val ? 1 : 0);
     }
 
     public static bool ShowButtonHints() {

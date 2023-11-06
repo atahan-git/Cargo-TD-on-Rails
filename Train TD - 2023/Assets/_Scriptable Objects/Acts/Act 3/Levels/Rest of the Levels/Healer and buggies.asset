@@ -22,17 +22,21 @@ MonoBehaviour:
       distanceOnPath: 0
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: ShieldedBuggyGatling
         enemyCount: 2
       distanceOnPath: 40
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: Healer
         enemyCount: 1
       distanceOnPath: 25
       isLeft: 0
       hasReward: 0
+      useAsIcon: 1
     segmentLength: 200
     artifactRewardUniqueName: 
+    artifactRewardLevel: 0

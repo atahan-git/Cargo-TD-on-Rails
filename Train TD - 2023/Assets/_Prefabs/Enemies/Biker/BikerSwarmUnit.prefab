@@ -64,6 +64,7 @@ MonoBehaviour:
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
+  autoSetUp: 0
   activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
@@ -89,6 +90,7 @@ MonoBehaviour:
   avoid: 0
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
+  enemiesTargetingMe: []
 --- !u!114 &-3559663181302352896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,8 +482,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.8666381, y: 1.3113456, z: 2.1761901}
-  m_Center: {x: 0, y: 0, z: -0.28671876}
+  m_Size: {x: 0.96, y: 1.55, z: 2.51}
+  m_Center: {x: 0, y: 0.34, z: -0.08}
 --- !u!1 &8940026235589141159
 GameObject:
   m_ObjectHideFlags: 0

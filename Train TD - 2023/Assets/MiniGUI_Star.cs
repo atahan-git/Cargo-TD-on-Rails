@@ -21,7 +21,7 @@ public class MiniGUI_Star : MonoBehaviour {
 		
 		gfx.transform.localPosition = Random.insideUnitCircle * randomOffsetMagnitude;
 
-		starImg.sprite = DataHolder.s.GetCitySprite(info.city.nameSuffix);
+		starImg.sprite = DataHolder.s.GetCityScriptable(info.city.uniqueName).sprite;
         
 		if(myInfo.isPlayerHere)
 			SetPlayerHere();

@@ -83,6 +83,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         speedMultiplier = 1;
         speedAmount = 0;
         delicateMachinery = false;
+        boostEffectMultiplier = 1;
     }
     
     public void AddEngine(EngineModule engineModule) {
@@ -101,8 +102,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         cartCapacity = 0;
         targetSpeed = 0;
         for (int i = 0; i < engines.Count; i++) {
-            cartCapacity += engines[i].enginePower;
-            targetSpeed += engines[i].speedAdd;
+            cartCapacity += (int)((engines[i].enginePower + engines[i].extraEnginePower) * (engines[i].isHalfPower ? 0.5f : 1f));
+            targetSpeed += (int)((engines[i].speedAdd + engines[i].extraSpeedAdd) * (engines[i].isHalfPower ? 0.5f : 1f));
         }
 
         targetSpeed += speedAmount;
@@ -284,6 +285,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     public float boostDuration = 30f;
     public float boostMultiplier = 2f;
     public float lowPowerMultiplier = 0.5f;
+    public float boostEffectMultiplier = 1f;
     public float lowPowerDuration = 60f;
     public float currentBoostMultiplier = 1;
     public float boostTimer;
@@ -293,7 +295,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             return Mathf.Clamp((boostTimer*2) / boostTotalTime,0,2f);
         }
     }
-
+[HideInInspector]
+    public UnityEvent OnSpeedBoostActivated = new UnityEvent();
     public void ActivateBoost() {
         if (canBoost && !encounterOverride) {
             for (int i = 0; i < engines.Count; i++) {
@@ -306,7 +309,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             isBoosting = true;
 
             if (!PlayerWorldInteractionController.s.engineBoostDamageInstead) {
-                currentBoostMultiplier = boostMultiplier;
+                currentBoostMultiplier = Mathf.Clamp((boostMultiplier-1) * boostEffectMultiplier,0,2) + 1;
             } else {
                 var boostable = Train.s.GetComponentInChildren<EngineBoostable>(true);
                 if (boostable != null) {
@@ -322,13 +325,14 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             boostTimer = boostDuration;
             boostTotalTime = boostDuration;
             Invoke(nameof(DisableBoostAndActivateLowPowerMode), boostDuration);
+            OnSpeedBoostActivated?.Invoke();
         }
     }
 
 
     void DisableBoostAndActivateLowPowerMode() {
         if (!PlayerWorldInteractionController.s.engineBoostDamageInstead) {
-            currentBoostMultiplier = lowPowerMultiplier;
+            currentBoostMultiplier = 1- Mathf.Clamp(lowPowerMultiplier / Mathf.Max(0.01f,boostEffectMultiplier), 0, 0.95f);;
         } else {
             var boostable = Train.s.GetComponentInChildren<EngineBoostable>(true);
             if (boostable != null) {

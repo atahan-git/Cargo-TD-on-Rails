@@ -61,6 +61,7 @@ MonoBehaviour:
   charNameText: {fileID: 3440298868388915545}
   lockedOverlay: {fileID: 5884166661232639114}
   myTrain: {fileID: 5230841107424530193}
+  isLocked: 0
   mouseOver: 0
   myTooltip:
     text: 
@@ -160,7 +161,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 3778325746667235197, guid: 4debc8fd45be08c46a063f95d627c571, type: 2}
+  - {fileID: 3778325746667235197, guid: 00556b7c4271951468511b4d4d4001b9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -204,8 +205,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Jason Thatcher
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4debc8fd45be08c46a063f95d627c571, type: 2}
-  m_sharedMaterial: {fileID: 3778325746667235197, guid: 4debc8fd45be08c46a063f95d627c571, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 00556b7c4271951468511b4d4d4001b9, type: 2}
+  m_sharedMaterial: {fileID: 3778325746667235197, guid: 00556b7c4271951468511b4d4d4001b9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

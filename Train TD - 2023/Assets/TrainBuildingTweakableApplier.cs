@@ -12,11 +12,9 @@ public class TrainBuildingTweakableApplier : MonoBehaviour
 	}
 
 	
-	private void ApplyStats() {
+	public void ApplyStats() {
 		var cart = GetComponent<Cart>();
 		var trainBuilding = GetComponent<Cart>();
 		var health = GetComponent<ModuleHealth>();
-		
-		
 	}
 }

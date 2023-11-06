@@ -22,7 +22,7 @@ public class MiniGUI_DisableTutorial : MonoBehaviour, IInitRequired
 
     public static void SetVal(bool val) {
         PlayerPrefs.SetInt(exposedName, val ? 1 : 0);
-        DataSaver.s.GetCurrentSave().tutorialProgress.firstCityTutorialDone = !val;
+        DataSaver.s.GetCurrentSave().tutorialProgress.showTutorials = !val;
     }
 
     public static bool IsTutorialActive() {

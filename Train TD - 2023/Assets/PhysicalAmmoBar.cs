@@ -26,7 +26,6 @@ public class PhysicalAmmoBar : MonoBehaviour {
         moduleAmmo = GetComponentInParent<ModuleAmmo>();
         moduleAmmo.OnReload.AddListener(OnReload);
         moduleAmmo.OnUse.AddListener(OnUse);
-        moduleAmmo.OnAmmoTypeChange.AddListener(OnAmmoTypeChange);
         OnAmmoTypeChange();
         OnReload(false);
         OnUse();
@@ -48,21 +47,6 @@ public class PhysicalAmmoBar : MonoBehaviour {
             ammoChunk = LevelReferences.s.bullet_repair;
         } else {
             ammoChunk = LevelReferences.s.bullet_regular;
-            if (moduleAmmo.isFire && moduleAmmo.isSticky && moduleAmmo.isExplosive) {
-                ammoChunk = LevelReferences.s.bullet_fire_sticky_explosive;
-            } else if (moduleAmmo.isFire && moduleAmmo.isSticky) {
-                ammoChunk = LevelReferences.s.bullet_fire_sticky;
-            } else if (moduleAmmo.isFire && moduleAmmo.isExplosive) {
-                ammoChunk = LevelReferences.s.bullet_fire_explosive;
-            } else if (moduleAmmo.isSticky && moduleAmmo.isExplosive) {
-                ammoChunk = LevelReferences.s.bullet_sticky_explosive;
-            } else if (moduleAmmo.isFire) {
-                ammoChunk = LevelReferences.s.bullet_fire;
-            } else if (moduleAmmo.isSticky) {
-                ammoChunk = LevelReferences.s.bullet_sticky;
-            } else if (moduleAmmo.isExplosive) {
-                ammoChunk = LevelReferences.s.bullet_explosive;
-            }
         }
 
         var oldAmmo = new List<GameObject>(allAmmoChunks);

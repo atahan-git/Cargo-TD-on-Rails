@@ -250,6 +250,24 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 				ArtifactsController.s.GetBonusArtifact(bonusArtifactUIStar, artifactRewardUniqueName);
 				bonusArtifactUIStar = null;
 			}
+
+			var rewardMoney = 0;
+			if (maxHealth >= 80) {
+				var rewardMoneyMax = Mathf.Log(maxHealth / 40, 2); // ie 80 = 1, 160 = 2, 800~= 4
+				rewardMoney = Mathf.RoundToInt(Random.Range(0, rewardMoneyMax));
+			} else {
+				if (Random.value < maxHealth / 160) {
+					rewardMoney = 1;
+				}
+			}
+
+			if (rewardArtifactOnDeath) {
+				rewardMoney += DataSaver.s.GetCurrentSave().currentRun.currentAct*2;
+			}
+
+			if (rewardMoney > 0) {
+				Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(uiTransform.position, rewardMoney);
+			}
 		}
 
 		var pos = aliveObject.position;
@@ -281,6 +299,10 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 		return false;
 	}
 
+	public bool IsAlive() {
+		return isAlive;
+	}
+	
 	public GameObject GetGameObject() {
 		return gameObject;
 	}
@@ -290,7 +312,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 	}
 
 	public bool HasArmor() {
-		return isArmored;
+		return false;
 	}
 
 	public float GetHealthPercent() {
@@ -359,6 +381,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 
 
 public interface IHealth {
+	public bool IsAlive();
 	public void DealDamage(float damage);
 	public void Repair(float heal);
 	public void BurnDamage(float damage);

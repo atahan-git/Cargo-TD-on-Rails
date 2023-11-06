@@ -76,7 +76,7 @@ public class DirectControlMaster : MonoBehaviour {
 			directControllable = source;
 
 			directControlTrainBuilding = directControllable.GetComponentInParent<ModuleHealth>();
-			myGun = directControllable.GetComponentInParent<GunModule>();
+			myGun = directControlTrainBuilding.GetComponentInChildren<GunModule>();
 			//myAmmo = myGun.GetComponent<ModuleAmmo>();
 			//ammoSlider.gameObject.SetActive(myAmmo != null);
 			ammoSlider.gameObject.SetActive(myGun.isGigaGatling || myGun.gatlinificator);
@@ -149,9 +149,9 @@ public class DirectControlMaster : MonoBehaviour {
 	}
 
 	void ApplyBulletTypes() {
-		isFire.SetActive(myGun.isFire);
-		isExplosive.SetActive(myGun.isExplosive);
-		isSticky.SetActive(myGun.isSticky);
+		isFire.SetActive(myGun.GetBurnDamage() > 0);
+		isExplosive.SetActive(myGun.GetExplosionRange() > 0);
+		isSticky.SetActive(false);
 	}
 
 	private void DisableDirectControl(InputAction.CallbackContext obj) {

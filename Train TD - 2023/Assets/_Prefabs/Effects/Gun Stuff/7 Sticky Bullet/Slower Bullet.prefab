@@ -9693,6 +9693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed22b7720cff2244a8c914a8c7f08ab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  curSpeed: 0
   acceleration: 2.5
   seekAcceleration: 100
   speed: 7.5
@@ -14599,7 +14600,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ebbd169b8fd722b458edcbc108725b71, type: 2}
+  - {fileID: 2100000, guid: 3d53d1ec19ac0a24ba3e7afd3cae114f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

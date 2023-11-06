@@ -22,11 +22,14 @@ MonoBehaviour:
       distanceOnPath: 15
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: BuggyCannon
         enemyCount: 1
       distanceOnPath: 0
       isLeft: 0
       hasReward: 0
+      useAsIcon: 1
     segmentLength: 50
     artifactRewardUniqueName: 
+    artifactRewardLevel: 0

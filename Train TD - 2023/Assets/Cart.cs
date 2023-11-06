@@ -8,10 +8,16 @@ using Random = UnityEngine.Random;
 
 public class Cart : MonoBehaviour {
 
+    public bool needsToBeBought = false;
+    [ShowIf("needsToBeBought")]
+    public int buyCost = 50;
+
     public int level;
 
     public UpgradesController.CartRarity myRarity;
-    
+    [Tooltip("If empty will drop in every act. If numbers are given will only drop in those acts")]
+    public List<int> possibleDropActs = new List<int>();
+
     public bool isMainEngine = false;
     public bool isMysteriousCart = false;
     public bool isCargo = false;
@@ -19,16 +25,16 @@ public class Cart : MonoBehaviour {
     public Artifact myAttachedArtifact;
 
     public Transform artifactParent;
+    public bool canAcceptComponentArtifact = false;
+    public Transform artifactChunkTransform;
     
     public bool isBeingDisabled = false;
-
     public int trainIndex;
 
     public int cartSize = 1;
 
-    public bool isRepairable => !isMainEngine && !isCargo && !isMysteriousCart;
-    public bool loseGameIfYouLoseThis => isMainEngine || isMysteriousCart;
-    //public bool isRepairable => !isCargo;
+    public bool isFragile = false;
+    public bool isSturdy = false;
 
     public UpgradesController.CartLocation myLocation = UpgradesController.CartLocation.train;
 
@@ -63,7 +69,7 @@ public class Cart : MonoBehaviour {
 
     public Material cartOverlayMaterial;
 
-    public MeshRenderer cartMaterial;
+    public MeshRenderer[] cartMaterial;
 
     public Transform genericParticlesParent;
     
@@ -72,16 +78,20 @@ public class Cart : MonoBehaviour {
         SetUpOutlines();
         genericParticlesParent.DeleteAllChildren();
         GetHealthModule().ResetState(level);
+        
+        artifactChunkTransform.DeleteAllChildren();
 
-        cartMaterial.material = LevelReferences.s.cartLevelMats[level];
+        for (int i = 0; i < cartMaterial.Length; i++) {
+            cartMaterial[i].material = LevelReferences.s.cartLevelMats[level];
+        }
+        
+        if (myAttachedArtifact != null) {
+            myAttachedArtifact.ResetState();
+        }
         
         var modulesWithResetStates = GetComponentsInChildren<IResetState>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
             modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
-        }
-
-        if (myAttachedArtifact != null) {
-            myAttachedArtifact.ResetState();
         }
     }
 
@@ -93,8 +103,12 @@ public class Cart : MonoBehaviour {
 
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
-                engineModule.enabled = false;
-                GetComponentInChildren<EngineFireController>().StopEngineFire();
+                if (isSturdy) {
+                    engineModule.OnEngineLowPower?.Invoke(true);
+                } else {
+                    engineModule.enabled = false;
+                    GetComponentInChildren<EngineFireController>().StopEngineFire();
+                }
             }
 
             var gunModules = GetComponentsInChildren<GunModule>();

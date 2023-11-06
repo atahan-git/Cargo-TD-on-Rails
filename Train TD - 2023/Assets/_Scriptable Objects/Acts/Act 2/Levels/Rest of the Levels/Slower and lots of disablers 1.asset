@@ -22,35 +22,42 @@ MonoBehaviour:
       distanceOnPath: 30
       isLeft: 0
       hasReward: 0
+      useAsIcon: 1
     - enemyIdentifier:
         enemyUniqueName: Disabler
         enemyCount: 1
       distanceOnPath: 0
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: Disabler
         enemyCount: 1
       distanceOnPath: 45
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: Disabler
         enemyCount: 1
       distanceOnPath: 45
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: Disabler
         enemyCount: 1
       distanceOnPath: 45
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     - enemyIdentifier:
         enemyUniqueName: Slower
         enemyCount: 1
       distanceOnPath: 45
       isLeft: 0
       hasReward: 0
+      useAsIcon: 0
     segmentLength: 200
     artifactRewardUniqueName: 
+    artifactRewardLevel: 0

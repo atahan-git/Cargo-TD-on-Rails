@@ -11,20 +11,20 @@ public class XPProgressionController : MonoBehaviour {
 		s = this;
 	}
 
-	 DataSaver.XPProgress _xpProgress => DataSaver.s.GetCurrentSave().xpProgress;
+	 DataSaver.MetaProgress _metaProgress => DataSaver.s.GetCurrentSave().metaProgress;
 
 	public  bool IsCharacterUnlocked(int id) {
 		switch (id) {
 			case 0:
 				return true;
 			case 1:
-				if (_xpProgress.xp > 5) {
+				if (_metaProgress.castlesTraveled > 5) {
 					return true;
 				} else {
 					return false;
 				}
 			case 2:
-				if (_xpProgress.xp > 10) {
+				if (_metaProgress.castlesTraveled > 10) {
 					return true;
 				} else {
 					return false;
