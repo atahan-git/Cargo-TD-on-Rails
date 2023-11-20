@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class HexGrid : MonoBehaviour {
-	public static HexGrid s;
+	/*public static HexGrid s;
 
 	private void Awake() {
 		s = this;
@@ -96,7 +96,7 @@ public class HexGrid : MonoBehaviour {
 				
 				var pos = HexCoordinates.HexToPosition(HexCoordinates.OrdinalToHex(new Vector2Int(x, z)), y);
 				/*var hex = hexChunk.GetCell( x+(gridSize.x/2),z+(gridSize.x/2));
-				hex.transform.localPosition = pos;#1#
+				hex.transform.localPosition = pos;#2#
 
 				guideObj.transform.localPosition = pos;
 				
@@ -145,7 +145,7 @@ public class HexGrid : MonoBehaviour {
 		
 		hexChunk.FinalizeBatches();
 		//UpdateGrid(hexParent);
-	}*/
+	}#1#
 
 	/*public void UpdateGrid(Transform hexParent) {
 		var hexChunk = hexParent.gameObject.GetComponent<HexChunk>();
@@ -163,7 +163,7 @@ public class HexGrid : MonoBehaviour {
 				hex.transform.localPosition = pos;
 			}
 		}
-	}*/
+	}#1#
 
 
 	private void Start() {
@@ -248,12 +248,12 @@ public class HexGrid : MonoBehaviour {
 			var obj = hexParents[i].gameObject;
 			Destroy(obj);
 		}
-		hexParents.Clear();*/
+		hexParents.Clear();#1#
 		/*var count = trackSegments.Count;
 		for (int i =  count-1; i >= 0; i--) {
 			var obj = trackSegments[i].gameObject;
 			Destroy(obj);
-		}*/
+		}#1#
 		trackSegments.Clear();
 		transform.DeleteAllChildren();
 	}
@@ -266,7 +266,7 @@ public class HexGrid : MonoBehaviour {
 		}
 		
 		hexParents.Clear();
-	}*/
+	}#1#
 
 	public float lastRealDistance = 0;
 	//public float distance = 0;
@@ -352,7 +352,7 @@ public class HexGrid : MonoBehaviour {
 			hexParents.Insert(0, lastHex);
 		}
 
-	}*/
+	}#1#
 
 	public List<TrackSwitchHex> trackSegments = new List<TrackSwitchHex>();
 	private void Update() {
@@ -437,7 +437,7 @@ public class HexGrid : MonoBehaviour {
 
 	public void ResetDistance() {
 		lastRealDistance = SpeedController.s.currentDistance;
-	}
+	}*/
 }
 
 

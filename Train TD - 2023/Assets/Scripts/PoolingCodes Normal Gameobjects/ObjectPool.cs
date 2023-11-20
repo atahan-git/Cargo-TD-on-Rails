@@ -18,6 +18,11 @@ public class ObjectPool : MonoBehaviour {
 
 		myObject.GetComponent<PooledObject> ().myPool = this;
 
+
+		for (int i = transform.childCount-1; i >=0 ; i--) {
+			Destroy(transform.GetChild(i).gameObject);
+		}
+
 		SetUp(poolSize);
 	}
 
@@ -52,6 +57,15 @@ public class ObjectPool : MonoBehaviour {
 
 
 	GameObject _Spawn (Vector3 pos, Quaternion rot){
+		#if UNITY_EDITOR
+		if(!Application.isPlaying){
+			GameObject inst = (GameObject)Instantiate(myObject, transform);
+			inst.transform.position = pos;
+			inst.transform.rotation = rot;
+			return inst;
+		}
+		#endif
+		
 		for (int i = 0; i < objs.Length; i++) {
 			if (!objs [i].GetComponent<PooledObject>().isActive) {
 

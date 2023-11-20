@@ -29,7 +29,7 @@ public class PooledObject : MonoBehaviour {
 	/// </summary>
 	public void EnableObject (){
 		ResetValues();
-		transform.GetChild(0).gameObject.SetActive(true);
+		gameObject.SetActive(true);
 		isActive = true;
 		if (lifeTime > 0f)
 			Invoke ("DisableObject", lifeTime);
@@ -51,12 +51,15 @@ public class PooledObject : MonoBehaviour {
 	/// DONT CALLS THIS. this is only for internal ObjectPool use. Use PooledObject.DestroyPooledObject() instead
 	/// </summary>
 	public void DisableObject (){
-			transform.GetChild(0).gameObject.SetActive (false);
-			isActive = false;
+		gameObject.SetActive (false);
+		isActive = false;
 		myPool.ActiveObjects -= 1;
 	}
 
 	public void DestroyPooledObject (){
+		if (GetComponent<TrainTerrainData>()) {
+			GetComponent<TrainTerrainData>()._DestroyPooledObject();
+		}
 		myPool.DestroyPooledObject (myId);
 	}
 
@@ -75,8 +78,5 @@ public class PooledObject : MonoBehaviour {
 			GetComponent<Rigidbody> ().velocity = Vector3.zero;
 			GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 		}
-
-		transform.GetChild (0).transform.position = transform.position;
-		transform.GetChild (0).transform.rotation = transform.rotation;
 	}
 }

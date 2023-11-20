@@ -169,19 +169,19 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             var prevHpPercent = currentHealth / maxHealth;
 
             if (myCart.isFragile) { // lose less hp the less hp you have if this is a fragile cart
-                damage *= Mathf.Clamp(prevHpPercent*2,0.1f,1f);
+                damage *= Mathf.Clamp(prevHpPercent*2,0.5f,1f);
             }
             
             
             currentHealth -= damage;
 
-            if (!myCart.isFragile) { // never be able to get one shot lose a fragile cart
+            if (myCart.isFragile) { // never be able to get one shot lose a fragile cart
                 if (prevHpPercent > 0.1f) {
                     if (currentHealth <= 0) {
-                        currentHealth = Mathf.Min(5, Mathf.CeilToInt(maxHealth*0.1f));
+                        currentHealth = Mathf.Min(5, Mathf.CeilToInt(maxHealth*0.05f));
                     }
 
-                    invincibilityTime = 1f;
+                    invincibilityTime = 0.5f;
                 }
             }
 

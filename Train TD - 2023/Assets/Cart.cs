@@ -105,6 +105,7 @@ public class Cart : MonoBehaviour {
             if (engineModule) {
                 if (isSturdy) {
                     engineModule.OnEngineLowPower?.Invoke(true);
+                    engineModule.isHalfPower = true;
                 } else {
                     engineModule.enabled = false;
                     GetComponentInChildren<EngineFireController>().StopEngineFire();
@@ -131,8 +132,17 @@ public class Cart : MonoBehaviour {
             }*/
         
             var duringCombat = GetComponentsInChildren<IActiveDuringCombat>();
-        
-            for (int i = 0; i < duringCombat.Length; i++) { duringCombat[i].Disable(); }
+
+            for (int i = 0; i < duringCombat.Length; i++) {
+                if (isSturdy) {
+                    if (!(duringCombat is EngineModule)) {//dont disable engine mod if strudy
+                        duringCombat[i].Disable();
+                    } 
+                } else {
+                    
+                    duringCombat[i].Disable();
+                }
+            }
         } else {
             GetComponent<PossibleTarget>().enabled = true;
         

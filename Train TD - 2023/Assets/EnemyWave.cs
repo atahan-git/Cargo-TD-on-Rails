@@ -104,6 +104,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
 
     private bool instantLerp = false;
     private bool movePos = true;
+    public Vector3 lookVector = Vector3.forward;
     public void UpdateBasedOnDistance(float playerPos) {
         if (PlayStateMaster.s.isCombatInProgress()) {
             distance = Mathf.Abs(playerPos - wavePosition);
@@ -129,7 +130,11 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
                 wavePosition += currentSpeed * Time.deltaTime;
             }
 
-            var targetPos = Vector3.forward * (wavePosition - playerPos + currentDistanceOffset) + Vector3.left * myXOffset;
+            lookVector = PathAndTerrainGenerator.s.GetDirectionVectorOnActivePath(wavePosition - playerPos + currentDistanceOffset);
+            var left = Quaternion.AngleAxis(-90, Vector3.up) * lookVector;
+            var targetPos = PathAndTerrainGenerator.s.GetPointOnActivePath(wavePosition - playerPos + currentDistanceOffset) + left * myXOffset;
+            //Debug.DrawLine(targetPos, targetPos + left * 5, Color.red, 1f);
+            //Debug.DrawLine(targetPos, targetPos +Vector3.up*5, Color.green, 1f);
             if(movePos)
                 transform.position = Vector3.Lerp(transform.position,targetPos, 20*Time.deltaTime);
             

@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TrainStation : MonoBehaviour {
-    public Vector3 startPos;
+    public float stationDistance;
     private void Start() {
         //startPos = transform.position;
     }
 
     void Update() {
-        transform.position = startPos + SpeedController.s.currentDistance * Vector3.back;
+        /*if(!PlayStateMaster.s.isCombatStarted())
+            return;*/
+        transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(stationDistance-SpeedController.s.currentDistance) ;
+        transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(stationDistance-SpeedController.s.currentDistance) /** Quaternion.Euler(0,180,0)*/;
     }
 }

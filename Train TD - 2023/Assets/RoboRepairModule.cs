@@ -76,12 +76,19 @@ public class RoboRepairModule : ActivateWhenAttachedToTrain, IActiveDuringCombat
     public string GetInfoText() {
         return $"Repairs {GetAmount()*countPerCycle} per {GetDelay():F1} seconds {GetRange()} nearby carts";
     }
+
+    private int halfRepairCount = 0;
     public void InstantRepair(bool fullRepair) {
         if (myCart.isSturdy || !myCart.isDestroyed) {
             if (fullRepair) {
                 BreadthFirstRepairSearch(GetAmount() / 2f);
             } else {
-                BreadthFirstRepairSearch(GetAmount() / 10f);
+                if (halfRepairCount <= 0) {
+                    BreadthFirstRepairSearch(GetAmount() / 2f);
+                    halfRepairCount = 5;
+                } else {
+                    halfRepairCount -= 1;
+                }
             }
         }
     }

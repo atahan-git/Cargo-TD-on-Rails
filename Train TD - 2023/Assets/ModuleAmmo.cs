@@ -83,7 +83,11 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
                 OnReload?.Invoke(showEffect);
                 if(showEffect)
                     roboRepairInstantRepair?.Invoke(true);
+            } else {
+                if(showEffect)
+                    roboRepairInstantRepair?.Invoke(false);
             }
+            
         } else {
             if(showEffect)
                 roboRepairInstantRepair?.Invoke(false);

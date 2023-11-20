@@ -35,7 +35,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public void ResetDistance() {
         missionDistance = 500;
-        endTrainStation.startPos = Vector3.forward * missionDistance;
+        endTrainStation.stationDistance = missionDistance;
         currentDistance = 0;
         LevelReferences.s.speed = 0;
         internalRealSpeed = 0;
@@ -58,16 +58,16 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         SetMissionEndDistance(missionDistance + amount);
     }
 
-    public void TravelToMissionEndDistance() {
+    public void TravelToMissionEndDistance(bool isShowingPrevRewards) {
         CalculateStopAcceleration();
         currentDistance = missionDistance;
     }
-    
+
     public void SetMissionEndDistance(float distance) {
         missionDistance = distance;
-        endTrainStation.startPos = Vector3.forward * missionDistance;
+        endTrainStation.stationDistance = missionDistance;
         //Debug.LogError("Re add hex grid here");
-        HexGrid.s.ResetDistance();
+        //HexGrid.s.ResetDistance();
     }
 
 

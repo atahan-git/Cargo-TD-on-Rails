@@ -30,12 +30,15 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
     public float forwardForce = 10;
 
     private Rigidbody rg;
-    
+
+
+    public EnemyWave enemyWave;
     private void Start() {
         rg = GetComponent<Rigidbody>();
         rg.centerOfMass = centerOfMass;
         transform.position += Vector3.up*1;
         rg.velocity = Vector3.zero;
+        enemyWave = GetComponentInParent<EnemyWave>();
     }
 
     private void FixedUpdate() {
@@ -72,16 +75,22 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
         }
 
 
-        var lookRotation = rg.velocity;
-        lookRotation.z = 0.5f;
-        lookRotation.y = 0;
-        lookRotation.x = Mathf.Clamp(lookRotation.x, -0.2f, 0.2f);
-        var realLookRotation = Quaternion.LookRotation(lookRotation, Vector3.up);
-        var eulerAngles = transform.rotation.eulerAngles;
+        //var velocityVector = rg.velocity;
+        var targetLookVector = enemyWave.lookVector;
+        //var vectorLookRotation = Quaternion.LookRotation(velocityVector, Vector3.up);
+        if (targetLookVector.magnitude == 0) {
+            targetLookVector = transform.forward;
+        }
+        var targetLookRotation = Quaternion.LookRotation(targetLookVector, Vector3.up);
+        //Debug.DrawLine(transform.position, transform.position + targetLookVector*10, Color.blue);
+        //var realLookRotation = Quaternion.RotateTowards(targetLookRotation, vectorLookRotation, 15);
+        var realLookRotation = targetLookRotation;
+        var eulerAngles = rg.rotation.eulerAngles;
         /*eulerAngles.x = Mathf.Clamp(eulerAngles.x, -45, 45);
         eulerAngles.z = Mathf.Clamp(eulerAngles.x, -45, 45);*/
         var adjustedLookRotation = Quaternion.Euler(eulerAngles.x, realLookRotation.y, eulerAngles.z);
-        transform.rotation = Quaternion.Lerp(transform.rotation, adjustedLookRotation, lookRotationDelta * Time.deltaTime);
+        rg.rotation = Quaternion.Lerp(rg.rotation, realLookRotation, lookRotationDelta * Time.deltaTime);
+        //transform.rotation = ;
     }
 
     private void ApplyForces() {

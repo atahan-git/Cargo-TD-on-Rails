@@ -44,7 +44,7 @@ public class RubbleFollowFloor : MonoBehaviour {
 
     void AttachToFloor(GameObject target) {
         isAttachedToFloor = true;
-        var hexChunk = target.GetComponentInParent<HexChunk>();
+        var hexChunk = target.GetComponentInParent<TrainTerrainData>();
         if (hexChunk) {
             hexChunk.AddForeignObject(gameObject);
         } else {

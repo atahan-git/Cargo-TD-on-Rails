@@ -73,7 +73,6 @@ public class PathSelectorController : MonoBehaviour {
 		_levers.Clear();
 		
 		trackParent.DeleteAllChildren();
-		myTrackSwitchHexes.Clear();
 		DistanceAndEnemyRadarController.s.ClearRadar();
 
 		Instantiate(castleCityPrefab, trackParent);
@@ -89,8 +88,8 @@ public class PathSelectorController : MonoBehaviour {
 		
 		//SplinePathMaster.s.GenerateInitialSegments();
 
-		HexGrid.s.ClearTrackSwitchDistances();
-		HexGrid.s.MakeFirstPath(nextSegmentChangeDistance);
+		/*HexGrid.s.ClearTrackSwitchDistances();
+		HexGrid.s.MakeFirstPath(nextSegmentChangeDistance);*/
 		//HexGrid.s.DoTrackSwitchAtDistance(nextSegmentChangeDistance);
 		
 		for (int i = 0; i < activeLevel.mySegmentsA.Length - 1; i++) {
@@ -113,10 +112,10 @@ public class PathSelectorController : MonoBehaviour {
 			_tracks.Add(_track);
 		}
 		
-		HexGrid.s.AddTrackSwitch(true, activeLevel.mySegmentsA[1].segmentLength, activeLevel.mySegmentsB[1].segmentLength, 
+		/*HexGrid.s.AddTrackSwitch(true, activeLevel.mySegmentsA[1].segmentLength, activeLevel.mySegmentsB[1].segmentLength, 
 			activeLevel.mySegmentsA.Length == 2,
 			_levers[currentSegment].currentState
-		);
+		);*/
 
 		for (int i = 0; i < _tracks.Count; i++) {
 			_tracks[i].SetTrackState(_tracks[i].currentState, true);
@@ -139,12 +138,6 @@ public class PathSelectorController : MonoBehaviour {
 		_tracks[id].doubleLever.SetTrackState(stateToSet);
 		_tracks[id].SetTrackState(stateToSet);
 
-		if (id == currentSegment) {
-			for (int i = 0; i < myTrackSwitchHexes.Count; i++) {
-				myTrackSwitchHexes[i].isGoingLeft = stateToSet;
-			}
-		}
-
 		ReCalculateMissionLength();
 
 		// trainCrossingAudioSource.PlayOneShot(trackSwitchSound);
@@ -159,14 +152,29 @@ public class PathSelectorController : MonoBehaviour {
 
 	void ReCalculateMissionLength() {
 		var currentLength = activeLevel.mySegmentsA[0].segmentLength;
+		
+		PathAndTerrainGenerator.s.activePath.Clear();
+		PathAndTerrainGenerator.s.activePath.Add(PathAndTerrainGenerator.s.myPaths[0]);
+		var currentPlaceInTree = PathAndTerrainGenerator.s.currentPathTree;
+		
+		PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
 
 		for (int i = 0; i < _levers.Count; i++) {
 			if (_levers[i].currentState) {
 				currentLength += activeLevel.mySegmentsA[i + 1].segmentLength;
+
+				currentPlaceInTree = currentPlaceInTree.leftPath;
+				PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
 			}else {
 				currentLength += activeLevel.mySegmentsB[i + 1].segmentLength;
+				
+				currentPlaceInTree = currentPlaceInTree.rightPath;
+				PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
 			}
 		}
+
+		currentPlaceInTree = currentPlaceInTree.rightPath; // end station
+		PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
 		
 		SpeedController.s.SetMissionEndDistance(currentLength);
 	}
@@ -175,87 +183,66 @@ public class PathSelectorController : MonoBehaviour {
 	public float trackSwitchWarningDistance = 50;
 	public bool isPlayingTrackSwitchWarning = false;
 
-	public void DoCrossSwitch() {
-		//trainCrossingAudioSource.Stop();
-		trainCrossingSpeaker.Stop();
-
-		isPlayingTrackSwitchWarning = false;
-				
-		_tracks[currentSegment].LockTrackState();
-		_levers[currentSegment].LockTrackState();
-
-
-		LevelSegment upcomingSegment;
-		if (_levers[currentSegment].currentState) {
-			upcomingSegment = activeLevel.mySegmentsA[currentSegment + 1];
-		} else {
-			upcomingSegment = activeLevel.mySegmentsB[currentSegment + 1];
-		}
-				
-		_levers[currentSegment].SetTrackSwitchWarningState(false);
-		_levers[currentSegment].SetVisibility(false);
-		_levers[currentSegment].SetButtonPromptState(false);
-		_tracks[currentSegment].doubleLever.SetTrackSwitchWarningState(false);
-		_tracks[currentSegment].doubleLever.SetButtonPromptState(false);
-
-		EnemyWavesController.s.PhaseOutExistingEnemies();
-		if (upcomingSegment.isEncounter) {
-			EncounterController.s.EngageEncounter(upcomingSegment.levelName);
-		} else {
-			EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingSegment);
-		}
-
-		if (currentSegment < _tracks.Count - 1) {
-			nextSegmentChangeDistance += upcomingSegment.segmentLength;
-			//HexGrid.s.DoTrackSwitchAtDistance(nextSegmentChangeDistance);
-			var isLastSegment = currentSegment >= _tracks.Count - 2;
-			HexGrid.s.AddTrackSwitch(_levers[currentSegment].currentState, 
-				activeLevel.mySegmentsA[currentSegment + 1].segmentLength, activeLevel.mySegmentsB[currentSegment + 1].segmentLength, 
-				isLastSegment,_levers[currentSegment+1].currentState
-				);
-		} else {
-			nextSegmentChangeDistance += 10000000;
-		}
-
-		currentSegment += 1;
-
-
-		if (currentSegment < _levers.Count) {
-			nextLever = _levers[currentSegment];
-			nextLever.SetButtonPromptState(true);
-			_tracks[currentSegment].doubleLever.SetButtonPromptState(true);
-		}
-
-		SpeedController.s.PlayEngineStartEffects();
-	}
 	private void Update() {
 		if (PlayStateMaster.s.isCombatInProgress()) {
 			if (SpeedController.s.currentDistance + trackSwitchWarningDistance > nextSegmentChangeDistance && !isPlayingTrackSwitchWarning) {
 				//trainCrossingAudioSource.Play();
 				trainCrossingSpeaker.Play();
 
-                isPlayingTrackSwitchWarning = true;
+				isPlayingTrackSwitchWarning = true;
 				_levers[currentSegment].SetTrackSwitchWarningState(true);
 				_tracks[currentSegment].doubleLever.SetTrackSwitchWarningState(true);
 			}
-		}
-	}
 
-	
 
-	public List<TrackSwitchHex> myTrackSwitchHexes = new List<TrackSwitchHex>();
-	public void RegisterTrackSwitchHex(TrackSwitchHex hex) {
-		return;
-		if(MissionWinFinisher.s.isWon)
-			return;
-		
-		myTrackSwitchHexes.Add(hex);
-		for (int i = 0; i < myTrackSwitchHexes.Count; i++) {
-			myTrackSwitchHexes[i].isGoingLeft = _levers[currentSegment].currentState;
+			if (nextSegmentChangeDistance > 0 && SpeedController.s.currentDistance > nextSegmentChangeDistance) {
+				//trainCrossingAudioSource.Stop();
+				trainCrossingSpeaker.Stop();
 
-			if (i == currentSegment) {
-				nextSegmentChangeDistance = myTrackSwitchHexes[i].GetSwitchDistance()-2f;
+				isPlayingTrackSwitchWarning = false;
+
+				_tracks[currentSegment].LockTrackState();
+				_levers[currentSegment].LockTrackState();
+
+
+				LevelSegment upcomingSegment;
+				if (_levers[currentSegment].currentState) {
+					upcomingSegment = activeLevel.mySegmentsA[currentSegment + 1];
+				} else {
+					upcomingSegment = activeLevel.mySegmentsB[currentSegment + 1];
+				}
+
+				_levers[currentSegment].SetTrackSwitchWarningState(false);
+				_levers[currentSegment].SetVisibility(false);
+				_levers[currentSegment].SetButtonPromptState(false);
+				_tracks[currentSegment].doubleLever.SetTrackSwitchWarningState(false);
+				_tracks[currentSegment].doubleLever.SetButtonPromptState(false);
+
+				EnemyWavesController.s.PhaseOutExistingEnemies();
+				if (upcomingSegment.isEncounter) {
+					EncounterController.s.EngageEncounter(upcomingSegment.levelName);
+				} else {
+					EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingSegment);
+				}
+
+				if (currentSegment < _tracks.Count - 1) {
+					nextSegmentChangeDistance += upcomingSegment.segmentLength;
+				} else {
+					nextSegmentChangeDistance += 10000000;
+				}
+
+				currentSegment += 1;
+
+
+				if (currentSegment < _levers.Count) {
+					nextLever = _levers[currentSegment];
+					nextLever.SetButtonPromptState(true);
+					_tracks[currentSegment].doubleLever.SetButtonPromptState(true);
+				}
+
+				SpeedController.s.PlayEngineStartEffects();
 			}
 		}
 	}
+
 }

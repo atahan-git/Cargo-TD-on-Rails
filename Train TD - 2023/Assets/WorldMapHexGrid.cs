@@ -254,7 +254,7 @@ public class WorldMapHexGrid : MonoBehaviour {
 		//doCallback = true;
 		
 		
-		Debug.Log($"Height Map generated in: {Time.realtimeSinceStartup-startTime}");
+		//Debug.Log($"Height Map generated in: {Time.realtimeSinceStartup-startTime}");
 	}
 
 	/*public bool doCallback = false;

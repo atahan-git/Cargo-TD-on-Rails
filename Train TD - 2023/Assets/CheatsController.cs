@@ -176,7 +176,7 @@ public class CheatsController : MonoBehaviour
             //MoneyController.s.AddScraps(1000);
             
             
-            SpeedController.s.TravelToMissionEndDistance();
+            SpeedController.s.TravelToMissionEndDistance(true);
 
             //MissionWinFinisher.s.MissionWon();
 

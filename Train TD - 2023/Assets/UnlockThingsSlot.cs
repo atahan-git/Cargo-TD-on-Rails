@@ -35,6 +35,7 @@ public class UnlockThingsSlot : MonoBehaviour {
     }
 
     public void SetUp(Cart cart) {
+        _starterShopButton = GetComponent<StarterShopButton>();
         Instantiate(cart.gameObject, cartParent);
         curCost = cart.buyCost;
         GetComponentInChildren<MoneyUIDisplay>().SetAmount(curCost);

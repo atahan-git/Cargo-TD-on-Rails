@@ -75,7 +75,7 @@ public class ShopStateController : MonoBehaviour {
 		if (DataSaver.s.GetCurrentSave().currentRun.isInEndRunArea) {
 			starterUI.SetActive(false);
 			MissionWinFinisher.s.ShowUnclaimedRewards();
-			HexGrid.s.CreateEndAreaChunk();
+			//HexGrid.s.CreateEndAreaChunk();
 
 		} else {
 			UpgradesController.s.DrawShopOptions();

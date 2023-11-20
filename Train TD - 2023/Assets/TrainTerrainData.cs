@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using UnityEngine;
+
+public class TrainTerrainData : MonoBehaviour {
+   public TerrainGenerator.TrainTerrain data = new TerrainGenerator.TrainTerrain();
+   public bool isInitialized = false;
+
+
+   [Button]
+   public void DebugPrintDetailMaps() {
+      
+      var detailWidth = data.terrain.terrainData.detailWidth;
+      var map = data.terrain.terrainData.GetDetailLayer(0,0,detailWidth, detailWidth, 0);
+
+      for (int x = 0; x < map.GetLength(0); x++) {
+         for (int y = 0; y < map.GetLength(1); y++) {
+            if (map[x, y] > 0) {
+               print($"{x},{y}: {map[x, y]}");
+            }
+         }
+      }
+   }
+   
+   [Button]
+   public void DebugPrintTreePositions() {
+
+      var trees = data.terrain.terrainData.treeInstances;
+
+      for (int i = 0; i < trees.Length; i++) {
+         print($"Tree {i} at {trees[i].position}");
+      }
+   }
+   
+   List<GameObject> foreignObjects = new List<GameObject>();
+   public void AddForeignObject(GameObject obj) {
+      foreignObjects.Add(obj);
+      obj.transform.SetParent(transform);
+   }
+
+
+   public void _DestroyPooledObject() {
+      for (int i = 0; i < foreignObjects.Count; i++) {
+         Destroy(foreignObjects[i].gameObject);
+      }
+      
+      foreignObjects.Clear();
+   }
+}

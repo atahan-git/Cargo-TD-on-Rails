@@ -54,7 +54,7 @@ public class MissionWinFinisher : MonoBehaviour {
 			needToDeliverMysteriousCargo = false;
 		}
 		
-		SpeedController.s.TravelToMissionEndDistance();
+		SpeedController.s.TravelToMissionEndDistance(isShowingPrevRewards);
 		isWon = true;
 		PlayStateMaster.s.FinishCombat(!isShowingPrevRewards);
 		EnemyWavesController.s.Cleanup();
@@ -189,6 +189,7 @@ public class MissionWinFinisher : MonoBehaviour {
 	}
 
 	public void ShowUnclaimedRewards() {
+		PathAndTerrainGenerator.s.MakeFakePathForMissionRewards();
 		MissionWon(true);
 		//Invoke(nameof(DelayedShowRewards), 0.05f);
 	}
@@ -236,7 +237,7 @@ public class MissionWinFinisher : MonoBehaviour {
 				ActFinishController.s.OpenActWinUI();
 				OnActCleared(DataSaver.s.GetCurrentSave().currentRun.currentAct);
 			} else {
-				PlayStateMaster.s.LeaveMissionRewardArea();
+				PlayStateMaster.s.LeaveMissionRewardAreaAndEnterShopState();
 			}
 		}
 

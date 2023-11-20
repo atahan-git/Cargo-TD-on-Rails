@@ -265,7 +265,7 @@ public class Train : MonoBehaviour {
         transform.position = endPos;
     }
 
-    public void UpdateCartPositions() {
+    public void UpdateCartPositions(bool basic = true) {
         if(carts.Count == 0)
             return;
         
@@ -273,8 +273,8 @@ public class Train : MonoBehaviour {
         for (int i = 0; i < carts.Count; i++) {
             totalLength += carts[i].length;
         }
-        
-        var currentSpot = - Vector3.back * (totalLength / 2f);
+
+        var currentDistance = (totalLength / 2f);
 
         if (cartDefPositions.Count != carts.Count) {
             cartDefPositions.Clear();
@@ -285,8 +285,13 @@ public class Train : MonoBehaviour {
 
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
-            cart.transform.localPosition = currentSpot;
-            currentSpot += -Vector3.forward * cart.length;
+            if (basic) {
+                cart.transform.localPosition = Vector3.forward*currentDistance;
+            } else {
+                cart.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
+                cart.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance);
+            }
+            currentDistance += -cart.length;
             var index = i;
             cart.name = $"Cart {index }";
             cart.trainIndex = index;
@@ -342,7 +347,15 @@ public class Train : MonoBehaviour {
                 MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noMysteryCargo);
             }
         }*/
-        
+
+        CheckHealth();
+
+
+        // draw train already calls this
+        //trainUpdatedThroughNonBuildingActions?.Invoke();
+    }
+
+    void CheckHealth() {
         var health = 0f;
         for (int i = 0; i < carts.Count; i++) {
             var _cart = carts[i].GetHealthModule();
@@ -351,12 +364,10 @@ public class Train : MonoBehaviour {
             }
         }
 
+        //print(health);
         if (health <= 0) {
             MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.everyCartExploded);
         }
-
-        // draw train already calls this
-        //trainUpdatedThroughNonBuildingActions?.Invoke();
     }
 
 
@@ -372,7 +383,7 @@ public class Train : MonoBehaviour {
 
     private void Update() {
         if (PlayStateMaster.s.isCombatInProgress()) {
-            if (doShake) {
+            /*if (doShake) {
                 if (curDistance < 0) {
                     StartCoroutine(ShakeWave());
                     StartCoroutine(RestoreWave(restoreDelay));
@@ -385,7 +396,9 @@ public class Train : MonoBehaviour {
                 if (shakeBlock <= 0) {
                     _RestartShake();
                 }
-            }
+            }*/
+            
+            UpdateCartPositions(false);
             
         } else {
             doShake = false;
@@ -472,8 +485,8 @@ public class Train : MonoBehaviour {
             var effects = artifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
             if (effects != null) {
                 for (int j = 0; j < effects.Length; j++) {
-                    if (effects[j].GetComponentInParent<Cart>() != null && !effects[j].GetComponentInParent<Cart>().isDestroyed) {
-                        if (isArm) {
+                    if (effects[j].GetComponentInParent<Cart>() != null) {
+                        if (isArm && !effects[j].GetComponentInParent<Cart>().isDestroyed) {
                             effects[j].Arm();
                         } else {
                             effects[j].Disarm();
@@ -532,6 +545,7 @@ public class Train : MonoBehaviour {
         if (isTrainDrawn) {
             UpdateThingsAffectingOtherThings(false);
             UpdateThingsAffectingOtherThings(true);
+            CheckHealth();
         }
     }
 
@@ -684,7 +698,7 @@ public class Train : MonoBehaviour {
     public void HealthModified() {
         MiniGUI_TrainOverallHealthBar.s.HealthChanged();
     }
-    
+
 
     public bool UpdateTrainCartsBasedOnRotation(float rotationStartZ, float rotationEndZ, float maxXOffset, float arcLength, bool isGoingLeft) {// rotation angle is 45 degrees
         StopShake();

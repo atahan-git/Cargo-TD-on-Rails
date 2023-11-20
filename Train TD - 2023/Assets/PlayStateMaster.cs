@@ -48,7 +48,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCharacterSelected.AddListener(MoneyUIDisplay.totalMoney.OnCharLoad);
         
         OnDrawWorld.AddListener(WorldMapCreator.s.GenerateWorldMap);
-        OnDrawWorld.AddListener(HexGrid.s.RefreshGrid);
+        OnDrawWorld.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         
         OnNewWorldCreation.AddListener(MapController.s.GenerateStarMap);
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
@@ -57,7 +57,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
         OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
         OnShopEntered.AddListener(WorldMapCreator.s.ReturnToRegularMap);
-        OnShopEntered.AddListener(HexGrid.s.RefreshGrid);
+        //OnShopEntered.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         OnShopEntered.AddListener(ShopStateController.s.OpenShopUI);
         OnShopEntered.AddListener(FMODMusicPlayer.s.PlayMenuMusic);
         OnShopEntered.AddListener(MainMenu.s.ExitMainMenu);
@@ -73,6 +73,7 @@ public class PlayStateMaster : MonoBehaviour {
         
         OnCombatEntered.AddListener(FMODMusicPlayer.s.PlayCombatMusic);
         OnCombatEntered.AddListener(SpeedController.s.SetUpOnMissionStart);
+        OnCombatEntered.AddListener(PathAndTerrainGenerator.s.MakeLevelTerrain);
         OnCombatEntered.AddListener(PathSelectorController.s.SetUpPath);
         OnCombatEntered.AddListener(FirstTimeTutorialController.s.OnEnterCombat);
         OnCombatEntered.AddListener(TimeController.s.OnCombatStart);
@@ -207,16 +208,22 @@ public class PlayStateMaster : MonoBehaviour {
         OnEnterMissionRewardArea?.Invoke();
     }
 
-    public void LeaveMissionRewardArea() {
+    public void LeaveMissionRewardAreaAndEnterShopState() {
         _gameState = GameState.shop;
 
         Train.s.RightBeforeLeaveMissionRewardArea();
         
         StopAllCoroutines();
-        StartCoroutine(Transition(false, () => {
+        /*StartCoroutine(Transition(false, () => {
             OnLeavingMissionRewardArea?.Invoke();
             OnShopEntered?.Invoke();
-        }));
+        }));*/
+        
+        StartCoroutine(Transition(true, () => {
+                OnLeavingMissionRewardArea?.Invoke();
+                OnDrawWorld?.Invoke();
+            }, WorldGenerationProgress,
+            () => {OnShopEntered?.Invoke();}));
     }
 
     public void EnterShopState() {
@@ -225,14 +232,14 @@ public class PlayStateMaster : MonoBehaviour {
         StopAllCoroutines();
 
         if (DataSaver.s.GetCurrentSave().isInARun) {
-            if (WorldGenerationProgress() >= 1f) {
+            /*if (WorldGenerationProgress() >= 1f) {
                 StartCoroutine(Transition(false, () => OnShopEntered?.Invoke()));
-            } else {
+            } else {*/
                 StartCoroutine(Transition(true, () => {
                     OnDrawWorld?.Invoke();
                 }, WorldGenerationProgress,
                     () => {OnShopEntered?.Invoke();}));
-            }
+            //}
         } else {
             StartCoroutine(Transition(false, () => {
                 OnOpenCharacterSelectMenu?.Invoke();
@@ -278,7 +285,7 @@ public class PlayStateMaster : MonoBehaviour {
     }
 
     float WorldGenerationProgress() {
-        return WorldMapCreator.s.worldMapGenerationProgress;
+        return (WorldMapCreator.s.worldMapGenerationProgress + PathAndTerrainGenerator.s.terrainGenerationProgress) / 2f;
     }
 
     delegate float LoadDelegate();
