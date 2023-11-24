@@ -320,6 +320,8 @@ MonoBehaviour:
   isBeingDisabled: 0
   trainIndex: 0
   cartSize: 1
+  isFragile: 0
+  isSturdy: 0
   myLocation: 0
   length: 0.55
   canPlayerDrag: 1

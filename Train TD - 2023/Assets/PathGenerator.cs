@@ -72,7 +72,7 @@ public class PathGenerator : MonoBehaviour {
 
             var curDirection = Quaternion.AngleAxis(curAngle, Vector3.up) * direction;
             
-            path[i] = path[i - 1] + curDirection * stepLength;
+            path[i] = path[i - 1] + curDirection.normalized * stepLength;
 
             if (interval < minGoBackInterval) {
                 if (DistanceToLine(startPoint, direction, path[i]) > pathWidth) {
@@ -128,7 +128,7 @@ public class PathGenerator : MonoBehaviour {
 
         path[0] = startPoint;
         for (int i = 1; i < path.Length; i++) {
-            path[i] = path[i - 1] + direction * stepLength;
+            path[i] = path[i - 1] + direction.normalized * stepLength;
 
             maxEdge.x = Mathf.Max(maxEdge.x, path[i].x);
             maxEdge.y = Mathf.Max(maxEdge.y, path[i].y);

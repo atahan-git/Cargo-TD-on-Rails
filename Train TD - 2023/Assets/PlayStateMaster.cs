@@ -51,6 +51,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnDrawWorld.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         
         OnNewWorldCreation.AddListener(MapController.s.GenerateStarMap);
+        OnNewWorldCreation.AddListener(PathAndTerrainGenerator.s.SetBiomes);
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
 
         OnShopEntered.AddListener(SpeedController.s.ResetDistance);

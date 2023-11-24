@@ -22,7 +22,7 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
     }
 
     void ResetArea() {
-        rotatingPlatform.transform.rotation = Quaternion.identity;
+        rotatingPlatform.transform.localRotation = Quaternion.identity;
         extraArtifactEffect.gameObject.SetActive(false);
     }
 
@@ -72,21 +72,21 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
 
         SetColliderStatus(rotatingPlatform.gameObject, false);
 
-        var rotateTarget = (rotatingPlatform.rotation.eulerAngles.y > 25) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-        var totalDelta = Quaternion.Angle(rotatingPlatform.rotation, rotateTarget);
-        var currentDelta = Quaternion.Angle(rotatingPlatform.rotation, rotateTarget);
+        var rotateTarget = (rotatingPlatform.localRotation.eulerAngles.y > 25) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+        var totalDelta = Quaternion.Angle(rotatingPlatform.localRotation, rotateTarget);
+        var currentDelta = Quaternion.Angle(rotatingPlatform.localRotation, rotateTarget);
         var curRotateSpeed = 0f;
 
         while (currentDelta > 0.1f) {
-            rotatingPlatform.rotation = Quaternion.RotateTowards(rotatingPlatform.rotation, rotateTarget, curRotateSpeed * Time.deltaTime);
+            rotatingPlatform.localRotation = Quaternion.RotateTowards(rotatingPlatform.localRotation, rotateTarget, curRotateSpeed * Time.deltaTime);
             curRotateSpeed += rotateAcceleration * Time.deltaTime;
             curRotateSpeed = Mathf.Clamp(curRotateSpeed, 0, rotateSpeed);
 
-            currentDelta = Quaternion.Angle(rotatingPlatform.rotation, rotateTarget); 
+            currentDelta = Quaternion.Angle(rotatingPlatform.localRotation, rotateTarget); 
             yield return null;
         }
 
-        rotatingPlatform.rotation = rotateTarget;
+        rotatingPlatform.localRotation = rotateTarget;
         
         SetColliderStatus(rotatingPlatform.gameObject, true);
         Destroy(fullPlatform.snapTransform.GetChild(0).gameObject);

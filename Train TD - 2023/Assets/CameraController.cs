@@ -27,35 +27,40 @@ public class CameraController : MonoBehaviour {
     public Transform cameraOffset;
     public Transform cameraOffsetFlat;
 
-    public bool isRight = true;
+    //public bool isRight = true;
 
     public float edgeScrollMoveSpeed = 8f;
     public float wasdSpeed = 8f;
-    public float gamepadMoveSpeed = 4f;
-    public float snappedwasdDelay = 0.5f; 
+    public float gamepadMoveSpeed = 5f;
+    public float snappedwasdDelay = 0.3f; 
     public float zoomSpeed = 0.004f;
-    public float zoomGamepadSpeed = 1f;
+    public float zoomGamepadSpeed = 0.2f;
     public bool canZoom = true;
-    public float middleMoveSpeed = 2f;
 
-    public float posLerpSpeed = 1f;
-    public float rotationAngle = 50;
+    public float posLerpSpeed = 10f;
     public float rotationAngleTarget = 50;
-    public float minAngle = 0;
-    public float maxAngle = 120;
-    public float snapToDefaultAngleDistance = 5;
-    public float rotLerpSpeed = 20f;
+    /*public float minAngle = 0;
+    public float maxAngle = 120;*/
+    //public float snapToDefaultAngleDistance = 5;
+    public float rotLerpSpeed = 8f;
+    public float clickRotAngle = 45;
+    public float middleMoveSpeed = 20f;
+    public float rotateSmoothSpeed = 20;
+    public float rotateSmoothGamepadSpeed = 20;
 
     public InputActionReference moveAction;
     public InputActionReference moveGamepadAction;
     public InputActionReference gamepadSnapMoveForward;
     public InputActionReference gamepadSnapMoveBackward;
     public InputActionReference rotateAction;
+    public InputActionReference rotateReverseAction;
     public InputActionReference zoomAction;
     public InputActionReference zoomGamepadAction;
     public InputActionReference rotateCameraAction;
     public InputActionReference aimAction;
     public InputActionReference aimGamepadAction;
+    public InputActionReference rotateSmoothAction;
+    public InputActionReference rotateSmoothGamepadAction;
     
 
     public float currentZoom = 0;
@@ -76,6 +81,7 @@ public class CameraController : MonoBehaviour {
         moveAction.action.Enable();
         moveGamepadAction.action.Enable();
         rotateAction.action.Enable();
+        rotateReverseAction.action.Enable();
         zoomAction.action.Enable();
         rotateCameraAction.action.Enable();
         aimAction.action.Enable();
@@ -86,7 +92,11 @@ public class CameraController : MonoBehaviour {
         zoomGamepadAction.action.Enable();
         aimGamepadAction.action.Enable();
         
-        rotateAction.action.performed += FlipCamera;
+        rotateSmoothAction.action.Enable();
+        rotateSmoothGamepadAction.action.Enable();
+        
+        rotateAction.action.performed += RotateCamera;
+        rotateReverseAction.action.performed += RotateCameraReverse;
     }
 
 
@@ -95,6 +105,7 @@ public class CameraController : MonoBehaviour {
         moveAction.action.Disable();
         moveGamepadAction.action.Disable();
         rotateAction.action.Disable();
+        rotateReverseAction.action.Disable();
         zoomAction.action.Disable();
         rotateCameraAction.action.Disable();
         aimAction.action.Disable();
@@ -105,7 +116,11 @@ public class CameraController : MonoBehaviour {
         zoomGamepadAction.action.Disable();
         aimGamepadAction.action.Disable();
         
-        rotateAction.action.performed -= FlipCamera;
+        rotateSmoothAction.action.Disable();
+        rotateSmoothGamepadAction.action.Disable();
+        
+        rotateAction.action.performed -= RotateCamera;
+        rotateReverseAction.action.performed -= RotateCameraReverse;
     }
 
     public GameObject cameraLerpDummy;
@@ -114,7 +129,7 @@ public class CameraController : MonoBehaviour {
 #if UNITY_EDITOR
         edgeScrollMoveSpeed = 0; // we dont want edge scroll in the editor
 #endif
-        cameraCenter.transform.rotation = Quaternion.Euler(0, isRight ? -rotationAngleTarget : rotationAngleTarget, 0);
+        cameraCenter.transform.rotation = Quaternion.Euler(0, rotationAngleTarget, 0);
         SetMainCamPos();
         DisableDirectControl();
     }
@@ -158,10 +173,14 @@ public class CameraController : MonoBehaviour {
                             }
                         }
 
-                        print(closestDistance);
+                        //print(closestDistance);
                         if (closestDistance < 1) {
                             SnapToTrainModule(closestModule);
                         }
+                    }
+
+                    if (SettingsController.GamepadMode() && isSnappedToTrain && !PlayStateMaster.s.isCombatInProgress()) {
+                        UnSnap();
                     }
                     
                     if (!isSnappedToTransform) {
@@ -178,6 +197,8 @@ public class CameraController : MonoBehaviour {
                         ProcessZoom(zoomAction.action.ReadValue<float>(), zoomGamepadAction.action.ReadValue<float>());
 
                     ProcessMiddleMouseRotation(rotateCameraAction.action.ReadValue<float>(), mousePos);
+                    ProcessSmoothRotationInput(rotateSmoothAction.action.ReadValue<float>(), rotateSmoothSpeed);
+                    ProcessSmoothRotationInput(rotateSmoothGamepadAction.action.ReadValue<float>(), rotateSmoothGamepadSpeed);
 
                     LerpCameraTarget();
                 }
@@ -320,16 +341,21 @@ public class CameraController : MonoBehaviour {
                 delta = -delta;*/
             rotationAngleTarget += delta * middleMoveSpeed * Time.unscaledDeltaTime;
 
-            isRight = rotationAngleTarget > 0;
+            //isRight = rotationAngleTarget > 0;
 
-            rotationAngleTarget = Mathf.Clamp(rotationAngleTarget, minAngle, maxAngle);
-        } else {
+            //rotationAngleTarget = Mathf.Clamp(rotationAngleTarget, minAngle, maxAngle);
+        } /*else {
             if (Mathf.Abs(Mathf.Abs(rotationAngleTarget) - rotationAngle) < snapToDefaultAngleDistance) {
                 rotationAngleTarget = Mathf.MoveTowards(rotationAngleTarget, isRight? rotationAngle : -rotationAngle, 10 * Time.unscaledDeltaTime);
             }
-        }
+        }*/
 
         mousePosLastFrame = mousePos;
+    }
+
+    void ProcessSmoothRotationInput(float value, float multiplier) {
+        var delta = value*multiplier;
+        rotationAngleTarget += delta * Time.unscaledDeltaTime;
     }
 
     private void LerpCameraTarget() {
@@ -423,9 +449,12 @@ public class CameraController : MonoBehaviour {
     private Vector3 regularPos;
     private float mapZoom;
     private float regularZoom;
+    public float mapAngle = 50;
+    public float regularAngle;
 
     public void ResetMapPos() {
         mapPos = mapStartPos;
+        mapAngle = 50;
         mapZoom = 0;
     }
 
@@ -440,9 +469,11 @@ public class CameraController : MonoBehaviour {
         cameraCenter.position = mapPos;
         regularZoom = currentZoom;
         currentZoom = mapZoom;
-        if (!isRight) {
+        regularAngle = rotationAngleTarget;
+        rotationAngleTarget = mapAngle;
+        /*if (!isRight) {
             FlipCamera(new InputAction.CallbackContext());
-        }
+        }*/
         
         SetMainCamPos();
     }
@@ -453,9 +484,11 @@ public class CameraController : MonoBehaviour {
         cameraCenter.position = regularPos;
         mapZoom = currentZoom;
         currentZoom = regularZoom;
-        if (!isRight) {
+        mapAngle = rotationAngleTarget;
+        rotationAngleTarget = regularAngle;
+        /*if (!isRight) {
             FlipCamera(new InputAction.CallbackContext());
-        }
+        }*/
         
         SetMainCamPos();
     }
@@ -523,7 +556,10 @@ public class CameraController : MonoBehaviour {
 
         if (isSnappedToTrain) {
             if (snappedMoveTimer <= 0) {
-                if (Mathf.Abs(value.x) > 0.1f) {
+                var trainForward = Train.s.GetTrainForward();
+                var trainForwardTransformed = cameraCenter.InverseTransformDirection(trainForward);
+                var trainForward2d = new Vector2(trainForwardTransformed.x, trainForwardTransformed.z);
+                /*if (Mathf.Abs(value.x) > 0.1f) {
                     snappedDetachTimer += Time.deltaTime;
 
                     if (snappedDetachTimer > 0.2f) {
@@ -539,15 +575,21 @@ public class CameraController : MonoBehaviour {
                     }
                 } else {
                     snappedDetachTimer = 0;
-                }
-                
-                if (Mathf.Abs(value.y) > 0.1f) {
-                    var nextBuilding = GetNextCart(value.y > 0, snappedCart);
+                }*/
+
+                if (value.magnitude > 0.1f) {
+
+                    var isForward = Vector2.Dot(trainForward2d, value) > 0;
+                    
+                    var nextBuilding = GetNextCart(isForward, snappedCart);
                     if (nextBuilding != null) {
                         SnapToTrainModule(nextBuilding);
+                    } else {
+                        UnSnapAndJoltForward(isForward);
+                        
                     }
                     
-                    PlayerWorldInteractionController.s.MoveSelectedCart(value.y > 0);
+                    PlayerWorldInteractionController.s.MoveSelectedCart(isForward);
                     
                     snappedMoveTimer = delay;
                 }
@@ -556,7 +598,7 @@ public class CameraController : MonoBehaviour {
             isSnappedToTransform = false;
         }
 
-        if (Mathf.Abs(value.y) < 0.05f) {
+        if (value.magnitude < 0.05f) {
             snappedMoveTimer = 0;
         }
 
@@ -581,6 +623,8 @@ public class CameraController : MonoBehaviour {
                 var nextBuilding = GetNextCart(true, snappedCart);
                 if (nextBuilding != null) {
                     SnapToTrainModule(nextBuilding);
+                } else {
+                    UnSnapAndJoltForward(true);
                 }
                 PlayerWorldInteractionController.s.MoveSelectedCart(true);
             }
@@ -589,6 +633,8 @@ public class CameraController : MonoBehaviour {
                 var nextBuilding = GetNextCart(false, snappedCart);
                 if (nextBuilding != null) {
                     SnapToTrainModule(nextBuilding);
+                } else {
+                    UnSnapAndJoltForward(false);
                 }
                 PlayerWorldInteractionController.s.MoveSelectedCart(false);
             }
@@ -653,11 +699,24 @@ public class CameraController : MonoBehaviour {
         snappedDetachTimer = 0;
     }
 
+    public void UnSnapAndJoltForward(bool isForward) {
+        isSnappedToTransform = false;
+        isSnappedToTrain = false;
+        snappedDetachTimer = 0;
+        /*var trainForward = Train.s.GetTrainForward();
+        var delta = trainForward * (isForward ? 1 : -1);
+        cameraCenter.position += delta.normalized*1.5f;*/
+    }
 
 
-    public void FlipCamera(InputAction.CallbackContext info) {
-        isRight = !isRight;
-        rotationAngleTarget = isRight? rotationAngle : -rotationAngle;
+
+    public void RotateCamera(InputAction.CallbackContext info) {
+        //isRight = !isRight;
+        rotationAngleTarget += clickRotAngle;
+    }
+
+    public void RotateCameraReverse(InputAction.CallbackContext info) {
+        rotationAngleTarget -= clickRotAngle;
     }
 
     

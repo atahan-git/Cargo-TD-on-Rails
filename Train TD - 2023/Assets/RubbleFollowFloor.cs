@@ -26,8 +26,12 @@ public class RubbleFollowFloor : MonoBehaviour {
     
     
     private void OnCollisionEnter(Collision other) {
+        print(other);
+        print(other.transform);
+        
         if (!isAttachedToFloor) {
-            if (other.transform.parent != null && other.transform.parent.CompareTag("Ground")) {
+            var hexChunk = other.gameObject.GetComponent<TrainTerrainData>();
+            if (hexChunk != null) {
                 AttachToFloor(other.gameObject);
             }
         }
@@ -35,7 +39,8 @@ public class RubbleFollowFloor : MonoBehaviour {
 
     private void OnCollisionStay(Collision other) {
         if (!isAttachedToFloor) {
-            if (other.transform.parent != null && other.transform.parent.CompareTag("Ground")) {
+            var hexChunk = other.gameObject.GetComponent<TrainTerrainData>();
+            if (hexChunk != null) {
                 AttachToFloor(other.gameObject);
             }
         }
@@ -44,7 +49,7 @@ public class RubbleFollowFloor : MonoBehaviour {
 
     void AttachToFloor(GameObject target) {
         isAttachedToFloor = true;
-        var hexChunk = target.GetComponentInParent<TrainTerrainData>();
+        var hexChunk = target.GetComponent<TrainTerrainData>();
         if (hexChunk) {
             hexChunk.AddForeignObject(gameObject);
         } else {

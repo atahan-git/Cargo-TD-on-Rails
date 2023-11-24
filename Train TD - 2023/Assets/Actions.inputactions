@@ -33,9 +33,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Flip Camera",
+                    "name": "Rotate Sharp",
                     "type": "Button",
                     "id": "4992a22f-6754-4556-bd27-00127df39cb9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate Sharp Reverse",
+                    "type": "Button",
+                    "id": "ddd6820e-3cc5-4b84-ae98-57251347e3df",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -229,6 +238,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate Smooth",
+                    "type": "Value",
+                    "id": "48ccf4f1-7189-4143-a678-3345e34bb5e0",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Rotate Smooth Gamepad",
+                    "type": "Value",
+                    "id": "960ab13c-72a2-4a9c-b821-98fda24467b1",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -316,7 +343,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
-                    "action": "Flip Camera",
+                    "action": "Rotate Sharp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -327,7 +354,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Flip Camera",
+                    "action": "Rotate Sharp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -680,6 +707,72 @@
                     "processors": "",
                     "groups": "",
                     "action": "Gamepad Snapped to Train Move Backward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "932909df-1527-485b-9547-c1e459e1a67e",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate Smooth",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "98ee3eaa-fe12-468a-8b5d-3de0db16c4c5",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate Smooth",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "e11f8778-0491-43f4-9e41-68fe67f84486",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate Smooth",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "9e563f33-3264-4340-8780-47cda6f6f56a",
+                    "path": "<Gamepad>/rightStick/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate Smooth Gamepad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "14b57ab8-f880-469f-8b9b-8e948f2ff70c",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Rotate Sharp Reverse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1a9d6ed2-273c-42a0-bd3c-b61374c4e4b3",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate Sharp Reverse",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

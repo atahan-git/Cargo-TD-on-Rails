@@ -1077,6 +1077,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
     void UpdateTrainCartPositionsSlowly() {
         var carts = Train.s.carts;
+
+        var isBasic = !PlayStateMaster.s.isCombatStarted();
         
         if(carts.Count == 0)
             return;
@@ -1086,19 +1088,29 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             totalLength += carts[i].length;
         }
         
-        var currentSpot =  - Vector3.back * (totalLength / 2f);
+        var currentDistance = (totalLength / 2f);
+        var currentSpot =  Vector3.zero;
 
         /*Debug.Log($"normal: {transform.localPosition - Vector3.back * (totalLength / 2f)}");
         Debug.Log( $"Brole: {- Vector3.back * (totalLength / 2f)}");*/
         
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
+            
+
+            
+            if (isBasic) {
+                currentSpot = Vector3.forward*currentDistance;
+            } else {
+                currentSpot = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
+                cart.transform.rotation = Quaternion.Slerp(cart.transform.localRotation,PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance),slerpSpeed * Time.deltaTime);
+            }
+            
             if (cart == selectedCart && !cart.isMainEngine )
                 currentSpot += Vector3.up * (isDragging() ? 0.4f : 0.05f);
-
+            currentDistance += -cart.length;
 
             cart.transform.localPosition = Vector3.Lerp(cart.transform.localPosition, currentSpot, lerpSpeed * Time.deltaTime);
-            cart.transform.localRotation = Quaternion.Slerp(cart.transform.localRotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
             
             var artifact = cart.myAttachedArtifact;
             if (artifact != null) {
@@ -1106,11 +1118,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 artifact.transform.localRotation = Quaternion.Slerp(artifact.transform.localRotation, Quaternion.identity, 5*slerpSpeed * Time.deltaTime);
             }
 
-            if (cart == selectedCart && !cart.isMainEngine)
+            /*if (cart == selectedCart && !cart.isMainEngine)
                 currentSpot -= Vector3.up * (isDragging() ? 0.4f : 0.05f);
 
 
-            currentSpot += -Vector3.forward * cart.length;
+            currentSpot += -Vector3.forward * cart.length;*/
             var index = i;
             cart.name = $"Cart {index}";
         }

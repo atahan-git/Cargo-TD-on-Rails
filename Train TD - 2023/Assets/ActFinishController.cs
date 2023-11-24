@@ -49,8 +49,8 @@ public class ActFinishController : MonoBehaviour {
         
         DataSaver.s.GetCurrentSave().currentRun.currentAct += 1;
 
-        PlayStateMaster.s.EnterNewAct();
         DataSaver.s.SaveActiveGame();
+        PlayStateMaster.s.EnterNewAct();
     }
 
     public void CloseActUI() {

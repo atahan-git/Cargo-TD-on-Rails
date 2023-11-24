@@ -22,6 +22,20 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
     public List<GameObject> myTracks = new List<GameObject>();
 
+
+    public Biome[] biomes;
+	
+    [System.Serializable]
+    public class Biome {
+        public GameObject terrainPrefab;
+        public Light sun;
+        public SkyboxParametersScriptable skybox;
+    }
+
+    public int biomeOverride = -1;
+
+    public ObjectPool terrainPool;
+
     public float trackDistance;
 
     public PathTree currentPathTree;
@@ -34,13 +48,42 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     }
 
     private void Start() {
+        currentTerrainGenCount = 0;
+        SetBiomes();
         MakeStarterAreaTerrain();
+    }
+
+    public void SetBiomes() {
+        if (!DataSaver.s.GetCurrentSave().isInARun)
+            biomeOverride = 0;
+
+        Biome currentBiome;
+        if (biomeOverride < 0) {
+            var targetBiome = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().biome;
+            if (targetBiome < 0 || targetBiome > biomes.Length) {
+                Debug.LogError($"Illegal biome {targetBiome}");
+                targetBiome = 0;
+            }
+
+            currentBiome = biomes[targetBiome];
+        } else {
+            currentBiome = biomes[biomeOverride];
+        }
+
+        for (int i = 0; i < biomes.Length; i++) {
+            biomes[i].sun.gameObject.SetActive(false);
+        }
+        
+        currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
+
+        terrainPool.RePopulateWithNewObject(currentBiome.terrainPrefab);
     }
 
 
     public void MakeFakePathForMissionRewards() {
         var fakePath = GetComponent<PathGenerator>().MakeStationPath(Vector3.zero, Vector3.forward, SpeedController.s.missionDistance + 100);
         myPaths.Add(fakePath);
+        activePath.Clear();
         activePath.Add(fakePath);
         terrainViewRange = 50;
         //StartCoroutine(ReDrawTerrainAroundCenter());
@@ -55,6 +98,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         needReflectionProbe = true;
         ClearTerrains();
         myPaths.Clear();
+        activePath.Clear();
         terrainViewRange = 20;
         myPaths.Add(GetComponent<PathGenerator>().MakeStationPath(-Vector3.forward*stationStraightDistance/2f,Vector3.forward, stationStraightDistance));
         StartCoroutine(ReDrawTerrainAroundCenter());
@@ -178,7 +222,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange);
 
         for (int i =  myTracks.Count-1; i >=0; i--) {
-            DestroyImmediate(myTracks[i].gameObject);
+            myTracks[i].GetComponent<PooledObject>().DestroyPooledObject();
         }
         myTracks.Clear();
         
@@ -630,7 +674,11 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 break;
             }
         }
-        return PathGenerator.GetPointOnLine(activePath[pathIndex], currentDistance);
+
+        var point = PathGenerator.GetPointOnLine(activePath[pathIndex], currentDistance);
+        
+        //Debug.Log($"{currentDistanceOffset}, {point}");
+        return point;
     }
     
     public Quaternion GetRotationOnActivePath(float currentDistanceOffset) {

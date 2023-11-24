@@ -12,13 +12,24 @@ public class ObjectPool : MonoBehaviour {
 	public int ExistingObjects;
 	public int ActiveObjects;
 
+	public bool autoSetUp = true;
+	private bool setUpAtLeastOnce = false;
+
 	void Awake (){
+		if (autoSetUp) {
+			ResetPool();
+		}
+	}
+
+
+	void ResetPool() {
 		if (myObject.GetComponent<PooledObject> () == null)
 			myObject.AddComponent<PooledObject> ();
 
 		myObject.GetComponent<PooledObject> ().myPool = this;
-
-
+		
+		setUpAtLeastOnce = true;
+		
 		for (int i = transform.childCount-1; i >=0 ; i--) {
 			Destroy(transform.GetChild(i).gameObject);
 		}
@@ -29,6 +40,13 @@ public class ObjectPool : MonoBehaviour {
 	GameObject[] objs;
 	Queue<int> activeIds = new Queue<int>();
 
+
+	public void RePopulateWithNewObject(GameObject obj) {
+		if (myObject != obj || !setUpAtLeastOnce) {
+			myObject = obj;
+			ResetPool();
+		}
+	}
 
 	void SetUp (int poolsize){
 		objs = new GameObject[poolsize];

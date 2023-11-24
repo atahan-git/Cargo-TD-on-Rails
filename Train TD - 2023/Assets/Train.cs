@@ -265,6 +265,12 @@ public class Train : MonoBehaviour {
         transform.position = endPos;
     }
 
+    public Vector3 GetTrainForward() {
+        var index = Mathf.RoundToInt(carts.Count / 2f);
+        index = Mathf.Clamp(index, 0, carts.Count-1);
+        return carts[index].transform.forward;
+    }
+    
     public void UpdateCartPositions(bool basic = true) {
         if(carts.Count == 0)
             return;

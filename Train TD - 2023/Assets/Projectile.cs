@@ -347,7 +347,7 @@ public class Projectile : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other) {
         if (!isDead) {
-            if (other.attachedRigidbody.gameObject != myOriginObject) {
+            if (other.attachedRigidbody != null && other.attachedRigidbody.gameObject != myOriginObject) {
                 var otherProjectile = other.transform.root.GetComponent<Projectile>();
                 if (otherProjectile != null) {
                     if (otherProjectile.isPlayerBullet == isPlayerBullet) {
