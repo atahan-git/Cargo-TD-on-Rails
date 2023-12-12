@@ -733,7 +733,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 16183
+    m_Bits: 15159
 --- !u!225 &3380069376071540210
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1070,10 +1070,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainScene:
     sceneAsset: {fileID: 102900000, guid: 409077931e7134041a58eddcf6eb98bb, type: 3}
-    scenePath: Assets/Scenes/Plains.unity
+    scenePath: Assets/Scenes/_Main Scene.unity
   initialScene:
     sceneAsset: {fileID: 102900000, guid: 2b3d3c1d30140c74aa87fe8adbf95267, type: 3}
-    scenePath: Assets/Scenes/InitialScene.unity
+    scenePath: Assets/Scenes/_Initial Scene.unity
   autoOpenProfiles: 0
   loadingScreen: {fileID: 1740159616}
   loadingText: {fileID: 3640201124203540823}

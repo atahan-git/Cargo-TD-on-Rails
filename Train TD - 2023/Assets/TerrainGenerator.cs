@@ -233,7 +233,6 @@ public class TerrainGenerator : MonoBehaviour
                 information.heightmap[x,y] = AbsoluteHeightToTerrainHeight(height);
             }
         }
-
         
         for (var y = 0; y < detailGridSize; y++)
         {
@@ -243,10 +242,16 @@ public class TerrainGenerator : MonoBehaviour
                 var posX = information.GetPos_X(distanceX, distanceY);
                 var posY = information.GetPos_Y(distanceX, distanceY);
                 var distance = information.distanceMap[distanceX, distanceY];
-                /*var realPos = information.GetRealPos(distanceX, distanceY);
-                Debug.DrawLine(realPos, realPos+Vector3.up*distance, Color.yellow,10f);*/
-                information.detailmap0[x, y] = GetGrassDensity(posX, posY, grassFrequency0, grassThreshold0, grassMaxDensity0, distance);
-                information.detailmap1[x, y] = GetGrassDensity(posX+500, posY+500, grassFrequency1, grassThreshold1, grassMaxDensity1,distance);
+                
+                var incline = InclineAtPos(distanceX, distanceY, information.heightmap);
+                //print(incline);
+                information.detailmap0[x, y] = GetGrassDensity(posX, posY, grassFrequency0, grassThreshold0, grassMaxDensity0, distance, incline);
+                information.detailmap1[x, y] = GetGrassDensity(posX+500, posY+500, grassFrequency1, grassThreshold1, grassMaxDensity1,distance,incline);
+                
+                var realPos = information.GetRealPos(distanceX, distanceY);
+                //Debug.DrawLine(realPos, realPos+Vector3.up*distance, Color.yellow,10f);
+                Debug.DrawLine(realPos, realPos + Vector3.up * incline*20, incline < maxGrassIncline ? Color.green : Color.red, 10f);
+                //Debug.DrawLine(realPos, realPos + Vector3.up * -20, incline > maxGrassIncline ? Color.green : Color.red, 10f);
             }
         }
 
@@ -276,6 +281,20 @@ public class TerrainGenerator : MonoBehaviour
         }
 
         information.treeInstances = treeInstances.ToArray();
+    }
+
+    static float InclineAtPos(int x, int y, float[,] map) {
+        var multiplier = 1000f/((float)gridSize / terrainWidth);
+        
+        var xmax = Mathf.Clamp(x + 1, 0, gridSize - 1);
+        var xmin = Mathf.Clamp(x - 1, 0, gridSize - 1);
+        var dx = (map[xmax, y] - map[xmin, y]) / (xmax-xmin);
+        
+        var ymax = Mathf.Clamp(y + 1, 0, gridSize - 1);
+        var ymin = Mathf.Clamp(y - 1, 0, gridSize - 1);
+        var dy = (map[x, ymax] - map[x, ymin]) / (ymax-ymin);
+
+        return Mathf.Sqrt(dx * dx + dy * dy)*multiplier;
     }
     static float NextFloat(System.Random random, float min = 0f, float max =1f) {
         double val = (random.NextDouble() * (max - min) + min);
@@ -311,27 +330,34 @@ public class TerrainGenerator : MonoBehaviour
     public float grassFrequency1 = 1f;
     public float grassThreshold0 = 0.5f;
     public float grassThreshold1 = 0.3f;
-    public int grassMaxDensity0 = 5;
-    public int grassMaxDensity1 = 1;
+    public int grassMaxDensity0 = 16;
+    public int grassMaxDensity1 = 5;
     public float minGrassDistance = 3;
     public float grassFadeToMaxWidth = 5;
+    private float maxGrassIncline = 0.03f;
+    private float grassInclineFadeWidth = 0.01f;
     
     float scale = 3 / 4f; // change this if you change the size of the terrain
-    private int GetGrassDensity(float x, float y, float frequency, float threshold, float density, float distance) {
-        var value = GetNoise(seed.x + x * frequency * scale, seed.y + y * frequency * scale);
-        if (value > threshold && distance > minGrassDistance) {
-            value = value - threshold;
-            value /= (1 - threshold);
-            value = Mathf.Clamp01(value);
-            value *= density;
-            var distanceMultiplier = (distance- minGrassDistance)/grassFadeToMaxWidth;
-            distanceMultiplier = Mathf.Clamp01(distanceMultiplier);
-            value *= distanceMultiplier;
-            var result = Mathf.RoundToInt(value);
-            return result;
-        } else {
-            return 0;
+    private int GetGrassDensity(float x, float y, float frequency, float threshold, float density, float distance, float incline) {
+        if (distance > minGrassDistance && incline < maxGrassIncline) {
+            var value = GetNoise(seed.x + x * frequency * scale, seed.y + y * frequency * scale);
+            if (value > threshold) {
+                value = value - threshold;
+                value /= (1 - threshold);
+                value = Mathf.Clamp01(value);
+                value *= density;
+                var distanceMultiplier = (distance - minGrassDistance) / grassFadeToMaxWidth;
+                distanceMultiplier = Mathf.Clamp01(distanceMultiplier);
+                var inclineMultiplier = (maxGrassIncline - incline) / grassInclineFadeWidth;
+                inclineMultiplier = Mathf.Clamp01(inclineMultiplier);
+                value *= distanceMultiplier;
+                value *= inclineMultiplier;
+                var result = Mathf.RoundToInt(value);
+                return result;
+            } 
         }
+
+        return 0;
     }
     
     private float GetPlayZoneHeight(float x, float y) {

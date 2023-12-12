@@ -23,13 +23,10 @@ public class ActFinishController : MonoBehaviour {
         PlayerWorldInteractionController.s.canSelect = false;
         if (DataSaver.s.GetCurrentSave().currentRun.currentAct == 1) {
             act1WinUI.SetActive(true);
-            EventSystem.current.SetSelectedGameObject(act1WinUI.GetComponentInChildren<Button>().gameObject);
         }else if (DataSaver.s.GetCurrentSave().currentRun.currentAct == 2) {
             act2WinUI.SetActive(true);
-            EventSystem.current.SetSelectedGameObject(act2WinUI.GetComponentInChildren<Button>().gameObject);
         } else {
             act3WinUI.SetActive(true);
-            EventSystem.current.SetSelectedGameObject(act3WinUI.GetComponentInChildren<Button>().gameObject);
         }
     }
 

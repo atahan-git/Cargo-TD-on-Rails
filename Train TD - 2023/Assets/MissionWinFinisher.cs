@@ -39,8 +39,6 @@ public class MissionWinFinisher : MonoBehaviour {
 
 	public GameObject mysteriousCargoDeliveryArea;
 	public bool needToDeliverMysteriousCargo = false;
-	
-	public GameObject winContinueButton;
 
 	public bool isWon = false;
 	public void MissionWon(bool isShowingPrevRewards = false) {
@@ -123,9 +121,6 @@ public class MissionWinFinisher : MonoBehaviour {
 		FMODMusicPlayer.s.SwapMusicTracksAndPlay(false);
 
 		DirectControlMaster.s.DisableDirectControl();
-		
-		if(SettingsController.GamepadMode())
-			EventSystem.current.SetSelectedGameObject(winContinueButton);
 	}
 
 	void OnActCleared(int current_act) {//eg if you finish act 1 this number will be equal to 1

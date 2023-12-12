@@ -20,7 +20,6 @@ public class Pauser : MonoBehaviour {
 
     public bool isPaused = false;
     public GameObject pauseMenu;
-    public Button gamepadSelect;
 
     private void OnApplicationFocus(bool hasFocus) {
         if(enabled && !Application.isEditor)
@@ -89,10 +88,6 @@ public class Pauser : MonoBehaviour {
         
         if (CameraController.s.directControlActive) {
             Cursor.lockState = CursorLockMode.None;
-        }
-
-        if (SettingsController.GamepadMode()) {
-            EventSystem.current.SetSelectedGameObject(gamepadSelect.gameObject);
         }
     }
 

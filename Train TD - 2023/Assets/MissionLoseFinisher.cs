@@ -26,8 +26,6 @@ public class MissionLoseFinisher : MonoBehaviour {
 
     public bool isMissionLost = false;
 
-    public GameObject loseContinueButton;
-
     public enum MissionLoseReason {
         noEngine, noMysteryCargo, abandon, everyCartExploded
     }
@@ -146,9 +144,6 @@ public class MissionLoseFinisher : MonoBehaviour {
 
         FMODMusicPlayer.s.PauseMusic();
         DirectControlMaster.s.DisableDirectControl();
-
-        if(SettingsController.GamepadMode())
-            EventSystem.current.SetSelectedGameObject(loseContinueButton);
     }
 
 

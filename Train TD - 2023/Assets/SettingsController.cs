@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class SettingsController : MonoBehaviour {
     public static SettingsController s;
@@ -17,6 +21,8 @@ public class SettingsController : MonoBehaviour {
     public bool forceDisableGamepadMode = false;
     public bool forceEnableGamepadMode = false;
     
+    public List<GameObject> gamepadModeButtons = new List<GameObject>();
+
     void Start()
     {
 #if !UNITY_EDITOR
@@ -30,35 +36,76 @@ public class SettingsController : MonoBehaviour {
         }
     }
 
+    public GameObject areYouSureScreen;
+    public TMP_Text areYouSureText;
+    private Action areYouSureClick;
 
+    private bool gamepadMode = false;
     
-    public void ResetRun() {
-        /*if (PlayStateMaster.s.isCombatStarted()) {
-            MissionWinFinisher.s.ContinueToClearOutOfCombat();
-        }*/
+    //public GameObject mainUI;
+    private void Update() {
+        var currentGamepadMode = GamepadMode();
+        if (currentGamepadMode != gamepadMode) {
+            if (currentGamepadMode) {
+                EventSystem.current.SetSelectedGameObject(gamepadModeButtons[^1]);
+            }   
+        }
+        gamepadMode = currentGamepadMode;
 
+        /*if (currentGamepadMode) {
+            var currentSelected = EventSystem.current.currentSelectedGameObject;
+            if (currentSelected == null) {
+                var randomButton = mainUI.GetComponentInChildren<Button>();
+                EventSystem.current.SetSelectedGameObject(randomButton.gameObject);
+            }
+        }*/
+    }
+
+    public void ResetRun() {
+        if (DataSaver.s.GetCurrentSave().isInARun == true) {
+            areYouSureScreen.SetActive(true);
+            areYouSureText.text = "Really Abandon?";
+            areYouSureClick = () => _ResetRun();
+
+            //SFX
+            AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
+        }
+    }
+
+    void _ResetRun() {
         DataSaver.s.GetCurrentSave().currentRun = null;
         DataSaver.s.GetCurrentSave().isInARun = false;
-        
+
         DataSaver.s.SaveActiveGame();
-        
+
         SceneLoader.s.ForceReloadScene();
+    }
 
-        /*MenuToggle.HideAllToggleMenus();
+    public void AreYouSureYes() {
+        areYouSureClick?.Invoke();
+        areYouSureScreen.SetActive(false);
         
-        if (FirstTimeTutorialController.s.tutorialEngaged) {
-            FirstTimeTutorialController.s.SkipTutorial();
-        } else {
-            PlayStateMaster.s.EnterShopState();
-        }
-        
-        Pauser.s.Unpause();*/
+        //SFX
+        AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
+    }
 
+    public void AreYouSureNo() {
+        areYouSureScreen.SetActive(false);
+        
         //SFX
         AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
     }
     
     public void ResetRunAndReplayTutorial() {
+        areYouSureScreen.SetActive(true);
+        areYouSureText.text = "Really Play Tutorial?";
+        areYouSureClick = () => _ResetRunAndReplayTutorial();
+
+        //SFX
+        AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
+    }
+    
+    void _ResetRunAndReplayTutorial() {
         MenuToggle.HideAllToggleMenus();
         Pauser.s.Unpause();
         
@@ -68,7 +115,6 @@ public class SettingsController : MonoBehaviour {
         //SFX
         AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
     }
-
     public void ClearCurrentSaveAndPlayerPrefs() {
         PlayerPrefs.DeleteAll();
         DataSaver.s.ClearCurrentSave();

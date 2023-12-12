@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -37,7 +38,11 @@ public class MainMenu : MonoBehaviour {
 
     public bool drawDebugTrainInstead = false;
     public DataSaver.TrainState debugTrain;
-    
+
+
+    public TMP_Text startGameText;
+    public GameObject resetButton;
+
     private void Awake() {
         s = this;
     }
@@ -51,6 +56,8 @@ public class MainMenu : MonoBehaviour {
             StartGame();
         }
     }
+    
+    
 
     public void OpenProfileMenu() {
         for (int i = 0; i < monoToDisableInProfileMenu.Length; i++) {
@@ -69,6 +76,15 @@ public class MainMenu : MonoBehaviour {
 
         ProfileUI.SetActive(true);
 
+
+        var isInARun = DataSaver.s.GetCurrentSave().isInARun;
+        resetButton.gameObject.SetActive(isInARun);
+        if (isInARun) {
+            startGameText.text = "Start";
+        } else {
+            startGameText.text = "Continue";
+        }
+
         if (SceneLoader.s.autoOpenProfiles) {
             profileChangeMenu.ShowMenu();
             SceneLoader.s.autoOpenProfiles = false;
@@ -82,8 +98,8 @@ public class MainMenu : MonoBehaviour {
         }
         RangeVisualizer.SetAllRangeVisualiserState(false);
         
-        if(SettingsController.GamepadMode())
-            EventSystem.current.SetSelectedGameObject(ProfileUI.GetComponentInChildren<Button>().gameObject);
+        /*if(SettingsController.GamepadMode())
+            EventSystem.current.SetSelectedGameObject(ProfileUI.GetComponentInChildren<Button>().gameObject);*/
     }
 
     public void StartGame() {

@@ -15,6 +15,10 @@ public class CursorAnimator : MonoBehaviour {
 
     private bool lastMouseState;
     void Update() {
+	    if(Cursor.lockState == CursorLockMode.Locked)
+		    return;
+	    
+	    
 	    var currentMouseState = Mouse.current.leftButton.isPressed;
 	    if (currentMouseState != lastMouseState) {
 		    if (currentMouseState) {

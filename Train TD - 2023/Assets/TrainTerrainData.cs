@@ -25,13 +25,13 @@ public class TrainTerrainData : MonoBehaviour {
    
    [Button]
    public void DebugPrintTreePositions() {
-
       var trees = data.terrain.terrainData.treeInstances;
 
       for (int i = 0; i < trees.Length; i++) {
          print($"Tree {i} at {trees[i].position}");
       }
    }
+   
    
    List<GameObject> foreignObjects = new List<GameObject>();
    public void AddForeignObject(GameObject obj) {
