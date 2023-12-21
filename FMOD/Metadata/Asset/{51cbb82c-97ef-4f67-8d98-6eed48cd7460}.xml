@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="EncodableAsset" id="{51cbb82c-97ef-4f67-8d98-6eed48cd7460}">
 		<property name="assetPath">
-			<value>BattleMusic/Audio Clip/</value>
+			<value>BattleMusic/BattleMusic1/Audio Clip/</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{91efd2a6-c39c-40dc-a364-71eda5276c1d}</destination>

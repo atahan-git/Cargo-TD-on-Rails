@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{c0e157f0-f5d0-4baf-9dfb-e22b8b674b7c}">
 		<property name="assetPath">
-			<value>BattleMusic/Riser/Zipper Riser 1.wav</value>
+			<value>BattleMusic/BattleMusic1/Riser/Zipper Riser 1.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>

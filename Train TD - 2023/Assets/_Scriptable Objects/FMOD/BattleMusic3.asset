@@ -10,29 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58ffc5045bb1c054a99178baa0b9c960, type: 3}
-  m_Name: Song 2
+  m_Name: BattleMusic3
   m_EditorClassIdentifier: 
   track:
     Guid:
-      Data1: -1870009544
-      Data2: 1318244914
-      Data3: -337345612
-      Data4: 141726870
-    Path: event:/Music/Song 2/Song 2
-  phaseChangePosition: 5
+      Data1: -625557869
+      Data2: 1279596182
+      Data3: 2110281137
+      Data4: 507341147
+    Path: event:/Music/BattleMusic3/BattleMusic3
+  phaseChangePosition: 9.6
   drum:
     enemy0Range: {x: 1, y: 1}
-    enemy1Range: {x: 1, y: 2}
+    enemy1Range: {x: 2, y: 2}
     enemy2Range: {x: 3, y: 6}
   bass:
-    enemy0Range: {x: 1, y: 1}
-    enemy1Range: {x: 2, y: 2}
+    enemy0Range: {x: 0, y: 1}
+    enemy1Range: {x: 1, y: 2}
     enemy2Range: {x: 2, y: 6}
   melody:
     enemy0Range: {x: 0, y: 1}
-    enemy1Range: {x: 1, y: 6}
-    enemy2Range: {x: 1, y: 6}
+    enemy1Range: {x: 1, y: 2}
+    enemy2Range: {x: 2, y: 6}
   backing:
-    enemy0Range: {x: 1, y: 1}
+    enemy0Range: {x: 0, y: 1}
     enemy1Range: {x: 1, y: 2}
     enemy2Range: {x: 2, y: 6}

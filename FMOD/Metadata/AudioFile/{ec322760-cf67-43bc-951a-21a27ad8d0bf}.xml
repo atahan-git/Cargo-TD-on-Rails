@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{ec322760-cf67-43bc-951a-21a27ad8d0bf}">
 		<property name="assetPath">
-			<value>BattleMusic/Buggy/Buggy Banjo 2.wav</value>
+			<value>BattleMusic/BattleMusic1/Buggy/Buggy Banjo 2.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>

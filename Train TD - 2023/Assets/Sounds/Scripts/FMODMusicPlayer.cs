@@ -31,7 +31,8 @@ public class FMODMusicPlayer : MonoBehaviour
 
     [FoldoutGroup("Music Tracks")]
     [AssetList]
-    public FMODDynamicMusic dynamicGameMusic;
+    public List<FMODDynamicMusic> dynamicGameMusicList = new List<FMODDynamicMusic>();
+    private FMODDynamicMusic currentDynamicGameMusic;
 
     private EventReference currentTracks;   // the current track that is loaded
     #endregion
@@ -59,12 +60,12 @@ public class FMODMusicPlayer : MonoBehaviour
 
     private void PreparePhaseChange()
     {
-        dynamicGameMusic.UpdatePhase(speaker);
+        currentDynamicGameMusic.UpdatePhase(speaker);
     }
 
     private void InitPhase()
     {
-        dynamicGameMusic.UpdatePhase(speaker);
+        currentDynamicGameMusic.UpdatePhase(speaker);
     }
     private float phaseT, lastT;
 
@@ -102,6 +103,7 @@ public class FMODMusicPlayer : MonoBehaviour
             Debug.LogError("FMODMusicPlayer should be a singleton class, but multiple instances are found!");
         s = this;
 
+        currentDynamicGameMusic = dynamicGameMusicList[Random.Range(0, dynamicGameMusicList.Count + 1)];
     }
 
     private void Start()
@@ -120,9 +122,9 @@ public class FMODMusicPlayer : MonoBehaviour
         var changeMade = false;
         if (isGame)
         {
-            if (!currentTracks.Equals(dynamicGameMusic.track))
+            if (!currentTracks.Equals(currentDynamicGameMusic.track))
             {
-                currentTracks = dynamicGameMusic.track;
+                currentTracks = currentDynamicGameMusic.track;
                 changeMade = true;
             }
         }
@@ -232,9 +234,9 @@ public class FMODMusicPlayer : MonoBehaviour
         #endregion
 
         #region PhaseChange
-        if (currentTracks.Equals(dynamicGameMusic.track))
+        if (currentTracks.Equals(currentDynamicGameMusic.track))
         {
-            phaseT = (timelinePosition + 0.5f) % dynamicGameMusic.phaseChangePosition;
+            phaseT = (timelinePosition + 0.5f) % currentDynamicGameMusic.phaseChangePosition;
             if (phaseT < lastT)
                 PreparePhaseChange();
             lastT = phaseT;

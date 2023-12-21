@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58ffc5045bb1c054a99178baa0b9c960, type: 3}
+  m_Name: BattleMusic1
+  m_EditorClassIdentifier: 
+  track:
+    Guid:
+      Data1: 820597358
+      Data2: 1317160643
+      Data3: 769095866
+      Data4: -159008215
+    Path: event:/Music/BattleMusic1/BattleMusic1
+  phaseChangePosition: 8
+  drum:
+    enemy0Range: {x: 1, y: 2}
+    enemy1Range: {x: 2, y: 4}
+    enemy2Range: {x: 4, y: 6}
+  bass:
+    enemy0Range: {x: 0, y: 2}
+    enemy1Range: {x: 1, y: 4}
+    enemy2Range: {x: 2, y: 4}
+  melody:
+    enemy0Range: {x: 0, y: 1}
+    enemy1Range: {x: 1, y: 2}
+    enemy2Range: {x: 3, y: 6}
+  backing:
+    enemy0Range: {x: 1, y: 1}
+    enemy1Range: {x: 2, y: 2}
+    enemy2Range: {x: 3, y: 6}

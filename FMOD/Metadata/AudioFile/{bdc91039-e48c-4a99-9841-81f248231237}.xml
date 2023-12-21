@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{bdc91039-e48c-4a99-9841-81f248231237}">
 		<property name="assetPath">
-			<value>BattleMusic/Drums/Drum Middle 2 out.wav</value>
+			<value>BattleMusic/BattleMusic1/Drums/Drum Middle 2 out.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>
