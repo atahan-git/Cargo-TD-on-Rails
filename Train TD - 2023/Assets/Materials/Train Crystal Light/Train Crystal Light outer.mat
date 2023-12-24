@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Train Crystal Light outer shell
+  m_Name: Train Crystal Light outer
   m_Shader: {fileID: -6465566751694194690, guid: 3e52eabf8ad973040891bdb201d6e0cb, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -99,7 +99,8 @@ Material:
     - _DstBlend: 10
     - _EdgeViewOffset: 0
     - _EnvironmentReflections: 1
-    - _Fresnel_Power: 2.31
+    - _Fresnel_Power: 2.3
+    - _Fresnel_Power_back: 1.14
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -118,14 +119,14 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 0
     m_Colors:
-    - _AnimSpeed: {r: 0.3, g: -0.3, b: 0, a: 0}
+    - _AnimSpeed: {r: 0.32, g: -0.32, b: 0, a: 0}
     - _BaseColor: {r: 0, g: 0.81598425, b: 1, a: 0.16862746}
     - _Color: {r: 0, g: 0.81598425, b: 1, a: 0.16862746}
     - _Color_Remap_Range: {r: 0.2, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 117.94763, b: 127.999985, a: 1}
     - _Fresnel_Remap: {r: -0.2, g: 0.1, b: 0, a: 0}
     - _MainColor: {r: 0, g: 0.95519966, b: 1, a: 0.20784314}
-    - _MainColor2: {r: 0.5334091, g: 0, b: 1, a: 0.23529412}
+    - _MainColor2: {r: 0.5334091, g: 0, b: 1, a: 0.30588236}
     - _MainColor_1: {r: 0, g: 0.95519966, b: 1, a: 1}
     - _MainColor_2: {r: 0, g: 0.95519966, b: 1, a: 1}
     - _MainColor_3: {r: 0, g: 0.95519966, b: 1, a: 1}
@@ -138,15 +139,15 @@ Material:
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Texture_min_alpha: {r: 0.5, g: 1, b: 0, a: 0}
     - _Tiling: {r: 5, g: 5, b: 0, a: 0}
-    - _VDAnimSpeed: {r: 0.22, g: 0.22, b: 0, a: 0}
-    - _VDAnimSpeed_1: {r: -0.12, g: -0.12, b: 0, a: 0}
-    - _VDAnimSpeed_big: {r: -0.17, g: -0.17, b: 0, a: 0}
+    - _VDAnimSpeed: {r: 0.52, g: -1.2, b: 0, a: 0}
+    - _VDAnimSpeed_1: {r: -0.1, g: -0.1, b: 0, a: 0}
+    - _VDAnimSpeed_big: {r: 0, g: -0.72, b: 0, a: 0}
     - _VDMagnitude: {r: 0.15, g: 0.15, b: 0.15, a: 0}
-    - _VDMagnitude_1: {r: 0.4, g: 0.4, b: 0.4, a: 0}
-    - _VDMagnitude_big: {r: 0.4, g: 0.4, b: 0.4, a: 0}
-    - _VDTiling: {r: 1, g: 1, b: 0, a: 0}
+    - _VDMagnitude_1: {r: 0.3, g: 0.3, b: 0.3, a: 0}
+    - _VDMagnitude_big: {r: 0.1, g: 0.4, b: 0.4, a: 0}
+    - _VDTiling: {r: 0.3, g: 0.4, b: 0, a: 0}
     - _VDTiling_1: {r: 0.2, g: 0.2, b: 0, a: 0}
-    - _VDTiling_big: {r: 0.2, g: 0.2, b: 0, a: 0}
+    - _VDTiling_big: {r: 0.082, g: 0.12, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &6706138665017465511
 MonoBehaviour:
