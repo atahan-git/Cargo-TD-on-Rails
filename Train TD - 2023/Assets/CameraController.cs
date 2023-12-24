@@ -359,6 +359,8 @@ public class CameraController : MonoBehaviour {
     }
 
     private void LerpCameraTarget() {
+        //transform.position = Train.s.trainMiddle.transform.position;
+        
         if (isSnappedToTransform) {
             var snapPos = snapTarget.position;
             snapPos.y = cameraCenter.position.y;

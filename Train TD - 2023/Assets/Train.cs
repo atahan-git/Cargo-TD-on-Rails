@@ -12,6 +12,7 @@ public class Train : MonoBehaviour {
 
     public Transform trainFront;
     public Transform trainBack;
+    public Transform trainMiddle;
     public Vector3 trainFrontOffset;
 
     public List<Cart> carts = new List<Cart>();
@@ -67,6 +68,9 @@ public class Train : MonoBehaviour {
             Destroy(trainFront.gameObject);
         if (trainBack != null)
             Destroy(trainBack.gameObject);
+        if (trainMiddle != null) 
+            Destroy(trainMiddle.gameObject);
+        
 
         if (trainState != null) {
             for (int i = 0; i < trainState.myCarts.Count; i++) {
@@ -84,6 +88,11 @@ public class Train : MonoBehaviour {
             trainBack = new GameObject().transform;
             trainBack.SetParent(transform);
             trainBack.gameObject.name = "Train Back";
+            
+            
+            trainMiddle = new GameObject().transform;
+            trainMiddle.SetParent(transform);
+            trainMiddle.gameObject.name = "Train Middle";
         }
 
         UpdateCartPositions();
@@ -270,15 +279,21 @@ public class Train : MonoBehaviour {
         index = Mathf.Clamp(index, 0, carts.Count-1);
         return carts[index].transform.forward;
     }
-    
-    public void UpdateCartPositions(bool basic = true) {
-        if(carts.Count == 0)
-            return;
-        
+
+    public float GetTrainLength() {
         var totalLength = 0f;
         for (int i = 0; i < carts.Count; i++) {
             totalLength += carts[i].length;
         }
+
+        return totalLength;
+    }
+    
+    public void UpdateCartPositions() {
+        if(carts.Count == 0)
+            return;
+
+        var totalLength = GetTrainLength();
 
         var currentDistance = (totalLength / 2f);
 
@@ -291,12 +306,8 @@ public class Train : MonoBehaviour {
 
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
-            if (basic) {
-                cart.transform.localPosition = Vector3.forward*currentDistance;
-            } else {
-                cart.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
-                cart.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance);
-            }
+            cart.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
+            cart.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance);
             currentDistance += -cart.length;
             var index = i;
             cart.name = $"Cart {index }";
@@ -310,6 +321,8 @@ public class Train : MonoBehaviour {
         
         trainFront.transform.localPosition = carts[0].transform.localPosition + trainFrontOffset + carts[0].length*Vector3.forward;
         trainBack.transform.localPosition = carts[carts.Count-1].transform.localPosition + trainFrontOffset - carts[carts.Count-1].length*Vector3.forward;
+
+        trainMiddle.transform.localPosition = PathAndTerrainGenerator.s.GetPointOnActivePath(totalLength / 2f);
     }
     
 
@@ -404,7 +417,7 @@ public class Train : MonoBehaviour {
                 }
             }*/
             
-            UpdateCartPositions(false);
+            UpdateCartPositions();
             
         } else {
             doShake = false;
@@ -682,10 +695,6 @@ public class Train : MonoBehaviour {
                 yield return null;
             }
         }
-    }
-    
-    public float GetTrainLength() {
-        return Train.s.carts.Count *DataHolder.s.cartLength;
     }
 
     public void ResetTrainPosition() {

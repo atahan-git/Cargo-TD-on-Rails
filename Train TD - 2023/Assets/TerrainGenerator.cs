@@ -139,13 +139,19 @@ public class TerrainGenerator : MonoBehaviour
 
 
     IEnumerator ThreadedInitialDistanceMapCalculation(TrainTerrain trainTerrain,List<PathGenerator.TrainPath> paths, Action completeCallback) {
+        bool done = false;
         trainTerrain.beingProcessed = true;
         yield return null;
-        bool done = false;
-        new Thread(()=>{
+        /*new Thread(()=>{
             CalculateInitialDistanceMaps(trainTerrain, paths);
             done = true;
-        }).Start();
+        }).Start();*/
+
+        ThreadPool.QueueUserWorkItem(o => {
+            CalculateInitialDistanceMaps(trainTerrain, paths);
+            done = true;
+        });
+        
         while (!done)
             yield return null;
         trainTerrain.beingProcessed = false;
@@ -248,9 +254,9 @@ public class TerrainGenerator : MonoBehaviour
                 information.detailmap0[x, y] = GetGrassDensity(posX, posY, grassFrequency0, grassThreshold0, grassMaxDensity0, distance, incline);
                 information.detailmap1[x, y] = GetGrassDensity(posX+500, posY+500, grassFrequency1, grassThreshold1, grassMaxDensity1,distance,incline);
                 
-                var realPos = information.GetRealPos(distanceX, distanceY);
+                //var realPos = information.GetRealPos(distanceX, distanceY);
                 //Debug.DrawLine(realPos, realPos+Vector3.up*distance, Color.yellow,10f);
-                Debug.DrawLine(realPos, realPos + Vector3.up * incline*20, incline < maxGrassIncline ? Color.green : Color.red, 10f);
+                //Debug.DrawLine(realPos, realPos + Vector3.up * incline*20, incline < maxGrassIncline ? Color.green : Color.red, 10f);
                 //Debug.DrawLine(realPos, realPos + Vector3.up * -20, incline > maxGrassIncline ? Color.green : Color.red, 10f);
             }
         }
@@ -428,9 +434,12 @@ public class TerrainGenerator : MonoBehaviour
             if (information.needReDistance) {
                 if (!information.distanceBeingCalculated) {
                     information.distanceBeingCalculated = true;
-                    new Thread(()=>{
+                    /*new Thread(()=>{
                         CalculateDistanceMap(information);
-                    }).Start();
+                    }).Start();*/
+                    ThreadPool.QueueUserWorkItem(o => {
+                        CalculateDistanceMap(information);
+                    });
                 }
             }
             
@@ -501,10 +510,16 @@ public class TerrainGenerator : MonoBehaviour
     IEnumerator ThreadedHeightmapCalculation(TrainTerrain trainTerrain) {
         bool done = false;
         yield return null;
-        new Thread(()=>{
+        /*new Thread(()=>{
             CalculateChangedDistanceMapsAndHeightMaps(trainTerrain);
             done = true;
         }).Start();
+        */
+        ThreadPool.QueueUserWorkItem(o => {
+            CalculateChangedDistanceMapsAndHeightMaps(trainTerrain);
+            done = true;
+        });
+        
         while (!done)
             yield return null;
         DoneCalculateChangedDistanceMapsAndHeightMaps(trainTerrain);
@@ -823,11 +838,11 @@ public class TerrainGenerator : MonoBehaviour
         terrain.terrainData = terrainData;
         terrain.GetComponent<TerrainCollider>().terrainData = terrainData;
 
+        // TERRAIN DETAILS DISABLED HERE
+        //information.terrain.terrainData.SetDetailLayer(0, 0, 0, Transpose(information.detailmap0));
+        //information.terrain.terrainData.SetDetailLayer(0, 0, 1, Transpose(information.detailmap1));
 
-        information.terrain.terrainData.SetDetailLayer(0, 0, 0, Transpose(information.detailmap0));
-        information.terrain.terrainData.SetDetailLayer(0, 0, 1, Transpose(information.detailmap1));
-
-        information.terrain.terrainData.SetTreeInstances(information.treeInstances, true);
+        //information.terrain.terrainData.SetTreeInstances(information.treeInstances, true);
     }
 
 

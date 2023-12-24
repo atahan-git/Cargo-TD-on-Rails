@@ -20,7 +20,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public List<PathGenerator.TrainPath> myPaths = new List<PathGenerator.TrainPath>();
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
-    public List<GameObject> myTracks = new List<GameObject>();
+    public Dictionary<Vector3, GameObject> myTracks = new Dictionary<Vector3,GameObject>();
 
 
     public Biome[] biomes;
@@ -221,11 +221,23 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public void DebugMakeTracks() {
         var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange);
 
-        for (int i =  myTracks.Count-1; i >=0; i--) {
+        /*for (int i =  myTracks.Count-1; i >=0; i--) {
             myTracks[i].GetComponent<PooledObject>().DestroyPooledObject();
         }
-        myTracks.Clear();
-        
+        myTracks.Clear();*/
+
+        var deleteList = new List<Vector3>();
+        foreach (var keyValuePair in myTracks) {
+            if (!viewBound.Contains(keyValuePair.Key+center)) {
+                keyValuePair.Value.GetComponent<PooledObject>().DestroyPooledObject();
+                deleteList.Add(keyValuePair.Key);
+            }
+        }
+
+        foreach (var key in deleteList) {
+            myTracks.Remove(key);
+        }
+
         for (int i = 0; i < myPaths.Count; i++) {
             if (myPaths[i].bounds.Intersects(viewBound)) {
                 
@@ -233,9 +245,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 var distance = 0f;
                 while (distance < trainPath.length) {
                     var point = PathGenerator.GetPointOnLine(trainPath, distance);
-                    if (viewBound.Contains(point)) {
+                    if (viewBound.Contains(point) && !myTracks.ContainsKey(point - center)) {
                         var newTrack = TrackPool.Spawn(point, PathGenerator.GetDirectionOnTheLine(trainPath, distance));
-                        myTracks.Add(newTrack);
+                        myTracks[point-center] = newTrack;
                     }
                     distance += trackDistance;
                 }
@@ -569,14 +581,18 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public ObjectPool TrackPool;
     public IEnumerator MakeTracksAroundCenter() {
         var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange*2);
-
-        for (int i = 0; i < myTracks.Count; i++) {
-            //if (!viewBound.Contains(myTracks[i].transform.position)) {
-                myTracks[i].GetComponent<PooledObject>().DestroyPooledObject();
-            //}
+        var deleteList = new List<Vector3>();
+        foreach (var keyValuePair in myTracks) {
+            if (!viewBound.Contains(keyValuePair.Key+center)) {
+                keyValuePair.Value.GetComponent<PooledObject>().DestroyPooledObject();
+                deleteList.Add(keyValuePair.Key);
+            }
         }
-        myTracks.Clear();
-        
+
+        foreach (var key in deleteList) {
+            myTracks.Remove(key);
+        }
+
         for (int i = 0; i < myPaths.Count; i++) {
             if (myPaths[i].bounds.Intersects(viewBound)) {
                 
@@ -584,9 +600,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 var distance = 0f;
                 while (distance < trainPath.length) {
                     var point = PathGenerator.GetPointOnLine(trainPath, distance);
-                    if (viewBound.Contains(point)) {
+                    if (viewBound.Contains(point) && !myTracks.ContainsKey(point - center)) {
                         var newTrack = TrackPool.Spawn(point, PathGenerator.GetDirectionOnTheLine(trainPath, distance));
-                        myTracks.Add(newTrack);
+                        myTracks[point-center] = newTrack;
                     }
 
                     distance += trackDistance;
@@ -629,6 +645,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         if (!PlayStateMaster.s.isCombatStarted()) {
             return;
         }
+
         var point = GetPointOnActivePath(0);
 
         for (int i = 0; i < myPaths.Count; i++) {
@@ -661,7 +678,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             if (myPaths.Count > 0) {
                 return PathGenerator.GetPointOnLine(myPaths[0], currentDistance);
             }
-            return Vector3.zero;
+            return Vector3.forward * currentDistance;
         }
         var pathIndex = 0;
         while (currentDistance > activePath[pathIndex].length) {
