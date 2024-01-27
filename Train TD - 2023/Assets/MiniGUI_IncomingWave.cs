@@ -39,7 +39,8 @@ public class MiniGUI_IncomingWave : MonoBehaviour {
             gunImage.enabled = false;
         }
 
-        countText.text = (myWave.myEnemy.enemyCount != -1) ? "x" + myWave.myEnemy.enemyCount.ToString() : "x1";
+        //countText.text = (myWave.myEnemy.enemyCount != -1) ? "x" + myWave.myEnemy.enemyCount.ToString() : "x1";
+        countText.text = "##";
         Update();
 
         GetComponent<Image>().color = enemyWave.isLeft ? LevelReferences.s.leftColor : LevelReferences.s.rightColor;

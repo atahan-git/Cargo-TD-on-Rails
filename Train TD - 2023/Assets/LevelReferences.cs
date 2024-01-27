@@ -143,9 +143,6 @@ public class LevelReferences : MonoBehaviour {
     [Space]
     public GameObject noAmmoWarning;
 
-    [Space]
-    public LevelSegmentScriptable debugBuggyLevel;
-
     [Space] 
     public GameObject bullet_regular;
     public GameObject bullet_repair;

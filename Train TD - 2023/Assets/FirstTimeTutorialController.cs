@@ -346,8 +346,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
         if (!_progress.firstCityTutorialDone) {
             if (emptyCartThingActive) {
                 var isOnTrain = emptyCart.myLocation == UpgradesController.CartLocation.train;
-                var isLookingAtShop = !WorldMapCreator.s.worldMapOpen;
-                getRidOfEmpty.SetActive(isOnTrain && isLookingAtShop);
+                getRidOfEmpty.SetActive(isOnTrain);
             }
         }
         

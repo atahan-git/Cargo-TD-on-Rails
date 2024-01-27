@@ -31,27 +31,8 @@ public class UpgradesController : MonoBehaviour {
 	public Transform shopableComponentsParent;
 	public GameObject buildingCargo;
 
-	public SnapCartLocation leftCargoParent;
-	public SnapCartLocation rightCargoParent;
-
-	public Transform leftRewardPos;
-	public Transform rightRewardPos;
-
 	public List<Artifact> shopArtifacts;
 	public List<Cart> shopCarts;
-	public Cart leftCargo;
-	public Cart rightCargo;
-
-	public GameObject leftRewardArea;
-	public GameObject leftArrow;
-	public GameObject rightRewardArea;
-
-	public bool shopArea_destinationSelected = false;
-	public bool shopArea_fleaMarketFull = false;
-	//public bool shopArea_noFreeCarts = false;
-
-	public bool endGame_noCargoOnTrain;
-	public bool endGame_noFreeCarts;
 	
 	public MiniGUI_DepartureChecklist shopChecklist;
 	public MiniGUI_DepartureChecklist endGameAreaChecklist;
@@ -62,8 +43,6 @@ public class UpgradesController : MonoBehaviour {
 	public GameObject artifactMarket;
 	public GameObject marketZone;
 	public GameObject smithy;
-	public GameObject recycler;
-	public GameObject scrapper;
 	public void OnShopOpened() {
 		bossArtifacts.Clear();
 		regularArtifacts.Clear();
@@ -180,107 +159,21 @@ public class UpgradesController : MonoBehaviour {
 	public SnapCartLocation[] cargoSwapLocations;
 	
 	public void UpdateCargoHighlights() {
-		var cargoCount = CheckIfCanGo();
-
-		if (cargoCount > 0) {
-			for (int i = 0; i < cargoSwapLocations.Length; i++) {
-				cargoSwapLocations[i].SetEmptyStatus(cargoSwapLocations[i].IsEmpty());
-			}
-		} else {
-			for (int i = 0; i < cargoSwapLocations.Length; i++) {
-				cargoSwapLocations[i].SetEmptyStatus(false);
-			}
+		for (int i = 0; i < cargoSwapLocations.Length; i++) {
+			cargoSwapLocations[i].SetEmptyStatus(cargoSwapLocations[i].IsEmpty());
 		}
 	}
 
 	public void UpdateCartShopHighlights() {
 		for (int i = 0; i < fleaMarketLocations.Length; i++) {
 			fleaMarketLocations[i].SetEmptyStatus(fleaMarketLocations[i].IsEmpty());
-			//_cargoLocations[i].SetEmptyStatus(isLocationEmpty);
 		}
-
-		CheckIfCanGo();
-	}
-	
-	public void SnapDestinationCargos(Cart lastCart) {
-		var directionSet = false;
-		if (leftCargo.myLocation == CartLocation.train && rightCargo.myLocation == CartLocation.train) {
-			if (leftCargo == lastCart) {
-				PutCargoBackInDestinationSelect(rightCargo, false);
-			}
-
-			if (rightCargo == lastCart) {
-				PutCargoBackInDestinationSelect(leftCargo, true);
-			}
-		}
-
-		if (leftCargo.myLocation == CartLocation.train && rightCargo.myLocation != CartLocation.train) {
-			directionSet = true;
-			ShopStateController.s.SetGoingLeft();
-
-			PutCargoBackInDestinationSelect(rightCargo, false);
-		}
-		
-		if (rightCargo.myLocation == CartLocation.train && leftCargo.myLocation != CartLocation.train) {
-			directionSet = true;
-			ShopStateController.s.SetGoingRight();
-
-			PutCargoBackInDestinationSelect(leftCargo, true);
-		}
-
-		if (!directionSet) {
-			PutCargoBackInDestinationSelect(leftCargo, true);
-			PutCargoBackInDestinationSelect(rightCargo, false);
-		}
-		
-		CheckIfCanGo();
-	}
-
-	void PutCargoBackInDestinationSelect(Cart cart, bool isLeft) {
-		var targetParent = isLeft ? leftCargoParent.snapTransform : rightCargoParent.snapTransform;
-
-		if (cart.myLocation == CartLocation.train) {
-			Train.s.RemoveCart(cart);
-			shopCarts.Add(cart);
-		}
-		
-		cart.myLocation = CartLocation.destinationSelect;
-		cart.transform.SetParent(targetParent);
-
-		var shopState = DataSaver.s.GetCurrentSave().currentRun.shopState;
-		var cargo = cart.GetComponentInChildren<CargoModule>();
-		var cargoState =  DataSaver.TrainState.CartState.CargoState.GetStateFromModule(cargo);
-		
-		if (isLeft) {
-			shopState.leftCargo = cargoState;
-		} else {
-			shopState.rightCargo = cargoState;
-		}
-
-		cart.GetComponent<Rigidbody>().isKinematic = true;
-		cart.GetComponent<Rigidbody>().useGravity = false;
-
-		SaveShopState();
-		Train.s.SaveTrainState();
 	}
 
 
 	public float destinationCargoLerpSpeed = 5f;
 	public float destinationCargoSlerpSpeed = 20f;
 	private void Update() {
-		if (rightCargo != null) {
-			if (rightCargo.myLocation == CartLocation.destinationSelect) {
-				rightCargo.transform.localPosition = Vector3.Lerp(rightCargo.transform.localPosition, Vector3.zero, destinationCargoLerpSpeed * Time.deltaTime);
-				rightCargo.transform.localRotation = Quaternion.Slerp(rightCargo.transform.localRotation, Quaternion.identity, destinationCargoSlerpSpeed * Time.deltaTime);
-			}
-		}
-
-		if (leftCargo != null) {
-			if (leftCargo.myLocation == CartLocation.destinationSelect) {
-				leftCargo.transform.localPosition = Vector3.Lerp(leftCargo.transform.localPosition, Vector3.zero, destinationCargoLerpSpeed * Time.deltaTime);
-				leftCargo.transform.localRotation = Quaternion.Slerp(leftCargo.transform.localRotation, Quaternion.identity, destinationCargoSlerpSpeed * Time.deltaTime);
-			}
-		}
 	}
 
 	
@@ -352,13 +245,11 @@ public class UpgradesController : MonoBehaviour {
 		train = 0, market = 1, world = 2, forge = 3, destinationSelect = 4, cargoDelivery = 5, rewardDisplay = 6
 	}
 
-	public Cart secondCityForcedRepairDrop;
 	void InitializeShop(DataSaver.RunState state) {
-		var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-		var playerCity = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().city;
+		
 
-		bool createFleaMarket = playerCity.myBuildings.Contains(CityData.BuildingType.fleaMarket);
-		bool createArtifactMarket = playerCity.myBuildings.Contains(CityData.BuildingType.fleaMarket_artifactOnly);
+		bool createFleaMarket = true;
+		bool createArtifactMarket = false;
 
 		state.shopState = new ShopState();
 		var buildingFleaMarketCount = 0;
@@ -371,17 +262,15 @@ public class UpgradesController : MonoBehaviour {
 		if (createArtifactMarket) {
 			artifactCount = fleaMarketLocationCount;
 		} else if(createFleaMarket){
-			if (playerStar.starChunk > 2) {
-				var artifactRoll = Random.value;
-				if (artifactRoll < 0.2f) {
-					// 2 artifacts
-					buildingFleaMarketCount -= 2;
-					artifactCount += 2;
-				} else if (artifactRoll < 0.5f) {
-					// 1 artifacts
-					buildingFleaMarketCount -= 1;
-					artifactCount += 1;
-				}
+			var artifactRoll = Random.value;
+			if (artifactRoll < 0.2f) {
+				// 2 artifacts
+				buildingFleaMarketCount -= 2;
+				artifactCount += 2;
+			} else if (artifactRoll < 0.5f) {
+				// 1 artifacts
+				buildingFleaMarketCount -= 1;
+				artifactCount += 1;
 			}
 		}
 
@@ -418,11 +307,6 @@ public class UpgradesController : MonoBehaviour {
 				}
 			});
 		}
-
-		if (state.map.GetPlayerStar().starChunk == 1) {
-			state.shopState.cartStates[0].state.uniqueName = secondCityForcedRepairDrop.uniqueName;
-		}
-		
 		
 		rollName = GetRandomBuildingCargoForDestinationReward(ref didRollEpic);
 		rollLevel = GetDestinationCargoLevel(didRollEpic);
@@ -520,14 +404,17 @@ public class UpgradesController : MonoBehaviour {
 		}
 
 		var currentRun = DataSaver.s.GetCurrentSave().currentRun;
-		var playerCityBuildings = currentRun.map.GetPlayerStar().city.myBuildings;
 
-		fleaMarket.SetActive(playerCityBuildings.Contains(CityData.BuildingType.fleaMarket));
+		/*fleaMarket.SetActive(playerCityBuildings.Contains(CityData.BuildingType.fleaMarket));
 		artifactMarket.SetActive(playerCityBuildings.Contains(CityData.BuildingType.fleaMarket_artifactOnly));
 		marketZone.SetActive(fleaMarket.activeSelf || artifactMarket.activeSelf);
 		smithy.SetActive(playerCityBuildings.Contains(CityData.BuildingType.smithy));
 		recycler.SetActive(playerCityBuildings.Contains(CityData.BuildingType.recycler));
-		scrapper.SetActive(playerCityBuildings.Contains(CityData.BuildingType.scrapper));
+		scrapper.SetActive(playerCityBuildings.Contains(CityData.BuildingType.scrapper));*/
+		fleaMarket.SetActive(true);
+		artifactMarket.SetActive(false);
+		marketZone.SetActive(fleaMarket.activeSelf || artifactMarket.activeSelf);
+		smithy.SetActive(true);
 
 		var fleaMarketLocationIndex = 0;
 		if (currentRun.isInEndRunArea) {
@@ -564,45 +451,7 @@ public class UpgradesController : MonoBehaviour {
 				}
 				
 			}
-
-
-			if (currentRun.shopState.leftCargo != null && currentRun.shopState.leftCargo.cargoReward != null && currentRun.shopState.leftCargo.cargoReward.Length > 0) {
-				leftCargo = SpawnCargo(currentRun.shopState.leftCargo, leftCargoParent);
-			} else {
-				var carts = Train.s.carts;
-				for (int i = 0; i < carts.Count; i++) {
-					if (carts[i].isCargo) {
-						var cargo = carts[i].GetComponentInChildren<CargoModule>();
-						if (cargo.GetState().isLeftCargo) {
-							leftCargo = carts[i];
-							ShopStateController.s.SetGoingLeft();
-							break;
-						}
-					}
-				}
-			}
-
-			if (currentRun.shopState.rightCargo != null && currentRun.shopState.rightCargo.cargoReward != null && currentRun.shopState.rightCargo.cargoReward.Length > 0) {
-				rightCargo = SpawnCargo(currentRun.shopState.rightCargo, rightCargoParent);
-			} else {
-				var carts = Train.s.carts;
-				for (int i = 0; i < carts.Count; i++) {
-					if (carts[i].isCargo) {
-						var cargo = carts[i].GetComponentInChildren<CargoModule>();
-						if (!cargo.GetState().isLeftCargo) {
-							rightCargo = carts[i];
-							ShopStateController.s.SetGoingRight();
-							break;
-						}
-					}
-				}
-			}
-
-			
-			SpawnRewardAtPos(leftRewardPos, leftCargo.GetComponentInChildren<CargoModule>());
-			SpawnRewardAtPos(rightRewardPos, rightCargo.GetComponentInChildren<CargoModule>());
 		}
-
 
 		for (int i = 0; i < currentRun.shopState.artifactStates.Count; i++) {
 			var myArtifactState = currentRun.shopState.artifactStates[i];
@@ -617,164 +466,7 @@ public class UpgradesController : MonoBehaviour {
 			}
 		}
 
-
-
-		var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-
-		var outgoingConnections = playerStar.outgoingConnections;
-		if (outgoingConnections.Count >= 2) {
-			leftRewardArea.SetActive(true);
-			leftArrow.SetActive(true);
-			rightRewardArea.SetActive(true);
-
-			leftRewardArea.GetComponentInChildren<MiniGUI_CityIcons>().SetState(currentRun.map.GetStarWithName(outgoingConnections[0]).city);
-			
-			rightRewardArea.GetComponentInChildren<MiniGUI_CityIcons>().SetState(currentRun.map.GetStarWithName(outgoingConnections[1]).city);
-
-		} else {
-			leftRewardArea.SetActive(true);
-			leftArrow.SetActive(false);
-			rightRewardArea.SetActive(false);
-			
-			leftRewardArea.GetComponentInChildren<MiniGUI_CityIcons>().SetState(currentRun.map.GetStarWithName(outgoingConnections[0]).city);
-		}
-		
-
-		CheckIfCanGo();
 		SaveShopState();
-	}
-
-	[ColorUsage(true, true)] 
-	public Color rewardOverlayColor = Color.cyan;
-
-	void SpawnRewardAtPos(Transform pos, CargoModule module) {
-		pos.DeleteAllChildren();
-
-		var rewardCart = Instantiate(DataHolder.s.GetCart(module.GetState().cargoReward).gameObject, pos).GetComponent<Cart>();
-
-		rewardCart.SetUpOverlays();
-		rewardCart.canPlayerDrag = false;
-		rewardCart.myLocation = CartLocation.rewardDisplay;
-		rewardCart.level = module.GetState().cargoLevel;
-		rewardCart.ResetState();
-
-		var renderers = rewardCart.GetComponentsInChildren<MeshRenderer>();
-
-		for (int i = 0; i < renderers.Length; i++) {
-			renderers[i].sharedMaterials[1].SetColor("OverlayColor", rewardOverlayColor);
-		}
-
-	}
-
-	int CheckIfCanGo() {
-		if (DataSaver.s.GetCurrentSave().currentRun.isInEndRunArea) {
-			var cargoCount = 0;
-			var onlyRegularCargoCount = 0;
-			var looseCartCount = shopCarts.Count;
-			for (int i = 0; i < shopCarts.Count; i++) {
-				var cart = shopCarts[i];
-				if (cart.isCargo) {
-					onlyRegularCargoCount += 1;
-				}
-				
-				if (cart.isCargo || (MissionWinFinisher.s.needToDeliverMysteriousCargo && cart.isMysteriousCart)) {
-					cargoCount += 1;
-					cart.GetComponentInChildren<CargoModule>()?.HighlightForDelivery();
-					cart.GetComponentInChildren<MysteriousCargoModule>()?.HighlightForDelivery();
-				}
-			}
-
-			for (int i = 0; i < Train.s.carts.Count; i++) {
-				var cart = Train.s.carts[i];
-				if (cart.isCargo) {
-					onlyRegularCargoCount += 1;
-				}
-				
-				if (cart.isCargo || (MissionWinFinisher.s.needToDeliverMysteriousCargo && cart.isMysteriousCart)) {
-					cargoCount += 1;
-					cart.GetComponentInChildren<CargoModule>()?.HighlightForDelivery();
-					cart.GetComponentInChildren<MysteriousCargoModule>()?.HighlightForDelivery();
-				}
-			}
-
-			if (looseCartCount > 0 || cargoCount > 0) {
-				MissionWinFinisher.s.SetCannotGo(cargoCount > 0);
-			} else {
-				MissionWinFinisher.s.SetCanGo();
-			}
-			
-			
-			endGame_noFreeCarts = looseCartCount == 0;
-			endGame_noCargoOnTrain = cargoCount == 0;
-			endGameAreaChecklist.UpdateStatus(new []{endGame_noCargoOnTrain, endGame_noFreeCarts});
-			
-			ShopStateController.s.SetCannotGo(ShopStateController.CanStartLevelStatus.needToSelectDestination);
-
-			return onlyRegularCargoCount;
-
-		} else {
-			var fleaMarketCount = 0;
-			for (int i = 0; i < fleaMarketLocations.Length; i++) {
-				if (fleaMarketLocations[i].snapTransform.childCount > 0) {
-					fleaMarketCount += 1;
-				}
-			}
-
-			shopArea_fleaMarketFull = fleaMarketCount >= fleaMarketLocationCount;
-
-			if (!marketZone.activeSelf)
-				shopArea_fleaMarketFull = true;
-			
-			if (leftCargo.myLocation == CartLocation.train) {
-				shopArea_destinationSelected = true;
-				ShopStateController.s.SetGoingLeft();
-			}
-
-			if (rightCargo.myLocation == CartLocation.train) {
-				shopArea_destinationSelected = true;
-				ShopStateController.s.SetGoingRight();
-			}
-
-
-			if (!shopArea_fleaMarketFull) {
-				ShopStateController.s.SetCannotGo(ShopStateController.CanStartLevelStatus.needToPutThingInFleaMarket);
-			}
-
-			/*shopArea_noFreeCarts = true;
-			for (int i = 0; i < shopCarts.Count; i++) {
-				if (shopCarts[i].myLocation == CartLocation.world || shopCarts[i].myLocation == CartLocation.forge) {
-					//Instantiate(cargoLyingAroundParticles, shopCarts[i].genericParticlesParent);
-					shopArea_noFreeCarts = false;
-					ShopStateController.s.SetCannotGo(ShopStateController.CanStartLevelStatus.needToPickUpFreeCarts);
-					break;
-				}
-			}*/
-			
-			if (leftCargo.myLocation != CartLocation.train && rightCargo.myLocation != CartLocation.train) {
-				shopArea_destinationSelected = false;
-				ShopStateController.s.SetCannotGo(ShopStateController.CanStartLevelStatus.needToSelectDestination);
-			}
-
-			
-			shopChecklist.UpdateStatus(new []{shopArea_destinationSelected, shopArea_fleaMarketFull/*, shopArea_noFreeCarts*/});
-			MissionWinFinisher.s.SetCannotGo(true);
-			return fleaMarketCount;
-		}
-	}
-
-	Cart SpawnCargo(DataSaver.TrainState.CartState.CargoState cargoState, SnapCartLocation location) {
-		var thingy = Instantiate(buildingCargo, shopableComponentsParent);
-		thingy.transform.position = location.snapTransform.position;
-		thingy.transform.rotation = location.snapTransform.rotation;
-		thingy.transform.SetParent(location.snapTransform);
-			
-		thingy.GetComponentInChildren<CargoModule>().SetCargo(cargoState);
-		AddCartToShop(thingy.GetComponent<Cart>(), CartLocation.destinationSelect, false);
-		return thingy.GetComponent<Cart>();
-	}
-
-	public string GetRandomPowerup() {
-		return DataHolder.s.powerUps[Random.Range(0, DataHolder.s.powerUps.Length)].name;
 	}
 
 	class RarityPickChance {
@@ -918,10 +610,6 @@ public class UpgradesController : MonoBehaviour {
 		
 		List<string> rollSource = availableBuildings;
 
-		if (DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().starChunk == 0) {
-			rollSource = firstShopCarts;
-		}
-		
 		return _GetRandomBuildingCargo(rollSource, ref DataSaver.s.GetCurrentSave().currentRun.fleaMarketRarityBoost, fleaMarketRarity, ref didRollEpic);
 	}
 

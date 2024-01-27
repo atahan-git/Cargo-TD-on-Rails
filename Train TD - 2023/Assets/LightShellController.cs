@@ -11,6 +11,9 @@ public class LightShellController : MonoBehaviour {
     public Transform[] innerBones;
     public Vector2 innerStartEndOffsets;
     public float yOffset = 0.658f;
+    
+    
+    public float lightAmount = 1f;
 
     void LateUpdate() {
         if (Train.s.carts.Count > 0) {

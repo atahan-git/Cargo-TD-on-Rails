@@ -842,10 +842,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             selectedCart.GetComponent<Rigidbody>().useGravity = true;
         }
 
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.SnapDestinationCargos(selectedCart);
-        }
-
         if (selectedCart.isMysteriousCart &&
             !(selectedCart.myLocation == UpgradesController.CartLocation.train || selectedCart.myLocation == UpgradesController.CartLocation.cargoDelivery)) {
             UpgradesController.s.RemoveCartFromShop(selectedCart);

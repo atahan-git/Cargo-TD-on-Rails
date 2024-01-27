@@ -7,7 +7,6 @@ using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
 
 public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSoundsProvider {
-    public EnemyIdentifier myEnemy;
     public EnemySwarmMaker drawnEnemies;
     public float mySpeed;
 
@@ -27,23 +26,28 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     public float targetXOffset = 0;
 
 
-    private bool isTeleporting = false;
-    private Vector2 teleportTiming = Vector2.zero;
+    public bool isTeleporting = false;
+    public Vector2 teleportTiming = Vector2.zero;
 
     public bool isStealing = false;
     public bool isLeaving = false;
     public bool isForwardLeave = false;
+
+    public Sprite mainSprite;
+    public Sprite gunSprite;
+
+    public bool isDeadly = true;
 
     public bool IsTrain() {
         return false;
     }
     
     public Sprite GetMainSprite() {
-        return DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
+        return mainSprite;
     }
 
     public Sprite GetGunSprite() {
-        return DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemySwarmMaker>().GetGunSprite();
+        return gunSprite;
     }
     
     private void Start() {
@@ -51,21 +55,8 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     }
 
     private DisablerHarpoonModule _disablerHarpoonModule;
-    public void SetUp(EnemyIdentifier data, float position, bool isMoving, bool _isLeft, Artifact artifact) {
-        myEnemy = data;
-        var en = DataHolder.s.GetEnemy(myEnemy.enemyUniqueName);
-        var mySwarm = en.GetComponent<EnemySwarmMaker>();
-        if (mySwarm == null) {
-            Debug.LogError($"Enemy is missing swarm maker {en.gameObject.name} {data.enemyUniqueName}");
-        }
-
-        mySpeed = mySwarm.speed;
-        isTeleporting = mySwarm.isTeleporting;
-        teleportTiming = mySwarm.teleportTiming;
-        isStealing = mySwarm.isStealing;
-        neverLeave = mySwarm.neverLeave;
-        isNuker = mySwarm.isNuker;
-        nukingTime = mySwarm.nukingTime;
+    public void SetUp( float position, bool isMoving, bool _isLeft) {
+        
         wavePosition = position;
         isWaveMoving = isMoving;
 
@@ -74,7 +65,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         }
         
         isLeft = _isLeft;
-        SpawnEnemy(artifact);
         
         SetTargetPosition();
         myXOffset = targetXOffset;
@@ -343,16 +333,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         if (!isLeft)
             targetXOffset = -targetXOffset;
     }
-    void SpawnEnemy(Artifact artifact = null) {
-        drawnEnemies = Instantiate(DataHolder.s.GetEnemy(myEnemy.enemyUniqueName), transform).GetComponent<EnemySwarmMaker>();
-        drawnEnemies.transform.ResetTransformation();
-        waveSpawnXSpread = drawnEnemies.SetData(myEnemy.enemyCount, artifact);
-
-        /*if (hasPowerUp) {
-            drawnEnemies.enemyIcon = powerUp.icon;
-        }*/
-    }
-
     void DestroyRouteDisplay() {
         if (waveDisplay != null) {
             Destroy(waveDisplay.gameObject);
@@ -393,8 +373,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             lineRenderer = GetComponentInChildren<LineRenderer>();
             lineRenderer.positionCount = points.Count;
             lineRenderer.SetPositions(points.ToArray());
-            var enemyType = DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemyTypeData>().myType;
-            lineRenderer.material = enemyType == EnemyTypeData.EnemyType.Deadly ? deadlyMaterial : safeMaterial;
+            lineRenderer.material = isDeadly ? deadlyMaterial : safeMaterial;
             targetAlpha = 0f;
             lineRenderer.material.SetFloat("alpha", targetAlpha);
             lineRenderer.enabled = true;
@@ -485,7 +464,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     }
 
     public Sprite GetIcon() {
-        return DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
+        return mainSprite;
     }
 
     public bool isLeftUnit() {
@@ -541,12 +520,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     }
 
 
-    public bool neverLeave = false;
-
     public void Leave(bool _isForwardLeave) {
-        if(neverLeave)
-            return;
-        
         isLeaving = true;
         isStealing = false;
         isTeleporting = false;

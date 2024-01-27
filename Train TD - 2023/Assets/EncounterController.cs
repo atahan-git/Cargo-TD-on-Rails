@@ -87,9 +87,9 @@ public class EncounterController : MonoBehaviour {
     }
 
 
-    public void EngageEncounter(LevelData data) {
+    /*public void EngageEncounter(LevelData data) {
         EngageEncounter(data.levelName);
-    }
+    }*/
 
     public MiniGUI_EncounterStopBy encounterStopByUI;
 
@@ -156,8 +156,6 @@ public class EncounterController : MonoBehaviour {
         }
     }
 
-    public LevelSegmentScriptable ridePastAmbush;
-
     public bool doAmbush = false;
     public bool encounterSkipped = false;
 
@@ -170,7 +168,7 @@ public class EncounterController : MonoBehaviour {
         
         yield return new WaitForSeconds(0.5f);
         if (doAmbush) {
-            EnemyWavesController.s.SpawnAmbush(ridePastAmbush.GetData());
+            //EnemyWavesController.s.SpawnAmbush(ridePastAmbush.GetData());
         }
 
         yield return new WaitForSeconds(0.5f);

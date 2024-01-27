@@ -9,23 +9,18 @@ using Random = UnityEngine.Random;
 
 public class EnemyWavesController : MonoBehaviour {
 	public static EnemyWavesController s;
+	
+	// the new general idea is that you constantly get smaller enemies, then on each segment you get a big enemy. Enemies no longer leave you alone at intersections
 
 	private void Awake() {
 		s = this;
 	}
-
-	public GameObject enemyWavePrefab;
 
 	public List<EnemyWave> waves = new List<EnemyWave>();
 
 	public bool enemiesInitialized = false;
 
 	[NonSerialized] public bool debugNoRegularSpawns = false;
-
-	public MiniGUI_PursuerTimer pursuerTimerObject;
-	
-	public UnityEvent<EnemyIdentifier> OnEnemyWaveSpawn = new UnityEvent<EnemyIdentifier>();
-	public UnityEvent<EnemyIdentifier> OnEnemyWaveCleared = new UnityEvent<EnemyIdentifier>();
 
 	public bool encounterMode = false;
 
@@ -36,63 +31,36 @@ public class EnemyWavesController : MonoBehaviour {
 
 	public void SetUpLevel() {
 		Cleanup();
-		
-		
-		pursuerTimerObject.gameObject.SetActive(false);
-		
-		if (PlayStateMaster.s.currentLevel.dynamicSpawnData != null) {
-			pursuerTimerObject.SetUp(PlayStateMaster.s.currentLevel.dynamicSpawnData);
-			
-			var curDynamicSpawn = PlayStateMaster.s.currentLevel.dynamicSpawnData;
-			curDynamicSpawn.curTime = curDynamicSpawn.firstSpawnTime;
-		}
 	}
 
-	public void SpawnEnemiesOnSegment(float segmentStartDistance, LevelSegment segment) {
+	public void SpawnEnemiesOnSegment(float segmentStartDistance, float segmentLength) {
 		if (debugNoRegularSpawns)
 			return;
 
 
-		enemiesInitialized = !segment.isEncounter;
+		enemiesInitialized = true; // ie for empty segments
 		if (enemiesInitialized) {
-			var enemiesOnPath = segment.enemiesOnPath;
-			for (int i = 0; i < enemiesOnPath.Length; i++) {
-				Artifact artifact = null;
-				if (enemiesOnPath[i].hasReward) {
-					artifact = DataHolder.s.GetArtifact(segment.artifactRewardUniqueName);
-				}
+			var distance = Random.Range(segmentLength/10f, segmentLength);
 
-				SpawnEnemy(enemiesOnPath[i].enemyIdentifier,
-					segmentStartDistance + enemiesOnPath[i].distanceOnPath,
-					false, enemiesOnPath[i].isLeft,
-					artifact);
-			}
+			var enemyPrefab =PlayStateMaster.s.currentLevel.battalions[Random.Range(0, PlayStateMaster.s.currentLevel.battalions.Length)];
+
+			SpawnEnemy(enemyPrefab, segmentStartDistance + distance, false, Random.value > 0.5f);
 		}
 	}
 
 
-
-	public void DebugEnemySpawn(EnemyIdentifier debugEnemy, int distance) {
-		SpawnEnemy(debugEnemy, SpeedController.s.currentDistance + distance, false, false);
-	}
-
-	public void SpawnEnemy(EnemyOnPathData data) {
-		SpawnEnemy(data.enemyIdentifier, data.distanceOnPath, false, data.isLeft);
-	}
-
 	public int maxConcurrentWaves = 6;
 
-	void SpawnEnemy(EnemyIdentifier enemyIdentifier, float distance, bool startMoving, bool isLeft, Artifact artifact = null) {
+	void SpawnEnemy(GameObject enemyPrefab, float distance, bool startMoving, bool isLeft) {
 		var playerDistance = SpeedController.s.currentDistance;
-		var wave = Instantiate(enemyWavePrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
+		var wave = Instantiate(enemyPrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
 		wave.transform.SetParent(transform);
-		wave.SetUp(enemyIdentifier, distance, startMoving, isLeft, artifact);
+		wave.SetUp( distance, startMoving, isLeft);
 		waves.Add(wave);
 		//UpdateEnemyTargetables();
-		OnEnemyWaveSpawn.Invoke(enemyIdentifier);
 	}
 
-	public void SpawnAmbush(LevelSegment ambush) {
+	/*public void SpawnAmbush(LevelSegment ambush) {
 		var segment = ambush;
 		var enemiesOnPath = segment.enemiesOnPath;
 		for (int i = 0; i < enemiesOnPath.Length; i++) {
@@ -106,7 +74,7 @@ public class EnemyWavesController : MonoBehaviour {
 				true, enemiesOnPath[i].isLeft,
 				artifact);
 		}
-	}
+	}*/
 
 	public void PhaseOutExistingEnemies() {
 		for (int i = 0; i < waves.Count; i++) {
@@ -116,7 +84,6 @@ public class EnemyWavesController : MonoBehaviour {
 
 	void Update() {
 		if (PlayStateMaster.s.isCombatInProgress() && enemiesInitialized) {
-			pursuerTimerObject.gameObject.SetActive(true);
 
 			var playerDistance = SpeedController.s.currentDistance;
 
@@ -130,28 +97,8 @@ public class EnemyWavesController : MonoBehaviour {
 
 			if (waves.Count < maxConcurrentWaves) {
 				if (encounterMode) {
-					pursuerTimerObject.gameObject.SetActive(false);
 					return;
 				}
-				
-				//for (int i = 0; i < SceneLoader.s.currentLevel.dynamicSpawnEnemies.Length; i++) {
-				if (PlayStateMaster.s.currentLevel.dynamicSpawnData != null) {
-					var dynamicSpawnEnemy = PlayStateMaster.s.currentLevel.dynamicSpawnData;
-
-					if (dynamicSpawnEnemy.curTime <= 0) {
-						SpawnEnemy(dynamicSpawnEnemy.enemyIdentifier, playerDistance - EnemyDynamicSpawnData.distanceFromTrain, true, Random.value > 0.5f);
-						dynamicSpawnEnemy.curTime = dynamicSpawnEnemy.spawnInterval;
-
-						dynamicSpawnEnemy.curIncreaseInNumberCount += 1;
-						if (dynamicSpawnEnemy.increaseInNumberInterval >= 0 && dynamicSpawnEnemy.curIncreaseInNumberCount >= dynamicSpawnEnemy.increaseInNumberInterval) {
-							dynamicSpawnEnemy.enemyIdentifier.enemyCount += 1;
-							dynamicSpawnEnemy.curIncreaseInNumberCount = 0;
-						}
-					}
-
-					dynamicSpawnEnemy.curTime -= Time.deltaTime;
-				}
-				//}
 			}
 		} else {
 			var playerDistance = SpeedController.s.currentDistance;
@@ -164,11 +111,9 @@ public class EnemyWavesController : MonoBehaviour {
 
 	public void RemoveWave(EnemyWave toRemove) {
 		waves.Remove(toRemove);
-		OnEnemyWaveCleared.Invoke(toRemove.myEnemy);
 	}
 
 	public void Cleanup() {
-		pursuerTimerObject.gameObject.SetActive(false);
 		transform.DeleteAllChildren();
 		enemiesInitialized = false;
 	}

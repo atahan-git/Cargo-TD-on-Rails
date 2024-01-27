@@ -47,17 +47,14 @@ public class PlayStateMaster : MonoBehaviour {
         OnCharacterSelected.AddListener(FirstTimeTutorialController.s.NewCharacterCutsceneReset);
         OnCharacterSelected.AddListener(MoneyUIDisplay.totalMoney.OnCharLoad);
         
-        OnDrawWorld.AddListener(WorldMapCreator.s.GenerateWorldMap);
         OnDrawWorld.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         
-        OnNewWorldCreation.AddListener(MapController.s.GenerateStarMap);
         OnNewWorldCreation.AddListener(PathAndTerrainGenerator.s.SetBiomes);
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
 
         OnShopEntered.AddListener(SpeedController.s.ResetDistance);
         OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
         OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
-        OnShopEntered.AddListener(WorldMapCreator.s.ReturnToRegularMap);
         //OnShopEntered.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         OnShopEntered.AddListener(ShopStateController.s.OpenShopUI);
         OnShopEntered.AddListener(FMODMusicPlayer.s.PlayMenuMusic);
@@ -93,9 +90,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnEnterMissionRewardArea.AddListener(FirstTimeTutorialController.s.OnEnterShop);
         
         OnLeavingMissionRewardArea.AddListener(MissionWinFinisher.s.CleanupWhenLeavingMissionRewardArea);
-        OnLeavingMissionRewardArea.AddListener(MapController.s.Cleanup);
         OnLeavingMissionRewardArea.AddListener(EnemyWavesController.s.Cleanup);
-        OnLeavingMissionRewardArea.AddListener(ShopStateController.s.FinishTravellingToStar);
         OnLeavingMissionRewardArea.AddListener(ActFinishController.s.CloseActUI);
     }
     
@@ -253,7 +248,6 @@ public class PlayStateMaster : MonoBehaviour {
         _gameState = GameState.shop;
 
         StopAllCoroutines();
-        WorldMapCreator.s.ResetWorldMapGenerationProgress();
         StartCoroutine(Transition(true,
             () => {
                 CharacterSelector.s.CharSelectionCompleteAndScreenGotDark();
@@ -272,7 +266,6 @@ public class PlayStateMaster : MonoBehaviour {
         Train.s.RightBeforeLeaveMissionRewardArea();
         
         StopAllCoroutines();
-        WorldMapCreator.s.ResetWorldMapGenerationProgress();
         StartCoroutine(Transition(true,
             () => {
                 OnLeavingMissionRewardArea?.Invoke();
@@ -286,7 +279,7 @@ public class PlayStateMaster : MonoBehaviour {
     }
 
     float WorldGenerationProgress() {
-        return (WorldMapCreator.s.worldMapGenerationProgress + PathAndTerrainGenerator.s.terrainGenerationProgress) / 2f;
+        return PathAndTerrainGenerator.s.terrainGenerationProgress;
     }
 
     delegate float LoadDelegate();

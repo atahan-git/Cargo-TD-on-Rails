@@ -142,11 +142,11 @@ public class AutoPlaytester : MonoBehaviour {
         CameraController.s.ResetCameraPos();
         
         
-        var destinationCart = UpgradesController.s.leftCargo;
+        /*var destinationCart = UpgradesController.s.leftCargo;
         UpgradesController.s.RemoveCartFromShop(destinationCart);
         Train.s.AddCartAtIndex(Train.s.carts.Count-1, destinationCart);
         
-        UpgradesController.s.SnapDestinationCargos(destinationCart);
+        UpgradesController.s.SnapDestinationCargos(destinationCart);*/
         UpgradesController.s.UpdateCartShopHighlights();
         UpgradesController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
@@ -201,7 +201,7 @@ public class AutoPlaytester : MonoBehaviour {
         // -------------------------------------------------------------------------------------
 
 
-        yield return CombatRewardRoutine(destinationCart);
+        yield return CombatRewardRoutine();
         
 
         for (int i = 0; i < DataHolder.s.buildings.Length; i++) {
@@ -230,11 +230,11 @@ public class AutoPlaytester : MonoBehaviour {
         
         yield return new WaitForSeconds(4f);
         
-        destinationCart = UpgradesController.s.leftCargo;
+        /*destinationCart = UpgradesController.s.leftCargo;
         UpgradesController.s.RemoveCartFromShop(destinationCart);
         Train.s.AddCartAtIndex(Train.s.carts.Count-1, destinationCart);
         
-        UpgradesController.s.SnapDestinationCargos(destinationCart);
+        UpgradesController.s.SnapDestinationCargos(destinationCart);*/
         UpgradesController.s.UpdateCartShopHighlights();
         UpgradesController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
@@ -406,13 +406,14 @@ public class AutoPlaytester : MonoBehaviour {
     }
 
 
-    IEnumerator CombatRewardRoutine(Cart destinationCart) {
+    IEnumerator CombatRewardRoutine() {
         GameObject.Find("Win Continue").GetComponent<Button>().onClick?.Invoke();
         var regularDeliveryLoc = GameObject.Find("Regular Delivery Snap Loc").GetComponent<SnapCartLocation>();
 
-        Train.s.RemoveCart(destinationCart);
+        /*Train.s.RemoveCart(destinationCart);
         UpgradesController.s.AddCartToShop(destinationCart, regularDeliveryLoc.myLocation);
         destinationCart.transform.SetParent(regularDeliveryLoc.snapTransform);
+        */
 
         //Debug.Break();
         yield return new WaitForSeconds(10f);

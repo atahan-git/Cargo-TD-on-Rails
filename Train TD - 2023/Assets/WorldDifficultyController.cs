@@ -33,7 +33,6 @@ public class WorldDifficultyController : MonoBehaviour {
     [Button]
     public void CalculateDifficulty() {
         playerAct = DataSaver.s.GetCurrentSave().currentRun.currentAct;
-        playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().starChunk;
         currentDamageIncrease = ((playerAct-1)*5 + playerStar) * enemyDamageIncreasePerLevel + baseDamageIncrease;
         currentHealthIncrease = ((playerAct-1)*5 + playerStar) * enemyHealthIncreasePerLevel;
         OnDifficultyChanged?.Invoke();

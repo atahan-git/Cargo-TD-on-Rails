@@ -42,15 +42,15 @@ public class MissionWinFinisher : MonoBehaviour {
 
 	public bool isWon = false;
 	public void MissionWon(bool isShowingPrevRewards = false) {
-		var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(DataSaver.s.GetCurrentSave().currentRun.targetStar);
+		/*var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(DataSaver.s.GetCurrentSave().currentRun.targetStar);
 
 		if (targetStar.isBoss) {
 			needToDeliverMysteriousCargo = true;
 			mysteriousCargoDeliveryArea.SetActive(true);
-		} else {
+		} else {*/
 			mysteriousCargoDeliveryArea.SetActive(false);
 			needToDeliverMysteriousCargo = false;
-		}
+		//}
 		
 		SpeedController.s.TravelToMissionEndDistance(isShowingPrevRewards);
 		isWon = true;
@@ -72,8 +72,6 @@ public class MissionWinFinisher : MonoBehaviour {
 		ChangeRangeShowState(false);
 		
 		var mySave = DataSaver.s.GetCurrentSave();
-
-		MapController.s.FinishTravelingToStar();
 
 		// mission rewards
 		if (!isShowingPrevRewards) {
@@ -192,7 +190,6 @@ public class MissionWinFinisher : MonoBehaviour {
 
 	void GenerateMissionRewards() {
 		var mySave = DataSaver.s.GetCurrentSave();
-		var playerStar = mySave.currentRun.map.GetPlayerStar();
 
 		Train.s.SaveTrainState();
 		mySave.metaProgress.castlesTraveled += 1;
@@ -226,14 +223,13 @@ public class MissionWinFinisher : MonoBehaviour {
 
 	public void ContinueToNextCity() {
 		if (isWon) { // call this only once
-			var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(DataSaver.s.GetCurrentSave().currentRun.targetStar);
-			
-			if (targetStar.isBoss) {
+
+			/*if (targetStar.isBoss) {
 				ActFinishController.s.OpenActWinUI();
 				OnActCleared(DataSaver.s.GetCurrentSave().currentRun.currentAct);
-			} else {
+			} else {*/
 				PlayStateMaster.s.LeaveMissionRewardAreaAndEnterShopState();
-			}
+			//}
 		}
 
 		isWon = false;

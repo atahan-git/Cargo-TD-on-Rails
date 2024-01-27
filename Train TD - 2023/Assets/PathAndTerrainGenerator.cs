@@ -39,12 +39,17 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public float trackDistance;
 
     public PathTree currentPathTree;
+    public float currentPathTreeOffset = 0;
     
     [Serializable]
     public class PathTree {
+        public PathTree prevPath;
         public PathGenerator.TrainPath myPath;
         public PathTree leftPath;
         public PathTree rightPath;
+
+        public bool startPath = false;
+        public bool endPath = false;
     }
 
     private void Start() {
@@ -59,7 +64,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         Biome currentBiome;
         if (biomeOverride < 0) {
-            var targetBiome = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().biome;
+            var targetBiome = 0;
             if (targetBiome < 0 || targetBiome > biomes.Length) {
                 Debug.LogError($"Illegal biome {targetBiome}");
                 targetBiome = 0;
@@ -81,16 +86,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
 
     public void MakeFakePathForMissionRewards() {
-        var fakePath = GetComponent<PathGenerator>().MakeStationPath(Vector3.zero, Vector3.forward, SpeedController.s.missionDistance + 100);
+        var fakePath = GetComponent<PathGenerator>().MakeStationPath(Vector3.zero, Vector3.forward,Vector3.forward, SpeedController.s.missionDistance + 100);
         myPaths.Add(fakePath);
-        activePath.Clear();
-        activePath.Add(fakePath);
         terrainViewRange = 50;
         //StartCoroutine(ReDrawTerrainAroundCenter());
     }
 
 
-    private const float stationStraightDistance = 100;
     public float terrainGenerationProgress = 0;
     private bool needReflectionProbe = false;
     public void MakeStarterAreaTerrain() {
@@ -98,16 +100,15 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         needReflectionProbe = true;
         ClearTerrains();
         myPaths.Clear();
-        activePath.Clear();
         terrainViewRange = 20;
-        myPaths.Add(GetComponent<PathGenerator>().MakeStationPath(-Vector3.forward*stationStraightDistance/2f,Vector3.forward, stationStraightDistance));
+        myPaths.Add(GetComponent<PathGenerator>().MakeStationPath(-Vector3.forward*PathGenerator.stationStraightDistance/2f,Vector3.forward, Vector3.forward, 0));
         StartCoroutine(ReDrawTerrainAroundCenter());
     }
 
     [Button]
     public void DebugMakePath() {
         myPaths.Clear();
-        myPaths.Add(GetComponent<PathGenerator>().MakeStationPath(transform.position-Vector3.forward*stationStraightDistance/2f,Vector3.forward, stationStraightDistance));
+        myPaths.Add(GetComponent<PathGenerator>().MakeStationPath(transform.position-Vector3.forward*PathGenerator.stationStraightDistance/2f,Vector3.forward, Vector3.forward, PathGenerator.stationStraightDistance));
         
         var startPoint = myPaths[0].points[^1];
 
@@ -120,61 +121,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         var currentPathTree = new PathTree() {
             myPath = path
         };
+        currentPathTreeOffset = PathGenerator.stationStraightDistance/2f;
         
-        DebugForkPath(currentPathTree, 0, 0);
-    }
-
-    void DebugForkPath(PathTree path, int depth,float degreeOffset) {
-        var startPoint = path.myPath.points[^1];
-        var startDirection = PathGenerator.GetDirectionVectorOnTheLine(path.myPath, path.myPath.length);
-
-        
-        // left fork
-        {
-            var segmentDistance = Random.Range(250,350);
-            var segmentDirection = Quaternion.Euler(0, degreeOffset + 30 + Random.Range(-15, 15), 0) * Vector3.forward;
-
-            var leftPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(leftPath);
-            var leftTree = new PathTree() {
-                myPath = leftPath
-            };
-            if (depth < 3) {
-                DebugForkPath(leftTree, depth + 1, degreeOffset + 60);
-            } else {
-                var leftStationEnd = GetComponent<PathGenerator>().MakeStationPath(leftPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(leftPath, leftPath.length), stationStraightDistance);
-                myPaths.Add(leftStationEnd);
-                var leftStation = new PathTree() {
-                    myPath = leftStationEnd
-                };
-                leftTree.rightPath = leftStation;
-            }
-            
-            path.leftPath = leftTree;
-        }
-        //right fork
-        {
-            var segmentDistance = Random.Range(250,350);;
-            var segmentDirection = Quaternion.Euler(0, degreeOffset - 30 + Random.Range(-15, 15), 0) * Vector3.forward;
-
-            var rightPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(rightPath);
-            var rightTree = new PathTree() {
-                myPath = rightPath
-            };
-            if (depth < 3) {
-                DebugForkPath(rightTree, depth + 1, degreeOffset - 60);
-            }else {
-                var rightStationEnd = GetComponent<PathGenerator>().MakeStationPath(rightPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(rightPath, rightPath.length), stationStraightDistance);
-                myPaths.Add(rightStationEnd);
-                var rightStation = new PathTree() {
-                    myPath = rightStationEnd
-                };
-                rightTree.rightPath = rightStation;
-            }
-
-            path.rightPath = rightTree;
-        }
+        ForkPath(currentPathTree, 0,3);
     }
 
 
@@ -265,7 +214,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         var startPoint = myPaths[0].points[^1];
 
-        var segmentDistance = activeLevel.mySegmentsA[0].segmentLength - (stationStraightDistance/2f);
+        var segmentDistance = activeLevel.GetRandomSegmentLength() - (PathGenerator.stationStraightDistance/2f);
         var segmentDirection = Quaternion.Euler(0,Random.Range(-15, 15),0) * Vector3.forward;
 
         var path = GetComponent<PathGenerator>().MakeTrainPath(startPoint, Vector3.forward, segmentDirection, segmentDistance);
@@ -274,61 +223,70 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         currentPathTree = new PathTree() {
             myPath = path
         };
+        currentPathTreeOffset = PathGenerator.stationStraightDistance/2f;
         
-        ForkPath(currentPathTree, 1, 0);
+        ForkPath(currentPathTree, 1,3);
+        ExtendAndPruneTerrain();
         StartCoroutine(ReDrawTerrainAroundCenter());
     }
 
-    void ForkPath(PathTree path, int segmentIndex, float degreeOffset) {
+    public void ExtendAndPruneTerrain() {
+        
+    }
+
+
+    private float endStationChance = 0.25f;
+    void ForkPath(PathTree path, int segmentIndex, int maxDepth) {
         var startPoint = path.myPath.points[^1];
         var startDirection = PathGenerator.GetDirectionVectorOnTheLine(path.myPath, path.myPath.length);
 
+        var makeEndStation = Random.value < endStationChance;
+        var leftStationMakeEnd = false;
+        var rightStationMakeEnd = false;
+        if (makeEndStation) {
+            if (Random.value < 0.5f) {
+                leftStationMakeEnd = true;
+            } else {
+                rightStationMakeEnd = true;
+            }
+        }
         
+        var segmentDistance = activeLevel.GetRandomSegmentLength();
         // left fork
         {
-            var segmentDistance = activeLevel.mySegmentsA[segmentIndex].segmentLength;
-            var segmentDirection = Quaternion.Euler(0, degreeOffset + 30 + Random.Range(-15, 15), 0) * Vector3.forward;
-
-            var leftPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(leftPath);
-            var leftTree = new PathTree() {
-                myPath = leftPath
-            };
-            if (segmentIndex + 1 < activeLevel.mySegmentsA.Length) {
-                ForkPath(leftTree, segmentIndex + 1, degreeOffset + 60);
-            } else {
-                var leftStationEnd = GetComponent<PathGenerator>().MakeStationPath(leftPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(leftPath, leftPath.length), stationStraightDistance);
-                myPaths.Add(leftStationEnd);
-                var leftStation = new PathTree() {
-                    myPath = leftStationEnd
-                };
-                leftTree.rightPath = leftStation;
-            }
-            
-            path.leftPath = leftTree;
+            var leftSegmentDirection = Quaternion.Euler(0,  30 + Random.Range(-15, 15), 0) * startDirection;
+            path.leftPath = _MakeForkedPath(path, segmentIndex, maxDepth, leftStationMakeEnd, startPoint, startDirection, leftSegmentDirection, segmentDistance);
         }
         //right fork
         {
-            var segmentDistance = activeLevel.mySegmentsB[segmentIndex].segmentLength;
-            var segmentDirection = Quaternion.Euler(0, degreeOffset - 30 + Random.Range(-15, 15), 0) * Vector3.forward;
+            var rightSegmentDirection = Quaternion.Euler(0, - 30 + Random.Range(-15, 15), 0) * startDirection;
+            path.rightPath = _MakeForkedPath(path, segmentIndex, maxDepth, rightStationMakeEnd, startPoint, startDirection, rightSegmentDirection, segmentDistance);
+        }
+    }
 
-            var rightPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(rightPath);
-            var rightTree = new PathTree() {
-                myPath = rightPath
+    private PathTree _MakeForkedPath(PathTree path, int segmentIndex, int maxDepth, bool leftStationMakeEnd, Vector3 startPoint, Vector3 startDirection, Vector3 segmentDirection, float segmentDistance) {
+        if (leftStationMakeEnd) {
+            var newStationEndPath = GetComponent<PathGenerator>().MakeStationPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
+            myPaths.Add(newStationEndPath);
+            var newStationEndPathTree = new PathTree() {
+                prevPath = path,
+                myPath = newStationEndPath,
+                endPath = true
             };
-            if (segmentIndex + 1 < activeLevel.mySegmentsA.Length) {
-                ForkPath(rightTree, segmentIndex + 1, degreeOffset - 60);
-            }else {
-                var rightStationEnd = GetComponent<PathGenerator>().MakeStationPath(rightPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(rightPath, rightPath.length), stationStraightDistance);
-                myPaths.Add(rightStationEnd);
-                var rightStation = new PathTree() {
-                    myPath = rightStationEnd
-                };
-                rightTree.rightPath = rightStation;
-            }
+            return newStationEndPathTree;
+        } else {
+            var newPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
+            myPaths.Add(newPath);
+            var newPathTree = new PathTree() {
+                prevPath = path,
+                myPath = newPath
+            };
 
-            path.rightPath = rightTree;
+            if (segmentIndex + 1 < maxDepth) {
+                ForkPath(newPathTree, segmentIndex + 1, maxDepth);
+            }
+            
+            return newPathTree;
         }
     }
 
@@ -640,7 +598,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
     }
 
-    public List<PathGenerator.TrainPath> activePath = new List<PathGenerator.TrainPath>();
     private void Update() {
         if (!PlayStateMaster.s.isCombatStarted()) {
             return;
@@ -673,73 +630,41 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
 
     public Vector3 GetPointOnActivePath(float currentDistanceOffset) {
-        var currentDistance = SpeedController.s.currentDistance + stationStraightDistance/2f + currentDistanceOffset;
-        if (activePath.Count <= 0) {
+        var currentDistance = SpeedController.s.currentDistance + currentDistanceOffset;
+        currentDistance -= currentPathTreeOffset;
+        if (currentPathTree == null) {
             if (myPaths.Count > 0) {
                 return PathGenerator.GetPointOnLine(myPaths[0], currentDistance);
             }
             return Vector3.forward * currentDistance;
         }
-        var pathIndex = 0;
-        while (currentDistance > activePath[pathIndex].length) {
-            currentDistance -= activePath[pathIndex].length;
-            pathIndex += 1;
-
-            if (pathIndex >= activePath.Count) {
-                pathIndex -= 1;
-                currentDistance = activePath[pathIndex].length;
-                break;
-            }
-        }
-
-        var point = PathGenerator.GetPointOnLine(activePath[pathIndex], currentDistance);
         
-        //Debug.Log($"{currentDistanceOffset}, {point}");
-        return point;
+        return PathGenerator.GetPointOnLine(currentPathTree.myPath, currentDistance);
     }
     
     public Quaternion GetRotationOnActivePath(float currentDistanceOffset) {
-        var currentDistance = SpeedController.s.currentDistance + stationStraightDistance/2f + currentDistanceOffset;
-        if (activePath.Count <= 0) {
+        var currentDistance = SpeedController.s.currentDistance + currentDistanceOffset;
+        currentDistance -= currentPathTreeOffset;
+        if (currentPathTree == null) {
             if (myPaths.Count > 0) {
                 return PathGenerator.GetDirectionOnTheLine(myPaths[0], currentDistance);
             }
             return Quaternion.identity;
         }
-        var pathIndex = 0;
-        while (currentDistance > activePath[pathIndex].length) {
-            currentDistance -= activePath[pathIndex].length;
-            pathIndex += 1;
-
-            if (pathIndex >= activePath.Count) {
-                pathIndex -= 1;
-                currentDistance = activePath[pathIndex].length;
-                print("We went too far!");
-                break;
-            }
-        }
-        return PathGenerator.GetDirectionOnTheLine(activePath[pathIndex], currentDistance);
+        
+        return PathGenerator.GetDirectionOnTheLine(currentPathTree.myPath, currentDistance);
     }
     
     public Vector3 GetDirectionVectorOnActivePath(float currentDistanceOffset) {
-        var currentDistance = SpeedController.s.currentDistance + stationStraightDistance/2f + currentDistanceOffset;
-        if (activePath.Count <= 0) {
+        var currentDistance = SpeedController.s.currentDistance + currentDistanceOffset;
+        currentDistance -= currentPathTreeOffset;
+        if (currentPathTree == null) {
             if (myPaths.Count > 0) {
                 return PathGenerator.GetDirectionVectorOnTheLine(myPaths[0], currentDistance);
             }
             return Vector3.zero;
         }
-        var pathIndex = 0;
-        while (currentDistance > activePath[pathIndex].length) {
-            currentDistance -= activePath[pathIndex].length;
-            pathIndex += 1;
-
-            if (pathIndex >= activePath.Count) {
-                pathIndex -= 1;
-                currentDistance = activePath[pathIndex].length;
-                break;
-            }
-        }
-        return PathGenerator.GetDirectionVectorOnTheLine(activePath[pathIndex], currentDistance).normalized;
+        
+        return PathGenerator.GetDirectionVectorOnTheLine(currentPathTree.myPath, currentDistance).normalized;
     }
 }

@@ -120,7 +120,38 @@ public class PathGenerator : MonoBehaviour {
         return trainPath;
     }
 
-    public TrainPath MakeStationPath(Vector3 startPoint, Vector3 direction, float length) {
+    public const float stationStraightDistance = 100;
+    public TrainPath MakeStationPath(Vector3 startPoint, Vector3 startDirection, Vector3 direction, float length ,bool immediateTurn = false) {
+
+
+        TrainPath curvyPath = new TrainPath() {
+            points = new Vector3[0]
+        };
+        if (length > 0) {
+            curvyPath = MakeTrainPath(startPoint, startDirection, direction, length, immediateTurn);
+            startPoint = curvyPath.points[^1];
+            startDirection = GetDirectionVectorOnTheLine(curvyPath, curvyPath.length);
+        }
+
+        var straightPath = MakeStraightPath(startPoint, startDirection, stationStraightDistance);
+
+        var combinedPath = new TrainPath();
+        combinedPath.points = new Vector3[curvyPath.points.Length + straightPath.points.Length];
+        curvyPath.points.CopyTo(combinedPath.points,0);
+        straightPath.points.CopyTo(combinedPath.points,curvyPath.points.Length);
+        combinedPath.bounds = new Bounds();
+        if (length > 0) {
+            combinedPath.bounds.Encapsulate(curvyPath.bounds);
+        }
+        combinedPath.bounds.Encapsulate(straightPath.bounds);
+
+        combinedPath.length = length + stationStraightDistance;
+        combinedPath.stepLength = stepLength;
+
+        return combinedPath;
+    }
+
+    public TrainPath MakeStraightPath(Vector3 startPoint, Vector3 direction, float length) {
         var path = new Vector3[Mathf.CeilToInt(length/stepLength)+1];
 
         var minEdge = new Vector3();
@@ -148,8 +179,8 @@ public class PathGenerator : MonoBehaviour {
         trainPath.stepLength = stepLength;
         return trainPath;
     }
-    
-    
+
+
     public TrainPath MakeCirclePath(Vector3 center) {
         float curAngle = 0;
         float rotAngle = 0;

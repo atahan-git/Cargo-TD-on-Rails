@@ -268,9 +268,6 @@ public class DataSaver {
 		public TrainState myTrain = new TrainState();
 
 		public int currentAct = 1; // 1,2,3
-		
-		public StarMapState map = new StarMapState();
-		public string targetStar;
 
 		public float playtime;
 		public RunResources myResources = new RunResources();

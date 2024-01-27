@@ -21,6 +21,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     public float currentDistance = 0;
 
     public float missionDistance = 300; //100 engine power goes 1 distance per second
+    public bool missionEndSet = false;
     
     public TMP_Text timeText;
     public TMP_Text distanceText;
@@ -35,7 +36,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public void ResetDistance() {
         missionDistance = 500;
-        endTrainStation.stationDistance = missionDistance;
+        missionEndSet = false;
         currentDistance = 0;
         LevelReferences.s.speed = 0;
         internalRealSpeed = 0;
@@ -61,11 +62,13 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     public void TravelToMissionEndDistance(bool isShowingPrevRewards) {
         CalculateStopAcceleration();
         currentDistance = missionDistance;
+        missionEndSet = true;
     }
 
     public void SetMissionEndDistance(float distance) {
         missionDistance = distance;
         endTrainStation.stationDistance = missionDistance;
+        missionEndSet = true;
         //Debug.LogError("Re add hex grid here");
         //HexGrid.s.ResetDistance();
     }
@@ -217,7 +220,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
                 distanceText.text = ((int)currentDistance).ToString();
 
-                if (currentDistance > missionDistance) {
+                if (missionEndSet && currentDistance > missionDistance) {
                     MissionWinFinisher.s.MissionWon();
                     CalculateStopAcceleration();
                 }

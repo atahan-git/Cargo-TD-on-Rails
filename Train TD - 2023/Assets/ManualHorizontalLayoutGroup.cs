@@ -75,41 +75,6 @@ public class ManualHorizontalLayoutGroup : MonoBehaviour {
 
 
     void UpdateWidths() {
-        /*var totalPreferredWidth = 0f;
-
-        for (int i = 0; i < paths.Length; i++) {
-            if (paths[i] == null) {
-                isDirty = true;
-                return;
-            }
-            totalPreferredWidth += paths[i].GetComponent<ManualLayoutElement>().preferredWidth;
-        }
-
-        var totalLength = _rectTransform.rect.width;
-        var remainingAreaAfterMinWidths = totalLength;
-
-        for (int i = 0; i < children.Length; i++) {
-            remainingAreaAfterMinWidths -= children[i].minWidth;
-        }
-
-        var pathLengthMultiplier = remainingAreaAfterMinWidths / totalPreferredWidth;*/
-
-
-        /*var percentage = 0f;
-        for (int i = 0; i < children.Length; i++) {
-            var distance = percentage * totalLength;
-            children[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(distance, 0);
-            if (children[i].isMinWidthMode) {
-                percentage += children[i].minWidth/totalLength;
-                children[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, children[i].minWidth);
-            }else
-            {
-                percentage += (children[i].preferredWidth * pathLengthMultiplier)/totalLength;
-                children[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, children[i].preferredWidth*pathLengthMultiplier);
-            }
-        }*/
-        
-        
         var percentage = 0f;
         for (int i = 0; i < children.Length; i++) {
             /*var distance = percentage /* * totalLength#1#;

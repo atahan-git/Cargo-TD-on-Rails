@@ -56,6 +56,8 @@ public class EngineFireController : MonoBehaviour {
 		    UpdateEngineParticleSystemValues();
 	    }
 	    
+	    UpdateEngineParticleSystemValues();
+	    
 
 	    if (PlayStateMaster.s.isCombatInProgress()) {
 		    var speedTier = -1;
@@ -120,10 +122,12 @@ public class EngineFireController : MonoBehaviour {
 		    forceOverLifeTime.y = new ParticleSystem.MinMaxCurve(LevelReferences.s.speed * 25f);
 
 		    // Engine Boost
-		    var playerControlAdjusted = lastEnginePowerPlayerControl;
-		    var powerLow = lastEnginePowerPlayerControl.Remap(0, 1.5f,6,60) * (_engine.enginePower / 6f);
-		    var powerHigh = lastEnginePowerPlayerControl.Remap(0, 1.5f,8,65) * (_engine.enginePower / 6f);
-		    mainModule.startSpeed = new ParticleSystem.MinMaxCurve(powerLow, powerHigh);
+		    /*var playerControlAdjusted = lastEnginePowerPlayerControl;
+		    /*var powerLow = lastEnginePowerPlayerControl.Remap(0, 1.5f,6,60) * (_engine.enginePower / 6f);
+		    var powerHigh = lastEnginePowerPlayerControl.Remap(0, 1.5f,8,65) * (_engine.enginePower / 6f);#1#
+		    var powerLow = 20 /*+ (_engine.enginePower / 6f)#1#;
+		    var powerHigh = 25 /*+ (_engine.enginePower / 6f)#1#;
+		    mainModule.startSpeed = new ParticleSystem.MinMaxCurve(powerLow, powerHigh);*/
 		    /*if (lastEnginePower > 300) {
 			    mainModule.startSpeed = new ParticleSystem.MinMaxCurve(50, 80);
 		    }else if(lastEnginePower > 150){

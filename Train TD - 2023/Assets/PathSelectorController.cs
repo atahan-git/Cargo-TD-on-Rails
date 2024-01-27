@@ -60,8 +60,8 @@ public class PathSelectorController : MonoBehaviour {
 		trackSwitchAction.action.Disable();
 		trackSwitchAction.action.performed -= TrackSwitch;
 	}
-
 	
+	private const int upcomingTracksCount = 2;
 	public void SetUpPath() {
 		if (activeLevel == null) {
 			return;
@@ -76,60 +76,32 @@ public class PathSelectorController : MonoBehaviour {
 		DistanceAndEnemyRadarController.s.ClearRadar();
 
 		Instantiate(castleCityPrefab, trackParent);
-
-		var firstTrack = Instantiate(trackPrefab, trackParent);
-		firstTrack.GetComponent<MiniGUI_TrackPath>().SetUpTrack(true, activeLevel.mySegmentsA[0],activeLevel.mySegmentsB[0]);
-		firstTrack.GetComponent<MiniGUI_TrackPath>().LockTrackState();
 		
-		EnemyWavesController.s.SpawnEnemiesOnSegment(0,  activeLevel.mySegmentsA[0]);
+		EnemyWavesController.s.SpawnEnemiesOnSegment(0,  firstLength);
 
 		currentSegment = 0;
-		nextSegmentChangeDistance = activeLevel.mySegmentsA[0].segmentLength;
-		
-		//SplinePathMaster.s.GenerateInitialSegments();
-
-		/*HexGrid.s.ClearTrackSwitchDistances();
-		HexGrid.s.MakeFirstPath(nextSegmentChangeDistance);*/
-		//HexGrid.s.DoTrackSwitchAtDistance(nextSegmentChangeDistance);
-		
-		for (int i = 0; i < activeLevel.mySegmentsA.Length - 1; i++) {
-			var _lever = Instantiate(switchPrefab, trackParent).GetComponent<MiniGUI_TrackLever>();
-			var leverState = Random.value > 0.5f;
-			_lever.SetTrackState(leverState);
-			_lever.SetTrackSwitchWarningState(false);
-			_lever.SetButtonPromptState(false);
-			_lever.leverId = i;
-			_levers.Add(_lever);
-
-			var _track = Instantiate(trackPrefab, trackParent).GetComponent<MiniGUI_TrackPath>();
-			_track.trackId = i;
-			_track.SetUpTrack(leverState, activeLevel.mySegmentsA[i+1], activeLevel.mySegmentsB[i+1]);
-			_track.singleLever = _lever;
-			_track.doubleLever.SetTrackState(leverState);
-			_track.doubleLever.leverId = i;
-			_track.doubleLever.SetTrackSwitchWarningState(false);
-			_track.doubleLever.SetButtonPromptState(false);
-			_tracks.Add(_track);
-		}
-		
-		/*HexGrid.s.AddTrackSwitch(true, activeLevel.mySegmentsA[1].segmentLength, activeLevel.mySegmentsB[1].segmentLength, 
-			activeLevel.mySegmentsA.Length == 2,
-			_levers[currentSegment].currentState
-		);*/
-
-		for (int i = 0; i < _tracks.Count; i++) {
-			_tracks[i].SetTrackState(_tracks[i].currentState, true);
-		}
+		nextSegmentChangeDistance = firstLength;
 
 		nextLever = _levers[0];
 		nextLever.SetButtonPromptState(true);
-		_tracks[0].doubleLever.SetButtonPromptState(true);
 		
 		
 		Instantiate(castleCityPrefab, trackParent);
 		
 		ReCalculateMissionLength();
 		layoutGroup.isDirty = true;
+	}
+
+	public GameObject leftCastleCity;
+	public MiniGUI_TrackPath mainTrack;
+	public GameObject mainSwitch;
+	public MiniGUI_TrackPath topTrack;
+	public MiniGUI_TrackPath bottomTrack;
+	public GameObject rightCastleCity;
+	void ReAdjustTracks() {
+		mainTrack.SetUpTrack(PathAndTerrainGenerator.s.currentPathTree.myPath.length);
+		topTrack.SetUpTrack(PathAndTerrainGenerator.s.currentPathTree.leftPath.myPath.length);
+		bottomTrack.SetUpTrack(PathAndTerrainGenerator.s.currentPathTree.rightPath.myPath.length);
 	}
 
 	public void ActivateLever(int id) {
@@ -142,10 +114,6 @@ public class PathSelectorController : MonoBehaviour {
 
 		// trainCrossingAudioSource.PlayOneShot(trackSwitchSound);
 		AudioManager.PlayOneShot(SfxTypes.OnTrackSwitch);
-	}
-
-	public void ShowTrackInfo(int id) {
-		_tracks[id].ToggleTrackState(!_tracks[id].isShowingBoth);
 	}
 
 	private float nextSegmentChangeDistance = -1;
