@@ -175,7 +175,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  - component: {fileID: 5744414609892468159}
   m_Layer: 17
   m_Name: Range Edge Line
   m_TagString: Untagged
@@ -297,25 +296,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &5744414609892468159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2677843582063563157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &3146471024428373951
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,9 +410,6 @@ MonoBehaviour:
   isHoming: 0
   boostDamageOnUpgrade: 0.5
   waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
   gotShootCredits: 0
@@ -464,7 +441,6 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  - component: {fileID: 7425281378063857211}
   m_Layer: 17
   m_Name: Targeting Line
   m_TagString: Untagged
@@ -586,25 +562,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &7425281378063857211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4868666074182737494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &5658430458275408792
 GameObject:
   m_ObjectHideFlags: 0

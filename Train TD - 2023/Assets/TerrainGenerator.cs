@@ -839,8 +839,8 @@ public class TerrainGenerator : MonoBehaviour
         terrain.GetComponent<TerrainCollider>().terrainData = terrainData;
 
         // TERRAIN DETAILS DISABLED HERE
-        information.terrain.terrainData.SetDetailLayer(0, 0, 0, Transpose(information.detailmap0));
-        information.terrain.terrainData.SetDetailLayer(0, 0, 1, Transpose(information.detailmap1));
+        //information.terrain.terrainData.SetDetailLayer(0, 0, 0, Transpose(information.detailmap0));
+        //information.terrain.terrainData.SetDetailLayer(0, 0, 1, Transpose(information.detailmap1));
 
         information.terrain.terrainData.SetTreeInstances(information.treeInstances, true);
     }

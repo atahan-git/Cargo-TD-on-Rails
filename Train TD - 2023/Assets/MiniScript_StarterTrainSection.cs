@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,12 +20,12 @@ public class MiniScript_StarterTrainSection : MonoBehaviour, IClickableWorldItem
     public bool isLocked = false;
     public void Setup(CharacterData data, bool _isLocked) {
         isLocked = _isLocked;
-        _outline = GetComponent<Outline>();
+        _outline = GetComponent<HighlightEffect>();
         myData = data;
         charNameText.text = myData.uniqueName;
         if (isLocked) {
             myTooltip.text = "Character Locked";
-            _outline.OutlineColor = Color.grey;
+            _outline.outlineColor = Color.grey;
         } else {
             myTooltip.text = myData.description;
         }
@@ -40,11 +41,11 @@ public class MiniScript_StarterTrainSection : MonoBehaviour, IClickableWorldItem
     }
     
     
-    private Outline _outline;
+    private HighlightEffect _outline;
     public bool mouseOver;
     public Tooltip myTooltip;
     private void Start() {
-        _outline = GetComponent<Outline>();
+        _outline = GetComponent<HighlightEffect>();
         _outline.enabled = false;
     }
     

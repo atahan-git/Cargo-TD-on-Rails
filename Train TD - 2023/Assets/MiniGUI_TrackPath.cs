@@ -16,6 +16,9 @@ public class MiniGUI_TrackPath : MonoBehaviour {
     
     private ManualLayoutElement _layoutElement;
     private ManualHorizontalLayoutGroup _layoutGroup;
+    
+    
+    public Color disabledColor = Color.white;
 
     private void Start() {
         _layoutElement = GetComponent<ManualLayoutElement>();
@@ -91,6 +94,7 @@ public class MiniGUI_TrackPath : MonoBehaviour {
 
     public bool widthDirty = false;
     private float uiSizeMultiplier => DistanceAndEnemyRadarController.s.UISizeMultiplier;
+    public float pixelMultiplier = 1f;
 
     void UpdateLengths() {
         
@@ -104,8 +108,11 @@ public class MiniGUI_TrackPath : MonoBehaviour {
         if (widthDirty || _layoutGroup.isLocationsDirty) {
             //set segment widths:
             var currentWidth = GetComponent<RectTransform>().rect.width;
+            
+            /*topTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _segmentA.segmentLength*selectionScaleMultiplier);
+            bottomTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _segmentB.segmentLength*selectionScaleMultiplier);*/
 
-            GetComponentInChildren<Image>().pixelsPerUnitMultiplier = 6f * (targetWidth / currentWidth) * uiSizeMultiplier;
+            GetComponentInChildren<Image>().pixelsPerUnitMultiplier = 6f * (targetWidth / currentWidth) * uiSizeMultiplier * pixelMultiplier;
         }
     }
 
@@ -119,6 +126,14 @@ public class MiniGUI_TrackPath : MonoBehaviour {
         }
         
         unitDisplays.Clear();
+    }
+
+    public void SetActiveState(bool state) {
+        if (state) {
+            GetComponentInChildren<Image>().color = Color.white;
+        } else {
+            GetComponentInChildren<Image>().color = disabledColor;
+        }
     }
     
     /*void SetAndStretchToParentSize(GameObject target) {

@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using UnityEngine;
 
 public class ObjectTooltipDisplayer : MonoBehaviour, IClickableWorldItem
 {
-    private Outline _outline;
+    private HighlightEffect _outline;
 	
     public Tooltip myTooltip;
 
     public bool mouseOver;
 
     private void Start() {
-        _outline = GetComponent<Outline>();
+        _outline = GetComponent<HighlightEffect>();
         _outline.enabled = false;
     }
 

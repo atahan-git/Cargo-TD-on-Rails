@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class ManualHorizontalLayoutGroup : MonoBehaviour {
@@ -44,12 +45,15 @@ public class ManualHorizontalLayoutGroup : MonoBehaviour {
         }
     }
 
+    [Button]
     void UpdateLocations() {
         var percentage = 0f;
 
-        var distanceAdjustment = SpeedController.s.currentDistance - 
+        /*var distanceAdjustment = SpeedController.s.currentDistance - 
                                  Mathf.Min(DistanceAndEnemyRadarController.s.playerTrainCurrentLocation, DistanceAndEnemyRadarController.s.playerTrainStaticLocation);
-        distanceAdjustment *= uiSizeMultiplier;
+        distanceAdjustment *= uiSizeMultiplier;*/
+
+        var distanceAdjustment = 0;
         for (int i = 0; i < children.Length; i++) {
             var distance = percentage /* * totalLength*/;
             distance -= distanceAdjustment;

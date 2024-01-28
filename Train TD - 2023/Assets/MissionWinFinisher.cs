@@ -34,7 +34,7 @@ public class MissionWinFinisher : MonoBehaviour {
 	private void Start() {
 		winUI.SetActive(false);
 		gateScript.OnCanLeaveAndPressLeave.AddListener(ContinueToNextCity);
-		gateScript.SetCanGoStatus(false, deliverYourCargoFirstTooltip);
+		//gateScript.SetCanGoStatus(false, deliverYourCargoFirstTooltip);
 	}
 
 	public GameObject mysteriousCargoDeliveryArea;

@@ -33,13 +33,9 @@ public class Artifact : MonoBehaviour
 
     public bool isAttached = false;
 
-    public MeshRenderer outerShellMaterial;
-
     public int range = 0;
     
     public void ResetState() {
-        outerShellMaterial.material = LevelReferences.s.artifactLevelMats[level];
-
         var artifactRangeBooster = GetComponentInParent<Cart>()?.GetComponentInChildren<GemBooster>();
         if (artifactRangeBooster) {
             range = artifactRangeBooster.GetRange();

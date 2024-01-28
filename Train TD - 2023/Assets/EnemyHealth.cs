@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
@@ -347,19 +348,16 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 	}
 
 	[ReadOnly]
-	public List<Outline> _outlines = new List<Outline>();
+	public List<HighlightEffect> _outlines = new List<HighlightEffect>();
 
 	void SetUpOutlines() {
 		if (_outlines.Count == 0) {
 			var renderers = GetComponentsInChildren<MeshRenderer>(true);
 
 			foreach (var rend in renderers) {
-				if (rend.GetComponent<Outline>() == null) {
-					var outline = rend.gameObject.AddComponent<Outline>();
-					outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
-					outline.OutlineWidth = 5;
-					outline.OutlineColor = new Color(0.0f, 0.833f, 1.0f, 1.0f);
-					outline.enabled = false;
+				if (rend.GetComponent<HighlightEffect>() == null) {
+					var outline = rend.gameObject.AddComponent<HighlightEffect>();
+					outline.highlighted = false;
 					_outlines.Add(outline);
 				}
 			}
@@ -373,7 +371,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
         
 		foreach (var outline in _outlines) {
 			if (outline != null) {
-				outline.enabled = isHighlighted;
+				outline.highlighted = isHighlighted;
 			}
 		}
 	}

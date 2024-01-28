@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
     [HideInInspector]
@@ -20,7 +22,7 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
 
     private bool isCartTarget = false;
     private Cart myCart;
-    private Outline _outline;
+    private HighlightEffect _outline;
     private void OnEnable() {
         if (targetTransform == null) {
             var building = GetComponent<Cart>();
@@ -35,7 +37,7 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
         LevelReferences.targetsDirty = true;
 
         myCart = GetComponent<Cart>();
-        _outline = GetComponentInChildren<Outline>();
+        _outline = GetComponentInChildren<HighlightEffect>();
         isCartTarget = myCart != null;
     }
 
@@ -80,8 +82,8 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
                     }
 
                     _outline.enabled = totalWidth > 0;
-                    _outline.OutlineColor = Color.red;
-                    _outline.OutlineWidth = totalWidth;
+                    _outline.outlineColor = Color.red;
+                    _outline.outlineWidth = totalWidth;
                 } else {
                     _outline.enabled = false;
                 }

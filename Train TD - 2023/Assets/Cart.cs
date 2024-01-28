@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using HighlightPlus;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -31,8 +32,6 @@ public class Cart : MonoBehaviour {
     public bool isBeingDisabled = false;
     public int trainIndex;
 
-    public int cartSize = 1;
-
     public bool isFragile = false;
     public bool isSturdy = false;
 
@@ -46,8 +45,6 @@ public class Cart : MonoBehaviour {
     public string uniqueName = "unnamed";
 
     public Sprite Icon;
-
-    public AudioClip[] moduleBuiltSound;
 
     [Space] 
     public bool isDestroyed = false;
@@ -69,8 +66,6 @@ public class Cart : MonoBehaviour {
 
     public Material cartOverlayMaterial;
 
-    public MeshRenderer[] cartMaterial;
-
     public Transform genericParticlesParent;
     
     public void ResetState() {
@@ -81,10 +76,6 @@ public class Cart : MonoBehaviour {
         
         artifactChunkTransform.DeleteAllChildren();
 
-        for (int i = 0; i < cartMaterial.Length; i++) {
-            cartMaterial[i].material = LevelReferences.s.cartLevelMats[level];
-        }
-        
         if (myAttachedArtifact != null) {
             myAttachedArtifact.ResetState();
         }
@@ -135,7 +126,7 @@ public class Cart : MonoBehaviour {
 
             for (int i = 0; i < duringCombat.Length; i++) {
                 if (isSturdy) {
-                    if (!(duringCombat is EngineModule)) {//dont disable engine mod if strudy
+                    if (!(duringCombat is EngineModule)) {//dont disable engine mod if sturdy
                         duringCombat[i].Disable();
                     } 
                 } else {
@@ -232,16 +223,17 @@ public class Cart : MonoBehaviour {
     }
 
 
-    [ReadOnly]
-    public Outline[] _outlines;
-    [ReadOnly]
+    //[ReadOnly]
+    private HighlightEffect[] _outlines;
+    //[ReadOnly]
+    [NonSerialized]
     public MeshRenderer[] _meshes;
 
     private static readonly int BoostAmount = Shader.PropertyToID("_Boost_Amount");
 
     void SetUpOutlines() {
         if (_outlines == null || _outlines.Length ==0) {
-            _outlines = GetComponentsInChildren<Outline>(true);
+            _outlines = GetComponentsInChildren<HighlightEffect>(true);
         }
     }
 
@@ -274,7 +266,7 @@ public class Cart : MonoBehaviour {
     public void SetHighlightState(bool isHighlighted) {
         foreach (var outline in _outlines) {
             if (outline != null) {
-                outline.enabled = isHighlighted;
+                outline.highlighted = isHighlighted;
             }
         }
     }

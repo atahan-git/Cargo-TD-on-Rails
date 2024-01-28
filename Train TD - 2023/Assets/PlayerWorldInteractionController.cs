@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using HighlightPlus;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -1503,9 +1504,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         //Debug.Log("selecting enemy");
         Deselect();
 
-        Outline outline = null;
+        HighlightEffect outline = null;
         if(enemy != null)
-            outline = enemy.GetComponentInChildren<Outline>();
+            outline = enemy.GetComponentInChildren<HighlightEffect>();
         
         if (isSelecting) {
             if(showShowDetails)
@@ -1516,7 +1517,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
 
         if (enemy != null) {
-            outline.enabled = isSelecting;
+            outline.highlighted = isSelecting;
         }
 
         OnSelectEnemy?.Invoke(enemy, isSelecting);
@@ -1525,9 +1526,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     void SelectArtifact(Artifact artifact, bool isSelecting) {
         Deselect();
 
-        Outline outline = null;
+        HighlightEffect outline = null;
         if(artifact != null)
-            outline = artifact.GetComponentInChildren<Outline>();
+            outline = artifact.GetComponentInChildren<HighlightEffect>();
         
         if (isSelecting) {
             if (PlayStateMaster.s.isShopOrEndGame()) {
@@ -1550,7 +1551,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
             selectedArtifact = artifact;
             
-            outline.OutlineColor = myColor;
+            outline.outlineColor = myColor;
         } else {
             if (PlayStateMaster.s.isShopOrEndGame()) {
                 PhysicalRangeShower.s.HideRange();
@@ -1562,7 +1563,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
 
         if (outline != null) {
-            outline.enabled = isSelecting;
+            outline.highlighted = isSelecting;
         }
 
         OnSelectArtifact?.Invoke(artifact, isSelecting);
@@ -1571,9 +1572,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     void SelectMeeple(Meeple meeple, bool isSelecting) {
         Deselect();
 
-        Outline outline = null;
+        HighlightEffect outline = null;
         if(meeple != null)
-            outline = meeple.GetComponentInChildren<Outline>();
+            outline = meeple.GetComponentInChildren<HighlightEffect>();
         
         if (isSelecting) {
             selectedMeeple = meeple;
@@ -1585,7 +1586,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
 
         if (outline != null) {
-            outline.enabled = isSelecting;
+            outline.highlighted = isSelecting;
         }
     }
 
@@ -1625,9 +1626,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     void SelectBuilding(Cart building, bool isSelecting, bool forceColor, Color forcedColor, bool isDefaultClick = true, bool isMove = false) {
         Deselect();
         
-        Outline outline = null;
+        HighlightEffect outline = null;
         if(building != null)
-            outline = building.GetComponentInChildren<Outline>();
+            outline = building.GetComponentInChildren<HighlightEffect>();
 
         if (isSelecting) {
             if (PlayStateMaster.s.isShopOrEndGame()) {
@@ -1690,12 +1691,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
             if (outline != null) {
                 if (forceColor) {
-                    outline.OutlineColor = forcedColor;
+                    outline.outlineColor = forcedColor;
                 } else {
-                    outline.OutlineColor = myColor;
+                    outline.outlineColor = myColor;
                 }
 
-                outline.OutlineWidth = 5;
+                //outline.outlineWidth = 5;
             }
 
             selectedCart = building;
@@ -1717,7 +1718,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         
 
         if (building != null) {
-            outline.enabled = isSelecting;
+            outline.highlighted = isSelecting;
             var ranges = building.GetComponentsInChildren<RangeVisualizer>();
             for (int i = 0; i < ranges.Length; i++) {
                 ranges[i].ChangeVisualizerEdgeShowState(isSelecting);

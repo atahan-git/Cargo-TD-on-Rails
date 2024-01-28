@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class StarterShopButton : MonoBehaviour, IClickableWorldItem
 {
-	private Outline _outline;
+	private HighlightEffect _outline;
 	
 	public Tooltip myTooltip;
 	public Color canBuyColor= Color.green;
@@ -14,7 +15,7 @@ public class StarterShopButton : MonoBehaviour, IClickableWorldItem
     public bool mouseOver;
 
     private void Start() {
-		_outline = GetComponent<Outline>();
+		_outline = GetComponent<HighlightEffect>();
 		_outline.enabled = false;
 	}
 
@@ -45,9 +46,9 @@ public class StarterShopButton : MonoBehaviour, IClickableWorldItem
 
     public void SetStatus(bool canBuy) {
         if (canBuy) {
-            _outline.OutlineColor = canBuyColor;
+            _outline.outlineColor = canBuyColor;
         } else {
-            _outline.OutlineColor = cannotBuyColor;
+            _outline.outlineColor = cannotBuyColor;
         }
     }
 

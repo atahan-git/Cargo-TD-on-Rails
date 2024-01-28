@@ -52,6 +52,7 @@ public class EnemyWavesController : MonoBehaviour {
 	public int maxConcurrentWaves = 6;
 
 	void SpawnEnemy(GameObject enemyPrefab, float distance, bool startMoving, bool isLeft) {
+		return;
 		var playerDistance = SpeedController.s.currentDistance;
 		var wave = Instantiate(enemyPrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
 		wave.transform.SetParent(transform);

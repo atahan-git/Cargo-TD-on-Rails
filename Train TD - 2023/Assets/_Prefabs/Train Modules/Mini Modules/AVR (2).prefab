@@ -73,7 +73,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4026553105259778278}
   - component: {fileID: 7138635443455367156}
-  - component: {fileID: 8742033853291007340}
   m_Layer: 11
   m_Name: Range Edge Line
   m_TagString: Untagged
@@ -195,25 +194,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &8742033853291007340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5880483824297719039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &5998617492025189071
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +204,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2168297141489815352}
   - component: {fileID: 7439466805122909550}
-  - component: {fileID: 5948188994089542078}
   m_Layer: 11
   m_Name: Targeting Line
   m_TagString: Untagged
@@ -346,25 +325,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &5948188994089542078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5998617492025189071}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &6212489414179934521
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,9 +523,6 @@ MonoBehaviour:
   isHoming: 0
   boostDamageOnUpgrade: 0.5
   waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
   gotShootCredits: 0

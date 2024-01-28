@@ -35,7 +35,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     }
 
     public void ResetDistance() {
-        missionDistance = 500;
+        missionDistance = float.MaxValue;
         missionEndSet = false;
         currentDistance = 0;
         LevelReferences.s.speed = 0;

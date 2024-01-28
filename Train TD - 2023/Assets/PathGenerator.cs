@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Threading;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 
 public class PathGenerator : MonoBehaviour {
@@ -18,6 +19,7 @@ public class PathGenerator : MonoBehaviour {
         public int endPoint;
         public int rotateStopPoint;
         public int endRotateStartPoint;
+        public bool endPath = false;
     }
 
     public float stepLength = 0.2f;
@@ -121,28 +123,52 @@ public class PathGenerator : MonoBehaviour {
     }
 
     public const float stationStraightDistance = 100;
-    public TrainPath MakeStationPath(Vector3 startPoint, Vector3 startDirection, Vector3 direction, float length ,bool immediateTurn = false) {
-
-
-        TrainPath curvyPath = new TrainPath() {
-            points = new Vector3[0]
-        };
-        if (length > 0) {
-            curvyPath = MakeTrainPath(startPoint, startDirection, direction, length, immediateTurn);
-            startPoint = curvyPath.points[^1];
-            startDirection = GetDirectionVectorOnTheLine(curvyPath, curvyPath.length);
-        }
+    public TrainPath MakeStationAtEndPath(Vector3 startPoint, Vector3 startDirection, Vector3 direction, float length ,bool immediateTurn = false) {
+        Assert.IsTrue(length > 0);
+        
+        var curvyPath = MakeTrainPath(startPoint, startDirection, direction, length, immediateTurn);
+        startPoint = curvyPath.points[^1];
+        startDirection = GetDirectionVectorOnTheLine(curvyPath, curvyPath.length);
 
         var straightPath = MakeStraightPath(startPoint, startDirection, stationStraightDistance);
 
         var combinedPath = new TrainPath();
         combinedPath.points = new Vector3[curvyPath.points.Length + straightPath.points.Length];
+        
         curvyPath.points.CopyTo(combinedPath.points,0);
         straightPath.points.CopyTo(combinedPath.points,curvyPath.points.Length);
+        
         combinedPath.bounds = new Bounds();
-        if (length > 0) {
-            combinedPath.bounds.Encapsulate(curvyPath.bounds);
-        }
+        combinedPath.bounds.Encapsulate(curvyPath.bounds);
+        combinedPath.bounds.Encapsulate(straightPath.bounds);
+
+        combinedPath.length = length + stationStraightDistance;
+        combinedPath.stepLength = stepLength;
+
+        combinedPath.endPath = true;
+
+        return combinedPath;
+    }
+    
+    
+    public TrainPath MakeStationAtBeginningPath(Vector3 startPoint, Vector3 startDirection, Vector3 direction, float length, bool immediateTurn = false) {
+        Assert.IsTrue(length > 0);
+        
+        var straightPath = MakeStraightPath(startPoint, startDirection, stationStraightDistance);
+        startPoint = straightPath.points[^1];
+        startDirection = GetDirectionVectorOnTheLine(straightPath, straightPath.length);
+        
+        var curvyPath = MakeTrainPath(startPoint, startDirection, direction, length, immediateTurn);
+
+
+        var combinedPath = new TrainPath();
+        combinedPath.points = new Vector3[curvyPath.points.Length + straightPath.points.Length];
+        
+        straightPath.points.CopyTo(combinedPath.points,0);
+        curvyPath.points.CopyTo(combinedPath.points,straightPath.points.Length);
+        
+        combinedPath.bounds = new Bounds();
+        combinedPath.bounds.Encapsulate(curvyPath.bounds);
         combinedPath.bounds.Encapsulate(straightPath.bounds);
 
         combinedPath.length = length + stationStraightDistance;
@@ -391,7 +417,7 @@ public class PathGenerator : MonoBehaviour {
         var n = 0;
         var total = smoothRangeForward + smoothRangeBack;
         for (int j = smoothRangeBack; j > 0 ; j--) {
-            Debug.DrawLine(path[^smoothRangeBack],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.up, Color.red, 5f);
+            //Debug.DrawLine(path[^smoothRangeBack],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.up, Color.red, 5f);
             path[^j] = Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total);
             n++;
         }
@@ -399,7 +425,7 @@ public class PathGenerator : MonoBehaviour {
         n--;
         
         for (int j = 0; j < smoothRangeForward; j++) {
-            Debug.DrawLine(path[smoothRangeForward],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.down, Color.green, 5f);
+            //Debug.DrawLine(path[smoothRangeForward],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.down, Color.green, 5f);
             path[j] = Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total);
             n++;
         }

@@ -84,7 +84,7 @@ public class PhysicalRangeShower : MonoBehaviour {
             var range = booster.GetRange();
             cartFrontCart = Train.s.GetNextBuilding(range, cart);
             cartBackCart = Train.s.GetNextBuilding(-range, cart);
-            while (cartFrontCart == null || cartBackCart == null) {
+            while (cartFrontCart == null || cartBackCart == null && range >= 0) {
                 range -= 1;
                 if(cartFrontCart == null)
                     cartFrontCart =Train.s.GetNextBuilding(range, cart);

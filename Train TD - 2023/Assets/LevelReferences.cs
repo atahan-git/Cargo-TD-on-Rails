@@ -82,12 +82,6 @@ public class LevelReferences : MonoBehaviour {
     public static TargetValues[] allTargetValues = new TargetValues[0];
     public static bool targetsDirty;
 
-
-    [Space]
-    public Material[] cartLevelMats;
-    public Material[] artifactLevelMats;
-
-    
     public struct TargetValues {
         public PossibleTarget.Type type;
         //public float health;
