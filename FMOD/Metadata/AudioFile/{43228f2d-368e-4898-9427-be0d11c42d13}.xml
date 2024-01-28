@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{43228f2d-368e-4898-9427-be0d11c42d13}">
 		<property name="assetPath">
-			<value>Song 2/[FREE SOUND EFFECT] Mumbai railway station general ambience and announcements (Mumbai, India).mp3</value>
+			<value>BattleMusic/BattleMusic2/[FREE SOUND EFFECT] Mumbai railway station general ambience and announcements (Mumbai, India).mp3</value>
 		</property>
 		<property name="isStreaming">
 			<value>true</value>

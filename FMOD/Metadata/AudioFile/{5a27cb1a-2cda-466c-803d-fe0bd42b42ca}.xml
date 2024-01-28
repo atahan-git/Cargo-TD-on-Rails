@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{5a27cb1a-2cda-466c-803d-fe0bd42b42ca}">
 		<property name="assetPath">
-			<value>BattleMusic/Audio Clip/Country Ambience  - Free Sound Effects - Premium Sound Quality - No Copyright - Copyright Free..mp3</value>
+			<value>BattleMusic/BattleMusic1/Audio Clip/Country Ambience  - Free Sound Effects - Premium Sound Quality - No Copyright - Copyright Free..mp3</value>
 		</property>
 		<property name="isStreaming">
 			<value>true</value>

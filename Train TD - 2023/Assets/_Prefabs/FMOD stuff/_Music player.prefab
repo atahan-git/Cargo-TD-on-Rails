@@ -176,7 +176,10 @@ MonoBehaviour:
       Data3: 2056448144
       Data4: 243352148
     Path: event:/Music/MenuMusic
-  dynamicGameMusic: {fileID: 11400000, guid: a65e153b80a32db48b2497999e6d2c48, type: 2}
+  dynamicGameMusicList:
+  - {fileID: 11400000, guid: 25289519e3246fb459b151aa15b21177, type: 2}
+  - {fileID: 11400000, guid: a65e153b80a32db48b2497999e6d2c48, type: 2}
+  - {fileID: 11400000, guid: 9dababe9ded335846be13ff85ee702c3, type: 2}
   numOfEngagingWave: 0
 --- !u!114 &8472147406251139772
 MonoBehaviour:

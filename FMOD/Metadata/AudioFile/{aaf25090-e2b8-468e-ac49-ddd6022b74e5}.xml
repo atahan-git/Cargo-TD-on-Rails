@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{aaf25090-e2b8-468e-ac49-ddd6022b74e5}">
 		<property name="assetPath">
-			<value>BattleMusic/Drums/Drum Slow 1 outro.wav</value>
+			<value>BattleMusic/BattleMusic1/Drums/Drum Slow 1 outro.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>

@@ -13,16 +13,13 @@ MonoBehaviour:
   m_Name: sfx debugger
   m_EditorClassIdentifier: 
   myCharacter:
-    uniqueName: Le Debugger
+    uniqueName: SFX Debugger
     description: For when you want to test something specific
     starterTrain:
       myCarts:
       - uniqueName: engine_nuclear
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -36,9 +33,6 @@ MonoBehaviour:
       - uniqueName: cargo_mystery_0
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -52,9 +46,6 @@ MonoBehaviour:
       - uniqueName: top_avr
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -68,9 +59,6 @@ MonoBehaviour:
       - uniqueName: top_flame
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -84,9 +72,6 @@ MonoBehaviour:
       - uniqueName: top_lazer
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -100,9 +85,6 @@ MonoBehaviour:
       - uniqueName: top_cannon
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -116,9 +98,6 @@ MonoBehaviour:
       - uniqueName: top_gatling
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -132,9 +111,6 @@ MonoBehaviour:
       - uniqueName: top_rockets
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
@@ -148,9 +124,6 @@ MonoBehaviour:
       - uniqueName: top_pneumatic
         health: -1
         ammo: -1
-        isFire: 0
-        isSticky: 0
-        isExplosive: 0
         level: 0
         cargoState:
           cargoReward: 
