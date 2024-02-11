@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2144092535843778900}
+  - component: {fileID: 160166730894821604}
   - component: {fileID: 2144092535843778901}
   - component: {fileID: 2144092535843778903}
   - component: {fileID: -3559663181302352896}
@@ -36,6 +37,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &160166730894821604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144092535843778906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7280c4d9d113ae4588bb3cfa1c8a075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyIcon: {fileID: 21300000, guid: 5092e47b2ce5e944e89c5988f747db77, type: 3}
+  speed: 7
+  enemyEnterSounds:
+  - {fileID: 8300000, guid: 4f1826688eb2a854ca071986ec45bc83, type: 3}
+  - {fileID: 8300000, guid: e83e724a7c0565748b698820f3a1a5a6, type: 3}
+  - {fileID: 8300000, guid: 56aeb7c7d0a301444a0a56c739476c87, type: 3}
+  enemyDieSounds:
+  - {fileID: 8300000, guid: d11c5a6875bef43459d4dc1dc2373fed, type: 3}
+  isTeleporting: 0
+  teleportTiming: {x: 10, y: 30}
+  isStealing: 0
+  isNuker: 0
+  nukingTime: 20
+  myType: 0
 --- !u!114 &2144092535843778901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51,27 +78,18 @@ MonoBehaviour:
   baseHealth: 10
   maxHealth: 20
   currentHealth: 10
-  scrapReward: 1
-  ammoReward: 0
-  fuelReward: 0
   deathPrefab: {fileID: 7789772247874358278, guid: d379c6693c04463469cb996bd3ec7d18, type: 3}
   aliveObject: {fileID: 2144092536254166970}
   isAlive: 1
   uiTransform: {fileID: 1998028121992200877}
-  cartRewardTransform: {fileID: 0}
   enemyUIBar: {fileID: 0}
-  isArmored: 0
   isComponentEnemy: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
-  autoSetUp: 0
   activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
-  rewardArtifactOnDeath: 0
-  artifactRewardUniqueName: 
-  bonusArtifactUIStar: {fileID: 0}
   _outlines: []
 --- !u!114 &2144092535843778903
 MonoBehaviour:

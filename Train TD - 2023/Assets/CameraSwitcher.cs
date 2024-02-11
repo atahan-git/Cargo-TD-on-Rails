@@ -52,6 +52,7 @@ public class CameraSwitcher : MonoBehaviour {
 		//availableIndexes.Remove(current);
 		
 		curTarget = _targets[current].transform;
+		DepthOfFieldController.s.madeACameraJump = true;
 		Invoke("PickTargetAndSwitch", switchTime);
 	}
 }

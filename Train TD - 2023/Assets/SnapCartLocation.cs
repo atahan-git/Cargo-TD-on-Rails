@@ -10,7 +10,6 @@ public class SnapCartLocation : MonoBehaviour {
 
     public bool snapNothing = false;
     public bool onlySnapCargo = false;
-    public bool onlySnapMysteriousCargo = false;
 
     public GameObject emptyShowObject;
 

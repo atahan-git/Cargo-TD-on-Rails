@@ -67,7 +67,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public void SetMissionEndDistance(float distance) {
         missionDistance = distance;
-        endTrainStation.stationDistance = missionDistance;
+        //endTrainStation.stationDistance = missionDistance;
         missionEndSet = true;
         //Debug.LogError("Re add hex grid here");
         //HexGrid.s.ResetDistance();
@@ -81,6 +81,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     public float speedAmount = 0;
     public float acceleration = 0;
     public bool delicateMachinery = false;
+
+    public float enginePower;
     public void ResetMultipliers() {
         cartCapacityModifier = 0;
         speedMultiplier = 1;
@@ -108,6 +110,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             cartCapacity += (int)((engines[i].enginePower + engines[i].extraEnginePower) * (engines[i].isHalfPower ? 0.5f : 1f));
             targetSpeed += (int)((engines[i].speedAdd + engines[i].extraSpeedAdd) * (engines[i].isHalfPower ? 0.5f : 1f));
         }
+
+        enginePower = cartCapacity;
 
         targetSpeed += speedAmount;
         targetSpeed *= speedMultiplier;
@@ -274,11 +278,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public string GetCurrentTime() {
         return GetNiceTime(currentTime);
-    }
-
-
-    public void UseSteam(float amount) {
-        // not used anymore
     }
 
     [Header("Boost stuff")]

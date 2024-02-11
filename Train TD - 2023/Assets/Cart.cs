@@ -8,19 +8,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Cart : MonoBehaviour {
-
-    public bool needsToBeBought = false;
-    [ShowIf("needsToBeBought")]
-    public int buyCost = 50;
-
-    public int level;
-
-    public UpgradesController.CartRarity myRarity;
-    [Tooltip("If empty will drop in every act. If numbers are given will only drop in those acts")]
-    public List<int> possibleDropActs = new List<int>();
-
     public bool isMainEngine = false;
-    public bool isMysteriousCart = false;
     public bool isCargo = false;
 
     public Artifact myAttachedArtifact;
@@ -72,6 +60,7 @@ public class Cart : MonoBehaviour {
         SetUpOverlays();
         SetUpOutlines();
         genericParticlesParent.DeleteAllChildren();
+        var level = 0;
         GetHealthModule().ResetState(level);
         
         artifactChunkTransform.DeleteAllChildren();

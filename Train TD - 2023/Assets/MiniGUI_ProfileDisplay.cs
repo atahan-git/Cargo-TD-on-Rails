@@ -28,8 +28,8 @@ public class MiniGUI_ProfileDisplay : MonoBehaviour {
 
 
     private void Update() {
-        if (mySave.isInARun) {
-            profileName.text = mySave.currentRun.character.uniqueName;
+        if (/*mySave.isInARun*/false) {
+            /*profileName.text = mySave.currentRun.character.uniqueName;
             playTime.text = SpeedController.GetNiceTime(mySave.currentRun.playtime);
             
             scrapsText.text = $"{MoneyController.s.scraps:F0}";
@@ -38,10 +38,10 @@ public class MiniGUI_ProfileDisplay : MonoBehaviour {
 
             for (int i = 0; i < mySave.currentRun.powerUps.Count; i++) {
                 myProfilePowerUpDisplays[i].UpdatePowerUpDisplay(mySave.currentRun.powerUps[i]);
-            }
+            }*/
         } else {
             moneyText.text = "0";
-            profileName.text = "Not Started";
+            profileName.text = "yeet";
             playTime.text = SpeedController.GetNiceTime(0);
             
             fuelText.text = $"-";

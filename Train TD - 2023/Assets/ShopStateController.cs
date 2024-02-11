@@ -54,6 +54,13 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	public void OpenShopUI() {
+		PlayerWorldInteractionController.s.canSelect = true;
+		if (DataSaver.s.GetCurrentSave().showWakeUp) {
+			WakeUpAnimation.s.Engage();
+			DataSaver.s.GetCurrentSave().showWakeUp = false;
+		}
+		
+		
 		if(PlayStateMaster.s.isCombatInProgress())
 			return;
 		
@@ -66,12 +73,13 @@ public class ShopStateController : MonoBehaviour {
 		
 		CameraController.s.ResetCameraPos();
 		
-		if (DataSaver.s.GetCurrentSave().currentRun.isInEndRunArea) {
+		if (DataSaver.s.GetCurrentSave().isInEndRunArea) {
 			starterUI.SetActive(false);
 			MissionWinFinisher.s.ShowUnclaimedRewards();
 			//HexGrid.s.CreateEndAreaChunk();
 
 		} else {
+			PathSelectorController.s.trainStationStart.SetActive(true);
 			UpgradesController.s.DrawShopOptions();
 			UpdateBackToProfileOrAbandonButton();
 		}
@@ -138,8 +146,6 @@ public class ShopStateController : MonoBehaviour {
 	}
 	
 	public void QuickStart() {
-		if (DataSaver.s.GetCurrentSave().isInARun) {
-			StartLevel();
-		}
+		StartLevel();
 	}
 }

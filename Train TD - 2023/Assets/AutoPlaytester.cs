@@ -206,12 +206,12 @@ public class AutoPlaytester : MonoBehaviour {
 
         for (int i = 0; i < DataHolder.s.buildings.Length; i++) {
             var building = DataHolder.s.buildings[i];
-            if (!building.isMainEngine && !building.isMysteriousCart && !building.isCargo) {
+            /*if (!building.isMainEngine && !building.isMysteriousCart && !building.isCargo) {
                 print($"Adding cart: {DataHolder.s.buildings[i].uniqueName}");
                 var cart = Instantiate(DataHolder.s.buildings[i]);
                 Train.s.AddCartAtIndex(Train.s.carts.Count - 1, cart);
                 yield return new WaitForSeconds(1f);
-            }
+            }*/
         }
         
         print("Finished adding every possible cart");

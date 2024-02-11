@@ -163,7 +163,7 @@ public class Projectile : MonoBehaviour {
                     return;
                 }
 
-                var enemy = hit.transform.root.GetComponent<EnemyTypeData>();
+                var enemy = hit.transform.root.GetComponent<EnemyWavesController>();
 
                 if (enemy != null && !isPlayerBullet) {
                     // make enemy projectiles not hit the player projectiles
@@ -363,7 +363,7 @@ public class Projectile : MonoBehaviour {
                     return;
                 }
 
-                var enemy = other.transform.root.GetComponent<EnemyTypeData>();
+                var enemy = other.transform.root.GetComponent<EnemyWavesController>();
                 
                 if (enemy != null && !isPlayerBullet) {
                     // make enemy projectiles not hit the player projectiles
@@ -557,15 +557,19 @@ public class Projectile : MonoBehaviour {
             } else if (isHeal) {
                 target.Repair(dmg);
             } else {
-                target.BurnDamage(burnDamage);
-                target.DealDamage(dmg);
-                Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                    .GetComponent<MiniGUI_DamageNumber>()
-                    .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
-                
-                Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                    .GetComponent<MiniGUI_DamageNumber>()
-                    .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);
+                if (dmg > 0) {
+                    target.DealDamage(dmg);
+                    Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                        .GetComponent<MiniGUI_DamageNumber>()
+                        .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
+                }
+
+                if (burnDamage > 0) {
+                    target.BurnDamage(burnDamage);
+                    Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                        .GetComponent<MiniGUI_DamageNumber>()
+                        .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);
+                }
             }
 
             didHit = true;

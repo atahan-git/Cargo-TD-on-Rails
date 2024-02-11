@@ -26,7 +26,7 @@ public class UnlockThingsSlot : MonoBehaviour {
 
     public void SetUp(Artifact artifact) {
         Instantiate(artifact.gameObject, artifactParent);
-        curCost = artifact.buyCost;
+        //curCost = artifact.buyCost;
         GetComponentInChildren<MoneyUIDisplay>().SetAmount(curCost);
         curUniqueName = artifact.uniqueName;
         _starterShopButton.myTooltip = new Tooltip() { text = $"Buy: {artifact.displayName}" };
@@ -37,7 +37,7 @@ public class UnlockThingsSlot : MonoBehaviour {
     public void SetUp(Cart cart) {
         _starterShopButton = GetComponent<StarterShopButton>();
         Instantiate(cart.gameObject, cartParent);
-        curCost = cart.buyCost;
+        //curCost = cart.buyCost;
         GetComponentInChildren<MoneyUIDisplay>().SetAmount(curCost);
         curUniqueName = cart.uniqueName;
         _starterShopButton.myTooltip = new Tooltip() { text = $"Buy: {cart.displayName}" };
@@ -67,7 +67,7 @@ public class UnlockThingsSlot : MonoBehaviour {
 
     void Update()
     {
-        _starterShopButton.SetStatus(!isEmpty && !isSold && DataSaver.s.GetCurrentSave().metaProgress.money >= curCost);
+        _starterShopButton.SetStatus(!isEmpty && !isSold && DataSaver.s.GetCurrentSave().money >= curCost);
     }
 
     public bool isEmpty = true;
@@ -85,15 +85,15 @@ public class UnlockThingsSlot : MonoBehaviour {
     
     public void TryPurchase() {
         if (!isSold && !isEmpty) {
-            if (curCost <= DataSaver.s.GetCurrentSave().metaProgress.money) {
-                DataSaver.s.GetCurrentSave().metaProgress.money -= curCost;
-                DataSaver.s.GetCurrentSave().metaProgress.unlockedThings.Add(curUniqueName);
+            if (curCost <= DataSaver.s.GetCurrentSave().money) {
+                DataSaver.s.GetCurrentSave().money -= curCost;
+                //DataSaver.s.GetCurrentSave().metaProgress.unlockedThings.Add(curUniqueName);
 
-                if (isCart) {
+                /*if (isCart) {
                     DataSaver.s.GetCurrentSave().metaProgress.justBoughtCart = curUniqueName;
                 } else {
                     DataSaver.s.GetCurrentSave().metaProgress.justBoughtArtifact = curUniqueName;
-                }
+                }*/
                 
                 DataSaver.s.SaveActiveGame();
                 

@@ -34,9 +34,9 @@ public class TweakablesMaster : MonoBehaviour {
 
 
     private void CalculateArmorAndHealthValues() {
-        var metaProgress = DataSaver.s.GetCurrentSave().metaProgress;
+        var saveData = DataSaver.s.GetCurrentSave();
         ResetTweakable();
-        myTweakables.playerMagazineSizeMultiplier *= 0.7f + (metaProgress.ammoUpgradesBought * 0.15f);
+        myTweakables.playerMagazineSizeMultiplier *= 0.7f + (saveData.ammoUpgradesBought * 0.15f);
     }
 }
 

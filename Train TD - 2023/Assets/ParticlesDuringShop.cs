@@ -21,7 +21,28 @@ public class ParticlesDuringShop : MonoBehaviour {
     }
 
 
+    private bool isActive = false;
+    private void Update() {
+        if (!Train.s.IsTrainMoving()) {
+            Activate();
+        } else {
+            Disable();
+        }
+    }
+
+
     void Activate() {
+        if(isActive)
+            return;
+        isActive = true;
+        
+        Invoke(nameof(_Activate), 0.2f);
+    }
+
+    void _Activate() {
+        if(!isActive)
+            return;
+        
         GetComponentInChildren<AudioSource>()?.Play();
         foreach (var particle in GetComponentsInChildren<RandomParticleTurnOnAndOff>()) {
             particle.enabled = true;
@@ -33,6 +54,9 @@ public class ParticlesDuringShop : MonoBehaviour {
     }
 
     void Disable() {
+        if(!isActive)
+            return;
+        isActive = false;
         GetComponentInChildren<AudioSource>()?.Stop();
         foreach (var particle in GetComponentsInChildren<RandomParticleTurnOnAndOff>()) {
             particle.enabled = false;

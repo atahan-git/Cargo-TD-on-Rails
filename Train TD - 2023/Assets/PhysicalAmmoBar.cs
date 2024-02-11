@@ -6,8 +6,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class PhysicalAmmoBar : MonoBehaviour {
-
-
+    
     [ReadOnly]
     public GameObject ammoChunk;
     public float ammoChunkHeight;
@@ -18,22 +17,13 @@ public class PhysicalAmmoBar : MonoBehaviour {
     public Transform noAmmoPos;
     public Transform reloadSpawnPos;
 
-    [ReadOnly]
-    public ModuleAmmo moduleAmmo;
-
-    public bool isRepairAmmo = false;
     void Start() {
-        moduleAmmo = GetComponentInParent<ModuleAmmo>();
-        moduleAmmo.OnReload.AddListener(OnReload);
-        moduleAmmo.OnUse.AddListener(OnUse);
         OnAmmoTypeChange();
-        OnReload(false);
-        OnUse();
     }
 
 
-    void OnUse() {
-        while ( allAmmoChunks.Count > moduleAmmo.curAmmo) {
+    public void OnUse(float curAmmo) {
+        while ( allAmmoChunks.Count > curAmmo) {
             var firstOne = allAmmoChunks[0];
             allAmmoChunks.RemoveAt(0);
             velocity.RemoveAt(0);
@@ -42,12 +32,8 @@ public class PhysicalAmmoBar : MonoBehaviour {
     }
 
 
-    void OnAmmoTypeChange() {
-        if (isRepairAmmo) {
-            ammoChunk = LevelReferences.s.bullet_repair;
-        } else {
-            ammoChunk = LevelReferences.s.bullet_regular;
-        }
+    public void OnAmmoTypeChange() {
+        ammoChunk = LevelReferences.s.bullet_regular;
 
         var oldAmmo = new List<GameObject>(allAmmoChunks);
         allAmmoChunks.Clear();
@@ -62,9 +48,10 @@ public class PhysicalAmmoBar : MonoBehaviour {
         allAmmoChunks.Reverse();
     }
 
-    void OnReload(bool showEffect) {
+    public void OnReload(bool showEffect, float curAmmo) {
+        ammoChunk = LevelReferences.s.bullet_regular;
         var delta = Vector3.zero;
-        while ( allAmmoChunks.Count < moduleAmmo.curAmmo) {
+        while ( allAmmoChunks.Count < curAmmo) {
             var newOne = Instantiate(ammoChunk, reloadSpawnPos);
             newOne.transform.position += delta + new Vector3(Random.Range(-0.005f, 0.005f), 0, Random.Range(-0.005f, 0.005f));
             newOne.transform.SetParent(transform);

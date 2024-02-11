@@ -38,7 +38,10 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
         rg.centerOfMass = centerOfMass;
         transform.position += Vector3.up*1;
         rg.velocity = Vector3.zero;
-        enemyWave = GetComponentInParent<EnemyWave>();
+        enemyWave= GetComponentInParent<EnemyInSwarm>().myWave;
+        if (enemyWave == null) {
+            enemyWave = GetComponentInParent<EnemyWave>();
+        }
     }
 
     private void FixedUpdate() {

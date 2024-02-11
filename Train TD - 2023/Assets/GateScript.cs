@@ -37,7 +37,7 @@ public class GateScript : MonoBehaviour, IClickableWorldItem {
         if (stuckInOpenPos) {
             gate.transform.position = gateFullOpenPos.position;
         }
-        SetCanGoStatus(true, new Tooltip(){text = "Click the gate to start your run."});
+        SetCanGoStatus(canGo, new Tooltip(){text = "Click the gate to start your run."});
     }
 
     public void _OnMouseEnter() {

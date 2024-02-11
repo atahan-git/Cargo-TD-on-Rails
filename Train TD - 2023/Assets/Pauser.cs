@@ -109,8 +109,6 @@ public class Pauser : MonoBehaviour {
                 { "Level", PlayStateMaster.s.currentLevel.levelName },
                 { "distance", Mathf.RoundToInt(SpeedController.s.currentDistance / 10) *10},
                 { "time", Mathf.RoundToInt(SpeedController.s.currentTime/10) * 10},
-                
-                {"character", DataSaver.s.GetCurrentSave().currentRun.character.uniqueName},
 
                 { "enemiesLeftAlive", EnemyHealth.enemySpawned - EnemyHealth.enemyKilled},
             }

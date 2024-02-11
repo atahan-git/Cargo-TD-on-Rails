@@ -87,7 +87,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         reflectiveShields = false;
         
         damageDefenders.Clear();
-        maxHealth = baseHealth * (1+(boostHealthOnUpgrade*level)) * (0.6f + (DataSaver.s.GetCurrentSave().metaProgress.armorUpgradesBought* 0.2f));
+        maxHealth = baseHealth * (1+(boostHealthOnUpgrade*level)) * (0.6f + (DataSaver.s.GetCurrentSave().armorUpgradesBought* 0.2f));
         
         maxShields = baseShields;
         canHaveShields = true;
@@ -122,10 +122,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         if(isImmune || invincible)
             return;
 
-        if (luckyCart && Random.value < DataSaver.s.GetCurrentSave().currentRun.luck) {
+        /*if (luckyCart && Random.value < DataSaver.s.GetCurrentSave().currentRun.luck) {
             Instantiate(LevelReferences.s.luckyNegate, transform.position, Quaternion.identity);
             return;
-        }
+        }*/
 
         if (invincibilityTime > 0) {
             return;

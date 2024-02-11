@@ -354,14 +354,11 @@ MonoBehaviour:
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 1
+  ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 1
-  steamUsePerShot: 0
   needWarmUp: 0
   startWarmUpEvent:
     m_PersistentCalls:
@@ -385,7 +382,7 @@ MonoBehaviour:
   explosionRangeBoost: 0
   gotShootCredits: 0
   needShootCredits: 0
-  shootCreditsUse: 1
+  shootCreditsUse: 0.5
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0

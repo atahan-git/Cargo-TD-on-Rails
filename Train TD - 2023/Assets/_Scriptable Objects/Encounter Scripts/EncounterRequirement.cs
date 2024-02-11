@@ -27,10 +27,10 @@ public class EncounterRequirement : MonoBehaviour
 
 
     public bool CanFulfillRequirement() {
-        return MoneyController.s.HasResource(myType, amount);
+        return true;
     }
 
     public void UseResource() {
-        MoneyController.s.ModifyResource(myType, -amount);
+        //MoneyController.s.ModifyResource(myType, -amount);
     }
 }

@@ -11,7 +11,7 @@ public class XPProgressionController : MonoBehaviour {
 		s = this;
 	}
 
-	 DataSaver.MetaProgress _metaProgress => DataSaver.s.GetCurrentSave().metaProgress;
+	 DataSaver.SaveFile _metaProgress => DataSaver.s.GetCurrentSave();
 
 	public  bool IsCharacterUnlocked(int id) {
 		switch (id) {

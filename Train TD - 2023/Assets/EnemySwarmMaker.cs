@@ -1,144 +1,74 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class EnemySwarmMaker : MonoBehaviour
-{
-    public GameObject enemyPrefab;
-    public Sprite enemyIcon;
-    
-    // 3 speed ~= regular speed
-    // 0.25 speed ~= min train sped
-    // 10 speed ~= max speed
-    public float speed = 5;
-    
-    public SpreadAndCount[] spreadAndCounts = new[] {
-        new SpreadAndCount() { count = 3, spread = 0.5f },
-        new SpreadAndCount() { count = 6, spread = 1f },
-        new SpreadAndCount() { count = 9, spread = 1.5f },
-    };
-
-    public int activeEnemies;
-    
-    public AudioClip[] enemyEnterSounds;
-    public AudioClip[] enemyDieSounds;
-    
-    
-    public bool isTeleporting = false;
-    public Vector2 teleportTiming = new Vector2(10, 30);
-
-    public bool isStealing = false;
-
-    public bool neverLeave = false;
-    
-    
-    public bool isNuker = false;
-
-    public float nukingTime = 20;
-
-    public Sprite GetGunSprite() {
-        var gunModule = enemyPrefab.GetComponentInChildren<GunModule>();
-
-        if (gunModule != null) {
-            return gunModule.gunSprite;
-        } else {
-            return null;
-        }
+public class EnemySwarmMaker : MonoBehaviour {
+    private void Start() {
+        GetComponent<Collider>().isTrigger = true;
     }
 
-    public float currentXSpread = 0;
-    public float xSpreadAdd = 0;
-    public float SetData(float data, Artifact artifact) {
-        var totalCount = Mathf.RoundToInt(data);
-        currentXSpread = 0;
-        var artifactEnemy = Random.Range(0, totalCount);
+    public List<EnemyInSwarm> activeEnemies = new List<EnemyInSwarm>();
 
-        if (totalCount == 1) {
-            var buggy = Instantiate(enemyPrefab, transform);
-            buggy.transform.localPosition = Vector3.zero;
-            buggy.GetComponentInChildren<EnemyHealth>().SetUp();
-            activeEnemies += 1;
-            
-            if(artifact != null)
-                AddArtifactToEnemy(artifact, buggy);
-            
-            ArtifactsController.s.ModifyEnemy(buggy.GetComponent<EnemyHealth>());
-
-        } else {
-            int n = 0;
-            while (totalCount > 0) {
-                var count = spreadAndCounts[n].count;
-                count = Mathf.Min(count, totalCount);
-                totalCount -= count;
-
-                var spread = spreadAndCounts[n].spread;
-
-                var radians = Mathf.Deg2Rad * 360 / count;
-                for (int i = 0; i < count; i++) {
-                    var pos = new Vector3(Mathf.Sin(radians * i), 0, Mathf.Cos(radians * i));
-
-                    var buggy = Instantiate(enemyPrefab, transform);
-                    buggy.GetComponentInChildren<EnemyHealth>().SetUp();
-                    var posWithSpread = pos * spread;
-                    buggy.transform.localPosition = posWithSpread;
-                    currentXSpread = Mathf.Max(currentXSpread, posWithSpread.x);
-                    activeEnemies += 1;
-                    
-                    
-                    if (i == artifactEnemy && artifact != null)
-                        AddArtifactToEnemy(artifact, buggy);
-                    
-                    ArtifactsController.s.ModifyEnemy(buggy.GetComponent<EnemyHealth>());
-                }
-
-                n++;
-            }
-        }
-
-        if (artifact != null) {
-            
-        }
-
-        currentXSpread += xSpreadAdd;
-
-        return currentXSpread;
+    public void EnemySpawn(EnemyHealth enemyHealth) {
+        var enemyInSwarm = enemyHealth.GetComponent<EnemyInSwarm>();
+        activeEnemies.Add(enemyInSwarm);
+        enemyInSwarm.mySwarm = this;
+        enemyInSwarm.myWave = GetComponentInParent<EnemyWave>();
+        enemyHealth.transform.SetParent(transform.parent);
+        //enemyHealth.transform.position += Random.onUnitSphere;
     }
 
-    void AddArtifactToEnemy(Artifact artifact, GameObject enemy) {
-        var artifactCarrier = enemy.GetComponent<EnemyHealth>();
-        var hasArtifactDisplayParent = artifactCarrier.GetUITransform();
-        var uiStar = Instantiate(LevelReferences.s.enemyHasArtifactStar, LevelReferences.s.uiDisplayParent).GetComponent<UIElementFollowWorldTarget>().SetUp(hasArtifactDisplayParent);
-        artifactCarrier.rewardArtifactOnDeath = true;
-        artifactCarrier.artifactRewardUniqueName = artifact.uniqueName;
-        artifactCarrier.bonusArtifactUIStar = uiStar;
-    }
+    public void EnemyDeath(EnemyHealth enemyHealth, bool playDeathSounds = true) {
+        activeEnemies.Remove(enemyHealth.GetComponent<EnemyInSwarm>());
 
-    public void EnemyDeath(bool playDeathSounds = true) {
-        activeEnemies -= 1;
+        var enemyInSwarm = enemyHealth.GetComponent<EnemyInSwarm>();
 
         if (playDeathSounds) {
-            if(enemyDieSounds.Length > 0)
-                SoundscapeController.s.PlayEnemyDie(enemyDieSounds[Random.Range(0,enemyDieSounds.Length)]);
+            if(enemyInSwarm.enemyDieSounds.Length > 0)
+                SoundscapeController.s.PlayEnemyDie(enemyInSwarm.enemyDieSounds[Random.Range(0,enemyInSwarm.enemyDieSounds.Length)]);
         }
 
-        if (activeEnemies == 0) {
+        if (activeEnemies.Count <= 0) {
             Destroy(GetComponentInParent<EnemyWave>().gameObject);
             Destroy(gameObject);
         }
     }
 
-    public void PlayEnemyEnterSound() {
-        if (enemyEnterSounds.Length > 0) {
-            SoundscapeController.s.PlayEnemyEnter(enemyEnterSounds[Random.Range(0, enemyEnterSounds.Length)]);
-        }
-    }
-}
+    public bool unsquished = false;
+    public Vector3 swarmCenter;
+    public Vector3 swarmAverageVelocity;
 
-[Serializable]
-public class SpreadAndCount {
-    public int count = 3;
-    public float spread = 0.5f;
+    [Button]
+    public Vector3 GetPositionInCollider() {
+        var collider = GetComponent<Collider>();
+        var randomPoint = collider.bounds.RandomPointInsideBounds();
+
+        var trialNum = 100;
+        bool success = false;
+        for (int i = 0; i < trialNum; i++) {
+            var pointInsideCollider = collider.ClosestPoint(randomPoint);
+            
+            if (Vector3.Distance(pointInsideCollider, randomPoint) < 0.01f) {
+                randomPoint = pointInsideCollider;
+                //Debug.DrawLine(randomPoint,randomPoint+Vector3.up*4, Color.green, 1f);
+                success = true;
+                break;
+            } /*else {
+                Debug.DrawLine(randomPoint,pointInsideCollider, Color.red, 0.5f);
+            }*/
+            
+            randomPoint = collider.bounds.RandomPointInsideBounds();
+        }
+
+        if (!success) {
+            randomPoint = collider.ClosestPoint(randomPoint);
+        }
+
+        return randomPoint;
+    }
+
 }

@@ -12,11 +12,11 @@ public class Artifact_ModifyLuck : ActivateWhenOnArtifactRow {
 
 	protected override void _Arm() {
 		//GetComponent<Artifact>().range = 100;
-		DataSaver.s.GetCurrentSave().currentRun.luck += modifyAmount;
+		//DataSaver.s.GetCurrentSave().currentRun.luck += modifyAmount;
 	}
 
 	protected override void _Disarm() { 
-		DataSaver.s.GetCurrentSave().currentRun.luck -= modifyAmount;
+		//DataSaver.s.GetCurrentSave().currentRun.luck -= modifyAmount;
 	}
 	
 }

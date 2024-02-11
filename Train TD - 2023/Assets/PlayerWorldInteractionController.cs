@@ -707,7 +707,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             var snapLocation = hit.collider.gameObject.GetComponentInParent<SnapCartLocation>();
 
             var snapLocationValidAndNew = snapLocation != null && snapLocation != currentSnapLoc;
-            var snapLocationCanAcceptCart = !snapLocation.onlySnapCargo  && !snapLocation.onlySnapMysteriousCargo;
+            var snapLocationCanAcceptCart = !snapLocation.onlySnapCargo;
             var snapLocationEmpty = snapLocation.snapTransform.childCount == 0;
             var canSnap = snapLocationValidAndNew && snapLocationCanAcceptCart && snapLocationEmpty && !snapLocation.snapNothing;
 
@@ -843,13 +843,13 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             selectedCart.GetComponent<Rigidbody>().useGravity = true;
         }
 
-        if (selectedCart.isMysteriousCart &&
+        /*if (selectedCart.isMysteriousCart &&
             !(selectedCart.myLocation == UpgradesController.CartLocation.train || selectedCart.myLocation == UpgradesController.CartLocation.cargoDelivery)) {
             UpgradesController.s.RemoveCartFromShop(selectedCart);
             Train.s.AddCartAtIndex(1, selectedCart);
             selectedCart.GetComponent<Rigidbody>().isKinematic = true;
             selectedCart.GetComponent<Rigidbody>().useGravity = false;
-        }
+        }*/
 
         if (PlayStateMaster.s.isShop()) {
             UpgradesController.s.UpdateCartShopHighlights();
@@ -951,7 +951,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     var snapLocation = hit.collider.gameObject.GetComponentInParent<SnapCartLocation>();
 
                     var snapLocationValidAndNew = snapLocation != null && snapLocation != currentSnapLoc;
-                    var snapLocationCanAcceptCart = (!snapLocation.onlySnapCargo || selectedCart.isCargo) && (!snapLocation.onlySnapMysteriousCargo || selectedCart.isMysteriousCart);
+                    var snapLocationCanAcceptCart = (!snapLocation.onlySnapCargo || selectedCart.isCargo);
                     var snapLocationEmpty = snapLocation.snapTransform.childCount == 0;
                     var canSnap = snapLocationValidAndNew && snapLocationCanAcceptCart && snapLocationEmpty && !snapLocation.snapNothing;
 
@@ -1024,7 +1024,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
                             if (sourceSnapIsMarket) {
                                 swapCart = Train.s.carts[i];
-                                canBeSwapped = !swapCart.isMysteriousCart && !swapCart.isCargo && !swapCart.isMainEngine;
+                                canBeSwapped = !swapCart.isCargo && !swapCart.isMainEngine;
                                 if (canBeSwapped) {
                                     Train.s.RemoveCart(swapCart);
                                     UpgradesController.s.AddCartToShop(swapCart, sourceSnapLocation.myLocation);

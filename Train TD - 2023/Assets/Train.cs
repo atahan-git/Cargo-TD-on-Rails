@@ -51,7 +51,7 @@ public class Train : MonoBehaviour {
     }
 
     public void DrawTrainBasedOnSaveData() {
-        DrawTrain(DataSaver.s.GetCurrentSave().currentRun.myTrain);
+        DrawTrain(DataSaver.s.GetCurrentSave().myTrain);
         //ArtifactsController.s.CreateArtifactsBasedOnSaveData();
     }
 
@@ -118,7 +118,7 @@ public class Train : MonoBehaviour {
 
     void OneFrameLater() {
         // because sometimes train doesnt get updated fast enough
-        DataSaver.s.GetCurrentSave().currentRun.myTrain = GetTrainState();
+        DataSaver.s.GetCurrentSave().myTrain = GetTrainState();
         DataSaver.s.SaveActiveGame();
     }
 
@@ -137,7 +137,6 @@ public class Train : MonoBehaviour {
         if (cart != null) {
             buildingState.uniqueName = cart.uniqueName;
             buildingState.health = cart.GetCurrentHealth();
-            buildingState.level = cart.level;
 
             var cargo = cart.GetComponentInChildren<CargoModule>();
             if (cargo != null) {
@@ -198,7 +197,6 @@ public class Train : MonoBehaviour {
             }
         }*/
 
-        cart.level = cartState.level;
 
         var cargoModule = cart.GetComponentInChildren<CargoModule>();
         if (cargoModule != null) {
@@ -217,7 +215,6 @@ public class Train : MonoBehaviour {
     public static void ApplyArtifactToState(Artifact artifact, DataSaver.TrainState.ArtifactState artifactState) {
         if (artifact != null) {
             artifactState.uniqueName = artifact.uniqueName;
-            artifactState.level = artifact.level;
         } else {
             artifactState.EmptyState();
         }
@@ -230,7 +227,6 @@ public class Train : MonoBehaviour {
     }
 
     public static void ApplyStateToArtifact(Artifact artifact, DataSaver.TrainState.ArtifactState artifactState) {
-        artifact.level = artifactState.level;
     }
 
     public void OnLeaveCombat(bool realCombat) {
@@ -240,20 +236,33 @@ public class Train : MonoBehaviour {
     public void RightBeforeLeaveMissionRewardArea() {
         StopShake();
         StopCoroutine(nameof(LerpTrain));
-        StartCoroutine(LerpTrain(Vector3.zero, Vector3.forward, 2f ,false));
+        StartCoroutine(LerpTrain(Vector3.zero, GetTrainForward()*3, 4f ,false));
         showEntryMovement = true;
     }
 
-    public bool showEntryMovement = false;
+    public static bool showEntryMovement = false;
+
     public void OnEnterShopArea() {
         StopShake();
         StopCoroutine(nameof(LerpTrain));
-        if(showEntryMovement) // only show this if the player just left the mission reward area
-            StartCoroutine(LerpTrain(Vector3.back,Vector3.zero, 2f , true));
+        if (showEntryMovement) {
+            // only show this if the player just left the mission reward area
+            StartCoroutine(LerpTrain(-GetTrainForward() * 3, Vector3.zero, 4f, true));
+            showEntryMovement = false;
+        }
+    }
+
+    public bool IsTrainMoving() {
+        if (PlayStateMaster.s.isCombatInProgress())
+            return true;
+
+        return lerpingTrain;
     }
 
 
+    private bool lerpingTrain = false;
     IEnumerator LerpTrain(Vector3 startPos, Vector3 endPos, float time, bool stopSparkles) {
+        lerpingTrain = true;
         transform.position = startPos;
         var totalTime = time;
         if (stopSparkles) {
@@ -272,6 +281,7 @@ public class Train : MonoBehaviour {
         }
 
         transform.position = endPos;
+        lerpingTrain = false;
     }
 
     public Vector3 GetTrainForward() {
@@ -484,8 +494,6 @@ public class Train : MonoBehaviour {
             PlayerWorldInteractionController.s.ResetValues();
             SpeedController.s.ResetMultipliers();
             SpeedController.s.CalculateSpeedBasedOnCartCapacity();
-            if(DataSaver.s.GetCurrentSave().isInARun)
-                DataSaver.s.GetCurrentSave().currentRun.luck = 0;
         }
     }
 

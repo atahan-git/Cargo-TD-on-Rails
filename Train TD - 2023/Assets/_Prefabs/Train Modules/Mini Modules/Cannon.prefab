@@ -517,6 +517,8 @@ MonoBehaviour:
   gunActive: 1
   IsBarrelPointingCorrectly: 0
   hasAmmo: 1
+  ammoPerBarrage: 2
+  ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
   barrageShot:

@@ -40,6 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2757841068463546036}
+  - component: {fileID: -2915540855332874735}
   - component: {fileID: 2757841068463546037}
   - component: {fileID: 2757841068463546039}
   - component: {fileID: 593568044335744060}
@@ -68,6 +69,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-2915540855332874735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2757841068463546042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7280c4d9d113ae4588bb3cfa1c8a075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyIcon: {fileID: 21300000, guid: ca54af69101e9e64a9e6ae122e60a997, type: 3}
+  speed: 5
+  enemyEnterSounds: []
+  enemyDieSounds: []
+  isTeleporting: 0
+  teleportTiming: {x: 10, y: 30}
+  isStealing: 0
+  isNuker: 0
+  nukingTime: 20
+  myType: 0
 --- !u!114 &2757841068463546037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,27 +106,18 @@ MonoBehaviour:
   baseHealth: 120
   maxHealth: 120
   currentHealth: 120
-  scrapReward: 15
-  ammoReward: 1
-  fuelReward: 1
   deathPrefab: {fileID: 65092263363361576, guid: 146fb37b6986ed14e9e3a47debeeaaa0, type: 3}
   aliveObject: {fileID: 2757841070207719514}
   isAlive: 1
   uiTransform: {fileID: 8270258553029418106}
-  cartRewardTransform: {fileID: 0}
   enemyUIBar: {fileID: 0}
-  isArmored: 0
   isComponentEnemy: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
-  autoSetUp: 0
   activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
-  rewardArtifactOnDeath: 0
-  artifactRewardUniqueName: 
-  bonusArtifactUIStar: {fileID: 0}
   _outlines: []
 --- !u!114 &2757841068463546039
 MonoBehaviour:

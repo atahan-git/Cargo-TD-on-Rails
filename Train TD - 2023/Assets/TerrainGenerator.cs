@@ -78,7 +78,17 @@ public class TerrainGenerator : MonoBehaviour
     public void ChangeSeed() {
         seed = new Vector2(Random.Range(1000, 10000f), Random.Range(1000, 10000f));
     }
-    
+
+    private void Start() {
+        var viewCount = Mathf.CeilToInt(50f * 2 / TerrainGenerator.terrainWidth);
+        if (viewCount % 2 == 0) {
+            viewCount += 1;
+        }
+        var terrainCount = (int)Mathf.Pow( viewCount,2);
+        
+        terrainPool.ExpandPoolToSize(Mathf.CeilToInt(terrainCount * 1.35f));
+    }
+
     public void MakeTerrainDistanceMaps(Vector2Int coordinates, Vector3 currentOffset, List<PathGenerator.TrainPath> paths, Action completeCallback) {
         //ChangeSeed();
         //var stopwatch = new System.Diagnostics.Stopwatch();
@@ -118,8 +128,6 @@ public class TerrainGenerator : MonoBehaviour
         terrainInformation.detailmap0 =    terrainInformation.terrain.terrainData.GetDetailLayer(0,0,detailGridSize, detailGridSize, 0);
         terrainInformation.detailmap1 =    terrainInformation.terrain.terrainData.GetDetailLayer(0,0,detailGridSize, detailGridSize, 1);
 
-
-        
         ResetPostAndDistMap(terrainInformation);
         ImprintNeighborEdges(terrainInformation);
         
@@ -160,16 +168,17 @@ public class TerrainGenerator : MonoBehaviour
 
     void CalculateInitialDistanceMaps(TrainTerrain information, List<PathGenerator.TrainPath> paths) {
         //noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-        //var stopwatch = new System.Diagnostics.Stopwatch();
-        //stopwatch.Start();
+        /*var stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();*/
         ImprintPaths(information, paths);
         //stopwatch.Stop();
         //Debug.Log($"Path Imprint Time: {stopwatch.ElapsedMilliseconds}ms");
 
         //stopwatch.Restart();
         CalculateDistanceMap(information);
-        //stopwatch.Stop();
-        //Debug.Log($"Calculate Distance Map time: {stopwatch.ElapsedMilliseconds}ms");
+        
+        /*stopwatch.Stop();
+        Debug.Log($"Calculate Distance Map time: {stopwatch.ElapsedMilliseconds}ms");*/
 	    //CalculateHeightmap(information);
         //GaussianBlur(information);
     }
@@ -398,7 +407,6 @@ public class TerrainGenerator : MonoBehaviour
             while (information.needReImprint) {
                 if (information.needReDistance) {
                     if (!information.distanceBeingCalculated) {
-                        information.distanceBeingCalculated = true;
                         CalculateDistanceMap(information);
                     }
                 }
@@ -433,19 +441,19 @@ public class TerrainGenerator : MonoBehaviour
         while (information.needReImprint) {
             if (information.needReDistance) {
                 if (!information.distanceBeingCalculated) {
-                    information.distanceBeingCalculated = true;
-                    /*new Thread(()=>{
-                        CalculateDistanceMap(information);
-                    }).Start();*/
                     ThreadPool.QueueUserWorkItem(o => {
                         CalculateDistanceMap(information);
                     });
                 }
+
+                yield return null;
+                continue;
             }
             
             //Debug.Log($"waiting do reimprint {information.coordinates.x}, {information.coordinates.y}");
             ImprintNeighborEdges(information);
-            yield return new WaitForSeconds(0.2f); // because it takes like 700ms to finish up a terrain. maybe not anymore?
+            yield return null;
+            //yield return new WaitForSeconds(0.05f); // because it takes like 700ms to finish up a terrain. maybe not anymore?
         }
         
         if (information.needReDraw || information.needReDistance) {
@@ -455,6 +463,30 @@ public class TerrainGenerator : MonoBehaviour
                 CalculateChangedDistanceMapsAndHeightMaps(information);
                 DoneCalculateChangedDistanceMapsAndHeightMaps(information);
             }
+        } else {
+            //Debug.Log($"No need to finish up {information.coordinates.x}, {information.coordinates.y}");
+            information.beingFinished = false;
+            information.beingProcessed = false;
+        }
+    }
+
+    void FinishUpTerrainNonThreaded(TrainTerrain information) {
+        information.beingFinished = true;
+        information.beingProcessed = true;
+        
+        while (information.needReImprint) {
+            if (information.needReDistance) {
+                if (!information.distanceBeingCalculated) {
+                    CalculateDistanceMap(information);
+                }
+            }
+            
+            ImprintNeighborEdges(information);
+        }
+        
+        if (information.needReDraw || information.needReDistance) {
+            CalculateChangedDistanceMapsAndHeightMaps(information);
+            DoneCalculateChangedDistanceMapsAndHeightMaps(information);
         } else {
             //Debug.Log($"No need to finish up {information.coordinates.x}, {information.coordinates.y}");
             information.beingFinished = false;
@@ -531,6 +563,9 @@ public class TerrainGenerator : MonoBehaviour
 
         if (sideTerrain.distanceBeingCalculated || sideTerrain.needReDistance) {
             mainTerrain.needReImprint = true;
+            if (!Application.isPlaying) {
+                CalculateDistanceMap(sideTerrain);
+            }
             return;
         }
 
@@ -654,6 +689,45 @@ public class TerrainGenerator : MonoBehaviour
         //Debug.Log($"Set Terrain Data Time: {stopwatch.ElapsedMilliseconds}ms");
     }
 
+
+    public void ReprocessTerrainChanges(TrainTerrain information) {
+        information.needReDraw = false;
+
+        var pathAndTerrainGen = information.pathAndTerrainGenerator;
+        if (information.leftDirty) {
+            var neighbor = pathAndTerrainGen.GetTerrainAtCoordinates(information.coordinates + Vector2Int.left );
+            if (neighbor != null) {
+                neighbor.needReImprint = true;
+                FinishUpTerrainNonThreaded(neighbor);
+            }
+        }
+        if (information.rightDirty) {
+            var neighbor = pathAndTerrainGen.GetTerrainAtCoordinates(information.coordinates + Vector2Int.right );
+            if (neighbor != null) {
+                neighbor.needReImprint = true;
+                FinishUpTerrainNonThreaded(neighbor);
+            }
+        }
+        if (information.upDirty) {
+            var neighbor = pathAndTerrainGen.GetTerrainAtCoordinates(information.coordinates + Vector2Int.up );
+            if (neighbor != null) {
+                neighbor.needReImprint = true;
+                FinishUpTerrainNonThreaded(neighbor);
+            }
+        }
+        if (information.downDirty) {
+            var neighbor = pathAndTerrainGen.GetTerrainAtCoordinates(information.coordinates + Vector2Int.down );
+            if (neighbor != null) {
+                neighbor.needReImprint = true;
+                FinishUpTerrainNonThreaded(neighbor);
+            }
+        }
+        
+
+        information.beingFinished = false;
+        information.beingProcessed = false;
+    }
+
     void ResetPostAndDistMap(TrainTerrain trainTerrain) {
         //var positionMap = trainTerrain.positionMap;
         var distanceMap = trainTerrain.distanceMap;
@@ -684,10 +758,12 @@ public class TerrainGenerator : MonoBehaviour
                 var forward = PathGenerator.GetDirectionVectorOnTheLine(trainPath, distance);
                 var left = Quaternion.Euler(0,90,0) * forward;
                 var right =Quaternion.Euler(0,-90,0) * forward;
-                
-                
-                AddPointToDistanceMap(trainTerrain, trainPath.points[i] + left*(GetNoise(seed.x + distance * transitionZoneWidthFrequency,0)) *transitionZoneWidthVariance, distanceMap);
-                AddPointToDistanceMap(trainTerrain, trainPath.points[i] + right*(GetNoise(0,seed.y + distance * transitionZoneWidthFrequency)) *transitionZoneWidthVariance, distanceMap);
+
+                if (trainPath.addImprintNoise) {
+                    AddPointToDistanceMap(trainTerrain, trainPath.points[i] + left * (GetNoise(seed.x + distance * transitionZoneWidthFrequency, 0)) * transitionZoneWidthVariance, distanceMap);
+                    AddPointToDistanceMap(trainTerrain, trainPath.points[i] + right * (GetNoise(0, seed.y + distance * transitionZoneWidthFrequency)) * transitionZoneWidthVariance, distanceMap);
+                }
+
                 distance += trainPath.stepLength;
             }
         }
@@ -739,9 +815,9 @@ public class TerrainGenerator : MonoBehaviour
                     }
                 } 
                 if (y == gridSize - 1) {
-                    if (!trainTerrain.downDirty) {
+                    if (!trainTerrain.upDirty) {
                         if (distanceMap[x, y] > minVal) {
-                            trainTerrain.downDirty = true;
+                            trainTerrain.upDirty = true;
                         }
                     }
                 } 
@@ -762,9 +838,9 @@ public class TerrainGenerator : MonoBehaviour
                 }
 
                 if (y == 0) {
-                    if (!trainTerrain.upDirty) {
+                    if (!trainTerrain.downDirty) {
                         if (distanceMap[x, y] > minVal) {
-                            trainTerrain.upDirty = true;
+                            trainTerrain.downDirty = true;
                         }
                     }
                 }

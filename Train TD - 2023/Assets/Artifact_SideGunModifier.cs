@@ -21,10 +21,7 @@ public class Artifact_SideGunModifier : ActivateWhenOnArtifactRow {
             if (!directControl) {
                 foreach (var gunModule in cart.GetComponentsInChildren<GunModule>()) {
                     gunModule.damageMultiplier += damageMultiplier - 1;
-                }
-                
-                if (cart.GetComponentInChildren<ModuleAmmo>() != null) {
-                    cart.GetComponentInChildren<ModuleAmmo>().ammoPerBarrageMultiplier += ammoUseMultiplier-1;
+                    gunModule.ammoPerBarrageMultiplier += ammoUseMultiplier - 1;
                 }
             }
         }

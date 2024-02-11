@@ -32,6 +32,20 @@ public class TrainTerrainData : MonoBehaviour {
       }
    }
    
+   [Button]
+   public void DebugDrawDistances(float height = 1) {
+      var map = data.distanceMap;
+
+      for (int x = 0; x < map.GetLength(0); x++) {
+         for (int y = 0; y < map.GetLength(1); y++) {
+            if (map[x, y] > 0) {
+               var pos = data.GetRealPos(x, y); 
+               Debug.DrawLine(pos, pos + Vector3.up*map[x,y]*height, Color.red, 20f);
+            }
+         }
+      }
+   }
+   
    
    List<GameObject> foreignObjects = new List<GameObject>();
    public void AddForeignObject(GameObject obj) {

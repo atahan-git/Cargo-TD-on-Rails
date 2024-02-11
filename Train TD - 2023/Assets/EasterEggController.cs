@@ -19,7 +19,7 @@ public class EasterEggController : MonoBehaviour {
     }
 
     public bool GetEasterEggDisplay(EasterEggChances type) {
-        if (DataSaver.s.GetCurrentSave().metaProgress.castlesTraveled < minimumXPRequiredForEasterEggActivation) {
+        if (DataSaver.s.GetCurrentSave().castlesTraveled < minimumXPRequiredForEasterEggActivation) {
             return false;
         }
 

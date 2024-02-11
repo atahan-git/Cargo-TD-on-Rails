@@ -42,7 +42,7 @@ public class MiniGUI_CartUIBar : MonoBehaviour {
 
     public GameObject warning;
 
-    public bool showWarning = false;
+    //public bool showWarning = false;
 
     public bool isBoost = false;
     private static readonly int Tiling = Shader.PropertyToID("_Tiling");
@@ -78,9 +78,9 @@ public class MiniGUI_CartUIBar : MonoBehaviour {
         UpdateAllSiblingPositions();
         
         warning.SetActive(false);
-
-        showWarning = myCart.isMysteriousCart || myCart.isMainEngine;
-
+        
+        //showWarning = myCart.isMainEngine;
+        
         healthFill.material = new Material(healthFill.material);
         shieldFill.material = new Material(shieldFill.material);
         
@@ -161,10 +161,10 @@ public class MiniGUI_CartUIBar : MonoBehaviour {
         healthFill.color = GetHealthColor(percent);
         healthFill.material.SetFloat(Tiling, health/100f);
 
-        if (showWarning) {
+        /*if (showWarning) {
             warning.SetActive(percent < 0.5f);
             warning.GetComponent<PulseAlpha>().speed = percent.Remap(0f, 0.5f, 3f, 0.2f);
-        }
+        }*/
     }
 
     void SetAmmoBarValue() {

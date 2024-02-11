@@ -53,9 +53,9 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
     public void ReDoTutorial() {
         //TutorialComplete();
-        DataSaver.s.GetCurrentSave().isInARun = false;
+        //DataSaver.s.GetCurrentSave().isInARun = false;
         DataSaver.s.GetCurrentSave().tutorialProgress = new DataSaver.TutorialProgress();
-        DataSaver.s.GetCurrentSave().metaProgress = new DataSaver.MetaProgress();
+        //DataSaver.s.GetCurrentSave().metaProgress = new DataSaver.MetaProgress();
         MiniGUI_DisableTutorial.SetVal(true);
         //ShopStateController.s.BackToMainMenu();
         
@@ -68,10 +68,10 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
         cameraHint.SetActive(false);
 
-        PlayStateMaster.s.OnCharacterSelected.AddListener(PlayObjectiveAnimation);
-        if (DataSaver.s.GetCurrentSave().isInARun) {
+        //PlayStateMaster.s.OnCharacterSelected.AddListener(PlayObjectiveAnimation);
+        //if (DataSaver.s.GetCurrentSave().isInARun) {
             PlayObjectiveAnimation();
-        }
+        //}
     }
 
     void PlayObjectiveAnimation() {
@@ -110,9 +110,9 @@ public class FirstTimeTutorialController : MonoBehaviour {
         emptyCart = null;
 
         for (int i = 0; i < Train.s.carts.Count; i++) {
-            if (Train.s.carts[i].isMysteriousCart) {
+            /*if (Train.s.carts[i].isMysteriousCart) {
                 cargo = Train.s.carts[i];
-            }
+            }*/
 
             if (Train.s.carts[i].modulesParent.childCount == 0) {
                 emptyCart = Train.s.carts[i];

@@ -62,6 +62,7 @@ public class TimeController : MonoBehaviour {
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.fastForward);
     }
 
+    public bool fastForwarding = false;
     public void ProcessFastForward() {
         //print(fastForwardKey.action.ReadValue<float>());
         if (fastForwardKey.action.IsPressed() && canFastForward) {
@@ -69,11 +70,15 @@ public class TimeController : MonoBehaviour {
             if (!isPaused) {
                 Time.timeScale = currentTimeScale;
             }
+
+            fastForwarding = true;
         } else {
             currentTimeScale = 1f;
             if (!isPaused) {
                 Time.timeScale = currentTimeScale;
             }
+            
+            fastForwarding = false;
         }
     }
 }

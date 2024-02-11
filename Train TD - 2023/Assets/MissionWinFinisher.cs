@@ -37,20 +37,8 @@ public class MissionWinFinisher : MonoBehaviour {
 		//gateScript.SetCanGoStatus(false, deliverYourCargoFirstTooltip);
 	}
 
-	public GameObject mysteriousCargoDeliveryArea;
-	public bool needToDeliverMysteriousCargo = false;
-
 	public bool isWon = false;
 	public void MissionWon(bool isShowingPrevRewards = false) {
-		/*var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(DataSaver.s.GetCurrentSave().currentRun.targetStar);
-
-		if (targetStar.isBoss) {
-			needToDeliverMysteriousCargo = true;
-			mysteriousCargoDeliveryArea.SetActive(true);
-		} else {*/
-			mysteriousCargoDeliveryArea.SetActive(false);
-			needToDeliverMysteriousCargo = false;
-		//}
 		
 		SpeedController.s.TravelToMissionEndDistance(isShowingPrevRewards);
 		isWon = true;
@@ -81,9 +69,8 @@ public class MissionWinFinisher : MonoBehaviour {
 		
 		
 		// save our resources
-		mySave.currentRun.myResources.scraps = Mathf.FloorToInt(MoneyController.s.scraps);
 		Train.s.SaveTrainState(true);
-		mySave.currentRun.isInEndRunArea = true;
+		mySave.isInEndRunArea = true;
 		
 		DataSaver.s.SaveActiveGame();
 		
@@ -100,9 +87,6 @@ public class MissionWinFinisher : MonoBehaviour {
 				"LevelWon",
 				new Dictionary<string, object> {
 					{ "Level", PlayStateMaster.s.currentLevel.levelName },
-
-					{ "character", DataSaver.s.GetCurrentSave().currentRun.character.uniqueName },
-
 					{ "enemiesLeftAlive", EnemyHealth.enemySpawned - EnemyHealth.enemyKilled },
 					{ "winTime", SpeedController.s.currentTime },
 				}
@@ -121,58 +105,6 @@ public class MissionWinFinisher : MonoBehaviour {
 		DirectControlMaster.s.DisableDirectControl();
 	}
 
-	void OnActCleared(int current_act) {//eg if you finish act 1 this number will be equal to 1
-		var allArtifacts = ArtifactsController.s.myArtifacts;
-
-		var eligibleComponents = new List<Artifact>();
-		var eligibleGems = new List<Artifact>();
-		for (int i = 0; i < allArtifacts.Count; i++) {
-			switch (allArtifacts[i].myRarity) {
-				case UpgradesController.CartRarity.common:
-				case UpgradesController.CartRarity.rare:
-				case UpgradesController.CartRarity.epic:
-					eligibleGems.Add(allArtifacts[i]);
-					break;
-				case UpgradesController.CartRarity.boss:
-					eligibleComponents.Add(allArtifacts[i]);
-					break;
-				case UpgradesController.CartRarity.special:
-					// do nothing. We never recover special artifacts
-					break;
-			}
-		}
-
-		var eligibleCarts = new List<Cart>();
-
-		for (int i = 0; i < Train.s.carts.Count; i++) {
-			var cart = Train.s.carts[i];
-			if (!cart.isCargo && !cart.isMainEngine && !cart.isMysteriousCart && cart.myRarity != UpgradesController.CartRarity.special) {
-				eligibleCarts.Add(cart);
-			}
-		}
-
-		if (eligibleComponents.Count > 0) {
-			DataSaver.s.GetCurrentSave().metaProgress.bonusComponent = eligibleComponents[Random.Range(0, eligibleComponents.Count)].uniqueName;
-		}
-
-		if (eligibleGems.Count > 0) {
-			DataSaver.s.GetCurrentSave().metaProgress.bonusGem = eligibleGems[Random.Range(0, eligibleGems.Count)].uniqueName;
-		}
-
-		if (eligibleCarts.Count > 0) {
-			DataSaver.s.GetCurrentSave().metaProgress.bonusCart = eligibleCarts[Random.Range(0, eligibleCarts.Count)].uniqueName;
-		}
-		
-		/*if (current_act >= 2) {
-			for (int i = 0; i < eligibleBossArtifacts.Count; i++) {
-				if (!DataSaver.s.GetCurrentSave().metaProgress.unlockedStarterArtifacts.Contains(eligibleBossArtifacts[i].uniqueName)) {
-					DataSaver.s.GetCurrentSave().metaProgress.unlockedStarterArtifacts.Add(eligibleBossArtifacts[i].uniqueName);
-					break;
-				}
-			}
-		}*/
-	}
-
 	void ChangeRangeShowState(bool state) {
 		var ranges = Train.s.GetComponentsInChildren<RangeVisualizer>();
 
@@ -182,7 +114,7 @@ public class MissionWinFinisher : MonoBehaviour {
 	}
 
 	public void ShowUnclaimedRewards() {
-		PathAndTerrainGenerator.s.MakeFakePathForMissionRewards();
+		//PathAndTerrainGenerator.s.MakeFakePathForMissionRewards();
 		MissionWon(true);
 		//Invoke(nameof(DelayedShowRewards), 0.05f);
 	}
@@ -192,7 +124,7 @@ public class MissionWinFinisher : MonoBehaviour {
 		var mySave = DataSaver.s.GetCurrentSave();
 
 		Train.s.SaveTrainState();
-		mySave.metaProgress.castlesTraveled += 1;
+		mySave.castlesTraveled += 1;
 	}
 
 	
@@ -237,8 +169,9 @@ public class MissionWinFinisher : MonoBehaviour {
 	}
 
 	public void CleanupWhenLeavingMissionRewardArea() {
-		DataSaver.s.GetCurrentSave().currentRun.shopInitialized = false;
-		DataSaver.s.GetCurrentSave().currentRun.isInEndRunArea = false;
+		//PathSelectorController.s.trainStationEnd.SetActive(false);
+		DataSaver.s.GetCurrentSave().shopInitialized = false;
+		DataSaver.s.GetCurrentSave().isInEndRunArea = false;
 		Train.s.SaveTrainState(true);
 		DataSaver.s.SaveActiveGame();
 	}

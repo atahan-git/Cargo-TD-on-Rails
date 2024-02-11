@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class TrainStation : MonoBehaviour {
     public float stationDistance;
+
+    public bool autoDisable = false;
     private void Start() {
         //startPos = transform.position;
     }
 
-    void Update() {
-        /*if(!PlayStateMaster.s.isCombatStarted())
-            return;*/
-        if (stationDistance - SpeedController.s.currentDistance > 250) {
+    public void Update() {
+        if (autoDisable && Mathf.Abs(stationDistance- SpeedController.s.currentDistance) > 250) {
             gameObject.SetActive(false);
         }
         

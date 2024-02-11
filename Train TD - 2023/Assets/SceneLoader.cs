@@ -82,6 +82,7 @@ public class SceneLoader : MonoBehaviour {
 
     IEnumerator FadeLoadingScreen(float startValue, float targetValue, float duration)
     {
+        yield return null;
         float time = 0;
 
         while (time < duration)
@@ -92,5 +93,6 @@ public class SceneLoader : MonoBehaviour {
             yield return null;
         }
         canvasGroup.alpha = targetValue;
+        yield return null;
     }
 }

@@ -47,7 +47,7 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
         //yield return null; //wait a frame for good luck
         
         //give reward money
-        var rewardMoney = 10 * DataSaver.s.GetCurrentSave().currentRun.currentAct;
+        var rewardMoney = 10;
         Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(fullPlatform.transform.position, rewardMoney);
 
         var cargoModule = fullPlatform.GetComponentInChildren<CargoModule>();

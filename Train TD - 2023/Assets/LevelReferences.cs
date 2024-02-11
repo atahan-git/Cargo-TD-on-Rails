@@ -127,7 +127,6 @@ public class LevelReferences : MonoBehaviour {
     public Sprite bossEnemyIcon;
 
     [Space]
-    public GameObject enemyCartReward;
     public GameObject enemyHasArtifactStar;
 
     [Space]
@@ -139,7 +138,6 @@ public class LevelReferences : MonoBehaviour {
 
     [Space] 
     public GameObject bullet_regular;
-    public GameObject bullet_repair;
 
     [Space] public float smallEffectFirstActivateTimeAfterCombatStarts = 10f;
     public float bigEffectFirstActivateTimeAfterCombatStarts = 15;
@@ -168,6 +166,9 @@ public class LevelReferences : MonoBehaviour {
     
     public AnimationCurve selectMarkerPulseCurve;
     public AnimationCurve alphaPulseCurve;
+    [Space] 
+    public GameObject enemyWaveMovingArrow;
+    public Material enemyWaveMovingArrowMaterial;
     
     private void Awake() {
         s = this;

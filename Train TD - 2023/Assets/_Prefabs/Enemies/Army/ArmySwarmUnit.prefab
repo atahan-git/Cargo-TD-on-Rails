@@ -40,6 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3038431739623073050}
+  - component: {fileID: 7802202291373594768}
   - component: {fileID: 3038431739623073051}
   - component: {fileID: 3038431739623073049}
   - component: {fileID: 7440264286695437326}
@@ -68,6 +69,42 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7802202291373594768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3038431739623073044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7280c4d9d113ae4588bb3cfa1c8a075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyIcon: {fileID: 21300000, guid: 6813beb723e394d42b5d75fb72d673cd, type: 3}
+  speed: 4.1
+  primeEnemy: 0
+  enemyEnterSounds:
+  - {fileID: 8300000, guid: 89edf244b7eee194da5e96ece6fa39b5, type: 3}
+  - {fileID: 8300000, guid: 0ecbc6dc43a428340854c5aa44d239a1, type: 3}
+  - {fileID: 8300000, guid: 349a5a230c978644aa3e65c14d237c67, type: 3}
+  enemyDieSounds:
+  - {fileID: 8300000, guid: a7307a066ee2e504480fc0dd242610e8, type: 3}
+  isTeleporting: 0
+  teleportTiming: {x: 10, y: 30}
+  isStealing: 0
+  isNuker: 0
+  nukingTime: 20
+  myType: 0
+  myBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  mainCollider: {fileID: 0}
+  boidRadius: 0
+  boilRealDelta: {x: 0, y: 0, z: 0}
+  boidTargetDelta: {x: 0, y: 0, z: 0}
+  mySwarm: {fileID: 0}
+  myWave: {fileID: 0}
 --- !u!114 &3038431739623073051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,27 +120,18 @@ MonoBehaviour:
   baseHealth: 400
   maxHealth: 400
   currentHealth: 400
-  scrapReward: 5
-  ammoReward: 0
-  fuelReward: 0
   deathPrefab: {fileID: 2226602934599951851, guid: 3194e3df78498b049bf0fc925a059cce, type: 3}
   aliveObject: {fileID: 3038431740301894644}
   isAlive: 1
   uiTransform: {fileID: 4734297801412349416}
-  cartRewardTransform: {fileID: 0}
   enemyUIBar: {fileID: 0}
-  isArmored: 1
   isComponentEnemy: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
-  autoSetUp: 0
   activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
-  rewardArtifactOnDeath: 0
-  artifactRewardUniqueName: 
-  bonusArtifactUIStar: {fileID: 0}
   _outlines: []
 --- !u!114 &3038431739623073049
 MonoBehaviour:
@@ -328,7 +356,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 6
+  rmsCount: 7
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25

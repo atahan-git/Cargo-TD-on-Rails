@@ -61,7 +61,7 @@ public class Artifact_IronGem : ActivateWhenOnArtifactRow, IResetStateArtifact
             didApply = true;
         }
 
-        if (target.isCargo || target.isMysteriousCart) {
+        if (target.isCargo) {
             if (!target.GetHealthModule().glassCart) {
                 target.GetHealthModule().maxHealth += curEngineHpIncrease;
                 target.GetHealthModule().currentHealth += curEngineHpIncrease;

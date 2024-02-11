@@ -1091,6 +1091,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2942942888468131772}
+  - component: {fileID: 9002223945133285827}
   - component: {fileID: 2942942888468131773}
   - component: {fileID: 2942942888468131775}
   - component: {fileID: -5213072349006234106}
@@ -1118,6 +1119,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9002223945133285827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2942942888468131762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7280c4d9d113ae4588bb3cfa1c8a075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyIcon: {fileID: 21300000, guid: d43c2da442e28124a8c35efb4bc70364, type: 3}
+  speed: 5
+  enemyEnterSounds:
+  - {fileID: 8300000, guid: cdc2e1a88462c0a4cb2dcc37eaf71bd0, type: 3}
+  - {fileID: 8300000, guid: 8fb52eda3ae6b9647b387792fbadb520, type: 3}
+  - {fileID: 8300000, guid: de908a6b1f33b2c439b305cea7dd71fb, type: 3}
+  enemyDieSounds:
+  - {fileID: 8300000, guid: 908a6c921e4428c4b924ab54e5bf2ec5, type: 3}
+  isTeleporting: 0
+  teleportTiming: {x: 10, y: 30}
+  isStealing: 0
+  isNuker: 0
+  nukingTime: 20
+  myType: 0
 --- !u!114 &2942942888468131773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1133,27 +1160,18 @@ MonoBehaviour:
   baseHealth: 40
   maxHealth: 40
   currentHealth: 40
-  scrapReward: 2
-  ammoReward: 0
-  fuelReward: 0
   deathPrefab: {fileID: 7595974982892567073, guid: e237b4e98a04bba49a1b0358ac8cf0f8, type: 3}
   aliveObject: {fileID: 2942942886986099026}
   isAlive: 1
   uiTransform: {fileID: 2740932883121660032}
-  cartRewardTransform: {fileID: 0}
   enemyUIBar: {fileID: 0}
-  isArmored: 0
   isComponentEnemy: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
-  autoSetUp: 0
   activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
-  rewardArtifactOnDeath: 0
-  artifactRewardUniqueName: 
-  bonusArtifactUIStar: {fileID: 0}
   _outlines: []
 --- !u!114 &2942942888468131775
 MonoBehaviour:

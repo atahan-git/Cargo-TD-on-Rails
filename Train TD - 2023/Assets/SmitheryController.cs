@@ -45,7 +45,7 @@ public class SmitheryController : MonoBehaviour
         var artifact1 = location1.GetComponentInChildren<Artifact>();
         var artifact2 = location2.GetComponentInChildren<Artifact>();
 
-        if (cart1 != null && cart1.uniqueName == scrapCart) {
+        /*if (cart1 != null && cart1.uniqueName == scrapCart) {
             if (cart2 != null) {
                 if (cart2.level < 2) {
                     EngageUpgrade(true);
@@ -86,7 +86,7 @@ public class SmitheryController : MonoBehaviour
                 EngageUpgrade(false);
                 return;
             }
-        }
+        }*/
     }
     
     
@@ -111,7 +111,7 @@ public class SmitheryController : MonoBehaviour
         var cart1 = location1.GetComponentInChildren<Cart>();
         var cart2 = location2.GetComponentInChildren<Cart>();
 
-        if (isCartUpgrade) {
+        /*if (isCartUpgrade) {
             if (cart1.uniqueName == scrapCart) {
                 UpgradesController.s.RemoveCartFromShop(cart1);
                 Destroy(cart1.gameObject);
@@ -138,7 +138,7 @@ public class SmitheryController : MonoBehaviour
                 Destroy(artifact1.gameObject);
                 artifact2.level += 1;
             }
-        }
+        }*/
 
 
         Train.s.CartOrArtifactUpgraded();

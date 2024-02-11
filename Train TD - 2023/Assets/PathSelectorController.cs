@@ -26,8 +26,11 @@ public class PathSelectorController : MonoBehaviour {
 
 	public InputActionReference trackSwitchAction;
 	
-
 	private ConstructedLevel activeLevel => PlayStateMaster.s.currentLevel;
+
+
+	public GameObject trainStationStart;
+	public GameObject trainStationEnd;
 
 	private void OnEnable() {
 		trackSwitchAction.action.Enable();
@@ -48,7 +51,6 @@ public class PathSelectorController : MonoBehaviour {
 		trackSwitchAction.action.performed -= TrackSwitch;
 	}
 	
-	private const int upcomingTracksCount = 2;
 	public void SetUpPath() {
 		if (activeLevel == null) {
 			return;
@@ -90,13 +92,19 @@ public class PathSelectorController : MonoBehaviour {
 		mainTrack.SetUpTrack(currentPathTree.myPath.length);
 		
 		if (currentPathTree.endPath) {
-			SpeedController.s.SetMissionEndDistance(nextSegmentChangeDistance-PathGenerator.stationStraightDistance/2f);
+			var stationDistance= nextSegmentChangeDistance-PathGenerator.stationStraightDistance/2f;
+			SpeedController.s.SetMissionEndDistance(stationDistance-9f);
 			topTrack.gameObject.SetActive(false);
 			bottomTrack.gameObject.SetActive(false);
 			mainLever.gameObject.SetActive(false);
 			rightCastleCity.SetActive(true);
 			topCastleCity.SetActive(false);
 			bottomCastleCity.SetActive(false);
+
+			trainStationEnd.GetComponent<TrainStation>().stationDistance = stationDistance;
+			trainStationEnd.GetComponent<TrainStation>().Update();
+			trainStationEnd.SetActive(true);
+			
 		} else {
 			topTrack.SetUpTrack(currentPathTree.leftPathTree.myPath.length);
 			bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
@@ -106,6 +114,11 @@ public class PathSelectorController : MonoBehaviour {
 			leftCastleCity.SetActive(currentPathTree.startPath);
 			topCastleCity.SetActive(currentPathTree.leftPathTree.endPath);
 			bottomCastleCity.SetActive(currentPathTree.rightPathTree.endPath);
+			
+			//trainStationStart.SetActive(currentPathTree.startPath);
+			
+			
+			trainStationEnd.SetActive(false);
 		}
 	}
 
@@ -157,16 +170,16 @@ public class PathSelectorController : MonoBehaviour {
 					EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length);
 				//}
 
-				if (!upcomingPath.endPath) {
+				nextSegmentChangeDistance += upcomingPath.myPath.length;
+				/*if (!upcomingPath.endPath) {
 					nextSegmentChangeDistance += upcomingPath.myPath.length;
 				} else {
 					nextSegmentChangeDistance += 10000000;
-				}
+				}*/
 
 				PathAndTerrainGenerator.s.currentPathTreeOffset += PathAndTerrainGenerator.s.currentPathTree.myPath.length;
 				PathAndTerrainGenerator.s.currentPathTree = upcomingPath;
 				PathAndTerrainGenerator.s.PruneAndExtendPaths();
-				PathAndTerrainGenerator.s.isFirstPath = false;
 				ReAdjustTracks();
 				
 				SpeedController.s.PlayEngineStartEffects();

@@ -75,7 +75,7 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
                 return;
             }
 
-            if (cargoOnly && (!cart.isCargo && !cart.isMysteriousCart)) {
+            if (cargoOnly && !cart.isCargo) {
                 return;
             }
 

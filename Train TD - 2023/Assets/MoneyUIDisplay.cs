@@ -18,7 +18,7 @@ public class MoneyUIDisplay : MonoBehaviour {
 
     public void OnCharLoad() {
         if (autoUpdateBasedOnSaveData) {
-            amount = DataSaver.s.GetCurrentSave().metaProgress.money;
+            amount = DataSaver.s.GetCurrentSave().money;
         }
     }
 
@@ -26,7 +26,7 @@ public class MoneyUIDisplay : MonoBehaviour {
     void Update() {
         //var money = DataSaver.s.GetCurrentSave().metaProgress.money;
         if (autoUpdateBasedOnSaveData) {
-            var target = DataSaver.s.GetCurrentSave().metaProgress.money;
+            var target = DataSaver.s.GetCurrentSave().money;
             if (Mathf.Abs(target - amount) > 20) {
                 amount = Mathf.Lerp(amount,target, 1f * Time.deltaTime);
             } else {

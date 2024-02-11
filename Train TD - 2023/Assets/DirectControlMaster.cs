@@ -141,6 +141,8 @@ public class DirectControlMaster : MonoBehaviour {
 
 			
 			ApplyBulletTypes();
+			
+			DepthOfFieldController.s.SetDepthOfField(false);
 		}
 	}
 
@@ -181,6 +183,8 @@ public class DirectControlMaster : MonoBehaviour {
 			myGun.sniperDamageMultiplier = 1;
 			
 			CancelInvoke(nameof(DisableDirectControlEnterShootLock));
+			
+			DepthOfFieldController.s.SetDepthOfField(true);
 		}
 	}
 

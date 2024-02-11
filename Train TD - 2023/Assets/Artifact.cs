@@ -10,18 +10,11 @@ using UnityEngine.UI;
 public class Artifact : MonoBehaviour
 {
     
-    public bool needsToBeBought = false;
-    [ShowIf("needsToBeBought")]
-    public int buyCost = 50;
-    
     public UpgradesController.CartLocation myLocation = UpgradesController.CartLocation.train;
-    public int level = 0;
     
     public string displayName = "Unnamed But Nice in game name";
     public string uniqueName = "unnamed";
 
-    public UpgradesController.CartRarity myRarity;
-    
     public bool isComponent;
 
     public Transform uiTransform;
@@ -43,7 +36,7 @@ public class Artifact : MonoBehaviour
         
         var modulesWithResetStates = GetComponentsInChildren<IResetStateArtifact>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
-            modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
+            modulesWithResetStates[i].ResetState(0); // level goes 0, 1, 2
         }
         
         ApplyToTarget.RemoveAllListeners();

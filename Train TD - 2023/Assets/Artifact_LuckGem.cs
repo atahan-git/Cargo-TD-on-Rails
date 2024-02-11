@@ -12,7 +12,7 @@ public class Artifact_LuckGem : ActivateWhenOnArtifactRow, IResetStateArtifact {
     public float curModifyAmount = 0;
 
     protected override void _Arm() {
-        DataSaver.s.GetCurrentSave().currentRun.luck += modifyAmount;
+        //DataSaver.s.GetCurrentSave().currentRun.luck += modifyAmount;
         var range = GetComponent<Artifact>().range;
         ApplyBoost(Train.s.GetNextBuilding(0, GetComponentInParent<Cart>()));
         for (int i = 1; i < range+1; i++) {

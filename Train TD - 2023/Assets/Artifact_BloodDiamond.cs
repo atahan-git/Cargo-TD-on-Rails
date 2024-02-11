@@ -9,7 +9,7 @@ public class Artifact_BloodDiamond : ActivateWhenOnArtifactRow {
     public float modifyAmount = 0.25f;
 
     protected override void _Arm() {
-        DataSaver.s.GetCurrentSave().currentRun.luck += modifyAmount;
+        //DataSaver.s.GetCurrentSave().currentRun.luck += modifyAmount;
 
         for (int i = 0; i <Train.s.carts.Count; i++) {
             ApplyBoost(Train.s.carts[i]);

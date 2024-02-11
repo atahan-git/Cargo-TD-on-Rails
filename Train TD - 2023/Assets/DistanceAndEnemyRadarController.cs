@@ -75,9 +75,13 @@ public class DistanceAndEnemyRadarController : MonoBehaviour {
             distance -= PathAndTerrainGenerator.s.currentPathTreeOffset;
             var pathLength = PathAndTerrainGenerator.s.currentPathTree.myPath.length;
             
-            if (PathAndTerrainGenerator.s.isFirstPath) {
+            if (PathAndTerrainGenerator.s.currentPathTree.startPath) {
                 distance -= PathGenerator.stationStraightDistance / 2f;
                 pathLength -= PathGenerator.stationStraightDistance / 2f;
+            }
+
+            if (PathAndTerrainGenerator.s.currentPathTree.endPath) {
+                pathLength -= PathGenerator.stationStraightDistance / 2f + 9f;
             }
 
             var percentage = distance / pathLength;

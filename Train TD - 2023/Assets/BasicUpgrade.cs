@@ -21,16 +21,16 @@ public class BasicUpgrade : MonoBehaviour
     void Start() {
         _moneyUIDisplay = GetComponentInChildren<MoneyUIDisplay>();
         _starterShopButton = GetComponent<StarterShopButton>();
-        var metaProgress = DataSaver.s.GetCurrentSave().metaProgress;
+        var saveData = DataSaver.s.GetCurrentSave();
         switch (myType) {
             case UpgradeType.ammo:
-                myLevel = metaProgress.ammoUpgradesBought;
+                myLevel = saveData.ammoUpgradesBought;
                 break;
             case UpgradeType.armor:
-                myLevel = metaProgress.armorUpgradesBought;
+                myLevel = saveData.armorUpgradesBought;
                 break;
             case UpgradeType.damage:
-                myLevel = metaProgress.damageUpgradesBought;
+                myLevel = saveData.damageUpgradesBought;
                 break;
         }
         
@@ -54,24 +54,24 @@ public class BasicUpgrade : MonoBehaviour
     void Update()
     {
         if(myLevel < costs.Length)
-            _starterShopButton.SetStatus(DataSaver.s.GetCurrentSave().metaProgress.money >= curCost);
+            _starterShopButton.SetStatus(DataSaver.s.GetCurrentSave().money >= curCost);
     }
 
     public void TryPurchase() {
         if (myLevel < costs.Length) {
-            if (curCost <= DataSaver.s.GetCurrentSave().metaProgress.money) {
-                DataSaver.s.GetCurrentSave().metaProgress.money -= curCost;
+            if (curCost <= DataSaver.s.GetCurrentSave().money) {
+                DataSaver.s.GetCurrentSave().money -= curCost;
                 myLevel += 1;
-                var metaProgress = DataSaver.s.GetCurrentSave().metaProgress;
+                var saveData = DataSaver.s.GetCurrentSave();
                 switch (myType) {
                     case UpgradeType.ammo:
-                        metaProgress.ammoUpgradesBought = myLevel;
+                        saveData.ammoUpgradesBought = myLevel;
                         break;
                     case UpgradeType.armor:
-                        metaProgress.armorUpgradesBought = myLevel;
+                        saveData.armorUpgradesBought = myLevel;
                         break;
                     case UpgradeType.damage:
-                        metaProgress.damageUpgradesBought = myLevel;
+                        saveData.damageUpgradesBought = myLevel;
                         break;
                 }
                 UpdateStatsBasedOnLevel();

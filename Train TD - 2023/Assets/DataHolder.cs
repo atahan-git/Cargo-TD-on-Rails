@@ -21,6 +21,7 @@ public class DataHolder : MonoBehaviour {
     public PowerUpScriptable[] powerUps;
     public LevelArchetypeScriptable[] levelArchetypeScriptables;
     
+    
     public PowerUpScriptable GetPowerUp(string powerUpUniqueName) {
         for (int i = 0; i < powerUps.Length; i++) {
             if (PreProcess(powerUps[i].name) == PreProcess(powerUpUniqueName)) {
@@ -89,5 +90,5 @@ public class DataHolder : MonoBehaviour {
 
     string PreProcess(string input) {
         return input.Replace(" ", "").ToLower();
-    } 
+    }
 }
