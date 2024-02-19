@@ -57,10 +57,6 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
         
         foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
             trainGemBridge.uranium = currentRadiation;
-            if (target.isMainEngine) {
-                SpeedController.s.boostEffectMultiplier = -100; // no boost at all with uranium
-            }
-
             trainGemBridge.uraniumDelayReduction += curRadiationDelayReduction;
             didApply = true;
         }

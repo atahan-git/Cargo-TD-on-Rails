@@ -42,9 +42,6 @@ public class Artifact_FireGem : ActivateWhenOnArtifactRow, IResetStateArtifact
         
         foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
             trainGemBridge.extraPrefabToSpawnOnAffected.Add(currentFireBurst);
-            if (target.isMainEngine) {
-                SpeedController.s.boostEffectMultiplier += 0.2f; //slightly increase the effects of the boost
-            }
             didApply = true;
         }
         

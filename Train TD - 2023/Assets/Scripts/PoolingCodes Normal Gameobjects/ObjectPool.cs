@@ -16,7 +16,7 @@ public class ObjectPool : MonoBehaviour {
 	private bool setUpAtLeastOnce = false;
 
 	void Awake (){
-		if (autoSetUp) {
+		if (autoSetUp && !setUpAtLeastOnce) {
 			ResetPool();
 		}
 	}
@@ -33,6 +33,9 @@ public class ObjectPool : MonoBehaviour {
 		for (int i = transform.childCount-1; i >=0 ; i--) {
 			Destroy(transform.GetChild(i).gameObject);
 		}
+
+		ExistingObjects = 0;
+		ActiveObjects = 0;
 
 		SetUp(poolSize);
 	}
@@ -71,6 +74,28 @@ public class ObjectPool : MonoBehaviour {
 				objs[i] = (inst);
 			}
 		}
+	}
+
+	public void ExpandPoolToSize(int size) {
+		size = Mathf.NextPowerOfTwo(size);
+		if (size < ExistingObjects) {
+			return;
+		}
+
+		poolSize = size;
+		
+		if (!setUpAtLeastOnce) {
+			ResetPool();
+			return;
+		}
+		
+		
+
+		GameObject[] temp = objs;
+		objs = new GameObject[size];
+		temp.CopyTo(objs, 0);
+		
+		FillArrayWithObjects();
 	}
 
 

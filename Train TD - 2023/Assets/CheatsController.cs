@@ -13,24 +13,22 @@ public class CheatsController : MonoBehaviour
     public EncounterTitle debugEncounter;
     public PowerUpScriptable debugPowerUp;
     public CharacterDataScriptable autoRestartCharacter;
-
-
-
+    
     
     // whenever you add a new cheat make sure to add it to the auto disable are below!
-    public bool infiniteLevel = false;
     public bool debugNoRegularSpawns = false;
     public bool instantEnterPlayMode = false;
     public bool playerIsImmune;
     public bool playerDealMaxDamage;
-    public bool restartOnStart = false;
-    public bool autoRestartWithSelectedCharacter = false;
-    public bool dontDrawMap = false;
     public bool everyPathIsEncounter = false;
 
     public bool autoPlayTest = false;
+
+    public bool setInstantEnterShopAnimation = false;
+
+    public bool overrideTrainState = false;
     
-    public EnemyIdentifier debugEnemy;
+    public DataSaver.TrainState trainState;
 
     private void Awake() {
         if (!Application.isEditor) {
@@ -40,43 +38,43 @@ public class CheatsController : MonoBehaviour
 
     public void ResetDebugOptions() {
         Debug.LogError("Debug Options Reset!");
-        infiniteLevel = false;
         debugNoRegularSpawns = false;
         instantEnterPlayMode = false;
         playerIsImmune= false;
-        restartOnStart = false;
-        autoRestartWithSelectedCharacter = false;
-        dontDrawMap = false;
         everyPathIsEncounter = false;
         playerDealMaxDamage = false;
         autoPlayTest = false;
+        setInstantEnterShopAnimation = false;
+        overrideTrainState = false;
     }
 
+    [Button]
+    void EnterMissionRewardsArea() {
+        DataSaver.s.GetCurrentSave().isInEndRunArea = true;
+        DataSaver.s.GetCurrentSave().endRunAreaInfo = new DataSaver.EndRunAreaInfo();
+    }
+    
     private void Start() {
         if (Application.isEditor) {
-            if (infiniteLevel || debugNoRegularSpawns  || instantEnterPlayMode ||playerIsImmune
-                || restartOnStart || autoRestartWithSelectedCharacter  ||  dontDrawMap|| everyPathIsEncounter)
+            if (debugNoRegularSpawns  || instantEnterPlayMode ||playerIsImmune
+                  || everyPathIsEncounter  || setInstantEnterShopAnimation || overrideTrainState)
                 Debug.LogError("Debug options active! See _CheatsController for more info");
 
-            LevelArchetypeScriptable.everyPathEncounterCheat = everyPathIsEncounter;
-                
+            //LevelArchetypeScriptable.everyPathEncounterCheat = everyPathIsEncounter;
+
+            if (overrideTrainState) {
+                DataSaver.s.GetCurrentSave().myTrain = trainState;
+                DataSaver.s.SaveActiveGame();
+            }
             
             if (debugNoRegularSpawns)
                 EnemyWavesController.s.debugNoRegularSpawns = true;
 
-            if (restartOnStart)
-                DataSaver.s.GetCurrentSave().isInARun = false;
-
-            if (dontDrawMap)
-                WorldMapCreator.s.QuickStartNoWorldMap();
-
-            if (autoRestartWithSelectedCharacter || instantEnterPlayMode) {
+            if (instantEnterPlayMode) {
                 PlayerPrefs.SetInt(MiniGUI_DisableTutorial.exposedName, 0);
             }
 
-            if (autoRestartWithSelectedCharacter) {
-                Invoke(nameof(QuickRestartWithCheaterCharacter), 0.01f);
-            } else if (instantEnterPlayMode) {
+            if (instantEnterPlayMode) {
                 Invoke(nameof(QuickStart), 0.01f);
             }
 
@@ -88,12 +86,14 @@ public class CheatsController : MonoBehaviour
             if (autoPlayTest) {
                 AutoPlaytester.s.StartAutoPlayer(true);
             }
+
+            if (setInstantEnterShopAnimation) {
+                Train.showEntryMovement = true;
+            }
         }
     }
 
     void QuickStart() {
-        if(dontDrawMap)
-            WorldMapCreator.s.QuickStartNoWorldMap();
         MainMenu.s.QuickStartGame();
         PlayStateMaster.s.OnShopEntered.AddListener(OnShopStateEnteredQuickStart);
     }
@@ -106,40 +106,8 @@ public class CheatsController : MonoBehaviour
         ShopStateController.s.QuickStart();
     }
     
-    
-    
-    void QuickRestartWithCheaterCharacter() {
-        DataSaver.s.GetCurrentSave().isInARun = false;
-        if(dontDrawMap)
-            WorldMapCreator.s.QuickStartNoWorldMap();
-        MainMenu.s.QuickStartGame();
-        PlayStateMaster.s.OnOpenCharacterSelectMenu.AddListener(OnShopStateEnteredQuickRestartWithCheaterCharacter);
-    }
-    
-    void OnShopStateEnteredQuickRestartWithCheaterCharacter() {
-        CharacterSelector.s.SelectCharacter(autoRestartCharacter.myCharacter);
-        CharacterSelector.s.CharSelectedAndLeave();
-        PlayStateMaster.s.OnOpenCharacterSelectMenu.RemoveListener(OnShopStateEnteredQuickRestartWithCheaterCharacter);
-
-        if (instantEnterPlayMode) {
-            Invoke(nameof(_OnShopStateEnteredQuickStart),0.5f);
-        }
-    }
-
-
     private void Update() {
-        if (infiniteLevel) {
-            if (SpeedController.s.missionDistance - SpeedController.s.currentDistance < 50) {
-                SpeedController.s.IncreaseMissionEndDistance(50);
-            }
-        }
-        
         ModuleHealth.isImmune = playerIsImmune;
-    }
-
-    [Button]
-    void DebugEnemySpawn(int distance) {
-        EnemyWavesController.s.DebugEnemySpawn(debugEnemy, distance);
     }
 
     /*[Button]
@@ -161,17 +129,12 @@ public class CheatsController : MonoBehaviour
     private void EngageCheat(InputAction.CallbackContext obj) {
 
         if (!PlayStateMaster.s.isCombatStarted()) {
-            if (WorldMapCreator.s.worldMapOpen) {
-                MapController.s.DebugTravelToSelectStar();
-                
-            } else {
-                if (PlayStateMaster.s.isMainMenu())
-                    MainMenu.s.StartGame();
+            if (PlayStateMaster.s.isMainMenu())
+                MainMenu.s.StartGame();
 
-                ShopStateController.s.QuickStart();
+            ShopStateController.s.QuickStart();
 
-                //DataSaver.s.GetCurrentSave().currentRun.money += 10000;
-            }
+            //DataSaver.s.GetCurrentSave().currentRun.money += 10000;
         } else if (!PlayStateMaster.s.isCombatFinished()) {
             //MoneyController.s.AddScraps(1000);
             

@@ -172,7 +172,7 @@ public class FeedbackSender : MonoBehaviour {
     }
 
     string GetSaveTime() {
-        var time = DataSaver.s.GetCurrentSave().currentRun.playtime + DataSaver.s.GetTimeSpentSinceLastSaving();
+        var time = DataSaver.s.GetCurrentSave().playtime + DataSaver.s.GetTimeSpentSinceLastSaving();
         return $"{NiceTime(time)}";
     }
     string NiceTime(float time) {

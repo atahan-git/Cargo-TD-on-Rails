@@ -83,6 +83,7 @@ Transform:
   m_Children:
   - {fileID: 7349334640653558217}
   - {fileID: 2131991619649952554}
+  - {fileID: 1284935284288493028}
   m_Father: {fileID: 2927632870427338314}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -146,7 +147,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  - component: {fileID: 5744414609892468159}
   m_Layer: 17
   m_Name: Range Edge Line
   m_TagString: Untagged
@@ -268,25 +268,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &5744414609892468159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2677843582063563157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &3146471024428373951
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,6 +277,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3248300930352555991}
+  - component: {fileID: -6177455946807745712}
   - component: {fileID: 2934280374143819819}
   - component: {fileID: 7371494607064308679}
   m_Layer: 17
@@ -322,6 +304,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6177455946807745712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3146471024428373951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip:
+    text: Two flame throwers. Shoots flames that burns any enemy it touches. Good
+      against single big enemies or group of smaller enemies, but has limited range.
+  info: Flame Throwers
 --- !u!114 &2934280374143819819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,7 +332,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunSprite: {fileID: 0}
+  gunUniqueName: flames
+  gunSprite: {fileID: 21300000, guid: aba5e5016c4c6674eb61199621225374, type: 3}
   isGigaGatling: 0
   gatlinificator: 0
   maxFireRateReduction: 0.875
@@ -365,6 +364,9 @@ MonoBehaviour:
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
@@ -374,14 +376,11 @@ MonoBehaviour:
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 0.5
+  ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 1
-  steamUsePerShot: 0
   needWarmUp: 0
   startWarmUpEvent:
     m_PersistentCalls:
@@ -398,17 +397,14 @@ MonoBehaviour:
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
+  isLockOn: 0
   isHoming: 0
-  boostDamageOnUpgrade: 0.5
   waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
   gotShootCredits: 0
   needShootCredits: 0
-  shootCreditsUse: 1
+  shootCreditsUse: 0.5
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -449,8 +445,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4532553131099445004}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0819, z: 0.1919}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8678880554783628499}
@@ -498,7 +494,6 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  - component: {fileID: 7425281378063857211}
   m_Layer: 17
   m_Name: Targeting Line
   m_TagString: Untagged
@@ -620,25 +615,50 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &7425281378063857211
+--- !u!1 &6991764679574335307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1284935284288493028}
+  - component: {fileID: 1719724880090044909}
+  m_Layer: 11
+  m_Name: Direct Control Top
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1284935284288493028
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6991764679574335307}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1823, z: 0.026}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8678880554783628499}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1719724880090044909
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4868666074182737494}
+  m_GameObject: {fileID: 6991764679574335307}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2876ead7b0efdcd488c3149e01808326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &7958866844652258755
 GameObject:
   m_ObjectHideFlags: 0

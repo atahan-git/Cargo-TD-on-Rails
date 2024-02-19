@@ -26,21 +26,21 @@ public class ArtifactsController : MonoBehaviour {
 	public void OnEnterShop() {
 		bonusArtifactStarLocation.DeleteAllChildren();
 		gotBonusArtifact = false;
-		var currentRun = DataSaver.s.GetCurrentSave().currentRun;
+		var saveData = DataSaver.s.GetCurrentSave();
 		
-		if (currentRun.isInEndRunArea) {
-			gotBonusArtifact = currentRun.endRunAreaInfo.gotBonusArtifact;
-			bonusArtifactUniqueName = currentRun.endRunAreaInfo.bonusArtifactUniqueName;
+		if (saveData.isInEndRunArea) {
+			gotBonusArtifact = saveData.endRunAreaInfo.gotBonusArtifact;
+			bonusArtifactUniqueName = saveData.endRunAreaInfo.bonusArtifactUniqueName;
 			Instantiate(LevelReferences.s.enemyHasArtifactStar, bonusArtifactStarLocation).transform.localPosition = Vector3.zero;
 		} else {
-			DataSaver.s.GetCurrentSave().currentRun.endRunAreaInfo = null;
+			saveData.endRunAreaInfo = null;
 		}
 	}
 
 	public void OnAfterCombat(bool isRealCombat) {
-		if (isRealCombat && DataSaver.s.GetCurrentSave().isInARun) {
-			DataSaver.s.GetCurrentSave().currentRun.endRunAreaInfo = new DataSaver.EndRunAreaInfo();
-			var endRunAreaInfo = DataSaver.s.GetCurrentSave().currentRun.endRunAreaInfo;
+		if (isRealCombat) {
+			DataSaver.s.GetCurrentSave().endRunAreaInfo = new DataSaver.EndRunAreaInfo();
+			var endRunAreaInfo = DataSaver.s.GetCurrentSave().endRunAreaInfo;
 			endRunAreaInfo.gotBonusArtifact = gotBonusArtifact;
 			endRunAreaInfo.bonusArtifactUniqueName = bonusArtifactUniqueName;
 			DataSaver.s.SaveActiveGame();

@@ -1,7 +1,8 @@
  using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+ using HighlightPlus;
+ using UnityEngine;
 using UnityEngine.Events;
 
 public class GateScript : MonoBehaviour, IClickableWorldItem {
@@ -28,14 +29,15 @@ public class GateScript : MonoBehaviour, IClickableWorldItem {
     public Color canGoColor= Color.green;
     public Color cannotGoColor = Color.red;
 
-    private Outline _outline;
+    private HighlightEffect _outline;
 
     private void Start() {
-        _outline = GetComponent<Outline>();
-        _outline.enabled = false;
+        _outline = GetComponent<HighlightEffect>();
+        _outline.highlighted = false;
         if (stuckInOpenPos) {
             gate.transform.position = gateFullOpenPos.position;
         }
+        SetCanGoStatus(canGo, new Tooltip(){text = "Click the gate to start your run."});
     }
 
     public void _OnMouseEnter() {
@@ -43,7 +45,7 @@ public class GateScript : MonoBehaviour, IClickableWorldItem {
             return;
         mouseOver = true;
         downCurrentSpeed = 0;
-        _outline.enabled = true;
+        _outline.highlighted = true;
         Invoke(nameof(ShowTooltip), TooltipsMaster.tooltipShowTime);
     }
 
@@ -51,7 +53,7 @@ public class GateScript : MonoBehaviour, IClickableWorldItem {
         if(!mouseOverAble)
             return;
         mouseOver = false;
-        _outline.enabled = false;
+        _outline.highlighted = false;
         CancelInvoke(nameof(ShowTooltip));
         TooltipsMaster.s.HideTooltip();
     }
@@ -78,7 +80,7 @@ public class GateScript : MonoBehaviour, IClickableWorldItem {
         canGo = status;
         readyToGoEffects.SetActive(canGo);
         downCurrentSpeed = 0;
-        _outline.OutlineColor = canGo ? canGoColor : cannotGoColor;
+        _outline.outlineColor = canGo ? canGoColor : cannotGoColor;
         myTooltip = tooltip;
         enabled = true;
     }

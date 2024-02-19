@@ -3,21 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, IExtraInfo, IBooster {
+public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 
-	public int baseIncreaseMaxShieldsAmount = 500;
-	public int increasePerLevel = 500;
-	public int increaseMaxShieldsAmount = 500;
-
+	public int baseShieldAmount = 1000;
+	public float currentShieldAmount = 1000;
+	public float currentMaxShieldAmount = 1000;
+	
+	
 	public List<GameObject> prefabToSpawnWhenShieldIsHit = new List<GameObject>();
 	public List<GameObject> prefabToSpawnWhenShieldIsDestroyed = new List<GameObject>();
 
 	private ModuleHealth myHealth;
-	protected override void _AttachedToTrain() {
-		myHealth = GetComponentInParent<ModuleHealth>();
-		myHealth.maxShields = increaseMaxShieldsAmount;
-		Activation(myHealth.IsShieldActive());
-	}
 	
 	public void SpawnGemEffect(ModuleHealth target) {
 		StartCoroutine(_SpawnGemEffect(target));
@@ -43,39 +39,6 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 		GetComponentInParent<ModuleHealth>().BurnDamage(damage);
 	}
 
-	protected override bool CanApply(Cart target) {
-		var health = target.GetComponentInChildren<ModuleHealth>();
-		var shield = target.GetComponentInChildren<ShieldGeneratorModule>();
-		return health != null && shield == null;
-	}
-
-	protected override void _ApplyBoost(Cart target, bool doApply) {
-		var health = target.GetComponentInChildren<ModuleHealth>();
-
-		if (doApply) {
-			health.damageDefenders.Add(ProtectFromDamage);
-			health.burnDefenders.Add(ProtectFromBurn);
-		} else {
-			health.damageDefenders.Remove(ProtectFromDamage);
-			health.burnDefenders.Remove(ProtectFromBurn);
-		}
-		
-		/*if (doApply) {
-			target.GetHealthModule().maxShields += increaseMaxShieldsAmount;
-
-			if (PlayStateMaster.s.isShopOrEndGame()) {
-				target.GetHealthModule().currentShields = target.GetHealthModule().maxShields;
-			}
-			
-			target.GetHealthModule().curShieldDelay = 1f;
-		}*/
-	}
-
-	protected override void _DetachedFromTrain() {
-		myHealth = null;
-	}
-
-	
 	public string GetInfoText() {
 		return $"Protects {GetRange()} nearby carts from damage as long as has shield";
 	}
@@ -84,15 +47,22 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 	public int rangeBoost = 0;
 	public float boostMultiplier = 1;
 
-	public void ResetState(int level) {
-		increaseMaxShieldsAmount = baseIncreaseMaxShieldsAmount + (level * increasePerLevel);
-		rangeBoost = level;
+	public void ResetState() {
+		currentMaxShieldAmount = baseShieldAmount;
+		
+		if (PlayStateMaster.s.isCombatInProgress()) {
+			currentShieldAmount = Mathf.Clamp(currentShieldAmount, 0, currentMaxShieldAmount);
+		} else {
+			currentShieldAmount = currentMaxShieldAmount;
+		}
+		
+		rangeBoost = 0;
 		boostMultiplier = 1;
 		
 		prefabToSpawnWhenShieldIsHit.Clear();
 		prefabToSpawnWhenShieldIsDestroyed.Clear();
 
-		GetComponentInParent<Cart>().GetComponentInChildren<PhysicalShieldBar>().SetSize(GetRange());
+		//GetComponentInParent<Cart>().GetComponentInChildren<PhysicalShieldBar>().SetSize(GetRange());
 	}
 
 	public void ModifyStats(int range, float value) {
@@ -102,31 +72,5 @@ public class ShieldGeneratorModule : ActivateWhenAttachedToTrain, IResetState, I
 	
 	public int GetRange() {
 		return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
-	}
-
-	[ColorUsageAttribute(true, true)] public Color boostRangeColor = Color.yellow;
-	public Color GetColor() {
-		return boostRangeColor;
-	}
-
-
-	private void Update() {
-		if (myHealth != null) {
-			if (isActive && !myHealth.IsShieldActive()) {
-				Activation(false);
-			}else if (!isActive && myHealth.IsShieldActive()) {
-				Activation(true);
-			}
-		}
-	}
-
-
-	private bool isActive;
-	void Activation(bool doActivate) {
-		isActive = doActivate;
-		for (int i = 1; i < GetRange()+1; i++) {
-			ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()), doActivate);
-			ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()), doActivate);
-		}
 	}
 }

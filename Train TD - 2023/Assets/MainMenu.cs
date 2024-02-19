@@ -45,19 +45,8 @@ public class MainMenu : MonoBehaviour {
 
     private void Awake() {
         s = this;
-    }
-
-    private void Start() {
         deleteSaveUI.SetActive(false);
-        if (PlayStateMaster.s.isMainMenu()) {
-            OpenProfileMenu();
-        } else {
-            OpenProfileMenu(); // Because we need this to disable some stuff for us
-            StartGame();
-        }
     }
-    
-    
 
     public void OpenProfileMenu() {
         for (int i = 0; i < monoToDisableInProfileMenu.Length; i++) {
@@ -77,8 +66,8 @@ public class MainMenu : MonoBehaviour {
         ProfileUI.SetActive(true);
 
 
-        var isInARun = DataSaver.s.GetCurrentSave().isInARun;
-        resetButton.gameObject.SetActive(isInARun);
+        var isInARun = DataSaver.s.GetCurrentSave().playtime > 0;
+        resetButton.gameObject.SetActive(/*isInARun*/false);
         if (isInARun) {
             startGameText.text = "Start";
         } else {

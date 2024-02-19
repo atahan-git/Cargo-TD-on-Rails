@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 public class PathAndTerrainGenerator : MonoBehaviour {
@@ -16,12 +18,30 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         myTracks.Clear();
         myTerrains.Clear();
+        currentTerrainGenCount = 0;
+        SetBiomes();
     }
 
     public List<PathGenerator.TrainPath> myPaths = new List<PathGenerator.TrainPath>();
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
     public Dictionary<Vector3, GameObject> myTracks = new Dictionary<Vector3,GameObject>();
+    public List<PathGenerator.TrainPath> cityStampPaths = new List<PathGenerator.TrainPath>();
+    List<PathGenerator.TrainPath> _comboList = new List<PathGenerator.TrainPath>();
+    List<PathGenerator.TrainPath> comboList {
+        get { return GetComboList(); }
+    }
 
+    public List<PathGenerator.TrainPath> GetComboList() {
+        if (isComboListDirty) {
+            isComboListDirty = false;
+            _comboList = new List<PathGenerator.TrainPath>(myPaths.Count + cityStampPaths.Count);
+            _comboList.AddRange(myPaths);
+            _comboList.AddRange(cityStampPaths);
+        }
+
+        return _comboList;
+    }
+    public bool isComboListDirty = false;
 
     public Biome[] biomes;
 	
@@ -39,27 +59,30 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public float trackDistance;
 
     public PathTree currentPathTree;
+    public float currentPathTreeOffset = 0;
     
     [Serializable]
     public class PathTree {
+        public PathTree prevPathTree;
         public PathGenerator.TrainPath myPath;
-        public PathTree leftPath;
-        public PathTree rightPath;
+        public PathTree leftPathTree;
+        public PathTree rightPathTree;
+
+        public bool startPath = false;
+        public bool endPath = false;
+
+        public PathGenerator.TrainPath cityStampPath;
     }
 
-    private void Start() {
-        currentTerrainGenCount = 0;
-        SetBiomes();
-        MakeStarterAreaTerrain();
-    }
+
+    public UnityEvent OnNewTerrainStabilized = new UnityEvent();
+    public bool initialTerrainMade = false;
+
 
     public void SetBiomes() {
-        if (!DataSaver.s.GetCurrentSave().isInARun)
-            biomeOverride = 0;
-
         Biome currentBiome;
         if (biomeOverride < 0) {
-            var targetBiome = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar().biome;
+            var targetBiome = 0;
             if (targetBiome < 0 || targetBiome > biomes.Length) {
                 Debug.LogError($"Illegal biome {targetBiome}");
                 targetBiome = 0;
@@ -81,112 +104,116 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
 
     public void MakeFakePathForMissionRewards() {
-        var fakePath = GetComponent<PathGenerator>().MakeStationPath(Vector3.zero, Vector3.forward, SpeedController.s.missionDistance + 100);
-        myPaths.Add(fakePath);
-        activePath.Clear();
-        activePath.Add(fakePath);
-        terrainViewRange = 50;
-        //StartCoroutine(ReDrawTerrainAroundCenter());
-    }
-
-
-    private const float stationStraightDistance = 100;
-    public float terrainGenerationProgress = 0;
-    private bool needReflectionProbe = false;
-    public void MakeStarterAreaTerrain() {
         terrainGenerationProgress = 0;
         needReflectionProbe = true;
         ClearTerrains();
         myPaths.Clear();
-        activePath.Clear();
+        cityStampPaths.Clear();
         terrainViewRange = 20;
-        myPaths.Add(GetComponent<PathGenerator>().MakeStationPath(-Vector3.forward*stationStraightDistance/2f,Vector3.forward, stationStraightDistance));
+
+        var stopDistance = 7.5f;
+
+        var segmentDistance = 5f;
+        var endStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward,Vector3.forward, segmentDistance);
+        myPaths.Add(endStationPath);
+        isComboListDirty = true;
+        
+        var cityDistance =   stopDistance + PathGenerator.stationStraightDistance/2f + endStationCenterOffset;
+        var cityStampPath = _pathGenerator.MakeCityStampPath(PathGenerator.GetPointOnLine(endStationPath, cityDistance), PathGenerator.GetDirectionOnTheLine(endStationPath, cityDistance));
+        cityStampPaths.Add(cityStampPath);
+        isComboListDirty = true;
+        
+        currentPathTree = new PathTree() {
+            startPath = true,
+            myPath = endStationPath,
+            cityStampPath = cityStampPath
+        };
+
+        initialTerrainMade = false;
+
+        currentPathTreeOffset = -PathGenerator.stationStraightDistance / 2f;
+        generatedPathDepth = 0;
+
+        var trainStationEnd = PathSelectorController.s.trainStationEnd;
+        trainStationEnd.GetComponent<TrainStation>().stationDistance = stopDistance;
+        trainStationEnd.GetComponent<TrainStation>().Update();
+        trainStationEnd.SetActive(true);
+        
+        PathSelectorController.s.trainStationStart.SetActive(false);
+        
+
+        SpeedController.s.missionDistance = 0;
+        SpeedController.s.currentDistance = 0;
+
         StartCoroutine(ReDrawTerrainAroundCenter());
     }
 
+
     [Button]
-    public void DebugMakePath() {
+    public void DebugMakeCityStamp(Vector3 offset, Quaternion direction) {
+        cityStampPaths.Clear();
+        var cityPath = _pathGenerator.MakeCityStampPath(offset, direction);
+        cityStampPaths.Add(cityPath);
+        isComboListDirty = true;
+    }
+
+    [Button]
+    public void DebugMakeCityPath() {
         myPaths.Clear();
-        myPaths.Add(GetComponent<PathGenerator>().MakeStationPath(transform.position-Vector3.forward*stationStraightDistance/2f,Vector3.forward, stationStraightDistance));
-        
-        var startPoint = myPaths[0].points[^1];
-
-        var segmentDistance = 200;
-        var segmentDirection = Quaternion.Euler(0,Random.Range(-15, 15),0) * Vector3.forward;
-
-        var path = GetComponent<PathGenerator>().MakeTrainPath(startPoint, Vector3.forward, segmentDirection, segmentDistance);
-        myPaths.Add(path);
-        
-        var currentPathTree = new PathTree() {
-            myPath = path
-        };
-        
-        DebugForkPath(currentPathTree, 0, 0);
+        var starterStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward, Vector3.forward, Random.Range(30,50));
+        myPaths.Add(starterStationPath);
+        isComboListDirty = true;
     }
 
-    void DebugForkPath(PathTree path, int depth,float degreeOffset) {
-        var startPoint = path.myPath.points[^1];
-        var startDirection = PathGenerator.GetDirectionVectorOnTheLine(path.myPath, path.myPath.length);
 
+    public float terrainGenerationProgress = 0;
+    private bool needReflectionProbe = false;
+    public void MakeStarterAreaTerrain() {
+        if (!PlayStateMaster.s.isMainMenu() && DataSaver.s.GetCurrentSave().isInEndRunArea) {
+            MakeFakePathForMissionRewards();
+            return;
+        }
         
-        // left fork
-        {
-            var segmentDistance = Random.Range(250,350);
-            var segmentDirection = Quaternion.Euler(0, degreeOffset + 30 + Random.Range(-15, 15), 0) * Vector3.forward;
+        terrainGenerationProgress = 0;
+        needReflectionProbe = true;
+        ClearTerrains();
+        myPaths.Clear();
+        cityStampPaths.Clear();
+        terrainViewRange = 20;
+        
+        var starterStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward, Vector3.forward, Random.Range(30,50));
+        myPaths.Add(starterStationPath);
+        isComboListDirty = true;
+        
+        var cityDistance =  PathGenerator.stationStraightDistance/2f;
+        var cityStampPath = _pathGenerator.MakeCityStampPath(PathGenerator.GetPointOnLine(starterStationPath, cityDistance), PathGenerator.GetDirectionOnTheLine(starterStationPath, cityDistance));
+        cityStampPaths.Add(cityStampPath);
+        isComboListDirty = true;
+        
+        currentPathTree = new PathTree() {
+            startPath = true,
+            myPath = starterStationPath,
+            cityStampPath = cityStampPath
+        };
 
-            var leftPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(leftPath);
-            var leftTree = new PathTree() {
-                myPath = leftPath
-            };
-            if (depth < 3) {
-                DebugForkPath(leftTree, depth + 1, degreeOffset + 60);
-            } else {
-                var leftStationEnd = GetComponent<PathGenerator>().MakeStationPath(leftPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(leftPath, leftPath.length), stationStraightDistance);
-                myPaths.Add(leftStationEnd);
-                var leftStation = new PathTree() {
-                    myPath = leftStationEnd
-                };
-                leftTree.rightPath = leftStation;
-            }
-            
-            path.leftPath = leftTree;
-        }
-        //right fork
-        {
-            var segmentDistance = Random.Range(250,350);;
-            var segmentDirection = Quaternion.Euler(0, degreeOffset - 30 + Random.Range(-15, 15), 0) * Vector3.forward;
+        initialTerrainMade = false;
 
-            var rightPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(rightPath);
-            var rightTree = new PathTree() {
-                myPath = rightPath
-            };
-            if (depth < 3) {
-                DebugForkPath(rightTree, depth + 1, degreeOffset - 60);
-            }else {
-                var rightStationEnd = GetComponent<PathGenerator>().MakeStationPath(rightPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(rightPath, rightPath.length), stationStraightDistance);
-                myPaths.Add(rightStationEnd);
-                var rightStation = new PathTree() {
-                    myPath = rightStationEnd
-                };
-                rightTree.rightPath = rightStation;
-            }
-
-            path.rightPath = rightTree;
-        }
+        currentPathTreeOffset = -PathGenerator.stationStraightDistance / 2f;
+        generatedPathDepth = 0;
+        
+        StartCoroutine(ReDrawTerrainAroundCenter());
     }
 
 
     [Button]
-    public void DebugMakeCircleTerrain() {
+    public void DebugMakeCirclePath() {
         myPaths.Clear();
         var isGoodTrack = false;
 
         PathGenerator.TrainPath track = null;
         var n = 0;
         while (!isGoodTrack) {
-            track = GetComponent<PathGenerator>().MakeCirclePath(Vector3.left * 100);
+            track = _pathGenerator.MakeCirclePath(Vector3.left * 100);
             isGoodTrack = Vector3.Distance(track.points[0], track.points[^1]) < 1;
             n++;
 
@@ -195,25 +222,36 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 break;
             }
         }
+        Debug.Log($"made good path in {n} tries");
         myPaths.Add(track);
+        isComboListDirty = true;
     }
 
     [Button]
-    public void DebugMakeTerrain() {
-        var viewCount = Mathf.CeilToInt(20 * 2f / TerrainGenerator.terrainWidth);
+    public void DebugMakeTerrain(int viewCount = 3) {
+        myTerrains.Clear();
+        //var viewCount = Mathf.CeilToInt(20 * 2f / TerrainGenerator.terrainWidth);
         if (viewCount % 2 == 0) {
             viewCount += 1;
         }
         var terrainCount = (int)Mathf.Pow( viewCount,2);
+
         for (int i = 0; i < terrainCount; i++) {
             var offset = GetSpiralNumber(i);
             var coordinates = new Vector2Int(offset.x, offset.y);
             GetComponent<TerrainGenerator>().MakeTerrainDistanceMaps(
                 coordinates,
                 center,
-                myPaths,
+                comboList,
                 TerrainGenDone
             );
+        }
+    }
+
+    [Button]
+    public void DebugMakeTerrainPostProcess() {
+        for (int i = 0; i < myTerrains.Count; i++) {
+            GetComponent<TerrainGenerator>().ReprocessTerrainChanges(myTerrains[i]);
         }
     }
     
@@ -262,75 +300,138 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             return;
         }
         terrainViewRange = 50;
-
-        var startPoint = myPaths[0].points[^1];
-
-        var segmentDistance = activeLevel.mySegmentsA[0].segmentLength - (stationStraightDistance/2f);
-        var segmentDirection = Quaternion.Euler(0,Random.Range(-15, 15),0) * Vector3.forward;
-
-        var path = GetComponent<PathGenerator>().MakeTrainPath(startPoint, Vector3.forward, segmentDirection, segmentDistance);
-        myPaths.Add(path);
-
-        currentPathTree = new PathTree() {
-            myPath = path
-        };
         
-        ForkPath(currentPathTree, 1, 0);
+        PruneAndExtendPaths();
         StartCoroutine(ReDrawTerrainAroundCenter());
     }
 
-    void ForkPath(PathTree path, int segmentIndex, float degreeOffset) {
-        var startPoint = path.myPath.points[^1];
-        var startDirection = PathGenerator.GetDirectionVectorOnTheLine(path.myPath, path.myPath.length);
-
+    public const float pathGenerateDistance = 600;
+    public void PruneAndExtendPaths() {
         
-        // left fork
-        {
-            var segmentDistance = activeLevel.mySegmentsA[segmentIndex].segmentLength;
-            var segmentDirection = Quaternion.Euler(0, degreeOffset + 30 + Random.Range(-15, 15), 0) * Vector3.forward;
+        // extend
+        ForkPath(currentPathTree, 0, pathGenerateDistance);
 
-            var leftPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(leftPath);
-            var leftTree = new PathTree() {
-                myPath = leftPath
-            };
-            if (segmentIndex + 1 < activeLevel.mySegmentsA.Length) {
-                ForkPath(leftTree, segmentIndex + 1, degreeOffset + 60);
-            } else {
-                var leftStationEnd = GetComponent<PathGenerator>().MakeStationPath(leftPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(leftPath, leftPath.length), stationStraightDistance);
-                myPaths.Add(leftStationEnd);
-                var leftStation = new PathTree() {
-                    myPath = leftStationEnd
-                };
-                leftTree.rightPath = leftStation;
+        // prune
+        PrunePath(currentPathTree, 0, pathGenerateDistance,new List<PathTree>());
+    }
+
+
+    void PrunePath(PathTree pathTree, float curDistance, float maxDistance, List<PathTree> processedList) {
+        if(pathTree == null)
+            return;
+        if(processedList.Contains(pathTree))
+        {
+            return;
+        }
+
+        if (curDistance > maxDistance) {
+            myPaths.Remove(pathTree.myPath);
+            isComboListDirty = true;
+            if (pathTree.leftPathTree != null) {
+                pathTree.leftPathTree.prevPathTree = null;
             }
-            
-            path.leftPath = leftTree;
+            if (pathTree.rightPathTree != null) {
+                pathTree.rightPathTree.prevPathTree = null;
+            }
+            if (pathTree.prevPathTree != null) {
+                var prevPath = pathTree.prevPathTree;
+                if (prevPath.leftPathTree == pathTree) {
+                    prevPath.leftPathTree = null;
+                }else if (prevPath.rightPathTree == pathTree) {
+                    prevPath.rightPathTree = null;
+                }
+            }
+
+            cityStampPaths.Remove(pathTree.cityStampPath);
+            isComboListDirty = true;
+        }
+        
+        processedList.Add(pathTree);
+
+        curDistance += pathTree.myPath.length;
+
+        PrunePath(pathTree.prevPathTree, curDistance, maxDistance, processedList);
+        PrunePath(pathTree.leftPathTree, curDistance, maxDistance, processedList);
+        PrunePath(pathTree.rightPathTree, curDistance, maxDistance, processedList);
+    }
+
+
+    public int generatedPathDepth = 0; // min path before we generate an end station
+    public int minCastleDepth = 2;
+    private float endStationChance = 0.25f;
+    private bool forceEndStation = true;
+    void ForkPath(PathTree pathTree, float curDistance, float maxDistance) {
+        if(pathTree.myPath.endPath)
+            return;
+        
+        var startPoint = pathTree.myPath.points[^1];
+        var startDirection = PathGenerator.GetDirectionVectorOnTheLine(pathTree.myPath, pathTree.myPath.length);
+        
+        var makeEndStation = generatedPathDepth > (Mathf.Pow(2,minCastleDepth)) && Random.value < endStationChance;
+        if (forceEndStation) {
+            makeEndStation = true;
+        }
+        var leftStationMakeEnd = false;
+        var rightStationMakeEnd = false;
+        if (makeEndStation) {
+            if (Random.value < 0.5f) {
+                leftStationMakeEnd = true;
+            } else {
+                rightStationMakeEnd = true;
+            }
+        }
+        
+        var segmentDistance = activeLevel.GetRandomSegmentLength();
+        // left fork
+        if(pathTree.leftPathTree == null) {
+            generatedPathDepth += 1;
+            var leftSegmentDirection = Quaternion.Euler(0, - 30 + Random.Range(-15, 15), 0) * startDirection;
+            pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, leftStationMakeEnd, startPoint, startDirection, leftSegmentDirection, segmentDistance);
         }
         //right fork
-        {
-            var segmentDistance = activeLevel.mySegmentsB[segmentIndex].segmentLength;
-            var segmentDirection = Quaternion.Euler(0, degreeOffset - 30 + Random.Range(-15, 15), 0) * Vector3.forward;
-
-            var rightPath = GetComponent<PathGenerator>().MakeTrainPath(startPoint, startDirection,segmentDirection, segmentDistance, true);
-            myPaths.Add(rightPath);
-            var rightTree = new PathTree() {
-                myPath = rightPath
-            };
-            if (segmentIndex + 1 < activeLevel.mySegmentsA.Length) {
-                ForkPath(rightTree, segmentIndex + 1, degreeOffset - 60);
-            }else {
-                var rightStationEnd = GetComponent<PathGenerator>().MakeStationPath(rightPath.points[^1], PathGenerator.GetDirectionVectorOnTheLine(rightPath, rightPath.length), stationStraightDistance);
-                myPaths.Add(rightStationEnd);
-                var rightStation = new PathTree() {
-                    myPath = rightStationEnd
-                };
-                rightTree.rightPath = rightStation;
-            }
-
-            path.rightPath = rightTree;
+        if(pathTree.rightPathTree == null) {
+            var rightSegmentDirection = Quaternion.Euler(0,  30 + Random.Range(-15, 15), 0) * startDirection;
+            pathTree.rightPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, rightStationMakeEnd, startPoint, startDirection, rightSegmentDirection, segmentDistance);
         }
     }
+
+    private float endStationCenterOffset = 14;
+    private PathTree _MakeForkedPath(PathTree pathTree, float curDistance, float maxDistance, bool leftStationMakeEnd, Vector3 startPoint, Vector3 startDirection, Vector3 segmentDirection, float segmentDistance) {
+        if (leftStationMakeEnd) {
+            var newStationEndPath = _pathGenerator.MakeStationAtEndPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
+            var cityDistance = segmentDistance + PathGenerator.stationStraightDistance/2f + endStationCenterOffset;
+            var cityStampPath = _pathGenerator.MakeCityStampPath(PathGenerator.GetPointOnLine(newStationEndPath, cityDistance), PathGenerator.GetDirectionOnTheLine(newStationEndPath, cityDistance));
+            myPaths.Add(newStationEndPath);
+            isComboListDirty = true;
+            var newStationEndPathTree = new PathTree() {
+                prevPathTree = pathTree,
+                myPath = newStationEndPath,
+                endPath = true,
+                cityStampPath = cityStampPath
+            };
+            cityStampPaths.Add(cityStampPath);
+            isComboListDirty = true;
+            return newStationEndPathTree;
+        } else {
+            var newPath = _pathGenerator.MakeTrainPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
+            myPaths.Add(newPath);
+            isComboListDirty = true;
+            var newPathTree = new PathTree() {
+                prevPathTree = pathTree,
+                myPath = newPath
+            };
+
+            curDistance += newPath.length;
+
+            if (curDistance < maxDistance) {
+                ForkPath(newPathTree, curDistance, maxDistance);
+            }
+            
+            return newPathTree;
+        }
+    }
+    
+    
 
 
     /*[Button]
@@ -373,6 +474,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
     }*/
 
+    [Button]
+    void DebugReDrawTerrainAroundCenter() {
+        if (Application.isPlaying) {
+            StartCoroutine(ReDrawTerrainAroundCenter());
+        }
+    }
+
     public float terrainViewRange = 10;
     public bool reDrawing = false;
     IEnumerator ReDrawTerrainAroundCenter() {
@@ -403,7 +511,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             myTerrains[i].needToBePurged = true;
         }
 
-        StartCoroutine(MakeTracksAroundCenter());
+        if (!makingTracks) {
+            StartCoroutine(MakeTracksAroundCenter());
+        }
 
         var diff =  drawCenter-center;
         var viewCount = Mathf.CeilToInt(terrainViewRange * 2 / TerrainGenerator.terrainWidth);
@@ -413,6 +523,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         var terrainCount = (int)Mathf.Pow( viewCount,2);
         var addition = 1f / terrainCount;
         terrainGenerationProgress -= 0.1f;
+        
         for (int i = 0; i < terrainCount; i++) {
             var offset = GetSpiralNumber(i);
             offset.x += Mathf.RoundToInt(diff.x / terrainWidth);
@@ -421,10 +532,11 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             var existingTerrain = GetTerrainAtCoordinates(coordinates);
             //Debug.Log($"Trying to draw terrain at coords {coordinates.x}, {coordinates.y} with diff {diff/terrainWidth}");
             if (existingTerrain == null) {
+                
                 GetComponent<TerrainGenerator>().MakeTerrainDistanceMaps(
                     coordinates,
                     center,
-                    myPaths,
+                    comboList,
                     TerrainGenDone
                 );
                 currentTerrainGenCount += 1;
@@ -458,6 +570,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         if (needReflectionProbe) {
             transform.parent.GetComponentInChildren<ReflectionProbe>().RenderProbe();
         }
+        
+        //Debug.Break();
     }
 
     void ClearTerrains() {
@@ -504,12 +618,14 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         return new Vector2Int(x, y);
     }
 
+    public float terrainStabilizedTimer = -1f;
     void TerrainGenDone() {
         currentTerrainGenCount -= 1;
         /*if (myTerrains.Count >= 9) {
             StopCoroutine(nameof(StitchTerrains));
             StartCoroutine(StitchTerrains());
         }*/
+        terrainStabilizedTimer = 1.5f;
     }
 
     /*[Button]
@@ -579,15 +695,27 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     }*/
 
     public ObjectPool TrackPool;
+    private PathGenerator _pathGenerator => GetComponent<PathGenerator>();
+
+    private bool makingTracks = false;
     public IEnumerator MakeTracksAroundCenter() {
+        makingTracks = true;
         var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange*2);
         var deleteList = new List<Vector3>();
+        var n = 0;
         foreach (var keyValuePair in myTracks) {
             if (!viewBound.Contains(keyValuePair.Key+center)) {
                 keyValuePair.Value.GetComponent<PooledObject>().DestroyPooledObject();
                 deleteList.Add(keyValuePair.Key);
             }
+
+            if (n % 300 == 0 && !TimeController.s.fastForwarding) {
+                yield return null;
+            }
+
+            n++;
         }
+        //print("key pruning done");
 
         foreach (var key in deleteList) {
             myTracks.Remove(key);
@@ -606,10 +734,20 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                     }
 
                     distance += trackDistance;
+                    
+                    if (n % 20 == 0 && !TimeController.s.fastForwarding) {
+                        yield return null;
+                    }
+
+                    n++;
                 }
             }
         }
+        
+        
+        //print("track adding done");
 
+        makingTracks = false;
         yield return null;
     }
     
@@ -622,12 +760,15 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             Gizmos.color = Color.white;
             for (int k = 0; k < path.Length-1; k++) {
                 //if (PathGenerator.CircularDistanceToLine(startPoint, direction, path[k]) > GetComponent<PathGenerator>().pathWidth) {
-                if (PathGenerator.CircularDistanceToLine(Vector3.left*100,  path[k]) > GetComponent<PathGenerator>().circularPathWidth) {
+                if (PathGenerator.CircularDistanceToLine(Vector3.left*100,  path[k]) > _pathGenerator.circularPathWidth) {
                     Gizmos.color = Color.red;
                 } else {
                     Gizmos.color = Color.white;
                 }
-            
+                
+                if(myPaths[i].endPath)
+                    Gizmos.color = Color.green;
+
                 Gizmos.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up);    
             }
             
@@ -638,10 +779,28 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(path[myPaths[i].endRotateStartPoint], 2);*/
         }
+        
+        
+        for (int i = 0; i < cityStampPaths.Count; i++) {
+            var path = cityStampPaths[i].points;
+            Gizmos.color = Color.cyan;
+            for (int k = 0; k < path.Length-1; k++) {
+                Gizmos.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up);    
+            }
+        }
     }
 
-    public List<PathGenerator.TrainPath> activePath = new List<PathGenerator.TrainPath>();
     private void Update() {
+        if (terrainStabilizedTimer > 0) {
+            terrainStabilizedTimer -= Time.deltaTime;
+
+            if (terrainStabilizedTimer <= 0) {
+                initialTerrainMade = true;
+                //print("terrain stabilized");
+                OnNewTerrainStabilized?.Invoke();
+            }
+        }
+        
         if (!PlayStateMaster.s.isCombatStarted()) {
             return;
         }
@@ -650,6 +809,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         for (int i = 0; i < myPaths.Count; i++) {
             var points = myPaths[i].points;
+            for (int j = 0; j < points.Length; j++) {
+                points[j] -= point;
+            }
+        }
+        
+        for (int i = 0; i < cityStampPaths.Count; i++) {
+            var points = cityStampPaths[i].points;
             for (int j = 0; j < points.Length; j++) {
                 points[j] -= point;
             }
@@ -673,73 +839,67 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
 
     public Vector3 GetPointOnActivePath(float currentDistanceOffset) {
-        var currentDistance = SpeedController.s.currentDistance + stationStraightDistance/2f + currentDistanceOffset;
-        if (activePath.Count <= 0) {
-            if (myPaths.Count > 0) {
-                return PathGenerator.GetPointOnLine(myPaths[0], currentDistance);
-            }
-            return Vector3.forward * currentDistance;
-        }
-        var pathIndex = 0;
-        while (currentDistance > activePath[pathIndex].length) {
-            currentDistance -= activePath[pathIndex].length;
-            pathIndex += 1;
-
-            if (pathIndex >= activePath.Count) {
-                pathIndex -= 1;
-                currentDistance = activePath[pathIndex].length;
-                break;
-            }
-        }
-
-        var point = PathGenerator.GetPointOnLine(activePath[pathIndex], currentDistance);
+        var currentDistance = GetCurrentDistance(currentDistanceOffset);
+        var correctPath = GetCorrectPath(ref currentDistance);
         
-        //Debug.Log($"{currentDistanceOffset}, {point}");
-        return point;
+        if(correctPath == null)
+            return Vector3.forward*currentDistance;
+
+        return PathGenerator.GetPointOnLine(correctPath, currentDistance);
     }
     
     public Quaternion GetRotationOnActivePath(float currentDistanceOffset) {
-        var currentDistance = SpeedController.s.currentDistance + stationStraightDistance/2f + currentDistanceOffset;
-        if (activePath.Count <= 0) {
-            if (myPaths.Count > 0) {
-                return PathGenerator.GetDirectionOnTheLine(myPaths[0], currentDistance);
-            }
+        var currentDistance = GetCurrentDistance(currentDistanceOffset);
+        var correctPath = GetCorrectPath(ref currentDistance);
+        
+        if(correctPath == null)
             return Quaternion.identity;
-        }
-        var pathIndex = 0;
-        while (currentDistance > activePath[pathIndex].length) {
-            currentDistance -= activePath[pathIndex].length;
-            pathIndex += 1;
 
-            if (pathIndex >= activePath.Count) {
-                pathIndex -= 1;
-                currentDistance = activePath[pathIndex].length;
-                print("We went too far!");
-                break;
-            }
-        }
-        return PathGenerator.GetDirectionOnTheLine(activePath[pathIndex], currentDistance);
+        return PathGenerator.GetDirectionOnTheLine(correctPath, currentDistance);
     }
     
     public Vector3 GetDirectionVectorOnActivePath(float currentDistanceOffset) {
-        var currentDistance = SpeedController.s.currentDistance + stationStraightDistance/2f + currentDistanceOffset;
-        if (activePath.Count <= 0) {
-            if (myPaths.Count > 0) {
-                return PathGenerator.GetDirectionVectorOnTheLine(myPaths[0], currentDistance);
-            }
+        var currentDistance = GetCurrentDistance(currentDistanceOffset);
+        var correctPath = GetCorrectPath(ref currentDistance);
+        
+        if(correctPath == null)
             return Vector3.zero;
-        }
-        var pathIndex = 0;
-        while (currentDistance > activePath[pathIndex].length) {
-            currentDistance -= activePath[pathIndex].length;
-            pathIndex += 1;
 
-            if (pathIndex >= activePath.Count) {
-                pathIndex -= 1;
-                currentDistance = activePath[pathIndex].length;
-                break;
+        return PathGenerator.GetDirectionVectorOnTheLine(correctPath, currentDistance);
+    }
+
+    float GetCurrentDistance(float currentDistanceOffset) {
+        var currentDistance = SpeedController.s.currentDistance + currentDistanceOffset;
+        currentDistance -= currentPathTreeOffset;
+        return currentDistance;
+    }
+    PathGenerator.TrainPath GetCorrectPath(ref float currentDistance) {
+        if (currentPathTree == null) {
+            if (myPaths.Count > 0) {
+                return myPaths[0];
+            }
+            return null;
+        }
+
+        var travelPathTree = currentPathTree;
+        if (currentDistance > 0) {
+            if (currentDistance > travelPathTree.myPath.length) {
+                currentDistance -= travelPathTree.myPath.length;
+                if (PathSelectorController.s.mainLever.topSelected) {
+                    if(travelPathTree.leftPathTree != null)
+                        travelPathTree = travelPathTree.leftPathTree;
+                } else {
+                    if(travelPathTree.rightPathTree != null)
+                        travelPathTree = travelPathTree.rightPathTree;
+                }
+            }
+        } else {
+            if (travelPathTree.prevPathTree != null) {
+                travelPathTree = travelPathTree.prevPathTree;
+                currentDistance += travelPathTree.myPath.length;
             }
         }
-        return PathGenerator.GetDirectionVectorOnTheLine(activePath[pathIndex], currentDistance).normalized;
+
+        return travelPathTree.myPath;
     }
 }

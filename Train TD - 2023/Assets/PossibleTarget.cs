@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
     [HideInInspector]
@@ -20,8 +22,8 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
 
     private bool isCartTarget = false;
     private Cart myCart;
-    private Outline _outline;
-    private void OnEnable() {
+    private HighlightEffect _outline;
+    private void Start() {
         if (targetTransform == null) {
             var building = GetComponent<Cart>();
 
@@ -31,17 +33,17 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
                 targetTransform = transform;
             }
         }
-        LevelReferences.allTargets.Add(this);
-        LevelReferences.targetsDirty = true;
+        LevelReferences.s.allTargets.Add(this);
+        LevelReferences.s.targetsDirty = true;
 
         myCart = GetComponent<Cart>();
-        _outline = GetComponentInChildren<Outline>();
+        _outline = GetComponent<HighlightEffect>();
         isCartTarget = myCart != null;
     }
 
-    private void OnDisable() {
-	    LevelReferences.allTargets.Remove(this);
-        LevelReferences.targetsDirty = true;
+    private void OnDestroy() {
+	    LevelReferences.s.allTargets.Remove(this);
+        LevelReferences.s.targetsDirty = true;
     }
 
     public float GetHealth() {
@@ -71,7 +73,8 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
         }
 
         if (isCartTarget) {
-            if (myCart != PlayerWorldInteractionController.s.selectedCart) {
+            var selectedCart = PlayerWorldInteractionController.s.currentSelectedThing as Cart;
+            if (myCart != selectedCart) {
                 if (enemiesTargetingMe.Count > 0) {
                     var totalWidth = 0f;
                     for (int i = 0; i < enemiesTargetingMe.Count; i++) {
@@ -79,11 +82,11 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
                             totalWidth += enemiesTargetingMe[i].currentWidth + 0.5f;
                     }
 
-                    _outline.enabled = totalWidth > 0;
-                    _outline.OutlineColor = Color.red;
-                    _outline.OutlineWidth = totalWidth;
+                    _outline.highlighted = totalWidth > 0;
+                    _outline.outlineColor = Color.red;
+                    _outline.outlineWidth = totalWidth;
                 } else {
-                    _outline.enabled = false;
+                    _outline.highlighted = false;
                 }
             }
         }

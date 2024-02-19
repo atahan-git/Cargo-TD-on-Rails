@@ -13,9 +13,6 @@ public class TrainGemBridge : MonoBehaviour, IResetState, IActiveDuringCombat
 
     public float curDelay = 1f;
     public float curUraniumDelay = 0;
-
-    
-    public List<GameObject> prefabToSpawnWhenSpeedBoostActivates = new List<GameObject>();
     
     void Update() {
         curDelay -= Time.deltaTime;
@@ -24,19 +21,12 @@ public class TrainGemBridge : MonoBehaviour, IResetState, IActiveDuringCombat
         if (curDelay <= 0) {
             SpawnGemEffect();
             curDelay = 2f;
-            if (SpeedController.s.isBoosting) {
-                curDelay = extraPrefabToSpawnOnAffected.Count*0.2f;
-            }
         }
 
         if (uranium != null) {
             if (curUraniumDelay <= 0) {
                 curUraniumDelay = Mathf.Max(1,uraniumDelay - uraniumDelayReduction); // min delay is 1 sec
                 Instantiate(uranium, transform);
-                
-                if (SpeedController.s.isBoosting) {
-                    curUraniumDelay = 1f;
-                }
             }
         }
     }
@@ -53,21 +43,8 @@ public class TrainGemBridge : MonoBehaviour, IResetState, IActiveDuringCombat
         }
     }
 
-    void SpawnSpeedBoostEffect() {
-        StartCoroutine(_SpawnSpeedBoostEffect());
-    }
-    
-    IEnumerator _SpawnSpeedBoostEffect() {
-        foreach (var prefab in prefabToSpawnWhenSpeedBoostActivates) {
-            Instantiate(prefab, transform);
-
-            yield return new WaitForSeconds(0.2f);
-        }
-    }
-
-    public void ResetState(int level) {
+    public void ResetState() {
         extraPrefabToSpawnOnAffected.Clear();
-        prefabToSpawnWhenSpeedBoostActivates.Clear();
         uranium = null;
         uraniumDelayReduction = 0;
     }
@@ -80,13 +57,5 @@ public class TrainGemBridge : MonoBehaviour, IResetState, IActiveDuringCombat
 
     public void Disable() {
         this.enabled = false;
-    }
-
-    private void Start() {
-        SpeedController.s.OnSpeedBoostActivated.AddListener(SpawnSpeedBoostEffect);
-    }
-
-    private void OnDestroy() {
-        SpeedController.s.OnSpeedBoostActivated.RemoveListener(SpawnSpeedBoostEffect);
     }
 }

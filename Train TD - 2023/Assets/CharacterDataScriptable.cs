@@ -17,6 +17,4 @@ public class CharacterData {
     public string description;
 
     public DataSaver.TrainState starterTrain;
-
-    public DataSaver.RunResources starterResources;
 }

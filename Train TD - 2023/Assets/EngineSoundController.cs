@@ -78,7 +78,11 @@ public class EngineSoundController : MonoBehaviour {
 
     void Start() {
         _source = GetComponent<AudioSource>();
-        _provider = GetComponentInParent<ISpeedForEngineSoundsProvider>();
+        //_provider = GetComponentInParent<ISpeedForEngineSoundsProvider>();
+        _provider = GetComponentInParent<EnemyInSwarm>().myWave;
+        if (_provider == null) {
+            _provider = GetComponentInParent<ISpeedForEngineSoundsProvider>();
+        }
         Invoke(nameof(RandomPitchChange), Random.Range(3f,10f));
         LoadEnemyEngineSfx();
         originVolume = _source.volume;
@@ -181,7 +185,7 @@ public class EngineSoundController : MonoBehaviour {
 
     private bool IsEngaging(EngineSoundController instance)
     {
-        EnemyWave wave = instance.GetComponentInParent<EnemyWave>();
+        EnemyWave wave = instance.GetComponentInParent<EnemyInSwarm>().myWave;
         if (wave.distance < 20 && !wave.isLeaving)
             return true;
         else

@@ -32,6 +32,16 @@ public static class ExtensionMethods {
             GameObject.Destroy(transform.GetChild(i).gameObject);
         }
     }
+    
+    public static void DeleteAllChildrenEditor(this Transform transform, bool skipLast = false) {
+        int childs = transform.childCount;
+        int minus = 1;
+        if (skipLast)
+            minus += 1;
+        for (int i = childs - minus; i >= 0; i--) {
+            GameObject.DestroyImmediate(transform.GetChild(i).gameObject);
+        }
+    }
 
 
     public static void InsertWithNullFill<T>(this List<T> ls, int index, T item) where T : class {
@@ -103,6 +113,15 @@ public static class ExtensionMethods {
             totalBBox.Encapsulate(collider.bounds);
         }
         return totalBBox;
+    }
+    
+    public static Vector3 RandomPointInsideBounds(this Bounds bounds)
+    {
+        float x = Random.Range(bounds.min.x, bounds.max.x);
+        float y = Random.Range(bounds.min.y, bounds.max.y);
+        float z = Random.Range(bounds.min.z, bounds.max.z);
+
+        return new Vector3(x, y, z);
     }
 
 }

@@ -7,21 +7,15 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ShopStateController : MonoBehaviour {
 	public static ShopStateController s;
 	private void Awake() { s = this; }
 
-	public List<LevelData> allLevels {
-		get {
-			return LevelDataLoader.s.allLevels;
-		}
-	}
 
 	public GameObject starterUI;
 	public GameObject gameUI;
-
-	public int selectedLevelIndex = -1;
 
 	public enum CanStartLevelStatus {
 		needToPutThingInFleaMarket, needToPickUpFreeCarts, needToSelectDestination, allGoodToGo
@@ -60,6 +54,13 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	public void OpenShopUI() {
+		PlayerWorldInteractionController.s.canSelect = true;
+		if (DataSaver.s.GetCurrentSave().showWakeUp) {
+			WakeUpAnimation.s.Engage();
+			DataSaver.s.GetCurrentSave().showWakeUp = false;
+		}
+		
+		
 		if(PlayStateMaster.s.isCombatInProgress())
 			return;
 		
@@ -72,12 +73,13 @@ public class ShopStateController : MonoBehaviour {
 		
 		CameraController.s.ResetCameraPos();
 		
-		if (DataSaver.s.GetCurrentSave().currentRun.isInEndRunArea) {
+		if (DataSaver.s.GetCurrentSave().isInEndRunArea) {
 			starterUI.SetActive(false);
 			MissionWinFinisher.s.ShowUnclaimedRewards();
 			//HexGrid.s.CreateEndAreaChunk();
 
 		} else {
+			PathSelectorController.s.trainStationStart.SetActive(true);
 			UpgradesController.s.DrawShopOptions();
 			UpdateBackToProfileOrAbandonButton();
 		}
@@ -88,52 +90,13 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	public GateScript gateScript;
-	public Tooltip selectDestinationTooltip;
-	public Tooltip pickUpWorldCartTooltip;
-	public Tooltip fillFleaMarketTooltip;
-	public Tooltip allGoodToGoTooltip;
-	public void SetGoingLeft() {
-		gateScript.SetCanGoStatus(true, allGoodToGoTooltip);
-		
-		var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-		var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(playerStar.outgoingConnections[0]);
-		SelectLevel(targetStar);
-	}
-
-	public void SetGoingRight() {
-		gateScript.SetCanGoStatus(true, allGoodToGoTooltip);
-
-		var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-		var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(playerStar.outgoingConnections[1]);
-		SelectLevel(targetStar);
-	}
-
-	public void SetCannotGo(CanStartLevelStatus status) {
-		Tooltip tooltip;
-
-		switch (status) {
-			case CanStartLevelStatus.needToSelectDestination:
-				tooltip = selectDestinationTooltip;
-				break;
-			case CanStartLevelStatus.needToPickUpFreeCarts:
-				tooltip = pickUpWorldCartTooltip;
-				break;
-			case CanStartLevelStatus.needToPutThingInFleaMarket:
-				tooltip = fillFleaMarketTooltip;
-				break;
-			default:
-				tooltip = null;
-				break;
-		}
-		
-		gateScript.SetCanGoStatus(false, tooltip);
-	}
 
 	public void StartLevel() {
 		StartLevel(true);
 	}
 
 	public void StartLevel(bool legitStart) {
+		PlayStateMaster.s.SetCurrentLevel(DataHolder.s.levelArchetypeScriptables[Random.Range(0,DataHolder.s.levelArchetypeScriptables.Length)].GenerateLevel());
 		if (PlayStateMaster.s.IsLevelSelected()) {
 			var currentLevel = PlayStateMaster.s.currentLevel;
 			starterUI.SetActive(false);
@@ -155,8 +118,8 @@ public class ShopStateController : MonoBehaviour {
 
 				SoundscapeController.s.PlayMissionStartSound();
 				
-				if(currentLevel.isBossLevel)
-					MiniGUI_BossNameUI.s.ShowBossName(currentLevel.levelNiceName);
+				/*if(currentLevel.isBossLevel)
+					MiniGUI_BossNameUI.s.ShowBossName(currentLevel.levelNiceName);*/
 			} 
 			/*} else {
 				SceneLoader.s.FinishLevel();
@@ -181,64 +144,8 @@ public class ShopStateController : MonoBehaviour {
 		EnemyHealth.enemyKilled = 0;
 		//PlayerBuildingController.s.currentLevelStats = new Dictionary<string, PlayerBuildingController.BuildingData>();
 	}
-
-	public void SelectLevelAndStart(StarState targetStar) {
-		SelectLevel(targetStar);
-		StartLevel();
-	}
-
-	public void SelectLevel(StarState targetStar) {
-		DataSaver.s.GetCurrentSave().currentRun.targetStar = targetStar.starName;
-		var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-
-		for (int i = 0; i < playerStar.outgoingConnections.Count; i++) {
-			if (playerStar.outgoingConnections[i] == targetStar.starName) {
-				selectedLevelIndex = i;
-				break;
-			}
-		}
-
-		if (selectedLevelIndex == -1) {
-			Debug.LogError($"Illegal star target: {targetStar.starName}");
-			return;
-		}
-
-		var level = playerStar.outgoingConnectionLevels[selectedLevelIndex];
-		PlayStateMaster.s.SetCurrentLevel(level);
-	}
-
-	public void SelectLevelAndStart_StarterUIStartOnly(ConstructedLevel data) {
-		PlayStateMaster.s.SetCurrentLevel(data);
-
-		starterUI.SetActive(false);
-
-		ClearStaticTrackers();
-
-		gameUI.SetActive(true);
-		PlayStateMaster.s.StarCombat();
-
-		UpdateBackToProfileOrAbandonButton();
-		
-		RangeVisualizer.SetAllRangeVisualiserState(true);
-
-		SoundscapeController.s.PlayMissionStartSound();
-
-		// MusicPlayer.s.SwapMusicTracksAndPlay(true);
-		FMODMusicPlayer.s.SwapMusicTracksAndPlay(true);
-		
-		StartLevel();
-	}
-
-	public void FinishTravellingToStar() {
-		var currentRun = DataSaver.s.GetCurrentSave().currentRun;
-		MapController.s.TravelToStar(currentRun.map.GetStarWithName(currentRun.targetStar));
-	}
-
+	
 	public void QuickStart() {
-		if (DataSaver.s.GetCurrentSave().isInARun) {
-			var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-			var targetStar = DataSaver.s.GetCurrentSave().currentRun.map.GetStarWithName(playerStar.outgoingConnections[0]);
-			SelectLevelAndStart(targetStar);
-		}
+		StartLevel();
 	}
 }

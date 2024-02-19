@@ -15,13 +15,6 @@ public class PathSelectorController : MonoBehaviour {
 	}
 
 	public Transform trackParent;
-	public GameObject trackPrefab;
-	public GameObject switchPrefab;
-
-	[Space] public GameObject castleCityPrefab;
-	
-	private List<MiniGUI_TrackPath> _tracks = new List<MiniGUI_TrackPath>();
-	private List<MiniGUI_TrackLever> _levers = new List<MiniGUI_TrackLever>();
 
 	// public AudioSource trainCrossingAudioSource;
 	// public AudioClip trackSwitchSound;
@@ -31,14 +24,13 @@ public class PathSelectorController : MonoBehaviour {
 
 	public ManualHorizontalLayoutGroup layoutGroup;
 
-	public int currentSegment = 0;
-
 	public InputActionReference trackSwitchAction;
-
-	public MiniGUI_TrackLever nextLever;
 	
-
 	private ConstructedLevel activeLevel => PlayStateMaster.s.currentLevel;
+
+
+	public GameObject trainStationStart;
+	public GameObject trainStationEnd;
 
 	private void OnEnable() {
 		trackSwitchAction.action.Enable();
@@ -51,16 +43,13 @@ public class PathSelectorController : MonoBehaviour {
     }
 
     private void TrackSwitch(InputAction.CallbackContext obj) {
-		if (nextLever != null && !nextLever.isLocked) {
-			nextLever.LeverClicked();
-		}
+		mainLever.LeverClicked();
 	}
 
 	private void OnDisable() {
 		trackSwitchAction.action.Disable();
 		trackSwitchAction.action.performed -= TrackSwitch;
 	}
-
 	
 	public void SetUpPath() {
 		if (activeLevel == null) {
@@ -69,115 +58,82 @@ public class PathSelectorController : MonoBehaviour {
 
 		EnemyWavesController.s.SetUpLevel();
 
-		_tracks.Clear();
-		_levers.Clear();
-		
-		trackParent.DeleteAllChildren();
 		DistanceAndEnemyRadarController.s.ClearRadar();
 
-		Instantiate(castleCityPrefab, trackParent);
+		EnemyWavesController.s.SpawnEnemiesOnSegment(0,  PathAndTerrainGenerator.s.currentPathTree.myPath.length);
 
-		var firstTrack = Instantiate(trackPrefab, trackParent);
-		firstTrack.GetComponent<MiniGUI_TrackPath>().SetUpTrack(true, activeLevel.mySegmentsA[0],activeLevel.mySegmentsB[0]);
-		firstTrack.GetComponent<MiniGUI_TrackPath>().LockTrackState();
-		
-		EnemyWavesController.s.SpawnEnemiesOnSegment(0,  activeLevel.mySegmentsA[0]);
+		nextSegmentChangeDistance = PathAndTerrainGenerator.s.currentPathTree.myPath.length + PathAndTerrainGenerator.s.currentPathTreeOffset;
 
-		currentSegment = 0;
-		nextSegmentChangeDistance = activeLevel.mySegmentsA[0].segmentLength;
+		mainLever.SetButtonPromptState(true);
+		mainLever.SetTrackSwitchWarningState(false);
 		
-		//SplinePathMaster.s.GenerateInitialSegments();
+		
+		topTrack.gameObject.SetActive(true);
+		bottomTrack.gameObject.SetActive(true);
+		mainTrack.gameObject.SetActive(true);
+		rightCastleCity.SetActive(false);
+		
+		mainLever.SetTrackState(Random.value < 0.5f);
 
-		/*HexGrid.s.ClearTrackSwitchDistances();
-		HexGrid.s.MakeFirstPath(nextSegmentChangeDistance);*/
-		//HexGrid.s.DoTrackSwitchAtDistance(nextSegmentChangeDistance);
-		
-		for (int i = 0; i < activeLevel.mySegmentsA.Length - 1; i++) {
-			var _lever = Instantiate(switchPrefab, trackParent).GetComponent<MiniGUI_TrackLever>();
-			var leverState = Random.value > 0.5f;
-			_lever.SetTrackState(leverState);
-			_lever.SetTrackSwitchWarningState(false);
-			_lever.SetButtonPromptState(false);
-			_lever.leverId = i;
-			_levers.Add(_lever);
-
-			var _track = Instantiate(trackPrefab, trackParent).GetComponent<MiniGUI_TrackPath>();
-			_track.trackId = i;
-			_track.SetUpTrack(leverState, activeLevel.mySegmentsA[i+1], activeLevel.mySegmentsB[i+1]);
-			_track.singleLever = _lever;
-			_track.doubleLever.SetTrackState(leverState);
-			_track.doubleLever.leverId = i;
-			_track.doubleLever.SetTrackSwitchWarningState(false);
-			_track.doubleLever.SetButtonPromptState(false);
-			_tracks.Add(_track);
-		}
-		
-		/*HexGrid.s.AddTrackSwitch(true, activeLevel.mySegmentsA[1].segmentLength, activeLevel.mySegmentsB[1].segmentLength, 
-			activeLevel.mySegmentsA.Length == 2,
-			_levers[currentSegment].currentState
-		);*/
-
-		for (int i = 0; i < _tracks.Count; i++) {
-			_tracks[i].SetTrackState(_tracks[i].currentState, true);
-		}
-
-		nextLever = _levers[0];
-		nextLever.SetButtonPromptState(true);
-		_tracks[0].doubleLever.SetButtonPromptState(true);
-		
-		
-		Instantiate(castleCityPrefab, trackParent);
-		
-		ReCalculateMissionLength();
+		ReAdjustTracks();
 		layoutGroup.isDirty = true;
 	}
 
-	public void ActivateLever(int id) {
-		var stateToSet = !_levers[id].currentState;
-		_levers[id].SetTrackState(stateToSet);
-		_tracks[id].doubleLever.SetTrackState(stateToSet);
-		_tracks[id].SetTrackState(stateToSet);
+	public GameObject leftCastleCity;
+	public GameObject rightCastleCity;
+	public MiniGUI_TrackPath mainTrack;
+	public MiniGUI_TrackLever mainLever;
+	public MiniGUI_TrackPath topTrack;
+	public MiniGUI_TrackPath bottomTrack;
+	public GameObject topCastleCity;
+	public GameObject bottomCastleCity;
+	void ReAdjustTracks() {
+		var currentPathTree = PathAndTerrainGenerator.s.currentPathTree;
+		mainTrack.SetUpTrack(currentPathTree.myPath.length);
+		
+		if (currentPathTree.endPath) {
+			var stationDistance= nextSegmentChangeDistance-PathGenerator.stationStraightDistance/2f;
+			SpeedController.s.SetMissionEndDistance(stationDistance-9f);
+			topTrack.gameObject.SetActive(false);
+			bottomTrack.gameObject.SetActive(false);
+			mainLever.gameObject.SetActive(false);
+			rightCastleCity.SetActive(true);
+			topCastleCity.SetActive(false);
+			bottomCastleCity.SetActive(false);
 
-		ReCalculateMissionLength();
+			trainStationEnd.GetComponent<TrainStation>().stationDistance = stationDistance;
+			trainStationEnd.GetComponent<TrainStation>().Update();
+			trainStationEnd.SetActive(true);
+			
+		} else {
+			topTrack.SetUpTrack(currentPathTree.leftPathTree.myPath.length);
+			bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
+			topTrack.SetActiveState(mainLever.topSelected);
+			bottomTrack.SetActiveState(!mainLever.topSelected);
+
+			leftCastleCity.SetActive(currentPathTree.startPath);
+			topCastleCity.SetActive(currentPathTree.leftPathTree.endPath);
+			bottomCastleCity.SetActive(currentPathTree.rightPathTree.endPath);
+			
+			//trainStationStart.SetActive(currentPathTree.startPath);
+			
+			
+			trainStationEnd.SetActive(false);
+		}
+	}
+
+	public void ActivateLever() {
+		var stateToSet = !mainLever.topSelected;
+		
+		mainLever.SetTrackState(stateToSet);
+
+		ReAdjustTracks();
 
 		// trainCrossingAudioSource.PlayOneShot(trackSwitchSound);
 		AudioManager.PlayOneShot(SfxTypes.OnTrackSwitch);
 	}
 
-	public void ShowTrackInfo(int id) {
-		_tracks[id].ToggleTrackState(!_tracks[id].isShowingBoth);
-	}
-
-	private float nextSegmentChangeDistance = -1;
-
-	void ReCalculateMissionLength() {
-		var currentLength = activeLevel.mySegmentsA[0].segmentLength;
-		
-		PathAndTerrainGenerator.s.activePath.Clear();
-		PathAndTerrainGenerator.s.activePath.Add(PathAndTerrainGenerator.s.myPaths[0]);
-		var currentPlaceInTree = PathAndTerrainGenerator.s.currentPathTree;
-		
-		PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
-
-		for (int i = 0; i < _levers.Count; i++) {
-			if (_levers[i].currentState) {
-				currentLength += activeLevel.mySegmentsA[i + 1].segmentLength;
-
-				currentPlaceInTree = currentPlaceInTree.leftPath;
-				PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
-			}else {
-				currentLength += activeLevel.mySegmentsB[i + 1].segmentLength;
-				
-				currentPlaceInTree = currentPlaceInTree.rightPath;
-				PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
-			}
-		}
-
-		currentPlaceInTree = currentPlaceInTree.rightPath; // end station
-		PathAndTerrainGenerator.s.activePath.Add(currentPlaceInTree.myPath);
-		
-		SpeedController.s.SetMissionEndDistance(currentLength);
-	}
+	public float nextSegmentChangeDistance = -1;
 
 
 	public float trackSwitchWarningDistance = 50;
@@ -190,8 +146,7 @@ public class PathSelectorController : MonoBehaviour {
 				trainCrossingSpeaker.Play();
 
 				isPlayingTrackSwitchWarning = true;
-				_levers[currentSegment].SetTrackSwitchWarningState(true);
-				_tracks[currentSegment].doubleLever.SetTrackSwitchWarningState(true);
+				mainLever.SetTrackSwitchWarningState(true);
 			}
 
 
@@ -201,45 +156,32 @@ public class PathSelectorController : MonoBehaviour {
 
 				isPlayingTrackSwitchWarning = false;
 
-				_tracks[currentSegment].LockTrackState();
-				_levers[currentSegment].LockTrackState();
-
-
-				LevelSegment upcomingSegment;
-				if (_levers[currentSegment].currentState) {
-					upcomingSegment = activeLevel.mySegmentsA[currentSegment + 1];
-				} else {
-					upcomingSegment = activeLevel.mySegmentsB[currentSegment + 1];
-				}
-
-				_levers[currentSegment].SetTrackSwitchWarningState(false);
-				_levers[currentSegment].SetVisibility(false);
-				_levers[currentSegment].SetButtonPromptState(false);
-				_tracks[currentSegment].doubleLever.SetTrackSwitchWarningState(false);
-				_tracks[currentSegment].doubleLever.SetButtonPromptState(false);
-
-				EnemyWavesController.s.PhaseOutExistingEnemies();
-				if (upcomingSegment.isEncounter) {
+				var upcomingPath = mainLever.topSelected ? PathAndTerrainGenerator.s.currentPathTree.leftPathTree : PathAndTerrainGenerator.s.currentPathTree.rightPathTree;
+				
+				//mainLever.LockTrackState();
+				mainLever.SetTrackSwitchWarningState(false);
+				mainLever.SetTrackState(Random.value < 0.5f);
+				
+				
+				//EnemyWavesController.s.PhaseOutExistingEnemies();
+				/*if (upcomingSegment.isEncounter) {
 					EncounterController.s.EngageEncounter(upcomingSegment.levelName);
-				} else {
-					EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingSegment);
-				}
+				} else {*/
+					EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length);
+				//}
 
-				if (currentSegment < _tracks.Count - 1) {
-					nextSegmentChangeDistance += upcomingSegment.segmentLength;
+				nextSegmentChangeDistance += upcomingPath.myPath.length;
+				/*if (!upcomingPath.endPath) {
+					nextSegmentChangeDistance += upcomingPath.myPath.length;
 				} else {
 					nextSegmentChangeDistance += 10000000;
-				}
+				}*/
 
-				currentSegment += 1;
-
-
-				if (currentSegment < _levers.Count) {
-					nextLever = _levers[currentSegment];
-					nextLever.SetButtonPromptState(true);
-					_tracks[currentSegment].doubleLever.SetButtonPromptState(true);
-				}
-
+				PathAndTerrainGenerator.s.currentPathTreeOffset += PathAndTerrainGenerator.s.currentPathTree.myPath.length;
+				PathAndTerrainGenerator.s.currentPathTree = upcomingPath;
+				PathAndTerrainGenerator.s.PruneAndExtendPaths();
+				ReAdjustTracks();
+				
 				SpeedController.s.PlayEngineStartEffects();
 			}
 		}

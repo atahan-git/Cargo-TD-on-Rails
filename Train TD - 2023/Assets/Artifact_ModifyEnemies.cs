@@ -7,9 +7,9 @@ public class Artifact_ModifyEnemies : ActivateWhenEnemySpawns {
 	public float fireDecayRateMultiplier = 1f;
 
 	public override void ModifyEnemy(EnemyHealth enemyHealth) {
-		if (enemyHealth.rewardArtifactOnDeath) {
+		/*if (enemyHealth.rewardArtifactOnDeath) {
 			enemyHealth.currentHealth *= eliteEnemyHealthMultiplier;
-		}
+		}*/
 
 		enemyHealth.burnReduction *= fireDecayRateMultiplier;
 	}

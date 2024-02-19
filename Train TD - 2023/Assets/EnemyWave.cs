@@ -7,8 +7,6 @@ using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
 
 public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSoundsProvider {
-    public EnemyIdentifier myEnemy;
-    public EnemySwarmMaker drawnEnemies;
     public float mySpeed;
 
     public MiniGUI_IncomingWave waveDisplay;
@@ -18,54 +16,42 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     public bool isLeft;
 
     private LineRenderer lineRenderer;
-    
-    public Material deadlyMaterial;
-    public Material safeMaterial;
 
-    public float waveSpawnXSpread = 0;
+    public Vector3 boundsSize;
     public float myXOffset = 0;
     public float targetXOffset = 0;
-
-
-    private bool isTeleporting = false;
-    private Vector2 teleportTiming = Vector2.zero;
+    
+    public bool isTeleporting = false;
+    public Vector2 teleportTiming = Vector2.zero;
 
     public bool isStealing = false;
     public bool isLeaving = false;
     public bool isForwardLeave = false;
+
+    public Sprite mainSprite;
+    public Sprite gunSprite;
+
+    public bool isDeadly = true;
 
     public bool IsTrain() {
         return false;
     }
     
     public Sprite GetMainSprite() {
-        return DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
+        return mainSprite;
     }
 
     public Sprite GetGunSprite() {
-        return DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemySwarmMaker>().GetGunSprite();
+        return gunSprite;
     }
     
     private void Start() {
+        Instantiate(LevelReferences.s.enemyWaveMovingArrow, transform);
         lineRenderer = GetComponentInChildren<LineRenderer>();
     }
 
     private DisablerHarpoonModule _disablerHarpoonModule;
-    public void SetUp(EnemyIdentifier data, float position, bool isMoving, bool _isLeft, Artifact artifact) {
-        myEnemy = data;
-        var en = DataHolder.s.GetEnemy(myEnemy.enemyUniqueName);
-        var mySwarm = en.GetComponent<EnemySwarmMaker>();
-        if (mySwarm == null) {
-            Debug.LogError($"Enemy is missing swarm maker {en.gameObject.name} {data.enemyUniqueName}");
-        }
-
-        mySpeed = mySwarm.speed;
-        isTeleporting = mySwarm.isTeleporting;
-        teleportTiming = mySwarm.teleportTiming;
-        isStealing = mySwarm.isStealing;
-        neverLeave = mySwarm.neverLeave;
-        isNuker = mySwarm.isNuker;
-        nukingTime = mySwarm.nukingTime;
+    public void SetUp( float position, bool isMoving, bool _isLeft) {
         wavePosition = position;
         isWaveMoving = isMoving;
 
@@ -73,23 +59,91 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             currentSpeed = mySpeed;
         }
         
-        isLeft = _isLeft;
-        SpawnEnemy(artifact);
-        
-        SetTargetPosition();
-        myXOffset = targetXOffset;
-
         DistanceAndEnemyRadarController.s.RegisterUnit(this);
 
         teleportTimer = 0;
 
         _disablerHarpoonModule = GetComponentInChildren<DisablerHarpoonModule>();
+
+        var allEnemyHealths = GetComponentsInChildren<EnemyHealth>();
+
+        for (int i = 0; i < allEnemyHealths.Length; i++) {
+            ArtifactsController.s.ModifyEnemy(allEnemyHealths[i]);
+        }
+        
+        var allEnemiesInSwarm = GetComponentsInChildren<EnemyInSwarm>();
+        
+        var primeEnemy = allEnemiesInSwarm[0];
+        mySpeed = 100;
+        
+        for (int i = 0; i < allEnemiesInSwarm.Length; i++) {
+            mySpeed = Mathf.Min(mySpeed, allEnemiesInSwarm[i].speed);
+
+            if (allEnemiesInSwarm[i].primeEnemy) {
+                mainSprite = allEnemiesInSwarm[i].enemyIcon;
+                primeEnemy = allEnemiesInSwarm[i];
+            }
+        }
+        
+        mainSprite = primeEnemy.enemyIcon;
+        isTeleporting = primeEnemy.isTeleporting;
+        teleportTiming = primeEnemy.teleportTiming;
+        isStealing = primeEnemy.isStealing;
+        isNuker = primeEnemy.isNuker;
+        nukingTime = primeEnemy.nukingTime;
+        
+        var myBounds = new Bounds(transform.position, Vector3.zero);
+        var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
+
+        for (int i = 0; i < allSwarmMakers.Length; i++) {
+            myBounds.Encapsulate(allSwarmMakers[i].GetComponent<Collider>().bounds);
+        }
+
+        boundsSize = myBounds.size;
+        var mismatchedCenter = transform.position - myBounds.center;
+
+        for (int i = 0; i < allSwarmMakers.Length; i++) {
+            allSwarmMakers[i].transform.position += mismatchedCenter;
+        }
+
+        SetLeftyness(_isLeft);
+        SetTargetPosition();
+        myXOffset = targetXOffset;
+
+        for (int i = 0; i < allSwarmMakers.Length; i++) {
+            EnemyWavesController.s.AddEnemySwarmMaker(allSwarmMakers[i]);
+        }
+        
+        //Update();
+    }
+
+    void SetLeftyness(bool _isLeft) {
+        if (isLeft != _isLeft) {
+            isLeft = _isLeft;
+            
+            var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
+
+            for (int i = 0; i < allSwarmMakers.Length; i++) {
+                var pos = allSwarmMakers[i].transform.position;
+                pos.x = -pos.x;
+                allSwarmMakers[i].transform.position = pos;
+            }
+        }
     }
 
     private void OnDestroy() {
         DestroyRouteDisplay();
-        DistanceAndEnemyRadarController.s.RemoveUnit(this);
-        EnemyWavesController.s.RemoveWave(this);
+        if (DistanceAndEnemyRadarController.s != null) {
+            DistanceAndEnemyRadarController.s.RemoveUnit(this);
+        }
+
+        if (EnemyWavesController.s != null) {
+            EnemyWavesController.s.RemoveWave(this);
+            var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
+            for (int i = 0; i < allSwarmMakers.Length; i++) {
+                EnemyWavesController.s.RemoveEnemySwarmMaker(allSwarmMakers[i]);
+            }
+        }
     }
 
 
@@ -130,16 +184,25 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
                 wavePosition += currentSpeed * Time.deltaTime;
             }
 
-            lookVector = PathAndTerrainGenerator.s.GetDirectionVectorOnActivePath(wavePosition - playerPos + currentDistanceOffset);
+            var adjustedWavePosition = wavePosition - playerPos + currentDistanceOffset;
+            lookVector = PathAndTerrainGenerator.s.GetDirectionVectorOnActivePath(adjustedWavePosition);
             var left = Quaternion.AngleAxis(-90, Vector3.up) * lookVector;
-            var targetPos = PathAndTerrainGenerator.s.GetPointOnActivePath(wavePosition - playerPos + currentDistanceOffset) + left * myXOffset;
+            var targetPos = PathAndTerrainGenerator.s.GetPointOnActivePath(adjustedWavePosition) + left * myXOffset;
+            var targetRot = PathAndTerrainGenerator.s.GetRotationOnActivePath(adjustedWavePosition);
+
+            Debug.DrawLine(targetPos, targetPos + left*boundsSize.x/2f);
+            Debug.DrawLine(targetPos, targetPos - left*boundsSize.x/2f);
+            
             //Debug.DrawLine(targetPos, targetPos + left * 5, Color.red, 1f);
             //Debug.DrawLine(targetPos, targetPos +Vector3.up*5, Color.green, 1f);
-            if(movePos)
-                transform.position = Vector3.Lerp(transform.position,targetPos, 20*Time.deltaTime);
-            
+            if (movePos) {
+                transform.position = Vector3.Lerp(transform.position, targetPos, 20 * Time.deltaTime);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, 180*Time.deltaTime);
+            }
+
             if (instantLerp) {
                 transform.position = targetPos;
+                transform.rotation = targetRot;
                 instantLerp = false;
             }
             var effectiveSpeed = currentSpeed - slowAmount;
@@ -231,7 +294,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         teleportEffects.Clear();
 
         currentSpeed = LevelReferences.s.speed;
-        isLeft = !isLeft;
+        SetLeftyness(!isLeft);
         SetTargetPosition();
         myXOffset = targetXOffset;
         currentDistanceOffset = targetDistanceOffset;
@@ -252,10 +315,19 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             SetPositionNuking();
         } else {
             var trainLength = Train.s.GetTrainLength();
-            var halfLength = (trainLength / 2f) + DataHolder.s.cartLength;
+            var halfLength = (trainLength / 2f) + DataHolder.s.cartLength*2f; // with a little padding at the end
+            halfLength -= boundsSize.z / 2f;
             targetDistanceOffset = Random.Range(-halfLength, halfLength);
 
-            targetXOffset = Random.Range(0.7f+waveSpawnXSpread, 3.2f-waveSpawnXSpread);
+            var minX = 0.7f + boundsSize.x / 2f;
+            var maxX = 3.2f - boundsSize.x / 2f;
+
+            if (maxX > minX) {
+                targetXOffset = Random.Range(minX,maxX);
+            } else {
+                targetXOffset = (3.2f + 0.7f) / 2f;
+            }
+
             if (!isLeft)
                 targetXOffset = -targetXOffset;
         }
@@ -273,7 +345,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i];
             var legalCartType = !cart.GetHealthModule().invincible;
-            var hasDirectControl = cart.GetComponentInChildren<DirectControllable>() != null;
+            var hasDirectControl = cart.GetComponentInChildren<IDirectControllable>() != null;
             if (!cart.isDestroyed && legalCartType && !cart.isBeingDisabled && !hasDirectControl) {
                 carts.Add(cart);
             }
@@ -305,8 +377,8 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         var carts = new List<Cart>();
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i];
-            var legalCartType = !cart.isCargo && !cart.isMainEngine && !cart.isMysteriousCart;
-            var hasDirectControl = cart.GetComponentInChildren<DirectControllable>() != null;
+            var legalCartType = !cart.isCargo && !cart.isMainEngine;
+            var hasDirectControl = cart.GetComponentInChildren<IDirectControllable>() != null;
             if (!cart.isDestroyed && legalCartType && !cart.isBeingDisabled && !hasDirectControl) {
                 carts.Add(cart);
             }
@@ -343,16 +415,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         if (!isLeft)
             targetXOffset = -targetXOffset;
     }
-    void SpawnEnemy(Artifact artifact = null) {
-        drawnEnemies = Instantiate(DataHolder.s.GetEnemy(myEnemy.enemyUniqueName), transform).GetComponent<EnemySwarmMaker>();
-        drawnEnemies.transform.ResetTransformation();
-        waveSpawnXSpread = drawnEnemies.SetData(myEnemy.enemyCount, artifact);
-
-        /*if (hasPowerUp) {
-            drawnEnemies.enemyIcon = powerUp.icon;
-        }*/
-    }
-
     void DestroyRouteDisplay() {
         if (waveDisplay != null) {
             Destroy(waveDisplay.gameObject);
@@ -363,7 +425,29 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     [NonSerialized]
     public UnityEvent OnEnemyEnter = new UnityEvent();
     void PlayEnemyEnterSound() {
-        drawnEnemies.PlayEnemyEnterSound();
+        var enemies = GetComponentsInChildren<EnemyInSwarm>();
+
+        if (enemies.Length > 0) {
+            List<EnemyInSwarm> prominentEnemies = new List<EnemyInSwarm>();
+            for (int i = 0; i < enemies.Length; i++) {
+                if (enemies[i].primeEnemy) {
+                    prominentEnemies.Add(enemies[i]);
+                }
+            }
+
+            AudioClip[] enemyEnterSounds = null;
+
+            if (prominentEnemies.Count > 0) {
+                enemyEnterSounds = prominentEnemies[Random.Range(0, prominentEnemies.Count)].enemyEnterSounds;
+            } else {
+                enemyEnterSounds = enemies[Random.Range(0, enemies.Length)].enemyEnterSounds;
+            }
+
+            if (enemyEnterSounds != null && enemyEnterSounds.Length > 0) {
+                SoundscapeController.s.PlayEnemyEnter(enemyEnterSounds[Random.Range(0, enemyEnterSounds.Length)]);
+            }
+        }
+
         OnEnemyEnter?.Invoke();
     }
 
@@ -393,8 +477,8 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             lineRenderer = GetComponentInChildren<LineRenderer>();
             lineRenderer.positionCount = points.Count;
             lineRenderer.SetPositions(points.ToArray());
-            var enemyType = DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemyTypeData>().myType;
-            lineRenderer.material = enemyType == EnemyTypeData.EnemyType.Deadly ? deadlyMaterial : safeMaterial;
+            //lineRenderer.material = isDeadly ? deadlyMaterial : safeMaterial;
+            lineRenderer.material = LevelReferences.s.enemyWaveMovingArrowMaterial;
             targetAlpha = 0f;
             lineRenderer.material.SetFloat("alpha", targetAlpha);
             lineRenderer.enabled = true;
@@ -485,7 +569,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     }
 
     public Sprite GetIcon() {
-        return DataHolder.s.GetEnemy(myEnemy.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
+        return mainSprite;
     }
 
     public bool isLeftUnit() {
@@ -541,12 +625,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     }
 
 
-    public bool neverLeave = false;
-
     public void Leave(bool _isForwardLeave) {
-        if(neverLeave)
-            return;
-        
         isLeaving = true;
         isStealing = false;
         isTeleporting = false;

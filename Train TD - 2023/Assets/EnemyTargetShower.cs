@@ -17,11 +17,18 @@ public class EnemyTargetShower : MonoBehaviour
     
     // Start is called before the first frame update
     void Start() {
+        gameObject.SetActive(false);
+        return;
+        
         _lineRenderer = GetComponent<LineRenderer>();
         GetComponentInParent<EnemyTargetPicker>().OnTargetChanged.AddListener(OnTargetChanged);
         GetComponentInParent<EnemyTargetPicker>().OnTargetUnset.AddListener(OnNoTarget);
         GetComponentInParent<GunModule>().onBulletFiredEvent.AddListener(OnShoot);
-        GetComponentInParent<EnemyWave>().OnEnemyEnter.AddListener(OnEnter);
+        var enemyWave= GetComponentInParent<EnemyInSwarm>().myWave;
+        if (enemyWave == null) {
+            enemyWave = GetComponentInParent<EnemyWave>();
+        }
+        enemyWave.OnEnemyEnter.AddListener(OnEnter);
     }
 
     void OnTargetChanged(Transform newTarget) {

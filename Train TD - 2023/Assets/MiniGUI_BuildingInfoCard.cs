@@ -75,7 +75,7 @@ public class MiniGUI_BuildingInfoCard : MonoBehaviour
         armorPenetrationIcon.gameObject.SetActive(false);
 
         icon.sprite = enemy.GetComponentInParent<EnemyWave>().GetIcon();
-        moduleName.text = enemy.GetComponentInParent<EnemyWave>().myEnemy.enemyUniqueName;
+        moduleName.text = "Error!";
         var myInfo = enemy.GetComponentsInChildren<IClickableInfo>();
         moduleDescription.text =myInfo[0].GetInfo();
         

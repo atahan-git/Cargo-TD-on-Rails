@@ -5,7 +5,7 @@ using UnityEditor;
 
 [InitializeOnLoad]
 public class Editor_CartRarityDisplay {
-    static Editor_CartRarityDisplay() {
+    /*static Editor_CartRarityDisplay() {
         EditorApplication.projectWindowItemOnGUI -= ProjectWindowItemOnGUICallback;
         EditorApplication.projectWindowItemOnGUI += ProjectWindowItemOnGUICallback;
     }
@@ -127,5 +127,5 @@ public class Editor_CartRarityDisplay {
         newRect.size /= 3.5f;
 
         return newRect;
-    }
+    }*/
 }

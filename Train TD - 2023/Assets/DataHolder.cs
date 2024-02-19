@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,14 +17,18 @@ public class DataHolder : MonoBehaviour {
 
     public Artifact[] artifacts;
     public Cart[] buildings;
-    public EnemyHolder[] enemies;
     public CharacterDataScriptable[] characters;
-    public CityDataScriptable[] cities;
     public EncounterTitle[] encounters;
-    public LevelDataScriptable[] levels;
     public PowerUpScriptable[] powerUps;
+    public LevelArchetypeScriptable[] levelArchetypeScriptables;
+    public GunModule[] swappableTier1Guns;
+    public GunModule[] swappableTier2Guns;
 
-
+    public Cart tier1GunCart;
+    public Cart tier2GunCart;
+    public Cart tier3GunCart;
+    
+    
     public PowerUpScriptable GetPowerUp(string powerUpUniqueName) {
         for (int i = 0; i < powerUps.Length; i++) {
             if (PreProcess(powerUps[i].name) == PreProcess(powerUpUniqueName)) {
@@ -45,33 +50,7 @@ public class DataHolder : MonoBehaviour {
         Debug.LogError($"Can't find encounter {encounterUniqueName}");
         return null;
     }
-    
-    public LevelData GetLevel(string levelUniqueName) {
-        if (levelUniqueName.StartsWith("e_")) {
-            return new LevelData() { levelName = levelUniqueName, isEncounter = true };
-        }
-        
-        for (int i = 0; i < levels.Length; i++) {
-            var data = levels[i].GetData();
-            if (PreProcess(data.levelName) == PreProcess(levelUniqueName)) {
-                return data;
-            }
-        }
 
-        Debug.LogError($"Can't find level {levelUniqueName}");
-        return null;
-    }
-
-    public CityDataScriptable GetCityScriptable(string cityUniqueName) {
-        for (int i = 0; i < cities.Length; i++) {
-            if (PreProcess(cities[i].cityData.uniqueName) == PreProcess(cityUniqueName)) {
-                return cities[i];
-            }
-        }
-
-        Debug.LogError($"Can't find city {cityUniqueName}");
-        return null;
-    }
 
     public Artifact GetArtifact(string artifactName) {
         for (int i = 0; i < artifacts.Length; i++) {
@@ -95,27 +74,50 @@ public class DataHolder : MonoBehaviour {
                 return buildings[i];
             }
         }
+        
+        // cant find building, maybe its a gun?
+        var tier1Gun = GetTier1Gun(buildingName);
+        if (tier1Gun != null) {
+            return tier1GunCart;
+        }
+        
+        var tier2Gun = GetTier2Gun(buildingName);
+
+        if (tier2Gun != null) {
+            return tier2GunCart;
+        }
 
         Debug.LogError($"Can't find building <{buildingName}>");
-        for (int i = 0; i < buildings.Length; i++) {
-			Debug.LogError(PreProcess(buildings[i].uniqueName));
+        var allBuildings = GetAllPossibleBuildingNames();
+        for (int i = 0; i < allBuildings.Count; i++) {
+			Debug.LogError(PreProcess(allBuildings[i]));
 		}
-        PlayStateMaster.s.OpenMainMenu(); // bail
+        
+        SettingsController.s.ResetTrainAndBail();
         
         return null;
     }
     
-    public GameObject GetEnemy(string enemyName) {
-        for (int i = 0; i < enemies.Length; i++) {
-            if (PreProcess(enemies[i].uniqueName) == PreProcess(enemyName)) {
-                return enemies[i].data;
+    
+    public GunModule GetTier1Gun(string gunName) {
+        for (int i = 0; i < swappableTier1Guns.Length; i++) {
+            if (PreProcess(swappableTier1Guns[i].gunUniqueName) == PreProcess(gunName)) {
+                return swappableTier1Guns[i];
             }
         }
-
-        Debug.LogError($"Can't find enemy {enemyName}");
+        
         return null;
     }
-    
+    public GunModule GetTier2Gun(string gunName) {
+        for (int i = 0; i < swappableTier2Guns.Length; i++) {
+            if (PreProcess(swappableTier2Guns[i].gunUniqueName) == PreProcess(gunName)) {
+                return swappableTier2Guns[i];
+            }
+        }
+        
+        return null;
+    }
+
     public CharacterData GetCharacter(string charName) {
         for (int i = 0; i < characters.Length; i++) {
             if (PreProcess(characters[i].myCharacter.uniqueName) == PreProcess(charName)) {
@@ -129,12 +131,22 @@ public class DataHolder : MonoBehaviour {
 
     string PreProcess(string input) {
         return input.Replace(" ", "").ToLower();
-    } 
-}
+    }
 
 
-[Serializable]
-public class EnemyHolder {
-    public string uniqueName = "unset";
-    public GameObject data;
+    public List<string> GetAllPossibleBuildingNames() {
+        var buildingNames = new List<string>();
+        buildingNames.Add("");
+        for (int i = 0; i < buildings.Length; i++) {
+            buildingNames.Add(buildings[i].uniqueName);
+        }
+        for (int i = 0; i < swappableTier1Guns.Length; i++) {
+            buildingNames.Add(swappableTier1Guns[i].gunUniqueName);
+        }
+        for (int i = 0; i < swappableTier2Guns.Length; i++) {
+            buildingNames.Add(swappableTier2Guns[i].gunUniqueName);
+        }
+
+        return buildingNames;
+    }
 }

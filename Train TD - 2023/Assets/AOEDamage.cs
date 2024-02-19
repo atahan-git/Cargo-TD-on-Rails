@@ -55,7 +55,7 @@ public class AOEDamage : MonoBehaviour {
                 return;
             }
 
-            var enemy = other.transform.root.GetComponent<EnemyTypeData>();
+            var enemy = other.transform.root.GetComponent<EnemyWavesController>();
 
             if (enemy != null && !isPlayerBullet) {
                 // make enemy projectiles not hit the player projectiles

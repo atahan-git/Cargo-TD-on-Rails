@@ -215,6 +215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2401890755843403906}
+  - component: {fileID: -7450878069248949382}
   - component: {fileID: 2664401322561058686}
   - component: {fileID: 7641972898590985362}
   m_Layer: 17
@@ -241,6 +242,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7450878069248949382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876656872020492522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip:
+    text: A rocket launcher. Shoots lock-on homing rockets for a huge explosion,
+      costing 3 ammo per shot. Very slow to fire.
+  info: Rocket Launcher
 --- !u!114 &2664401322561058686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunUniqueName: rockets
   gunSprite: {fileID: 0}
   isGigaGatling: 0
   gatlinificator: 0
@@ -298,14 +316,11 @@ MonoBehaviour:
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 3
+  ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 1
-  steamUsePerShot: 0
   needWarmUp: 0
   startWarmUpEvent:
     m_PersistentCalls:
@@ -322,12 +337,9 @@ MonoBehaviour:
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
+  isLockOn: 1
   isHoming: 0
-  boostDamageOnUpgrade: 0.5
   waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   explosionRange: 0.5
   explosionRangeBoost: 0
   gotShootCredits: 0
@@ -359,7 +371,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6371622877325114003}
   - component: {fileID: 1060988430631081643}
-  - component: {fileID: 4897999060098577130}
   m_Layer: 17
   m_Name: Range Edge Line
   m_TagString: Untagged
@@ -481,25 +492,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &4897999060098577130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2983896549083203264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &3487391404720896828
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,8 +547,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4258505734654129841}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0819, z: 0.1919}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4275241540373961609}
@@ -567,6 +559,7 @@ Transform:
   - {fileID: 265239296001426397}
   - {fileID: 6218788800557491715}
   - {fileID: 5636224339530866253}
+  - {fileID: 2998208188321920362}
   m_Father: {fileID: 2401890755843403906}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -663,7 +656,6 @@ GameObject:
   m_Component:
   - component: {fileID: 566673180595833726}
   - component: {fileID: 7464405951499286955}
-  - component: {fileID: 7731155006580760942}
   m_Layer: 17
   m_Name: Targeting Line
   m_TagString: Untagged
@@ -785,25 +777,37 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &7731155006580760942
-MonoBehaviour:
+--- !u!1 &5955004714165440288
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5751531482346899715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2998208188321920362}
+  m_Layer: 11
+  m_Name: Direct Control Top
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2998208188321920362
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5955004714165440288}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.0739, y: 0.223, z: 0.011}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 800980718394170119}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8219606432554914338
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,6 +34,8 @@ public class MissionLoseFinisher : MonoBehaviour {
         if (isMissionLost)
             return;
 
+        DataSaver.s.GetCurrentSave().showWakeUp = true;
+
         tipText.text = loseTips[Random.Range(0, loseTips.Length)];
 
         switch (loseReason) {
@@ -118,23 +120,16 @@ public class MissionLoseFinisher : MonoBehaviour {
             }
         }*/
 
-        DataSaver.s.GetCurrentSave().isInARun = false;
-        
         DataSaver.s.SaveActiveGame();
         
         
-        var myChar = DataSaver.s.GetCurrentSave().currentRun.character;
         AnalyticsResult analyticsResult = Analytics.CustomEvent(
             "LevelLost",
             new Dictionary<string, object> {
                 { "Level", PlayStateMaster.s.currentLevel.levelName },
                 { "distance", Mathf.RoundToInt(SpeedController.s.currentDistance / 10) *10},
                 { "time", Mathf.RoundToInt(SpeedController.s.currentTime/10) * 10},
-                
-                {"character", myChar.uniqueName},
-				
-                { "remainingScraps", MoneyController.s.scraps },
-                
+
                 { "enemiesLeftAlive", EnemyHealth.enemySpawned - EnemyHealth.enemyKilled},
             }
         );
@@ -157,8 +152,6 @@ public class MissionLoseFinisher : MonoBehaviour {
         isMissionLost = false;
         loseUI.SetActive(false);
         //MissionWinFinisher.s.ContinueToClearOutOfCombat();
-        DataSaver.s.GetCurrentSave().currentRun = null;
-        DataSaver.s.GetCurrentSave().isInARun = false;
         DataSaver.s.SaveActiveGame();
 
         // MusicPlayer.s.SwapMusicTracksAndPlay(false);

@@ -17,12 +17,12 @@ public class UnlockThingShop : MonoBehaviour {
         var allAffordableArtifacts = new List<Artifact>();
         var allAffordableCarts = new List<Cart>();
 
-        var unlockedThings = DataSaver.s.GetCurrentSave().metaProgress.unlockedThings;
+        //var unlockedThings = DataSaver.s.GetCurrentSave().metaProgress.unlockedThings;
         var allArtifacts = DataHolder.s.artifacts;
         var allCarts = DataHolder.s.buildings;
-        var currentMoney = DataSaver.s.GetCurrentSave().metaProgress.money;
+        var currentMoney = DataSaver.s.GetCurrentSave().money;
 
-        for (int i = 0; i < allArtifacts.Length; i++) {
+        /*for (int i = 0; i < allArtifacts.Length; i++) {
             if (allArtifacts[i].needsToBeBought) {
                 if (!unlockedThings.Contains(allArtifacts[i].uniqueName)) {
                     allUnlockableArtifacts.Add(allArtifacts[i]);
@@ -42,7 +42,7 @@ public class UnlockThingShop : MonoBehaviour {
                     }
                 }
             }
-        }
+        }*/
 
         for (int i = 0; i < slots.Length; i++) {
             slots[i].Clear();

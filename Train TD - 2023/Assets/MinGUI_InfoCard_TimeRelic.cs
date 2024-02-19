@@ -34,10 +34,7 @@ public class MinGUI_InfoCard_TimeRelic : MonoBehaviour , IBuildingInfoCard {
         }
     }
 
-    void SetTime() {
-        if (CharacterSelector.s.isInCharSelect) {
-            hour = 7;
-        }else if (PlayStateMaster.s.isShop()) {
+    void SetTime() {if (PlayStateMaster.s.isShop()) {
             hour = 10;
         }else if (PlayStateMaster.s.isCombatInProgress()) {
             hour = 15;

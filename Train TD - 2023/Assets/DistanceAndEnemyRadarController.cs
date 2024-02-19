@@ -21,9 +21,6 @@ public class DistanceAndEnemyRadarController : MonoBehaviour {
 
     public RectTransform unitsArea;
 
-    public int playerTrainStaticLocation = 60;
-    public float playerTrainCurrentLocation;
-
     [NonSerialized]
     public float UISizeMultiplier = 4;
 
@@ -60,9 +57,6 @@ public class DistanceAndEnemyRadarController : MonoBehaviour {
     public float increaseHeight = 25f;
     // Update is called once per frame
     void Update() {
-        var totalDistance = SpeedController.s.missionDistance;
-        var width = unitsArea.rect.width;
-
         var lastDistance = float.NegativeInfinity;
         var curHeight = 0f;
         //myUnits.Sort((x, y) => x.GetDistance().CompareTo(y.GetDistance()));
@@ -78,23 +72,30 @@ public class DistanceAndEnemyRadarController : MonoBehaviour {
                 curHeight = 0;
             }
 
-            if (myUnits[i].IsTrain()) {
-                playerTrainCurrentLocation = distance;
-                if (distance > playerTrainStaticLocation) {
-                    distance = playerTrainStaticLocation;
-                }
-            } else {
-                if (playerTrainCurrentLocation > playerTrainStaticLocation) {
-                    distance -= playerTrainCurrentLocation - playerTrainStaticLocation;
-                }
-            }
+            distance -= PathAndTerrainGenerator.s.currentPathTreeOffset;
+            var pathLength = PathAndTerrainGenerator.s.currentPathTree.myPath.length;
             
-            unitDisplays[i].GetComponent<RectTransform>().anchoredPosition =
-                Vector2.Lerp(
-                    unitDisplays[i].GetComponent<RectTransform>().anchoredPosition,
-                    new Vector2(distance*UISizeMultiplier, baseHeight + (curHeight * increaseHeight)),
-                    10 * Time.deltaTime
-                );
+            if (PathAndTerrainGenerator.s.currentPathTree.startPath) {
+                distance -= PathGenerator.stationStraightDistance / 2f;
+                pathLength -= PathGenerator.stationStraightDistance / 2f;
+            }
+
+            if (PathAndTerrainGenerator.s.currentPathTree.endPath) {
+                pathLength -= PathGenerator.stationStraightDistance / 2f + 9f;
+            }
+
+            var percentage = distance / pathLength;
+            var howFarToGo = percentage * ((RectTransform)unitsParent).rect.width;
+            
+            var targetPos = Vector2.Lerp(
+                unitDisplays[i].GetComponent<RectTransform>().anchoredPosition,
+                new Vector2(howFarToGo/*distance*UISizeMultiplier*/, baseHeight + (curHeight * increaseHeight)),
+                10 * Time.deltaTime
+            );
+
+
+            unitDisplays[i].GetComponent<RectTransform>().anchoredPosition = targetPos;
+                
 
             lastDistance = distance;
         }

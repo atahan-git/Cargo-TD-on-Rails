@@ -10,14 +10,10 @@ public class MiniGUI_TrackLever : MonoBehaviour {
     public GameObject bottomTrack;
     public GameObject button;
 
-    public int leverId;
-
-    public bool currentState;
+    public bool topSelected;
 
     public bool switchByColor = false;
     public Color disabledColor = Color.white;
-
-    public bool isVisible = true;
 
     public GameObject buttonPrompt;
     public void SetButtonPromptState(bool state) {
@@ -26,12 +22,9 @@ public class MiniGUI_TrackLever : MonoBehaviour {
     }
     
     public void SetTrackState(bool state) {
-        currentState = state;
-        
-        if(!isVisible)
-            return;
-        
-        if (currentState) {
+        topSelected = state;
+
+        if (topSelected) {
             if (switchByColor) {
                 upTrack.SetActive(true);
                 bottomTrack.SetActive(true);
@@ -64,19 +57,10 @@ public class MiniGUI_TrackLever : MonoBehaviour {
         }
     }
 
-
-    public void SetVisibility(bool state) {
-        isVisible = state;
-
-        if (isVisible) {
-            button.SetActive(true);
-        } else {
-            button.SetActive(false);
-        }
-    }
-
     public void LeverClicked() {
-        PathSelectorController.s.ActivateLever(leverId);
+        if (!isLocked) {
+            PathSelectorController.s.ActivateLever();
+        }
     }
 
     public bool isLocked = false;
@@ -93,17 +77,17 @@ public class MiniGUI_TrackLever : MonoBehaviour {
     public void SetTrackSwitchWarningState(bool state) {
         enabled = state;
         switchWarning.SetActive(state);
-        stateTimer = 0;
+        warningStateTimer = 0;
         Update();
     }
 
 
-    public float stateTimer;
-    private bool state;
+    public float warningStateTimer;
+    private bool warningState;
     private void Update() {
-        if (stateTimer <= 0) {
-            state = !state;
-            if (state) {
+        if (warningStateTimer <= 0) {
+            warningState = !warningState;
+            if (warningState) {
                 warning1.color = Color.white;
                 warning2.color = Color.red;
             } else {
@@ -111,9 +95,9 @@ public class MiniGUI_TrackLever : MonoBehaviour {
                 warning1.color = Color.red;
             }
 
-            stateTimer = 0.3f;
+            warningStateTimer = 0.3f;
         } else {
-            stateTimer -= Time.deltaTime;
+            warningStateTimer -= Time.deltaTime;
         }
     }
 }

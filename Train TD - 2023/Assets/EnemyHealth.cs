@@ -1,24 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class EnemyHealth : MonoBehaviour, IHealth {
+public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 
 	public float baseHealth = 200f;
 	
 	[ReadOnly]
 	public float maxHealth = 20f;
 	public float currentHealth = 20f;
-
-	public int scrapReward = 10;
-	public int ammoReward = 10;
-	public int fuelReward = 10;
-
 
 	public GameObject deathPrefab;
 	public Transform aliveObject;
@@ -29,18 +25,11 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 	public bool isAlive = true;
 
 	public Transform uiTransform;
-	[SerializeField] Transform cartRewardTransform;
-
-	public static UnityEvent<bool> winSelfDestruct = new UnityEvent<bool>();
 	
 	[ReadOnly]
 	public MiniGUI_EnemyUIBar enemyUIBar;
-
-	[Tooltip("Will reduce incoming damage by 50% if gun doesn't have armor penetration")]
-	public bool isArmored = false;
-
-	public bool isComponentEnemy = false;
 	
+	public bool isComponentEnemy = false;
 	
 	public float maxShields = 0;
 	public float currentShields = 0;
@@ -48,11 +37,9 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 	private float shieldRegenDelay = 1;
 	public float curShieldDelay = 0;
 
-	public bool autoSetUp = false;
 
 	private void Start() {
-		if(autoSetUp)
-			SetUp();
+		SetUp();
 	}
 
 	public void DealDamage(float damage) {
@@ -189,7 +176,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 		currentShields = Mathf.Clamp(currentShields, 0, maxShields);
 	}
 
-	public void SetUp() {
+	void SetUp() {
 		maxHealth = baseHealth;
 		maxHealth *= 1 + WorldDifficultyController.s.currentHealthIncrease;
 		maxShields *= 1 + WorldDifficultyController.s.currentHealthIncrease;
@@ -199,58 +186,29 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 		enemyUIBar = Instantiate(LevelReferences.s.enemyHealthPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_EnemyUIBar>();
 		enemyUIBar.SetUp(this);
 		enemySpawned += 1;
+
+		if (!isComponentEnemy) {
+			GetComponentInParent<EnemySwarmMaker>().EnemySpawn(this);
+		}
 	}
 
 	private Bounds myBounds;
 	private float totalSize;
 	private void OnEnable() {
-		winSelfDestruct.AddListener(Die);
 		myBounds = transform.GetCombinedBoundingBoxOfChildren();
 		totalSize = myBounds.size.magnitude;
 	}
 
-	private void OnDisable() {
-		winSelfDestruct.RemoveListener(Die);
-	}
-
-
-	public bool rewardArtifactOnDeath = false;
-	public string artifactRewardUniqueName;
-	public Transform bonusArtifactUIStar;
-	[Button]
+	
 	void Die(bool giveRewards = true) {
 		enemyKilled += 1;
 		isAlive = false;
 
 		var extraRewards = GetComponentsInChildren<EnemyReward>();
 		//var otherRewards = GetComponentInChildren<EnemyCartReward>();
-
-		for (int i = 0; i < extraRewards.Length; i++) {
-			switch (extraRewards[i].type) {
-				case ResourceTypes.scraps:
-					scrapReward += extraRewards[i].amount;
-					break;
-			}
-		}
+		
 		
 		if (giveRewards) {
-			LevelReferences.s.SpawnResourceAtLocation(ResourceTypes.scraps, 
-				scrapReward*TweakablesMaster.s.myTweakables.scrapEnemyRewardMultiplier, 
-				aliveObject.transform.position);
-
-			/*if (rewardPowerUp) {
-				//PlayerActionsController.s.GetPowerUp(EnemyWavesController.s.powerUpScriptables.Dequeue());
-			}*/
-
-			/*if (otherRewards != null) {
-				otherRewards.RewardPlayerCart();
-			}*/
-
-			if (rewardArtifactOnDeath) {
-				ArtifactsController.s.GetBonusArtifact(bonusArtifactUIStar, artifactRewardUniqueName);
-				bonusArtifactUIStar = null;
-			}
-
 			var rewardMoney = 0;
 			if (maxHealth >= 80) {
 				var rewardMoneyMax = Mathf.Log(maxHealth / 40, 2); // ie 80 = 1, 160 = 2, 800~= 4
@@ -261,12 +219,13 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 				}
 			}
 
-			if (rewardArtifactOnDeath) {
-				rewardMoney += DataSaver.s.GetCurrentSave().currentRun.currentAct*2;
-			}
-
 			if (rewardMoney > 0) {
 				Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(uiTransform.position, rewardMoney);
+			}
+
+			var carryAward = GetComponent<CarrierEnemy>();
+			if (carryAward) {
+				carryAward.AwardTheCarriedThingOnDeath();
 			}
 		}
 
@@ -280,7 +239,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 			Instantiate(deathPrefab, pos, rot);
 		
 		if(!isComponentEnemy)
-			GetComponentInParent<EnemySwarmMaker>().EnemyDeath();
+			GetComponent<EnemyInSwarm>().mySwarm.EnemyDeath(this);
 
 		Destroy(gameObject);
 	}
@@ -289,10 +248,6 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 		if(enemyUIBar != null)
 			if(enemyUIBar.gameObject != null)
 				Destroy(enemyUIBar.gameObject);
-
-		if (bonusArtifactUIStar != null) {
-			Destroy(bonusArtifactUIStar.gameObject);
-		}
 	}
 
 	public bool IsPlayer() {
@@ -334,32 +289,19 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 	public Transform GetUITransform() {
 		return uiTransform;
 	}
-
-	public Transform GetCartRewardTransform() {
-		if (cartRewardTransform != null) {
-			return cartRewardTransform;
-		} else {
-			cartRewardTransform = new GameObject("cart reward transform").transform;
-			cartRewardTransform.SetParent(transform.GetChild(0));
-			cartRewardTransform.localPosition = Vector3.back*0.5f + Vector3.down*0.25f;
-			return cartRewardTransform;
-		}
-	}
+	
 
 	[ReadOnly]
-	public List<Outline> _outlines = new List<Outline>();
+	public List<HighlightEffect> _outlines = new List<HighlightEffect>();
 
 	void SetUpOutlines() {
 		if (_outlines.Count == 0) {
 			var renderers = GetComponentsInChildren<MeshRenderer>(true);
 
 			foreach (var rend in renderers) {
-				if (rend.GetComponent<Outline>() == null) {
-					var outline = rend.gameObject.AddComponent<Outline>();
-					outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
-					outline.OutlineWidth = 5;
-					outline.OutlineColor = new Color(0.0f, 0.833f, 1.0f, 1.0f);
-					outline.enabled = false;
+				if (rend.GetComponent<HighlightEffect>() == null) {
+					var outline = rend.gameObject.AddComponent<HighlightEffect>();
+					outline.highlighted = false;
 					_outlines.Add(outline);
 				}
 			}
@@ -373,9 +315,17 @@ public class EnemyHealth : MonoBehaviour, IHealth {
         
 		foreach (var outline in _outlines) {
 			if (outline != null) {
-				outline.enabled = isHighlighted;
+				outline.highlighted = isHighlighted;
 			}
 		}
+	}
+
+	public Transform GetUITargetTransform() {
+		return uiTransform;
+	}
+
+	public void SetHoldingState(bool state) {
+		// do nothing. Enemy health is not holdable
 	}
 }
 

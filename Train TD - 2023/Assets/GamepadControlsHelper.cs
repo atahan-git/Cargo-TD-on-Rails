@@ -17,8 +17,8 @@ public class GamepadControlsHelper : MonoBehaviour {
     }
     
     public enum PossibleActions {
-        move=0, reload=1, repair=2, directControl=3, openMap=4, pause=5, fastForward=6, showDetails=7, shoot=8, exitDirectControl=9, flipCamera=10, cutsceneSkip=11, clickGate=12, changeTrack=13, engineBoost=14,
-        encounterButtons=15, selectTopButton=17, shield=19, moveHoldGamepad=20
+        move=0, reloadControl=1, repairControl=2, gunControl=3, openMap=4, pause=5, fastForward=6, showDetails=7, shoot=8, exitDirectControl=9, flipCamera=10, cutsceneSkip=11, clickGate=12, changeTrack=13, engineControl=14,
+        encounterButtons=15, shieldControl=19, moveHoldGamepad=20
     }
 
     public GameObject gamepadSelector;
@@ -32,39 +32,20 @@ public class GamepadControlsHelper : MonoBehaviour {
 
     private void Start() {
         AddActionsAlwaysAvailable();
-        PlayerWorldInteractionController.s.OnSelectBuilding.AddListener(UpdateButtonPromptsLocation);
-        PlayerWorldInteractionController.s.OnSelectEnemy.AddListener(UpdateButtonPromptsLocation);
-        PlayerWorldInteractionController.s.OnSelectArtifact.AddListener(UpdateButtonPromptsLocation);
+        PlayerWorldInteractionController.s.OnSelectSomething.AddListener(UpdateButtonPromptsLocation);
         PlayerWorldInteractionController.s.OnSelectGate.AddListener(UpdateGateSelectPrompt);
     }
 
-    private void UpdateButtonPromptsLocation(Cart cart, bool isSelecting) {
+    private void UpdateButtonPromptsLocation(IPlayerHoldable target, bool isSelecting) {
         if (isSelecting) {
-            cartSelectPrompts.SetUp(cart.uiTargetTransform);
+            cartSelectPrompts.SetUp(target.GetUITargetTransform());
             cartSelectPrompts.gameObject.SetActive(true);
         } else {
+            gatePrompt.gameObject.SetActive(false);
             cartSelectPrompts.gameObject.SetActive(false);
         }
     }
     
-    private void UpdateButtonPromptsLocation(EnemyHealth enemy, bool isSelecting) {
-        if (isSelecting) {
-            cartSelectPrompts.SetUp(enemy.uiTransform);
-            cartSelectPrompts.gameObject.SetActive(true);
-        } else {
-            cartSelectPrompts.gameObject.SetActive(false);
-        }
-    }
-    
-    private void UpdateButtonPromptsLocation(Artifact artifact, bool isSelecting) {
-        if (isSelecting) {
-            cartSelectPrompts.SetUp(artifact.uiTransform);
-            cartSelectPrompts.gameObject.SetActive(true);
-        } else {
-            cartSelectPrompts.gameObject.SetActive(false);
-        }
-    }
-
     void UpdateGateSelectPrompt(IClickableWorldItem gateScript, bool isSelecting) {
         if (isSelecting) {
             gatePrompt.SetUp((gateScript as MonoBehaviour).transform);
@@ -73,7 +54,6 @@ public class GamepadControlsHelper : MonoBehaviour {
             gatePrompt.gameObject.SetActive(false);
         }
     }
-
 
     void AddActionsAlwaysAvailable() {
         currentlyLegalActions.Add(PossibleActions.pause);

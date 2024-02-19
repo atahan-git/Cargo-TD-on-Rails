@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Threading;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 
 public class PathGenerator : MonoBehaviour {
@@ -18,6 +19,8 @@ public class PathGenerator : MonoBehaviour {
         public int endPoint;
         public int rotateStopPoint;
         public int endRotateStartPoint;
+        public bool endPath = false;
+        public bool addImprintNoise = true;
     }
 
     public float stepLength = 0.2f;
@@ -120,7 +123,62 @@ public class PathGenerator : MonoBehaviour {
         return trainPath;
     }
 
-    public TrainPath MakeStationPath(Vector3 startPoint, Vector3 direction, float length) {
+    public const float stationStraightDistance = 100;
+    public TrainPath MakeStationAtEndPath(Vector3 startPoint, Vector3 startDirection, Vector3 direction, float length ,bool immediateTurn = false) {
+        Assert.IsTrue(length > 0);
+        
+        var curvyPath = MakeTrainPath(startPoint, startDirection, direction, length, immediateTurn);
+        startPoint = curvyPath.points[^1];
+        startDirection = GetDirectionVectorOnTheLine(curvyPath, curvyPath.length);
+
+        var straightPath = MakeStraightPath(startPoint, startDirection, stationStraightDistance);
+
+        var combinedPath = new TrainPath();
+        combinedPath.points = new Vector3[curvyPath.points.Length + straightPath.points.Length -1];
+        
+        curvyPath.points.CopyTo(combinedPath.points,0);
+        straightPath.points.CopyTo(combinedPath.points,curvyPath.points.Length -1);
+        
+        combinedPath.bounds = new Bounds();
+        combinedPath.bounds.Encapsulate(curvyPath.bounds);
+        combinedPath.bounds.Encapsulate(straightPath.bounds);
+
+        combinedPath.length = length + stationStraightDistance;
+        combinedPath.stepLength = stepLength;
+
+        combinedPath.endPath = true;
+
+        return combinedPath;
+    }
+    
+    
+    public TrainPath MakeStationAtBeginningPath(Vector3 startPoint, Vector3 startDirection, Vector3 direction, float length, bool immediateTurn = false) {
+        Assert.IsTrue(length > 0);
+        
+        var straightPath = MakeStraightPath(startPoint, startDirection, stationStraightDistance);
+        startPoint = straightPath.points[^1];
+        startDirection = GetDirectionVectorOnTheLine(straightPath, straightPath.length);
+        
+        var curvyPath = MakeTrainPath(startPoint, startDirection, direction, length, immediateTurn);
+
+
+        var combinedPath = new TrainPath();
+        combinedPath.points = new Vector3[curvyPath.points.Length + straightPath.points.Length -1];
+        
+        straightPath.points.CopyTo(combinedPath.points,0);
+        curvyPath.points.CopyTo(combinedPath.points,straightPath.points.Length-1);
+        
+        combinedPath.bounds = new Bounds();
+        combinedPath.bounds.Encapsulate(curvyPath.bounds);
+        combinedPath.bounds.Encapsulate(straightPath.bounds);
+
+        combinedPath.length = length + stationStraightDistance;
+        combinedPath.stepLength = stepLength;
+
+        return combinedPath;
+    }
+
+    public TrainPath MakeStraightPath(Vector3 startPoint, Vector3 direction, float length) {
         var path = new Vector3[Mathf.CeilToInt(length/stepLength)+1];
 
         var minEdge = new Vector3();
@@ -148,8 +206,125 @@ public class PathGenerator : MonoBehaviour {
         trainPath.stepLength = stepLength;
         return trainPath;
     }
-    
-    
+
+
+    private Vector3 cityDimensions = new Vector3(30, 0, 30); //  dimensions of cube
+    private Vector3 cityOffset = new Vector3(0, 0, -8);
+    public TrainPath MakeCityStampPath(Vector3 position, Quaternion direction) {
+        var path = new List<Vector3>();
+
+        cityDimensions = new Vector3(30, 0, 30);
+        
+        var safeDist = GetComponent<TerrainGenerator>().playZoneWidth*2f;
+        var effectiveDimensions = cityDimensions + (Vector3.one * (0.5f - safeDist));
+        var smallestDimension = Mathf.Min(effectiveDimensions.x, effectiveDimensions.z);
+        var rectCount = Mathf.CeilToInt(smallestDimension / safeDist);
+        
+        var minEdge = new Vector3();
+        var maxEdge = new Vector3(0,10,0);// give volume to the bounds
+
+        var pathLength = 0f;
+        
+        var radianTheta = QuaternionToRadian(direction);
+        var l = stepLength;
+
+        var effectiveOffset = position + RotatePoint(cityOffset, radianTheta);
+
+        //print(effectiveDimensions);
+        for (int r = 0; r < rectCount; r++) {
+            var a = effectiveDimensions.x - (r*safeDist);
+            var b = effectiveDimensions.z - (r*safeDist);
+
+             var squareCenterChangeOffset = -new Vector3(a,0,b) / 2;
+
+             pathLength += (a+b)*2;
+
+            int pointsOnSideA = Mathf.CeilToInt(a / l);
+            int pointsOnSideB = Mathf.CeilToInt(b / l);
+            var a_l = a / pointsOnSideA;
+            var b_l = b / pointsOnSideB;
+
+            // Calculate points on top edge
+            for (int i = 0; i < pointsOnSideA; i++) {
+                var x = i * a_l;
+                var y = 0;
+                var pointOnPerimeter = RotatePoint(new Vector3(x, 0, y) + squareCenterChangeOffset, radianTheta);
+                AddPointAndUpdateBounds(effectiveOffset + pointOnPerimeter, path, minEdge,maxEdge);
+            }
+
+            // Calculate points on right edge
+            for (int i = 0; i < pointsOnSideB; i++) {
+                var x = a;
+                var y = i * b_l;
+                var pointOnPerimeter = RotatePoint(new Vector3(x, 0, y) + squareCenterChangeOffset, radianTheta);
+                AddPointAndUpdateBounds(effectiveOffset + pointOnPerimeter, path, minEdge,maxEdge);
+            }
+
+            // Calculate points on bottom edge
+            for (int i = 0; i < pointsOnSideA; i++) {
+                var x = a - i * a_l;
+                var y = b;
+                var pointOnPerimeter = RotatePoint(new Vector3(x, 0, y) + squareCenterChangeOffset, radianTheta);
+                AddPointAndUpdateBounds(effectiveOffset + pointOnPerimeter, path, minEdge,maxEdge);
+            }
+
+            // Calculate points on left edge
+            for (int i = 0; i < pointsOnSideB; i++) {
+                var x = 0;
+                var y = b - i * b_l;
+                var pointOnPerimeter = RotatePoint(new Vector3(x, 0, y) + squareCenterChangeOffset, radianTheta);
+                AddPointAndUpdateBounds(effectiveOffset + pointOnPerimeter, path, minEdge,maxEdge);
+            }
+        }
+        
+        
+        var trainPath = new TrainPath();
+        trainPath.points = path.ToArray();
+        trainPath.bounds = new Bounds();
+        trainPath.bounds.SetMinMax(minEdge, maxEdge);
+        trainPath.length = pathLength;
+        trainPath.stepLength = trainPath.length/(path.Count-1);
+        trainPath.addImprintNoise = false;
+        return trainPath;
+    }
+
+    Vector3 RotatePoint(Vector3 point, float radian_theta) {
+        var x = point.x;
+        var y = point.z;
+        var rotated_x = x * Mathf.Cos(radian_theta) - y * Mathf.Sin(radian_theta);
+        var rotated_y = x * Mathf.Sin(radian_theta) + y * Mathf.Cos(radian_theta);
+        return new Vector3(rotated_x, 0, rotated_y);
+    }
+
+    float QuaternionToRadian(Quaternion quaternion)
+    {
+        // Convert quaternion to angle-axis representation
+        float angle;
+        Vector3 axis;
+        quaternion.ToAngleAxis(out angle, out axis);
+
+        // Unity uses left-handed coordinate system, so we negate the z-component of the axis
+        axis.z = -axis.z;
+
+        // Convert angle to radians
+        float radianTheta = angle * Mathf.Deg2Rad;
+
+        return radianTheta;
+    }
+
+    void AddPointAndUpdateBounds(Vector3 point, List<Vector3> path, Vector3 minEdge, Vector3 maxEdge) {
+        path.Add(point);
+
+        maxEdge.x = Mathf.Max(maxEdge.x, path[^1].x);
+        maxEdge.y = Mathf.Max(maxEdge.y, path[^1].y);
+        maxEdge.z = Mathf.Max(maxEdge.z, path[^1].z);
+            
+        minEdge.x = Mathf.Min(minEdge.x, path[^1].x);
+        minEdge.y = Mathf.Min(minEdge.y, path[^1].y);
+        minEdge.z = Mathf.Min(minEdge.z, path[^1].z);
+    }
+
+
     public TrainPath MakeCirclePath(Vector3 center) {
         float curAngle = 0;
         float rotAngle = 0;
@@ -360,7 +535,7 @@ public class PathGenerator : MonoBehaviour {
         var n = 0;
         var total = smoothRangeForward + smoothRangeBack;
         for (int j = smoothRangeBack; j > 0 ; j--) {
-            Debug.DrawLine(path[^smoothRangeBack],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.up, Color.red, 5f);
+            //Debug.DrawLine(path[^smoothRangeBack],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.up, Color.red, 5f);
             path[^j] = Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total);
             n++;
         }
@@ -368,7 +543,7 @@ public class PathGenerator : MonoBehaviour {
         n--;
         
         for (int j = 0; j < smoothRangeForward; j++) {
-            Debug.DrawLine(path[smoothRangeForward],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.down, Color.green, 5f);
+            //Debug.DrawLine(path[smoothRangeForward],  Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total) + Vector3.down, Color.green, 5f);
             path[j] = Vector3.Lerp(startSmooth, endSmooth, ((float)n)/total);
             n++;
         }
@@ -497,6 +672,9 @@ public class PathGenerator : MonoBehaviour {
         var direction = path[Mathf.FloorToInt(target) + 1] - path[Mathf.FloorToInt(target)];
 
         //Debug.DrawLine(path[Mathf.FloorToInt(target)]+Vector3.up*5f,path[Mathf.FloorToInt(target)]+direction.normalized*5 + Vector3.up*5f, Color.blue, 1f);
+        if (direction.magnitude == 0) {
+            print($"something is wrong {trainPath}, {distance}, {trainPath.length}, {trainPath.points.Length}");
+        }
         return Quaternion.LookRotation(direction);
     }
     
@@ -515,6 +693,6 @@ public class PathGenerator : MonoBehaviour {
         var direction = path[Mathf.FloorToInt(target) + 1] - path[Mathf.FloorToInt(target)];
 
         //Debug.DrawLine(path[Mathf.FloorToInt(target)],path[Mathf.FloorToInt(target)]+direction.normalized*5, Color.blue, 1f);
-        return direction;
+        return direction.normalized;
     }
 }

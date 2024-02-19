@@ -12,13 +12,6 @@ public class PlayStateMaster : MonoBehaviour {
         s = this;
     }
     
-
-    [NonSerialized]
-    public UnityEvent OnMainMenuEntered = new UnityEvent();
-    [NonSerialized]
-    public UnityEvent OnOpenCharacterSelectMenu = new UnityEvent();
-    [NonSerialized]
-    public UnityEvent OnCharacterSelected = new UnityEvent();
     [NonSerialized]
     public UnityEvent OnDrawWorld = new UnityEvent();
     [NonSerialized]
@@ -37,33 +30,27 @@ public class PlayStateMaster : MonoBehaviour {
     
     
     void SetDefaultCallbacks() {
-        OnMainMenuEntered.AddListener(FirstTimeTutorialController.s.RemoveAllTutorialStuff);
+        //OnMainMenuEntered.AddListener(FirstTimeTutorialController.s.RemoveAllTutorialStuff);
         
-        OnOpenCharacterSelectMenu.AddListener(CharacterSelector.s.CheckAndShowCharSelectionScreen);
-        OnOpenCharacterSelectMenu.AddListener(MainMenu.s.ExitMainMenu);
-        
-        OnCharacterSelected.AddListener(Train.s.DrawTrainBasedOnSaveData);
+        /*OnCharacterSelected.AddListener(Train.s.DrawTrainBasedOnSaveData);
         OnCharacterSelected.AddListener(UpgradesController.s.SetUpNewCharacterRarityBoosts);
         OnCharacterSelected.AddListener(FirstTimeTutorialController.s.NewCharacterCutsceneReset);
-        OnCharacterSelected.AddListener(MoneyUIDisplay.totalMoney.OnCharLoad);
+        OnCharacterSelected.AddListener(MoneyUIDisplay.totalMoney.OnCharLoad);*/
         
-        OnDrawWorld.AddListener(WorldMapCreator.s.GenerateWorldMap);
         OnDrawWorld.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         
-        OnNewWorldCreation.AddListener(MapController.s.GenerateStarMap);
         OnNewWorldCreation.AddListener(PathAndTerrainGenerator.s.SetBiomes);
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
 
-        OnShopEntered.AddListener(SpeedController.s.ResetDistance);
+        //OnShopEntered.AddListener(SpeedController.s.ResetDistance);
+        OnShopEntered.AddListener(Train.s.CheckSetMinimumTrain);
         OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
         OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
-        OnShopEntered.AddListener(WorldMapCreator.s.ReturnToRegularMap);
         //OnShopEntered.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         OnShopEntered.AddListener(ShopStateController.s.OpenShopUI);
         OnShopEntered.AddListener(FMODMusicPlayer.s.PlayMenuMusic);
         OnShopEntered.AddListener(MainMenu.s.ExitMainMenu);
         OnShopEntered.AddListener(Pauser.s.Unpause);
-        OnShopEntered.AddListener(CharacterSelector.s.CheckAndShowCharSelectionScreen);
         OnShopEntered.AddListener(PlayerWorldInteractionController.s.OnEnterShopScreen);
         OnShopEntered.AddListener(FirstTimeTutorialController.s.OnEnterShop);
         OnShopEntered.AddListener(Train.s.OnEnterShopArea);
@@ -84,19 +71,14 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatFinished.AddListener(TimeController.s.OnCombatEnd);
         OnCombatFinished.AddListener(FirstTimeTutorialController.s.OnFinishCombat);
         OnCombatFinished.AddListener(EncounterController.s.ResetEncounter);
-        OnCombatFinished.AddListener(SpeedController.s.OnCombatFinished);
         OnCombatFinished.AddListener(ArtifactsController.s.OnAfterCombat);
-        OnCombatFinished.AddListener(Train.s.OnLeaveCombat);
         OnCombatFinished.AddListener(PlayerWorldInteractionController.s.OnLeaveCombat);
         
         OnEnterMissionRewardArea.AddListener(VignetteController.s.ResetVignette);
         OnEnterMissionRewardArea.AddListener(FirstTimeTutorialController.s.OnEnterShop);
         
         OnLeavingMissionRewardArea.AddListener(MissionWinFinisher.s.CleanupWhenLeavingMissionRewardArea);
-        OnLeavingMissionRewardArea.AddListener(MapController.s.Cleanup);
         OnLeavingMissionRewardArea.AddListener(EnemyWavesController.s.Cleanup);
-        OnLeavingMissionRewardArea.AddListener(ShopStateController.s.FinishTravellingToStar);
-        OnLeavingMissionRewardArea.AddListener(ActFinishController.s.CloseActUI);
     }
     
     [SerializeField]
@@ -183,12 +165,21 @@ public class PlayStateMaster : MonoBehaviour {
     }
 
     private void Start() {
-        _gameState = GameState.mainMenu;
-        OnMainMenuEntered?.Invoke();
         SetDefaultCallbacks();
+        OnDrawWorld?.Invoke();
+
+        if (enterShopOnLoad) {
+            enterShopOnLoad = false;
+            MainMenu.s.OpenProfileMenu(); // we need this to disable a couple of things
+            MainMenu.s.StartGame();
+        } else {
+            FirstTimeTutorialController.s.RemoveAllTutorialStuff();
+            _gameState = GameState.mainMenu;
+            MainMenu.s.OpenProfileMenu();
+        }
     }
 
-    
+
 
     /*void DoOpenMainMenu() {
         _gameState = GameState.mainMenu;
@@ -209,8 +200,16 @@ public class PlayStateMaster : MonoBehaviour {
         OnEnterMissionRewardArea?.Invoke();
     }
 
+    public static bool enterShopOnLoad = false;
     public void LeaveMissionRewardAreaAndEnterShopState() {
-        _gameState = GameState.shop;
+        Train.s.RightBeforeLeaveMissionRewardArea();
+        enterShopOnLoad = true;
+        
+        OnLeavingMissionRewardArea?.Invoke();
+        
+        StartCoroutine(Transition(false, () => { SceneLoader.s.ForceReloadScene(); }, NoProgress));
+
+        /*_gameState = GameState.shop;
 
         Train.s.RightBeforeLeaveMissionRewardArea();
         
@@ -218,13 +217,13 @@ public class PlayStateMaster : MonoBehaviour {
         /*StartCoroutine(Transition(false, () => {
             OnLeavingMissionRewardArea?.Invoke();
             OnShopEntered?.Invoke();
-        }));*/
+        }));#1#
         
         StartCoroutine(Transition(true, () => {
                 OnLeavingMissionRewardArea?.Invoke();
                 OnDrawWorld?.Invoke();
             }, WorldGenerationProgress,
-            () => {OnShopEntered?.Invoke();}));
+            () => {OnShopEntered?.Invoke();}));*/
     }
 
     public void EnterShopState() {
@@ -232,38 +231,10 @@ public class PlayStateMaster : MonoBehaviour {
 
         StopAllCoroutines();
 
-        if (DataSaver.s.GetCurrentSave().isInARun) {
-            /*if (WorldGenerationProgress() >= 1f) {
-                StartCoroutine(Transition(false, () => OnShopEntered?.Invoke()));
-            } else {*/
-                StartCoroutine(Transition(true, () => {
-                    OnDrawWorld?.Invoke();
-                }, WorldGenerationProgress,
-                    () => {OnShopEntered?.Invoke();}));
-            //}
-        } else {
-            StartCoroutine(Transition(false, () => {
-                OnOpenCharacterSelectMenu?.Invoke();
-            }));
-        }
-    }
-
-
-    public void FinishCharacterSelection() {
-        _gameState = GameState.shop;
-
-        StopAllCoroutines();
-        WorldMapCreator.s.ResetWorldMapGenerationProgress();
-        StartCoroutine(Transition(true,
-            () => {
-                CharacterSelector.s.CharSelectionCompleteAndScreenGotDark();
-                OnCharacterSelected?.Invoke();
-                OnNewWorldCreation?.Invoke();
+        StartCoroutine(Transition(true, () => {
+                OnDrawWorld?.Invoke();
             }, WorldGenerationProgress,
-            () => {
-                OnShopEntered?.Invoke();
-            }
-        ));
+            () => {OnShopEntered?.Invoke();}));
     }
 
     public void EnterNewAct() {
@@ -272,7 +243,6 @@ public class PlayStateMaster : MonoBehaviour {
         Train.s.RightBeforeLeaveMissionRewardArea();
         
         StopAllCoroutines();
-        WorldMapCreator.s.ResetWorldMapGenerationProgress();
         StartCoroutine(Transition(true,
             () => {
                 OnLeavingMissionRewardArea?.Invoke();
@@ -285,8 +255,12 @@ public class PlayStateMaster : MonoBehaviour {
             ));
     }
 
+    float NoProgress() {
+        return 0f;
+    }
+    
     float WorldGenerationProgress() {
-        return (WorldMapCreator.s.worldMapGenerationProgress + PathAndTerrainGenerator.s.terrainGenerationProgress) / 2f;
+        return PathAndTerrainGenerator.s.terrainGenerationProgress;
     }
 
     delegate float LoadDelegate();
@@ -314,7 +288,7 @@ public class PlayStateMaster : MonoBehaviour {
         
         toCallInTheMiddle();
 
-        if (showLoading && loadProgress != null) {
+        if (loadProgress != null) {
             while (loadingProgress < 1f) {
                 loadingProgress = loadProgress();
                 loadingSlider.value = loadingProgress;
@@ -338,6 +312,7 @@ public class PlayStateMaster : MonoBehaviour {
     
     IEnumerator FadeLoadingScreen(float startValue, float targetValue, float duration)
     {
+        yield return null;
         float time = 0;
 
         while (time < duration)
@@ -348,5 +323,6 @@ public class PlayStateMaster : MonoBehaviour {
             yield return null;
         }
         canvasGroup.alpha = targetValue;
+        yield return null;
     }
 }

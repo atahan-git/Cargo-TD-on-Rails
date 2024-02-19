@@ -53,9 +53,9 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
     public void ReDoTutorial() {
         //TutorialComplete();
-        DataSaver.s.GetCurrentSave().isInARun = false;
+        //DataSaver.s.GetCurrentSave().isInARun = false;
         DataSaver.s.GetCurrentSave().tutorialProgress = new DataSaver.TutorialProgress();
-        DataSaver.s.GetCurrentSave().metaProgress = new DataSaver.MetaProgress();
+        //DataSaver.s.GetCurrentSave().metaProgress = new DataSaver.MetaProgress();
         MiniGUI_DisableTutorial.SetVal(true);
         //ShopStateController.s.BackToMainMenu();
         
@@ -68,10 +68,10 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
         cameraHint.SetActive(false);
 
-        PlayStateMaster.s.OnCharacterSelected.AddListener(PlayObjectiveAnimation);
-        if (DataSaver.s.GetCurrentSave().isInARun) {
+        //PlayStateMaster.s.OnCharacterSelected.AddListener(PlayObjectiveAnimation);
+        //if (DataSaver.s.GetCurrentSave().isInARun) {
             PlayObjectiveAnimation();
-        }
+        //}
     }
 
     void PlayObjectiveAnimation() {
@@ -81,12 +81,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
     public InputActionReference skip;
 
-    public GameObject thisIsYourCargo;
-
     public GameObject leaveTheCity;
-    public GameObject getRidOfEmpty;
-    private bool emptyCartThingActive = false;
-    private Cart emptyCart;
 
     public GameObject hoverOverThingsToGetInfo;
 
@@ -105,24 +100,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
     }
     IEnumerator _PlayObjectiveAnimation() {
         WakeUpAnimation.s.Engage();
-        
-        Cart cargo = null;
-        emptyCart = null;
 
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            if (Train.s.carts[i].isMysteriousCart) {
-                cargo = Train.s.carts[i];
-            }
-
-            if (Train.s.carts[i].modulesParent.childCount == 0) {
-                emptyCart = Train.s.carts[i];
-            }
-        }
-        thisIsYourCargo.GetComponent<UIElementFollowWorldTarget>().SetUp(cargo.uiTargetTransform);
-        if (emptyCart != null) {
-            getRidOfEmpty.GetComponent<UIElementFollowWorldTarget>().SetUp(emptyCart.uiTargetTransform);
-        }
-        
         //ShopStateController.s.mapOpenButton.gameObject.SetActive(false);
         ShopStateController.s.starterUI.SetActive(false);
         
@@ -144,14 +122,12 @@ public class FirstTimeTutorialController : MonoBehaviour {
             timer -= Time.deltaTime;
             yield return null;
         }
-        thisIsYourCargo.SetActive(true);
 
         yield return new WaitUntil(() => clickComplete);
         clickComplete = false;
         yield return new WaitForSeconds(0.1f);
         
         yield return new WaitForSeconds(1f);
-        thisIsYourCargo.SetActive(false);
         
         crewMeeple.SpecialMeepleSpeak("Don't get too full of yourselves. We are just helping you because our goals align.", OnClicked);
         
@@ -171,7 +147,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
         clickComplete = false;
         yield return new WaitForSeconds(0.1f);
 
-        if (emptyCart != null) {
+        /*if (emptyCart != null) {
             collectiveMeeple.SpecialMeepleSpeak("Before you leave we recommend you trade away your empty cart in the <b>Flea Market</b>. It will help your mission.", OnClicked);
             timer = 4f;
             while (timer >=0 && !clickComplete) {
@@ -190,7 +166,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
             yield return new WaitUntil(() => clickComplete);
             clickComplete = false;
             yield return new WaitForSeconds(0.1f);
-        }
+        }*/
         
         collectiveMeeple.SpecialMeepleSpeak("When you are ready pick some extra cargo next to the gate to deliver along your way and go.", OnClicked);
         yield return new WaitForSeconds(0.5f);
@@ -344,11 +320,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
     private void Update() {
         if (!_progress.firstCityTutorialDone) {
-            if (emptyCartThingActive) {
-                var isOnTrain = emptyCart.myLocation == UpgradesController.CartLocation.train;
-                var isLookingAtShop = !WorldMapCreator.s.worldMapOpen;
-                getRidOfEmpty.SetActive(isOnTrain && isLookingAtShop);
-            }
+            
         }
         
         if (!_progress.cameraDone) {
@@ -378,8 +350,6 @@ public class FirstTimeTutorialController : MonoBehaviour {
         _progress.firstCityTutorialDone = true;
         ClearActiveHints();
         
-        emptyCartThingActive = false;
-        getRidOfEmpty.SetActive(false);
         leaveTheCity.SetActive(false);
         hoverOverThingsToGetInfo.SetActive(false);
 
@@ -389,7 +359,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i];
-            if (!_progress.directControlHint && cart.GetComponentInChildren<DirectControllable>()) {
+            if (!_progress.directControlHint && cart.GetComponentInChildren<IDirectControllable>() != null) {
                 directControlHint.SetActive(true);
                 _progress.directControlHint = true;
             }
@@ -409,7 +379,6 @@ public class FirstTimeTutorialController : MonoBehaviour {
     }
 
     void ClearActiveHints() {
-        thisIsYourCargo.SetActive(false);
         for (int i = 0; i < activeHints.Count; i++) {
             if(activeHints[i] != null)
                 Destroy(activeHints[i].gameObject);

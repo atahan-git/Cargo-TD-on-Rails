@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3260276348594542097}
   - component: {fileID: 66985901946156025}
   - component: {fileID: 3696371460510630945}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Particles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,8 +169,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 14
-      minScalar: 5
+      scalar: 25
+      minScalar: 20
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -867,7 +867,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 40
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1028,7 +1028,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
       cycleCount: 0
-      repeatInterval: 0.4
+      repeatInterval: 0.2
       probability: 1
   SizeModule:
     enabled: 1
@@ -2682,7 +2682,7 @@ ParticleSystem:
     separateAxis: 0
     inWorldSpace: 0
     multiplyDragByParticleSize: 1
-    multiplyDragByParticleVelocity: 1
+    multiplyDragByParticleVelocity: 0
     dampen: 0.1
     drag:
       serializedVersion: 2
@@ -4894,7 +4894,7 @@ GameObject:
   - component: {fileID: 2345586699297905595}
   - component: {fileID: 8578716657350242314}
   - component: {fileID: 7261944562384906196}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5063,6 +5063,7 @@ MonoBehaviour:
     Path: event:/Train/LocomotiveFX
   pauseOnGamePause: 1
   playOnStart: 1
+  instantiateInstanceOnStart: 1
   volume: 1
 --- !u!1 &9082847109121117575
 GameObject:
@@ -5074,7 +5075,7 @@ GameObject:
   m_Component:
   - component: {fileID: 750469078357298144}
   - component: {fileID: 6054183283993166569}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Engine Smokes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5090,7 +5091,7 @@ Transform:
   m_GameObject: {fileID: 9082847109121117575}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3260276348594542097}

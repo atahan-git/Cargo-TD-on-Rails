@@ -22,11 +22,11 @@ public class MiniGUI_WorldDifficultyArea : MonoBehaviour {
     }
 
     void Update() {
-        trainPos.value = WorldDifficultyController.s.playerStar + SpeedController.s.currentDistance / SpeedController.s.missionDistance;
+        trainPos.value = WorldDifficultyController.s.playerStar /*+ SpeedController.s.currentDistance / SpeedController.s.missionDistance*/;
     }
 
     public void OnDifficultyChanged() {
-        trainPos.maxValue = DataSaver.s.GetCurrentSave().currentRun.map.chunks.Count-1;
+        trainPos.maxValue = 0;
         
         act1Difficulty.SetActive(false);
         act2Difficulty.SetActive(false);

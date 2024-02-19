@@ -7,43 +7,33 @@ using UnityEngine.UI;
 public class MiniGUI_TrackPath : MonoBehaviour {
     public int trackId;
 
-    public bool currentState;
-    public bool isShowingBoth = false;
+    public float targetWidth;
     
     public GameObject unitsPrefab;
     
     public List<GameObject> unitDisplays = new List<GameObject>();
-
     private float baseHeight => DistanceAndEnemyRadarController.s.baseHeight;
-
-    public Color regularShowColor = Color.white;
-    private LevelSegment _segmentA;
-    private LevelSegment _segmentB;
-
+    
     private ManualLayoutElement _layoutElement;
     private ManualHorizontalLayoutGroup _layoutGroup;
+    
+    
+    public Color disabledColor = Color.white;
 
     private void Start() {
         _layoutElement = GetComponent<ManualLayoutElement>();
         _layoutGroup = GetComponentInParent<ManualHorizontalLayoutGroup>(true);
     }
 
-    public void SetUpTrack(bool selectedTrackState, LevelSegment mySegmentDataA, LevelSegment mySegmentDataB) {
-        currentState = selectedTrackState;
-        _segmentA = mySegmentDataA;
-        _segmentB = mySegmentDataB;
+    public void SetUpTrack(float _length) {
+        targetWidth = _length;
         
-        //SetTrackState(currentState, true);
-
-        GetComponent<ManualLayoutElement>().preferredWidth = currentState ? _segmentA.segmentLength : _segmentB.segmentLength;
         widthDirty = true;
-        
-        showBothObject.transform.position = hidePosition.position;
     }
     
     
 
-    void SpawnUnitsOnSegment(LevelSegment segment, RectTransform parent) {
+    void SpawnUnitsOnSegment(/*LevelSegment segment,*/ RectTransform parent) {
         //if (!segment.isEncounter) {
             /*for (int i = 0; i < segment.enemiesOnPath.Length; i++) {
                 var unitIcon = DataHolder.s.GetEnemy(segment.enemiesOnPath[i].enemyIdentifier.enemyUniqueName).GetComponent<EnemySwarmMaker>().enemyIcon;
@@ -64,7 +54,7 @@ public class MiniGUI_TrackPath : MonoBehaviour {
             var unit = Instantiate(unitsPrefab, parent);
             unitDisplays.Add(unit);
 
-            var icon = LevelReferences.s.smallEnemyIcon;
+            /*var icon = LevelReferences.s.smallEnemyIcon;
             if (segment.eliteEnemy)
                 icon = LevelReferences.s.eliteEnemyIcon;
             if (segment.isEncounter)
@@ -90,7 +80,7 @@ public class MiniGUI_TrackPath : MonoBehaviour {
             }
             
             
-            unit.GetComponent<MiniGUI_RadarUnit>().SetUp(icon, percentage, segment.eliteEnemy, segment.isEncounter);
+            unit.GetComponent<MiniGUI_RadarUnit>().SetUp(icon, percentage, segment.eliteEnemy, segment.isEncounter);*/
             
         /*} else {
             var percentage = 0.5f;
@@ -102,53 +92,12 @@ public class MiniGUI_TrackPath : MonoBehaviour {
         }*/
     }
 
-    public void TrackClicked() {
-        if (!isLocked) {
-            PathSelectorController.s.ShowTrackInfo(trackId);
-        }
-    }
-
-    public void ToggleTrackState(bool _isShowingBoth) { 
-        isShowingBoth = _isShowingBoth;
-        showBothObject.SetActive(true);
-        showSingleObject.SetActive(false);
-        if(singleLever != null)
-            singleLever.SetVisibility(false);
-        isMoving = true;
-        curReverseSpeed = 0;
-    }
-
-    public void SetTrackState(bool state, bool forced = false) {  // True is A
-        if (isShowingBoth) {
-            isStateDirty = true;
-            dirtyState = state;
-            return;
-        }
-
-        if (state != currentState || forced) {
-            currentState = state;
-
-            ClearUnitDisplays();
-            SpawnUnitsOnSegment(_segmentA, topTrack);
-            SpawnUnitsOnSegment(_segmentB, bottomTrack);
-
-
-            Destroy(showSingleObject);
-            showSingleObject = Instantiate(currentState ? topTrack.gameObject : bottomTrack.gameObject, showSingleParent);
-            showSingleObject.GetComponent<Image>().color = regularShowColor;
-            SetAndStretchToParentSize(showSingleObject);
-            if (isShowingBoth) {
-                showSingleObject.SetActive(false);
-            }
-        }
-    }
-
     public bool widthDirty = false;
     private float uiSizeMultiplier => DistanceAndEnemyRadarController.s.UISizeMultiplier;
+    public float pixelMultiplier = 1f;
 
     void UpdateLengths() {
-        var targetWidth = currentState ? _segmentA.segmentLength : _segmentB.segmentLength;
-
+        
         var lastWidth = _layoutElement.preferredWidth;
         _layoutElement.preferredWidth = Mathf.Lerp(_layoutElement.preferredWidth, targetWidth, 10* Time.deltaTime);
 
@@ -156,109 +105,19 @@ public class MiniGUI_TrackPath : MonoBehaviour {
             widthDirty = true;
         }
 
-        var selectionScaleMultiplier = 1f;
-        
         if (widthDirty || _layoutGroup.isLocationsDirty) {
             //set segment widths:
             var currentWidth = GetComponent<RectTransform>().rect.width;
-            /*var currentWidth = GetComponent<RectTransform>().rect.width;
             
-            if (currentState) {
-                var ratioA = 1f;
-                var ratioB = (float)_segmentB.segmentLength / (float)_segmentA.segmentLength;
+            /*topTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _segmentA.segmentLength*selectionScaleMultiplier);
+            bottomTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _segmentB.segmentLength*selectionScaleMultiplier);*/
 
-                if (ratioB > 1f) {
-                    ratioA = 1f / ratioB;
-                    ratioB = 1f;
-                }
-                
-                topTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, currentWidth * ratioA);
-                bottomTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, currentWidth * ratioB) ;
-                //print($"{currentState} - {currentWidth} - {currentWidth * ((float)_segmentB.segmentLength / _segmentA.segmentLength)}");
-            } else {
-                var ratioA = (float)_segmentA.segmentLength / (float)_segmentB.segmentLength;
-                var ratioB = 1f;
-
-                if (ratioA > 1f) {
-                    ratioB = 1f / ratioA;
-                    ratioA = 1f;
-                }
-
-                topTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, currentWidth * ratioA);
-                bottomTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, currentWidth * ratioB);
-
-                //print($"{currentState} - {currentWidth * ((float)_segmentA.segmentLength / _segmentB.segmentLength)} - {currentWidth}");
-            }*/
-            
-            topTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _segmentA.segmentLength*selectionScaleMultiplier);
-            bottomTrack.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _segmentB.segmentLength*selectionScaleMultiplier);
-
-            showSingleObject.GetComponent<Image>().pixelsPerUnitMultiplier = 6f * (targetWidth / currentWidth) * uiSizeMultiplier;
-            topTrack.GetComponent<Image>().pixelsPerUnitMultiplier = 
-                6f * (_segmentA.segmentLength / topTrack.GetComponent<RectTransform>().rect.width) * (selectionScaleMultiplier*2f);
-            bottomTrack.GetComponent<Image>().pixelsPerUnitMultiplier = 
-                6f * (_segmentB.segmentLength / bottomTrack.GetComponent<RectTransform>().rect.width) * (selectionScaleMultiplier*2f);
+            GetComponentInChildren<Image>().pixelsPerUnitMultiplier = 6f * (targetWidth / currentWidth) * uiSizeMultiplier * pixelMultiplier;
         }
     }
 
-    public Transform showPosition;
-    public Transform hidePosition;
-    public GameObject showBothObject;
-    
-    public RectTransform topTrack;
-    public RectTransform bottomTrack;
-    
-    public Transform showSingleParent;
-    public GameObject showSingleObject;
-
-    public MiniGUI_TrackLever singleLever;
-    public MiniGUI_TrackLever doubleLever;
-
-    private float reverseLerpAcceleration = 200;
-    private float lerpSpeed = 15;
-    private float curReverseSpeed = 0;
-    
-    
-    public bool isMoving = false;
-    public bool isStateDirty = false;
-    private bool dirtyState;
     private void Update() {
-        if (isMoving) {
-            if (isShowingBoth) {
-                showBothObject.transform.position = Vector3.Lerp(showBothObject.transform.position, showPosition.position, lerpSpeed * Time.deltaTime);
-                if (Mathf.Abs(showBothObject.transform.position.y - showPosition.position.y) < 0.1f) {
-                    isMoving = false;
-                    showBothObject.transform.position = showPosition.position;
-                }
-            } else {
-                showBothObject.transform.position = Vector3.Lerp(showBothObject.transform.position, hidePosition.position, curReverseSpeed * Time.deltaTime);
-                curReverseSpeed += reverseLerpAcceleration * Time.deltaTime;
-
-                if (Mathf.Abs(showBothObject.transform.position.y - hidePosition.position.y) < 0.3f) {
-                    isMoving = false;
-                    showBothObject.SetActive(false);
-                    showSingleObject.SetActive(true);
-                    if(singleLever != null)
-                        singleLever.SetVisibility(true);
-                    showBothObject.transform.position = hidePosition.position;
-                }
-            }
-        }
-
         UpdateLengths();
-
-        if (isStateDirty && !isShowingBoth) {
-            isStateDirty = false;
-            SetTrackState(dirtyState);
-        }
-    }
-
-
-    private bool isLocked = false;
-    public void LockTrackState() {
-        isLocked = true;
-        ToggleTrackState(false);
-        ClearUnitDisplays();
     }
 
     void ClearUnitDisplays() {
@@ -267,16 +126,22 @@ public class MiniGUI_TrackPath : MonoBehaviour {
         }
         
         unitDisplays.Clear();
-        showSingleObject.transform.DeleteAllChildren();
     }
 
-
-    void SetAndStretchToParentSize(GameObject target) {
+    public void SetActiveState(bool state) {
+        if (state) {
+            GetComponentInChildren<Image>().color = Color.white;
+        } else {
+            GetComponentInChildren<Image>().color = disabledColor;
+        }
+    }
+    
+    /*void SetAndStretchToParentSize(GameObject target) {
         var _mRect = target.GetComponent<RectTransform>();
         _mRect.anchorMin = Vector2.zero;
         _mRect.anchorMax = Vector2.one;
         _mRect.pivot = new Vector2(0, 0.5f);
         _mRect.sizeDelta = Vector2.zero;
         _mRect.anchoredPosition = Vector2.zero;
-    }
+    }*/
 }

@@ -15,7 +15,7 @@ public class MiniGUI_InfoCard_FragileSturdy : MonoBehaviour, IBuildingInfoCard {
     public void SetUp(Cart building) {
         fragile.SetActive(false);
         sturdy.SetActive(false);
-        if (building.isFragile) {
+        /*if (building.isFragile) {
             fragile.SetActive(true);
             GetComponent<UITooltipDisplayer>().myTooltip.text = fragileText;
         }
@@ -23,7 +23,7 @@ public class MiniGUI_InfoCard_FragileSturdy : MonoBehaviour, IBuildingInfoCard {
         if (building.isSturdy) {
             sturdy.SetActive(true);
             GetComponent<UITooltipDisplayer>().myTooltip.text = sturdyText;
-        }
+        }*/
 
     }
 

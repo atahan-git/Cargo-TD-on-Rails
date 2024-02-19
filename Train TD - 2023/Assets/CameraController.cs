@@ -153,7 +153,9 @@ public class CameraController : MonoBehaviour {
         if (!Pauser.s.isPaused) {
             if (directControlActive) {
                 ProcessDirectControl(aimAction.action.ReadValue<Vector2>(), aimGamepadAction.action.ReadValue<Vector2>());
-                ProcessVelocityPredictionAndAimAssist();
+                if (allowDirectControlFreeLook) {
+                    ProcessVelocityPredictionAndAimAssist();
+                }
             } else {
                 if (PlayerWorldInteractionController.s.canSelect || cannotSelectButCanMoveOverride) {
                     var mousePos = Mouse.current.position.ReadValue();
@@ -220,8 +222,8 @@ public class CameraController : MonoBehaviour {
     public MiniGUI_LineBetweenObjects miniGUILine;
 
     void ProcessVelocityPredictionAndAimAssist() {
-        var allTargets = LevelReferences.allTargetValues;
-        var allTargetsReal = LevelReferences.allTargets;
+        var allTargets = LevelReferences.s.allTargetValues;
+        var allTargetsReal = LevelReferences.s.allTargets;
  
         var myPosition =  mainCamera.transform.position;
         var myForward = mainCamera.transform.forward;
@@ -730,10 +732,14 @@ public class CameraController : MonoBehaviour {
     public bool directControlActive = false;
     public Transform directControlTransform;
     private Vector2 rotTarget;
+    private Vector2 freeLookDelta;
     public float mouseSensitivity = 1f;
     public float gamepadSensitivity = 1f;
     public float overallSensitivity = 1f;
-    private bool rotLerping = true;
+    public bool rotLerping = true;
+    public bool allowDirectControlFreeLook;
+    public float directControlMaxNonFreeLook = 8f;
+    public float directControlNonFreeLookSensitivityMultiplier = 0.35f;
 
 
     public void ProcessDirectControl(Vector2 mouseInput, Vector2 gamepadInput) {
@@ -745,7 +751,19 @@ public class CameraController : MonoBehaviour {
     }
     
     public void ProcessDirectControl(Vector2 processedInput) {
-        rotTarget += processedInput;
+        if (allowDirectControlFreeLook) {
+            rotTarget += processedInput;
+        } else {
+            processedInput *= directControlNonFreeLookSensitivityMultiplier;
+            freeLookDelta += processedInput;
+            
+            freeLookDelta = Vector2.ClampMagnitude(freeLookDelta, directControlMaxNonFreeLook+20);
+            var clampedLookDelta = Vector2.ClampMagnitude(freeLookDelta, directControlMaxNonFreeLook);
+            freeLookDelta = Vector2.Lerp(freeLookDelta, clampedLookDelta, 10 * Time.unscaledDeltaTime);
+            
+            rotTarget = new Vector2(directControlTransform.rotation.eulerAngles.y, -directControlTransform.rotation.eulerAngles.x) + freeLookDelta;
+        }
+        
 
         Quaternion xQuaternion = Quaternion.AngleAxis (rotTarget.x, Vector3.up);
         Quaternion yQuaternion = Quaternion.AngleAxis (rotTarget.y, -Vector3.right);
@@ -764,12 +782,18 @@ public class CameraController : MonoBehaviour {
         }
     }
     
-    public void ActivateDirectControl(Transform target) {
+    public void ActivateDirectControl(Transform target, bool allowFreeLook) {
         directControlTransform = target;
         directControlActive = true;
         rotTarget = new Vector2(target.rotation.eulerAngles.y, -target.rotation.eulerAngles.x);
+        freeLookDelta = Vector2.zero;
         rotLerping = true;
+        allowDirectControlFreeLook = allowFreeLook;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public void ChangeDirectControlTransformWithoutChangingCurrentRotation(Transform target) {
+        directControlTransform = target;
     }
 
     public void DisableDirectControl() {

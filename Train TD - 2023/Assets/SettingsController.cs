@@ -62,19 +62,29 @@ public class SettingsController : MonoBehaviour {
     }
 
     public void ResetRun() {
-        if (DataSaver.s.GetCurrentSave().isInARun == true) {
+        /*if (DataSaver.s.GetCurrentSave().isInARun == true) {
             areYouSureScreen.SetActive(true);
             areYouSureText.text = "Really Abandon?";
             areYouSureClick = () => _ResetRun();
 
             //SFX
             AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
-        }
+        }*/
+        
+        
+        AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
+    }
+
+    public void ResetTrainAndBail() {
+        DataSaver.s.GetCurrentSave().myTrain = new DataSaver.TrainState();
+        Train.s.CheckSetMinimumTrain();
+        DataSaver.s.SaveActiveGame();
+        SceneLoader.s.ForceReloadScene();
     }
 
     void _ResetRun() {
-        DataSaver.s.GetCurrentSave().currentRun = null;
-        DataSaver.s.GetCurrentSave().isInARun = false;
+        /*DataSaver.s.GetCurrentSave().currentRun = null;
+        DataSaver.s.GetCurrentSave().isInARun = false;*/
 
         DataSaver.s.SaveActiveGame();
 

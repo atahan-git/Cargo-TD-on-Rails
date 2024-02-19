@@ -78,7 +78,7 @@ public class CoinDrop : MonoBehaviour {
             speed = Mathf.Clamp(speed, 0, 20);
 
             if (Vector3.Distance(transform.position, MoneyUIDisplay.totalMoney.transform.position) < 0.01f) {
-                DataSaver.s.GetCurrentSave().metaProgress.money += amount;
+                DataSaver.s.GetCurrentSave().money += amount;
                 Destroy(gameObject);
             }
         }

@@ -8,6 +8,8 @@ using Random = UnityEngine.Random;
 
 public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringCombat, IResetState {
 
+    [Tooltip("only used for serializing player carts")]
+    public string gunUniqueName = "unset unique name";
     public Sprite gunSprite;
     [System.Serializable]
     public class TransformWithActivation {
@@ -76,6 +78,9 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float bonusBurnDamage = 0;
     public float damageMultiplier = 1f;
     public float sniperDamageMultiplier = 1f;
+    public float directControlDamageMultiplier = 1f;
+    public float directControlFirerateMultiplier = 1f;
+    public float directControlAmmoUseMultiplier = 1f;
     public float burnDamageMultiplier = 1f;
     public float regularToBurnDamageConversionMultiplier = 0;
     //public float regularToIceDamageConversionMultiplier = 0;
@@ -115,17 +120,39 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public bool gunActive = true;
     public bool IsBarrelPointingCorrectly = false;
-    public bool hasAmmo = true;
+
+    public bool HasAmmo() {
+        if (ammoPerBarrage <= 0)
+            return true;
+
+        if (_ammoTracker == null) {
+            _ammoTracker = GetComponentInParent<AmmoTracker>();
+        }
+
+        if (_ammoTracker == null) {
+            return true;
+        }
+
+        var ammoUse = AmmoUseWithMultipliers();
+        for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
+            if (_ammoTracker.ammoProviders[i].AvailableAmmo() >= ammoUse) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private AmmoTracker _ammoTracker;
+
+    public float ammoPerBarrage = 1;
+    public float ammoPerBarrageMultiplier = 1;
 
     public bool isPlayer = false;
 
     public Transform rangeOrigin;
 
-    public UnityEvent barrageShot;
-
     public bool canPenetrateArmor = false;
-
-    public float steamUsePerShot = 0;
 
     public bool needWarmUp = false;
     private bool isWarmedUp = false;
@@ -145,11 +172,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public bool beingDirectControlled = false;
 
+    public bool isLockOn = false;
+    
     public bool isHoming = false;
-
-    public float boostDamageOnUpgrade = 0.5f;
-    public void ResetState(int level) {
-        damageMultiplier = 1 + (boostDamageOnUpgrade*level);
+    public void ResetState() {
+        damageMultiplier = 1;
         sniperDamageMultiplier = 1;
         fireRateMultiplier = 1;
         fireRateDivider = 1;
@@ -289,7 +316,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
-            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().metaProgress.damageUpgradesBought * 0.2f);
+            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().damageUpgradesBought * 0.2f);
             dmgMul *= sniperDamageMultiplier;
         } else {
             dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
@@ -303,7 +330,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
-            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().metaProgress.damageUpgradesBought * 0.2f);
+            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().damageUpgradesBought * 0.2f);
         } else {
             dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
         }
@@ -318,7 +345,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float waitTimer;
     IEnumerator ShootCycle() {
         while (true) {
-            while (!IsBarrelPointingCorrectly || !hasAmmo || waitTimer > 0) {
+            while (!IsBarrelPointingCorrectly || !HasAmmo() || waitTimer > 0) {
                 waitTimer -= Time.deltaTime;
                 //print(IsBarrelPointingCorrectly);
                 yield return null;
@@ -378,8 +405,16 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         }
 
 
-        if(!isFree)
-            barrageShot?.Invoke();
+        if (!isFree) {
+            if (_ammoTracker != null) {
+                for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
+                    if (_ammoTracker.ammoProviders[i].AvailableAmmo() >= AmmoUseWithMultipliers()) {
+                        _ammoTracker.ammoProviders[i].UseAmmo(AmmoUseWithMultipliers());
+                        break;
+                    }
+                }
+            }
+        }
 
         for (int i = 0; i < fireBarrageCount; i++) {
             //if (!isPlayer || AreThereEnoughMaterialsToShoot() || isFree) {
@@ -422,9 +457,9 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             //if(myCart != null)
             if (isPlayer)
                 LogShotData(GetDamage());
-            if (isPlayer && !isFree) {
+            /*if (isPlayer && !isFree) {
                 SpeedController.s.UseSteam(steamUsePerShot * TweakablesMaster.s.myTweakables.gunSteamUseMultiplier);
-            }
+            }*/
 
             shotCallback?.Invoke();
             onBulletFiredEvent?.Invoke();
@@ -448,6 +483,17 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             //yield return new WaitForSeconds(GetFireBarrageDelay());
         }
     }
+    
+    float AmmoUseWithMultipliers() {
+        var ammoUse = ammoPerBarrage * ammoPerBarrageMultiplier;
+
+        /*if (myGunModule.beingDirectControlled)
+            ammoUse /= DirectControlMaster.s.directControlAmmoConservationBoost;*/
+
+        //ammoUse /= TweakablesMaster.s.myTweakables.playerMagazineSizeMultiplier;
+
+        return ammoUse;
+    }
 
     
     public bool gotShootCredits = false;
@@ -457,7 +503,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         if (!isPlayer) {
             var enemyHp = GetComponentInParent<EnemyHealth>();
             if (enemyHp != null) {
-                bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
+                bool isElite = GetComponentInParent<CarrierEnemy>() != null;
                 if (!isElite) {
                     needShootCredits = true;
                     EnemyTargetAssigner.s.shootRequesters.Enqueue(this);
@@ -471,7 +517,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         if (!isPlayer) {
             var enemyHp = GetComponentInParent<EnemyHealth>();
             if (enemyHp != null) {
-                bool isElite = GetComponentInParent<EnemyHealth>().rewardArtifactOnDeath;
+                bool isElite = GetComponentInParent<CarrierEnemy>() != null;
                 if (!isElite) {
                     needShootCredits = false;
                 }

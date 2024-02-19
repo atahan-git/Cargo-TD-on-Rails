@@ -175,7 +175,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  - component: {fileID: 5744414609892468159}
   m_Layer: 17
   m_Name: Range Edge Line
   m_TagString: Untagged
@@ -297,25 +296,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &5744414609892468159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2677843582063563157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &3146471024428373951
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,6 +305,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3248300930352555991}
+  - component: {fileID: 3491152898792926885}
   - component: {fileID: 2934280374143819819}
   - component: {fileID: 7371494607064308679}
   m_Layer: 17
@@ -351,6 +332,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3491152898792926885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3146471024428373951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip:
+    text: Two super fast gatling guns. Shoots fast inaccurate shots. Each shot uses
+      little ammo but goes through ammo fast.
+  info: Gatling Guns
 --- !u!114 &2934280374143819819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,7 +360,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunSprite: {fileID: 0}
+  gunUniqueName: gatling
+  gunSprite: {fileID: 21300000, guid: 60b74295dc0f58144a253ad95f441d97, type: 3}
   isGigaGatling: 1
   gatlinificator: 0
   maxFireRateReduction: 0.92
@@ -394,6 +392,9 @@ MonoBehaviour:
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
@@ -403,14 +404,11 @@ MonoBehaviour:
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 0.1
+  ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 0
-  steamUsePerShot: 0
   needWarmUp: 1
   startWarmUpEvent:
     m_PersistentCalls:
@@ -427,17 +425,14 @@ MonoBehaviour:
   gunShakeOnShoot: 1
   gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
+  isLockOn: 0
   isHoming: 0
-  boostDamageOnUpgrade: 0.5
   waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
   gotShootCredits: 0
   needShootCredits: 0
-  shootCreditsUse: 1
+  shootCreditsUse: 0.1
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,7 +459,6 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  - component: {fileID: 7425281378063857211}
   m_Layer: 17
   m_Name: Targeting Line
   m_TagString: Untagged
@@ -586,25 +580,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &7425281378063857211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4868666074182737494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 4
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
-  isInitialized: 0
 --- !u!1 &5658430458275408792
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,7 +921,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7515037017782385448}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.102375, z: -0.239875}
+  m_LocalPosition: {x: -0, y: 0.0319, z: 0.0879}
   m_LocalScale: {x: 1.2499999, y: 1.25, z: 1.2499999}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1019,18 +994,63 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8688943409664434149}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0819, z: 0.1919}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalRotation: {x: -0, y: -0.045951065, z: 6.617444e-24, w: 0.99894375}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6637031524188555893}
   - {fileID: 9060155755661591850}
   - {fileID: 7351534438779255672}
   - {fileID: 6428232684007577200}
+  - {fileID: 8599756972266018480}
   m_Father: {fileID: 3248300930352555991}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -5.267, z: 0}
+--- !u!1 &8918089211520961272
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8599756972266018480}
+  - component: {fileID: 9110276213428392525}
+  m_Layer: 11
+  m_Name: Direct Control Top
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8599756972266018480
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8918089211520961272}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1959, z: -0.0669}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9110276213428392525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8918089211520961272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2876ead7b0efdcd488c3149e01808326, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &195691669376562020
 PrefabInstance:
   m_ObjectHideFlags: 0
