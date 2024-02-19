@@ -19,10 +19,6 @@ public class Artifact_HomingBullets : ActivateWhenOnArtifactRow
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
             gunModule.isHoming = true;
         }
-        
-        foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {
-            roboRepair.rangeBoost += 100; // apply to the entire train
-        }
     }
 
     protected override void _Disarm() {

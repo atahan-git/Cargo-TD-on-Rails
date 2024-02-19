@@ -12,36 +12,38 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public int _maxAmmo = 100;
     public float maxAmmoMultiplier = 1f;
 
+    [ShowInInspector]
     public int maxAmmo {
         get { return Mathf.RoundToInt(_maxAmmo * maxAmmoMultiplier); }
     }
 
     public PhysicalAmmoBar myAmmoBar;
 
-    public void ResetState(int level) {
+    public void ResetState() {
         maxAmmoMultiplier = 1;
         reloadEfficiency = 1;
 
         maxAmmoMultiplier = 0.7f + (DataSaver.s.GetCurrentSave().ammoUpgradesBought * 0.15f);
 
-        ChangeMaxAmmo(0);
-        UpdateModuleState();
-        
         myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
         myAmmoBar.OnAmmoTypeChange();
-        myAmmoBar.OnReload(false,curAmmo);
-        myAmmoBar.OnUse(curAmmo);
         
-        GetComponentInParent<AmmoTracker>().ammoProviders.Add(this);
+        ChangeMaxAmmo(0);
+        UpdateModuleState();
     }
 
     private void Start() {
         myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
+        myAmmoBar.OnAmmoTypeChange();
         UpdateModuleState();
     }
 
     public float AvailableAmmo() {
         return curAmmo;
+    }
+
+    public float AmmoCapacity() {
+        return maxAmmo;
     }
 
     public void UseAmmo(float usedAmount) {
@@ -92,11 +94,8 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         maxAmmoMultiplier += multiplierChange;
         if (PlayStateMaster.s.isCombatInProgress()) {
             curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
-        } else {
-            if(PlayerWorldInteractionController.s.autoReloadAtStation)
-                curAmmo = maxAmmo;
-            else
-                curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
+        } else { 
+            curAmmo = maxAmmo;
         }
 
         if (myAmmoBar != null) {
@@ -154,5 +153,6 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
 public interface IAmmoProvider {
     public float AvailableAmmo();
+    public float AmmoCapacity();
     public void UseAmmo(float amountUsed);
 }

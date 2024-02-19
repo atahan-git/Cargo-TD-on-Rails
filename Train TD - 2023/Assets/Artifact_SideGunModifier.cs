@@ -15,10 +15,10 @@ public class Artifact_SideGunModifier : ActivateWhenOnArtifactRow {
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
 
-            var directControl = cart.GetComponentInChildren<DirectControllable>();
+            var directControl = cart.GetComponentInChildren<IDirectControllable>();
 
 
-            if (!directControl) {
+            if (directControl == null) {
                 foreach (var gunModule in cart.GetComponentsInChildren<GunModule>()) {
                     gunModule.damageMultiplier += damageMultiplier - 1;
                     gunModule.ammoPerBarrageMultiplier += ammoUseMultiplier - 1;

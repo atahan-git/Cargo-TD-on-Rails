@@ -75,6 +75,13 @@ public class SettingsController : MonoBehaviour {
         AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
     }
 
+    public void ResetTrainAndBail() {
+        DataSaver.s.GetCurrentSave().myTrain = new DataSaver.TrainState();
+        Train.s.CheckSetMinimumTrain();
+        DataSaver.s.SaveActiveGame();
+        SceneLoader.s.ForceReloadScene();
+    }
+
     void _ResetRun() {
         /*DataSaver.s.GetCurrentSave().currentRun = null;
         DataSaver.s.GetCurrentSave().isInARun = false;*/

@@ -8,7 +8,7 @@ public class BuildingScrapperController : MonoBehaviour
     [ValueDropdown("GetAllModuleNames")]
     public string scrapCart = "";
 
-    public SnapCartLocation target;
+    public SnapLocation target;
 
     public GameObject poofEffect;
     
@@ -17,7 +17,7 @@ public class BuildingScrapperController : MonoBehaviour
     void Update()
     {
         if (!isEngaged && !PlayerWorldInteractionController.s.isDragging() && PlayerWorldInteractionController.s.canSmith) {
-            if (target.snapTransform.childCount > 0)
+            if (!target.IsEmpty())
                 CheckAndDoUpgrade();
         }
     }
@@ -30,8 +30,8 @@ public class BuildingScrapperController : MonoBehaviour
             if (cart.uniqueName != scrapCart) {
                 UpgradesController.s.RemoveCartFromShop(cart);
                 Destroy(cart.gameObject);
-                Instantiate(poofEffect, target.snapTransform);
-                Instantiate(DataHolder.s.GetCart(scrapCart), target.snapTransform);
+                Instantiate(poofEffect, target.transform);
+                Instantiate(DataHolder.s.GetCart(scrapCart), target.transform);
                 didUpgrade = true;
             }
         }
@@ -42,8 +42,8 @@ public class BuildingScrapperController : MonoBehaviour
         if (artifact != null) {
             UpgradesController.s.RemoveArtifactFromShop(artifact);
             Destroy(artifact.gameObject);
-            Instantiate(poofEffect, target.snapTransform);
-            Instantiate(DataHolder.s.GetCart(scrapCart), target.snapTransform);
+            Instantiate(poofEffect, target.transform);
+            Instantiate(DataHolder.s.GetCart(scrapCart), target.transform);
             didUpgrade = true;
         }
 

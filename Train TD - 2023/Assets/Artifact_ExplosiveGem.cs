@@ -52,12 +52,6 @@ public class Artifact_ExplosiveGem: ActivateWhenOnArtifactRow, IResetStateArtifa
         }
         
         foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
-            if (target.isMainEngine) {
-                trainGemBridge.prefabToSpawnWhenSpeedBoostActivates.Add(currentGigaExplosion);
-                SpeedController.s.boostEffectMultiplier = -100; // no boost at all with explosive
-            } else {
-                trainGemBridge.prefabToSpawnWhenSpeedBoostActivates.Add(currentMiniExplosion);
-            }
             didApply = true;
         }
         

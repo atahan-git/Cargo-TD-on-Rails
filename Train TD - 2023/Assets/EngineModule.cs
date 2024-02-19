@@ -49,7 +49,7 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
       this.enabled = false;
    }
 
-   public void ResetState(int level) {
+   public void ResetState() {
       extraSpeedAdd = 0;
       extraEnginePower = 0;
    }

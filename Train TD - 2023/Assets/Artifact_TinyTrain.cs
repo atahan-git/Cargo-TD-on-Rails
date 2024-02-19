@@ -25,7 +25,7 @@ public class Artifact_TinyTrain : ActivateWhenOnArtifactRow
             moduleAmmo.maxAmmoMultiplier += 0.2f;
         }
         
-        foreach (var directControllable in target.GetComponentsInChildren<DirectControllable>()) {
+        foreach (var directControllable in target.GetComponentsInChildren<IDirectControllable>()) {
         }
 
         foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {

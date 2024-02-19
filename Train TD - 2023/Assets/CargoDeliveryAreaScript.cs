@@ -7,8 +7,8 @@ using Random = UnityEngine.Random;
 
 public class CargoDeliveryAreaScript : MonoBehaviour {
 
-    public SnapCartLocation location1;
-    public SnapCartLocation location2;
+    public SnapLocation location1;
+    public SnapLocation location2;
 
     public Transform rotatingPlatform;
 
@@ -29,7 +29,7 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
     void Update()
     {
         if (!isEngaged && !PlayerWorldInteractionController.s.isDragging()) {
-            if (location1.snapTransform.childCount > 0) 
+            if (!location1.IsEmpty()) 
                 StartCoroutine(EngagePlatform(location1, location2));
         }
     }
@@ -39,7 +39,7 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
 
     private bool isEngaged = false;
 
-    IEnumerator EngagePlatform(SnapCartLocation fullPlatform, SnapCartLocation emptyPlatform) {
+    IEnumerator EngagePlatform(SnapLocation fullPlatform, SnapLocation emptyPlatform) {
         isEngaged = true;
         PlayerWorldInteractionController.s.Deselect();
         SetColliderStatus(rotatingPlatform.gameObject, false);
@@ -53,7 +53,7 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
         var cargoModule = fullPlatform.GetComponentInChildren<CargoModule>();
         GameObject rewardCart = null;
         if (UpgradesController.s.rewardDestinationCart) {
-            rewardCart = Instantiate(DataHolder.s.GetCart(cargoModule.GetState().cargoReward).gameObject, emptyPlatform.snapTransform);
+            rewardCart = Instantiate(DataHolder.s.GetCart(cargoModule.GetState().cargoReward).gameObject, emptyPlatform.transform);
         }
 
         GameObject rewardArtifact = null;
@@ -89,13 +89,13 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
         rotatingPlatform.localRotation = rotateTarget;
         
         SetColliderStatus(rotatingPlatform.gameObject, true);
-        Destroy(fullPlatform.snapTransform.GetChild(0).gameObject);
+        Destroy(fullPlatform.GetSnappedObject().gameObject);
 
         if (UpgradesController.s.rewardDestinationCart) {
-            UpgradesController.s.AddCartToShop(rewardCart.GetComponent<Cart>(), UpgradesController.CartLocation.world);
+            UpgradesController.s.AddCartToShop(rewardCart.GetComponent<Cart>());
         }
 
-        UpgradesController.s.RemoveCartFromShop(fullPlatform.snapTransform.GetChild(0).GetComponent<Cart>());
+        UpgradesController.s.RemoveCartFromShop(fullPlatform.GetSnappedObject().GetComponent<Cart>());
 
 
         FirstTimeTutorialController.s.CargoHintShown();

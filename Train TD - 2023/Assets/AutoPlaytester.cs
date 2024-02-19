@@ -141,13 +141,6 @@ public class AutoPlaytester : MonoBehaviour {
         
         CameraController.s.ResetCameraPos();
         
-        
-        /*var destinationCart = UpgradesController.s.leftCargo;
-        UpgradesController.s.RemoveCartFromShop(destinationCart);
-        Train.s.AddCartAtIndex(Train.s.carts.Count-1, destinationCart);
-        
-        UpgradesController.s.SnapDestinationCargos(destinationCart);*/
-        UpgradesController.s.UpdateCartShopHighlights();
         UpgradesController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
         
@@ -168,7 +161,7 @@ public class AutoPlaytester : MonoBehaviour {
         
         Assert.IsNotNull(fleaMarketCart.GetComponentInChildren<ModuleAmmo>());
         
-        var fleaLocation = fleaMarketCart.GetComponentInParent<SnapCartLocation>();
+        var fleaLocation = fleaMarketCart.GetComponentInParent<SnapLocation>();
         
         UpgradesController.s.RemoveCartFromShop(fleaMarketCart);
         Train.s.AddCartAtIndex(Train.s.carts.Count-1, fleaMarketCart);
@@ -177,12 +170,8 @@ public class AutoPlaytester : MonoBehaviour {
         yield return new WaitForSeconds(0.2f);
         
         Train.s.RemoveCart(emptyCart);
-        emptyCart.transform.SetParent(fleaLocation.snapTransform);
-        UpgradesController.s.AddCartToShop(emptyCart, fleaLocation.myLocation);
 
         yield return new WaitForSeconds(0.2f);
-        
-        UpgradesController.s.UpdateCartShopHighlights();
         UpgradesController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
         
@@ -230,12 +219,6 @@ public class AutoPlaytester : MonoBehaviour {
         
         yield return new WaitForSeconds(4f);
         
-        /*destinationCart = UpgradesController.s.leftCargo;
-        UpgradesController.s.RemoveCartFromShop(destinationCart);
-        Train.s.AddCartAtIndex(Train.s.carts.Count-1, destinationCart);
-        
-        UpgradesController.s.SnapDestinationCargos(destinationCart);*/
-        UpgradesController.s.UpdateCartShopHighlights();
         UpgradesController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
         
@@ -303,21 +286,15 @@ public class AutoPlaytester : MonoBehaviour {
         yield return new WaitForSeconds(1f);
 
 
-        DirectControllable directControllable = null;
+        IDirectControllable directControllable = null;
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i];
-            directControllable = cart.GetComponentInChildren<DirectControllable>();
+            directControllable = cart.GetComponentInChildren<IDirectControllable>();
             if (directControllable != null) {
                 break;
             }
         }
         
-        
-
-        SpeedController.s.ActivateBoost();
-        
-        print("Activated boost");
-        yield return new WaitForSeconds(10f);
         
         DirectControlMaster.s.AssumeDirectControl(directControllable);
         
@@ -379,14 +356,13 @@ public class AutoPlaytester : MonoBehaviour {
                 var healthModule = cart.GetHealthModule();
                 var ammoModule = cart.GetComponentInChildren<ModuleAmmo>();
                 while (healthModule.GetHealthPercent() < 0.75f) {
-                    cart.GetHealthModule()?.Repair(PlayerWorldInteractionController.s.GetRepairAmount(cart.GetHealthModule()));
+                    
                     repairCount += 1;
                     yield return new WaitForSeconds(0.1f);
                 }
 
                 if (ammoModule != null) {
                     while (ammoModule.curAmmo < 0.25f) {
-                        ammoModule.Reload(PlayerWorldInteractionController.s.GetReloadAmount());
                         reloadCount += 1;
                         yield return new WaitForSeconds(0.1f);
                     }
@@ -408,7 +384,7 @@ public class AutoPlaytester : MonoBehaviour {
 
     IEnumerator CombatRewardRoutine() {
         GameObject.Find("Win Continue").GetComponent<Button>().onClick?.Invoke();
-        var regularDeliveryLoc = GameObject.Find("Regular Delivery Snap Loc").GetComponent<SnapCartLocation>();
+        var regularDeliveryLoc = GameObject.Find("Regular Delivery Snap Loc").GetComponent<SnapLocation>();
 
         /*Train.s.RemoveCart(destinationCart);
         UpgradesController.s.AddCartToShop(destinationCart, regularDeliveryLoc.myLocation);
@@ -426,7 +402,6 @@ public class AutoPlaytester : MonoBehaviour {
         Assert.IsNotNull(rewardArtifact);
 
         
-        UpgradesController.s.UpdateCargoHighlights();
         
         yield return new WaitForSeconds(2f);
         

@@ -21,7 +21,7 @@ public class BreakParticles : MonoBehaviour {
     void Update() {
         var isBreaking = SpeedController.s.currentBreakPower > 0 
                          && ((LevelReferences.s.speed > 0.01f || PlayStateMaster.s.isShop() || SpeedController.s.encounterOverride)
-                             && myCart.myLocation == UpgradesController.CartLocation.train);
+                             && myCart.GetComponentInParent<Train>());
         if (lastState != isBreaking) {
             for (int i = 0; i < _particleSystems.Length; i++) {
                 if (isBreaking) {

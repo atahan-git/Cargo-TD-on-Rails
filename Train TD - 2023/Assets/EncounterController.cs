@@ -108,7 +108,6 @@ public class EncounterController : MonoBehaviour {
         doAmbush = false;
         encounterSkipped = false;
         
-        SpeedController.s.DisableLowPower();
         Invoke(nameof(ReallyEngageEncounter), 3f);
     }
 

@@ -33,7 +33,10 @@ public class EnemyAmmo : MonoBehaviour, IAmmoProvider
 
     private void Start() {
         myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
-
+        
+        if (!myAmmoBar.ammoTypeSet) {
+            myAmmoBar.OnAmmoTypeChange();
+        }
         Reload(-1);
 
         GetComponentInParent<AmmoTracker>().ammoProviders.Add(this);
@@ -47,7 +50,11 @@ public class EnemyAmmo : MonoBehaviour, IAmmoProvider
             return 0f;
         }
     }
-    
+
+    public float AmmoCapacity() {
+        return maxAmmo;
+    }
+
 
     public void UseAmmo(float usedAmount) {
         curAmmo -= usedAmount;

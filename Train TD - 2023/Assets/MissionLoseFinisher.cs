@@ -159,14 +159,4 @@ public class MissionLoseFinisher : MonoBehaviour {
 
         SceneLoader.s.ForceReloadScene();
     }
-
-
-    public DataSaver.TrainState minimumTrain;
-    public void CheckMinimumTrain() {
-        var saveData = DataSaver.s.GetCurrentSave();
-
-        if (saveData.myTrain == null || saveData.myTrain.myCarts.Count <= 3) {
-            saveData.myTrain = minimumTrain;
-        }
-    }
 }

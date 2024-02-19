@@ -21,13 +21,14 @@ public class RubbleFollowFloor : MonoBehaviour {
     }
 
     private void FixedUpdate() {
+        deathTime -= Time.fixedDeltaTime;
         GetComponent<Rigidbody>().AddForce(Vector3.back * constantForce);
     }
     
     
     private void OnCollisionEnter(Collision other) {
-        print(other);
-        print(other.transform);
+        //print(other);
+        //print(other.transform);
         
         if (!isAttachedToFloor) {
             var hexChunk = other.gameObject.GetComponent<TrainTerrainData>();

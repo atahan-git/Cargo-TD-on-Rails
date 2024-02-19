@@ -6,6 +6,7 @@ using HighlightPlus;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Analytics;
+using UnityEngine.Assertions;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -21,13 +22,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         s = null;
     }
 
-
-    public IPlayerHoldable selectedThing;
-    public EnemyHealth selectedEnemy;
-    public Artifact selectedArtifact;
-    public Meeple selectedMeeple;
     
-    public Cart selectedCart;
+    public IPlayerHoldable currentSelectedThing;
+    MonoBehaviour currentSelectedThingMonoBehaviour => currentSelectedThing as MonoBehaviour;
     public Vector3 dragBasePos;
 
     
@@ -46,36 +43,16 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
     [SerializeField]
     private bool _canSelect;
+
     public bool canSelect {
-        get {
-            return _canSelect;
-        }
-        set {
-            SetCannotSelect(value);
-        }
-}
+        get { return _canSelect; }
+        set { SetCannotSelect(value); }
+    }
 
-    public bool canOnlySelectCharSelectStuff;
-
-    public bool canRepair = true;
-    public bool autoRepairAtStation = true;
-    public bool canReload = true;
-    public bool autoReloadAtStation = true;
     public bool canSmith = true;
-
-    public bool engineBoostDamageInstead = false;
     
     public void ResetValues() {
-        repairAmountMultiplier = 1;
-        reloadAmountMultiplier = 1;
-        reloadAmountPerClickBoost = 0;
-        shieldUpAmountMultiplier = 1;
-        canRepair = true;
-        canReload = true;
         canSmith = true;
-        autoRepairAtStation = true;
-        autoReloadAtStation = true;
-        engineBoostDamageInstead = false;
     }
     
     protected void OnEnable()
@@ -97,31 +74,15 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     public Color cantActColor = Color.white;
+    public Color destroyedColor = Color.black;
     public Color moveColor = Color.blue;
-    public Color repairColor = Color.green;
-    public Color shieldColor = Color.cyan;
     public Color reloadColor = Color.yellow;
     public Color directControlColor = Color.magenta;
     public Color engineBoostColor = Color.red;
+    public Color enemyColor = Color.white;
+    public Color meepleColor = Color.white;
 
-
-    public float maxRepairCapacity = 1000;
-    public float repairRecharge = 10;
-    public float repairRechargeDelay = 1;
-    public float curRepairRechargeDelay = 0;
-    public float curRepairCapacity;
     private void Update() {
-        if (curRepairRechargeDelay <= 0) {
-            if (curRepairCapacity < maxRepairCapacity) {
-                curRepairCapacity += repairRecharge*Time.deltaTime;
-                curRepairCapacity = Mathf.Clamp(curRepairCapacity, 0, maxRepairCapacity);
-            }
-        } else {
-            curRepairRechargeDelay -= Time.deltaTime;
-        }
-
-
-
         if (!canSelect || Pauser.s.isPaused || PlayStateMaster.s.isLoading || DirectControlMaster.s.directControlLock > 0) {
             return;
         }
@@ -133,28 +94,14 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
 
         if (!isDragging() && !infoCardActive) {
-            if(PlayStateMaster.s.isShopOrEndGame())
-                CastRayToOutlineArtifact();
-            
-            if(selectedArtifact == null)
-                CastRayToOutlineCart();
-            
-            if(PlayStateMaster.s.isCombatInProgress())
-                CastRayToOutlineEnemy();
-            
-            if(selectedArtifact == null && selectedCart == null)
-                CastRayToOutlineMeeple();
+            CastRayToOutline();
         }
 
-
+        CheckAndDoDrag();
+        
         if (PlayStateMaster.s.isCombatInProgress()) {
-            CheckAndDoClick();
-            //CheckAndDoDragCombat();
+            CheckAndDoCombatClick();
         } else {
-            if (!canOnlySelectCharSelectStuff) {
-                CheckAndDoDrag();
-            }
-
             CheckGate();
         }
     }
@@ -185,6 +132,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
     private IClickableWorldItem lastGate;
     private bool clickedOnGate;
+    
+    [HideInInspector]
+    public UnityEvent<IClickableWorldItem, bool> OnSelectGate = new UnityEvent<IClickableWorldItem, bool>();
     void CheckGate() {
         RaycastHit hit;
         Ray ray = GetRay();
@@ -225,51 +175,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
-
-    void CheckAndDoDragCombat() {
-        if (selectedCart != null) {
-            DoCartDragCombat();
-        }
-
-        if (doCombatTrainLerp) {
-            UpdateTrainCartPositionsSlowlyCombat();
-        }
-    }
-
-    private bool doCombatTrainLerp = false;
-    void UpdateTrainCartPositionsSlowlyCombat() {
-        var carts = Train.s.carts;
-        
-        if(carts.Count == 0)
-            return;
-        
-        var totalLength = 0f;
-        for (int i = 0; i < carts.Count; i++) {
-            totalLength += carts[i].length;
-        }
-        
-        var currentSpot = - Vector3.back * (totalLength / 2f);
-
-        //Debug.Log("combat lerping");
-
-        for (int i = 0; i < carts.Count; i++) {
-            var cart = carts[i];
-            if (cart == selectedCart && !cart.isMainEngine )
-                currentSpot += Vector3.up * (isDragging() ? 0.4f : 0.05f);
-
-            cart.transform.localPosition = Vector3.Lerp(cart.transform.localPosition, currentSpot, lerpSpeed * Time.deltaTime);
-            cart.transform.localRotation = Quaternion.Slerp(cart.transform.localRotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-
-            if (cart == selectedCart && !cart.isMainEngine)
-                currentSpot -= Vector3.up * (isDragging() ? 0.4f : 0.05f);
-
-
-            currentSpot += -Vector3.forward * cart.length;
-            var index = i;
-            cart.name = $"Cart {index}";
-        }
-    }
-
     public bool isDragging() {
         return isToggleDragStarted || isHoldDragStarted;
     }
@@ -277,43 +182,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     private float clickCartTime = 0;
     private Vector3 clickCartPos;
     private bool clickCartFired;
-    private void DoCartDragCombat() {
-        if (!isToggleDragStarted) {
-            if (DragStarted(clickCart, ref clickCartTime, ref clickCartPos, ref clickCartFired)) {
-                HideInfo();
-                if (CanDragCart(selectedCart)) {
-                    isHoldDragStarted = true;
-                    BeginCartDragCombat();
-                }
-            }
-
-            if (isHoldDragStarted) {
-                if (clickCart.action.IsPressed()) {
-                    CheckIfCartSnappingCombat();
-                } else {
-                    EndCartDragCombat();
-                }
-            }
-        }
-        
-        if (!isHoldDragStarted) {
-            if (!isToggleDragStarted) {
-                if (dragClick.action.WasPerformedThisFrame() && !isHoldDragStarted) {
-                    HideInfo();
-                    if (CanDragCart(selectedCart)) {
-                        isToggleDragStarted = true;
-                        BeginCartDragCombat();
-                    }
-                }
-            }else{
-                CheckIfCartSnappingCombat();
-                if (dragClick.action.WasPerformedThisFrame()) {
-                    EndCartDragCombat();
-                }
-            }
-        }
-    }
-
 
     /// <summary>
     /// This should be called from an update function every frame.
@@ -339,34 +207,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         return false;
     }
     
-    private void BeginCartDragCombat() {
-        if (selectedCart.myLocation == UpgradesController.CartLocation.train) {
-            isSnapping = false;
-            
-            dragBasePos = selectedCart.transform.position;
-            offset = dragBasePos - GetMousePositionOnPlane();
-
-            Train.s.StopShake(10000000, false);
-            doCombatTrainLerp = true;
-            CancelInvoke(nameof(StopCombatTrainLerp));
-
-            
-            PhysicalRangeShower.s.ShowCartRange(selectedCart,true);
-            SelectBuilding(selectedCart, true, true, true);
-            // SFX
-            AudioManager.PlayOneShot(SfxTypes.OnCargoPickUp);
-        }
-    }
-    
-    
-    void CheckIfCartSnappingCombat() {
-        if (!SettingsController.GamepadMode()) {
-            SnapToTrainCombat();
-        }
-    }
 
     public void MoveSelectedCart(bool isForward) {
         if (PlayStateMaster.s.isCombatInProgress() && isDragging()) {
+            var selectedCart = currentSelectedThing as Cart;
             if (selectedCart != null) {
                 if (CanDragCart(selectedCart)) {
                     if (isForward) {
@@ -382,115 +226,50 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
         }
     }
-    private bool SnapToTrainCombat() {
-        var carts = Train.s.carts;
-        var zPos = GetMousePositionOnPlane().z;
-
-        var totalLength = 0f;
-        for (int i = 0; i < carts.Count; i++) {
-            totalLength += carts[i].length;
-        }
-
-        var currentSpot = Vector3.forward * (totalLength / 2f);
-
-        bool inserted = false;
-        float distance = 0;
-
-        for (int i = 0; i < carts.Count; i++) {
-            var cart = carts[i];
-            currentSpot += Vector3.back * cart.length;
-
-            if (i != 0) {
-                distance = Mathf.Abs((currentSpot.z + (cart.length / 2f)) - zPos);
-                //Debug.Log($"{currentSpot.z + (cart.length / 2f)} < {zPos} && {distance} < {cart.length*4}");
-                if (currentSpot.z + (cart.length / 2f) < zPos && distance < cart.length*4) {
-                    if (cart != selectedCart) {
-                        inserted = true;
-                        Debug.Log($"Changing index {i}");
-                        Train.s.RemoveCart(selectedCart);
-                        Train.s.AddCartAtIndex(i, selectedCart);
-                        
-                        PhysicalRangeShower.s.ShowCartRange(selectedCart,false);
-                        
-                    } else {
-                        inserted = true;
-                    }
-
-                    if(inserted)
-                        return true;
-                }
-            }
-        }
-
-        if (!inserted) {
-            if (carts[carts.Count - 1] != selectedCart && distance < carts[0].length*4) {
-                Train.s.RemoveCart(selectedCart);
-                Train.s.AddCartAtIndex(carts.Count, selectedCart);
-                
-                PhysicalRangeShower.s.ShowCartRange(selectedCart, false);
-            }
-        }
-        return true;
-    }
-    
-    private void EndCartDragCombat() {
-        isHoldDragStarted = false;
-        isToggleDragStarted = false;
-        
-        
-        PhysicalRangeShower.s.HideRange();
-        
-        SelectBuilding(selectedCart, true);
-        Train.s.RestartShake(2.1f, true);
-        Invoke(nameof(StopCombatTrainLerp),2);
-    }
-
-    void StopCombatTrainLerp() {
-        doCombatTrainLerp = false;
-    }
 
     bool CanDragArtifact(Artifact artifact) {
-        return !canOnlySelectCharSelectStuff; //we might have artifacts later that are permanently glued to a cart.
+        return true; 
     }
     bool CanDragCart(Cart cart) {
-        return (!cart.isMainEngine && cart.canPlayerDrag) && !canOnlySelectCharSelectStuff;
+        return (!cart.isMainEngine && cart.canPlayerDrag) && (PlayStateMaster.s.isShopOrEndGame() || !cart.IsAttachedToTrain());
+    }
+    
+    bool CanDragMeeple(Meeple meeple) {
+        return PlayStateMaster.s.isShopOrEndGame();
+    }
+
+    bool CanDragThing(IPlayerHoldable thing) {
+        if (thing is Artifact artifact) {
+            return CanDragArtifact(artifact);
+        }else if ( thing is Cart cart) {
+            return CanDragCart(cart);
+        }else if (thing is EnemyHealth enemyHealth) {
+            return false;
+        }else if (thing is Meeple meeple) {
+            return CanDragMeeple(meeple);
+        } else {
+            return false;
+        }
     }
 
     public bool isToggleDragStarted = false;
     public bool isHoldDragStarted = false;
-    public bool isSnapping = false;
     public Vector3 offset;
-    public SnapCartLocation sourceSnapLocation;
     void CheckAndDoDrag() {
-        if (selectedCart != null) {
-            DoCartDrag();
-        }else if (selectedArtifact != null) {
-            DoArtifactDrag();
-        }else if (selectedMeeple != null) {
-            DoMeepleDrag();
-        }
-        
-        UpdateTrainCartPositionsSlowly();
-    }
-    
-    private void DoMeepleDrag() {
         if (!isToggleDragStarted) {
             if (clickCart.action.WasPressedThisFrame()) {
                 HideInfo();
+                if (CanDragThing(currentSelectedThing)) {
                     isHoldDragStarted = true;
-                    BeginMeepleDrag();
+                    BeginDrag();
+                }
             }
 
             if (isHoldDragStarted) {
                 if (clickCart.action.IsPressed()) {
-                    CheckIfMeepleSnapping();
-                    if (!isSnapping) {
-                        selectedMeeple.transform.position = GetMousePositionOnPlane() + offset;
-                        selectedMeeple.transform.rotation = Quaternion.Slerp(selectedMeeple.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-                        offset = Vector3.Lerp(offset, Vector3.up/2f, lerpSpeed * Time.deltaTime);
-                    }
+                    DoDrag();
                 } else {
-                    EndMeepleDrag();
+                    EndDrag();
                 }
             }
         }
@@ -499,777 +278,248 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             if (!isToggleDragStarted) {
                 if (dragClick.action.WasPerformedThisFrame()) {
                     HideInfo();
+                    if (CanDragThing(currentSelectedThing)) {
                         isToggleDragStarted = true;
-                        BeginMeepleDrag();
+                        BeginDrag();
+                    }
                 }
             }else{
-                CheckIfMeepleSnapping();
-                if (!isSnapping) {
-                    selectedMeeple.transform.position = GetMousePositionOnPlane() + offset;
-                    selectedMeeple.transform.rotation = Quaternion.Slerp(selectedMeeple.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-                    offset = Vector3.Lerp(offset, Vector3.zero, lerpSpeed * Time.deltaTime);
-                }
+                DoDrag();
                 
                 if (dragClick.action.WasPerformedThisFrame()) {
-                    EndMeepleDrag();
-                } 
+                    EndDrag();
+                }
             }
         }
     }
 
-    private void BeginMeepleDrag() {
+    void BeginDrag() {
         isSnapping = false;
-        selectedMeeple.SetHandlingState(true);
-        selectedMeeple.GetClicked();
 
-        dragBasePos = selectedMeeple.transform.position;
-        offset = dragBasePos - GetMousePositionOnPlane();
-    }
-
-    void CheckIfMeepleSnapping() {
-        // meeples cannot snap ever
-    }
-
-    
-    
-    private void EndMeepleDrag() {
-        isHoldDragStarted = false;
-        selectedMeeple.SetHandlingState(false);
-    }
-
-    private void DoArtifactDrag() {
-        if (!isToggleDragStarted) {
-            if (clickCart.action.WasPressedThisFrame()) {
-                HideInfo();
-                if (CanDragArtifact(selectedArtifact)) {
-                    isHoldDragStarted = true;
-                    BeginArtifactDrag();
-                }
-            }
-
-            if (isHoldDragStarted) {
-                if (clickCart.action.IsPressed()) {
-                    CheckIfArtifactSnapping();
-                    if (!isSnapping) {
-                        selectedArtifact.transform.position = GetMousePositionOnPlane() + offset;
-                        selectedArtifact.transform.rotation = Quaternion.Slerp(selectedArtifact.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-                        offset = Vector3.Lerp(offset, Vector3.up/2f, lerpSpeed * Time.deltaTime);
-                    }
-                } else {
-                    EndArtifactDrag();
-                }
-            }
-        }
-        
-        if (!isHoldDragStarted) {
-            if (!isToggleDragStarted) {
-                if (dragClick.action.WasPerformedThisFrame()) {
-                    HideInfo();
-                    if (CanDragArtifact(selectedArtifact)) {
-                        isToggleDragStarted = true;
-                        BeginArtifactDrag();
-                    }
-                }
-            }else{
-                CheckIfArtifactSnapping();
-                if (!isSnapping) {
-                    selectedArtifact.transform.position = GetMousePositionOnPlane() + offset;
-                    selectedArtifact.transform.rotation = Quaternion.Slerp(selectedArtifact.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-                    offset = Vector3.Lerp(offset, Vector3.zero, lerpSpeed * Time.deltaTime);
-                }
-                
-                if (dragClick.action.WasPerformedThisFrame()) {
-                    EndArtifactDrag();
-                } 
-            }
-        }
-    }
-
-    public Cart sourceSnapCart;
-    private void BeginArtifactDrag() {
-        isSnapping = false;
-        sourceSnapCart = selectedArtifact.GetComponentInParent<Cart>();
-        selectedArtifact.DetachFromCart();
-        selectedArtifact.GetComponent<Rigidbody>().isKinematic = true;
-        selectedArtifact.GetComponent<Rigidbody>().useGravity = false;
-
-        dragBasePos = selectedArtifact.transform.position;
-        offset = dragBasePos - GetMousePositionOnPlane();
-        
-        
-        PhysicalRangeShower.s.ShowArtifactRange(selectedArtifact,true);
-        
-        
-        swapArtifact = null;
-        swapCart = null;
-        
-        if (ArtifactsController.s.myArtifacts.Contains(selectedArtifact)) {
-            ArtifactsController.s.ArtifactsChanged();
-        } 
-
-        /*if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.UpdateCartShopHighlights();
-        } else {
-            UpgradesController.s.UpdateCargoHighlights();
-        }*/
-    }
-
-    bool CanAttachToCart(Cart cart, Artifact artifact) {
-        return !artifact.isComponent || cart.canAcceptComponentArtifact;
-    }
-    
-    public Artifact swapArtifact;
-    public Cart swapCart;
-    void CheckIfArtifactSnapping() {
-        var carts = Train.s.carts;
-        var wasAttachedBefore = selectedArtifact.isAttached;    
-        if (Mathf.Abs(GetMousePositionOnPlane().x) < 0.3f) { // snap to stuff on the cart
-            isSnapping = false;
-
-            var zPos = GetMousePositionOnPlane().z;
-
-            var totalLength = 0f;
-            for (int i = 0; i < carts.Count; i++) {
-                totalLength += carts[i].length;
-            }
-
-            var currentSpot = transform.localPosition - Vector3.back * (totalLength / 2f);
-
-            for (int i = 0; i < carts.Count; i++) {
-                var cart = carts[i];
-                currentSpot += -Vector3.forward * cart.length;
-
-                var distance = Mathf.Abs((currentSpot.z + (cart.length / 2f)) - zPos);
-                if (currentSpot.z + (cart.length / 2f) < zPos && distance < cart.length * 4) {
-                    if (cart.myAttachedArtifact != selectedArtifact) {
-                        if (swapArtifact != null) {
-                            swapArtifact.AttachToCart(swapCart);
-                            swapCart = null;
-                            swapArtifact = null;
-                        }
-
-                        if (cart.myAttachedArtifact == null && CanAttachToCart(cart, selectedArtifact)) {
-                            selectedArtifact.AttachToCart(cart);
-                            PhysicalRangeShower.s.ShowArtifactRange(selectedArtifact, false);
-                            isSnapping = true;
-
-                        } else {
-                            var canBeSwapped = CanDragArtifact(cart.myAttachedArtifact) && CanAttachToCart(cart, selectedArtifact);
-
-                            if (canBeSwapped) {
-                                if (sourceSnapCart != null) {
-                                    swapArtifact = cart.myAttachedArtifact;
-                                    if (swapArtifact != null) {
-                                        swapCart = cart;
-                                        swapArtifact.AttachToCart(sourceSnapCart);
-                                    }
-                                } else {
-                                    swapArtifact = cart.myAttachedArtifact;
-                                    if (swapArtifact != null) {
-                                        swapCart = cart;
-                                        swapArtifact.DetachFromCart();
-                                        swapArtifact.transform.position += Vector3.up / 2f;
-                                        //swapArtifact.transform.position = dragBasePos;
-                                    }
-                                }
-
-                                selectedArtifact.AttachToCart(cart);
-                                PhysicalRangeShower.s.ShowArtifactRange(selectedArtifact, false);
-                                isSnapping = true;
-                            }
-                        }
-
-                        if (isSnapping) {
-                            AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
-                        }
-                    } else {
-                        isSnapping = true;
-                    }
-
-                    if (isSnapping) {
-                        if (PlayStateMaster.s.isShop()) {
-                            UpgradesController.s.UpdateCartShopHighlights();
-                        } else {
-                            UpgradesController.s.UpdateCargoHighlights();
-                        }
-
-                        return;
-                    }
-                }
-            }
-        } 
-        
-        // snap to snap locations
-        
-        RaycastHit hit;
-        Ray ray = GetRay();
-        if (Physics.Raycast(ray, out hit, 100f, LevelReferences.s.cartSnapLocationsLayer)) {
-            var snapLocation = hit.collider.gameObject.GetComponentInParent<SnapCartLocation>();
-
-            var snapLocationValidAndNew = snapLocation != null && snapLocation != currentSnapLoc;
-            var snapLocationCanAcceptCart = !snapLocation.onlySnapCargo;
-            var snapLocationEmpty = snapLocation.snapTransform.childCount == 0;
-            var canSnap = snapLocationValidAndNew && snapLocationCanAcceptCart && snapLocationEmpty && !snapLocation.snapNothing;
-
-            if (canSnap) {
-                isSnapping = true;
-                selectedArtifact.AttachToSnapLoc(snapLocation);
-                currentSnapLoc = snapLocation;
-                print("snapping to location");
-            } else {
-                //print("cant snap to location");
-                isSnapping = currentSnapLoc != null;
-            }
-        } else {
-            isSnapping = false;
-            if (currentSnapLoc != null) {
-                print("stopped snapping");
-                currentSnapLoc = null;
-            }
-        }
-        
-
-        if (!isSnapping) {
-            PhysicalRangeShower.s.HideRange();
-            selectedArtifact.DetachFromCart();
-            selectedArtifact.GetComponent<Rigidbody>().isKinematic = true;
-            selectedArtifact.GetComponent<Rigidbody>().useGravity = false;
-        }
-
-        // SFX
-        if (wasAttachedBefore != selectedArtifact.isAttached) {
-            if (!selectedArtifact.isAttached)
-                AudioManager.PlayOneShot(SfxTypes.OnCargoDrop);
-        }
-        
-        if (swapArtifact != null) {
-            swapArtifact.AttachToCart(swapCart);
-            swapCart = null;
-            swapArtifact = null;
-        }
-        
-        
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.UpdateCartShopHighlights();
-        } else {
-            UpgradesController.s.UpdateCargoHighlights();
-        }
-    }
-
-    
-    
-    private void EndArtifactDrag() {
-        isHoldDragStarted = false;
-        if (!isSnapping) {
-            selectedArtifact.GetComponent<Rigidbody>().isKinematic = false;
-            selectedArtifact.GetComponent<Rigidbody>().useGravity = true;
-        }
-        
-
-        /*if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.UpdateCartShopHighlights();
-        } else {
-            UpgradesController.s.UpdateCargoHighlights();
-        }*/
-
-        PhysicalRangeShower.s.HideRange();
-
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.UpdateCartShopHighlights();
-        } else {
-            UpgradesController.s.UpdateCargoHighlights();
-        }
-
-
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.SaveCartStateWithDelay();
-            Train.s.SaveTrainState();
-        }
-    }
-
-    private void DoCartDrag() {
-        if (!isToggleDragStarted) {
-            if (clickCart.action.WasPressedThisFrame()) {
-                HideInfo();
-                if (CanDragCart(selectedCart)) {
-                    isHoldDragStarted = true;
-                    BeginCartDrag();
-                }
-            }
-
-            if (isHoldDragStarted) {
-                if (clickCart.action.IsPressed()) {
-                    CheckIfCartSnapping();
-                    if (!isSnapping) {
-                        selectedCart.transform.position = GetMousePositionOnPlane() + offset;
-                        selectedCart.transform.rotation = Quaternion.Slerp(selectedCart.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-                        offset = Vector3.Lerp(offset, Vector3.zero, lerpSpeed * Time.deltaTime);
-                    }
-                } else {
-                    EndCartDrag();
-                }
-            }
-        }
-        
-        if (!isHoldDragStarted) {
-            if (!isToggleDragStarted) {
-                if (dragClick.action.WasPerformedThisFrame()) {
-                    HideInfo();
-                    if (CanDragCart(selectedCart)) {
-                        isToggleDragStarted = true;
-                        BeginCartDrag();
-                    }
-                }
-            }else{
-                CheckIfCartSnapping();
-                if (!isSnapping) {
-                    selectedCart.transform.position = GetMousePositionOnPlane() + offset;
-                    selectedCart.transform.rotation = Quaternion.Slerp(selectedCart.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
-                    offset = Vector3.Lerp(offset, Vector3.zero, lerpSpeed * Time.deltaTime);
-                }
-                
-                if (dragClick.action.WasPerformedThisFrame()) {
-                    EndCartDrag();
-                }
-            }
-        }
-    }
-
-    private void EndCartDrag() {
-        isHoldDragStarted = false;
-        isToggleDragStarted = false;
-        if (!isSnapping) {
-            selectedCart.GetComponent<Rigidbody>().isKinematic = false;
-            selectedCart.GetComponent<Rigidbody>().useGravity = true;
-        }
-
-        /*if (selectedCart.isMysteriousCart &&
-            !(selectedCart.myLocation == UpgradesController.CartLocation.train || selectedCart.myLocation == UpgradesController.CartLocation.cargoDelivery)) {
-            UpgradesController.s.RemoveCartFromShop(selectedCart);
-            Train.s.AddCartAtIndex(1, selectedCart);
-            selectedCart.GetComponent<Rigidbody>().isKinematic = true;
-            selectedCart.GetComponent<Rigidbody>().useGravity = false;
-        }*/
-
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.UpdateCartShopHighlights();
-        } else {
-            UpgradesController.s.UpdateCargoHighlights();
-        }
-
-
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.SaveCartStateWithDelay();
-            Train.s.SaveTrainState();
-        }
-
-        if (selectedCart.myLocation != UpgradesController.CartLocation.train) {
-            if (selectedCart.myAttachedArtifact != null) {
-                selectedCart.myAttachedArtifact.DetachFromCart();
-            }
-        }
-
-        if (swapCart != null) {
-            if (swapCart.myLocation != UpgradesController.CartLocation.train) {
-                if (swapCart.myAttachedArtifact != null) {
-                    var artifact = swapCart.myAttachedArtifact;
-                    artifact.DetachFromCart();
-                    artifact.AttachToCart(selectedCart);
-                }
-                
-            }
-        }
-
-
-        PhysicalRangeShower.s.HideRange();
-    }
-
-    private void BeginCartDrag() {
+        displacedArtifact = null;
         currentSnapLoc = null;
-        isSnapping = false;
-        sourceSnapLocation = selectedCart.GetComponentInParent<SnapCartLocation>();
-        prevCartTrainSnapIndex = -1;
-        selectedCart.transform.SetParent(null);
-        selectedCart.GetComponent<Rigidbody>().isKinematic = true;
-        selectedCart.GetComponent<Rigidbody>().useGravity = false;
-
-        dragBasePos = selectedCart.transform.position;
+        sourceSnapLocation = currentSelectedThingMonoBehaviour.GetComponentInParent<SnapLocation>();
+        
+        currentSelectedThing.SetHoldingState(true);
+        dragBasePos = currentSelectedThingMonoBehaviour.transform.position;
         offset = dragBasePos - GetMousePositionOnPlane();
 
-        if (Train.s.carts.Contains(selectedCart)) {
-            Train.s.RemoveCart(selectedCart);
-            UpgradesController.s.AddCartToShop(selectedCart, UpgradesController.CartLocation.world);
-        } else {
-            UpgradesController.s.ChangeCartLocation(selectedCart, UpgradesController.CartLocation.world);
+        if (currentSelectedThing is Cart selectedCart) {
+            if (Train.s.carts.Contains(selectedCart)) {
+                Train.s.RemoveCart(selectedCart);
+                UpgradesController.s.AddCartToShop(selectedCart);
+            } 
+            
+            MakeOnTrainCartSnapLocations();
         }
+        
+        
+        currentSelectedThingMonoBehaviour.transform.SetParent(null);
 
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.UpdateCartShopHighlights();
-        } else {
-            UpgradesController.s.UpdateCargoHighlights();
-        }
-        
-        
-        PhysicalRangeShower.s.ShowCartRange(selectedCart,true);
-      
         // SFX
         AudioManager.PlayOneShot(SfxTypes.OnCargoPickUp);
     }
 
-    public SnapCartLocation currentSnapLoc;
-    void CheckIfCartSnapping() {
-        var carts = Train.s.carts;
-        if (Mathf.Abs(GetMousePositionOnPlane().x) < 0.3f) {
-            isSnapping = SnapToTrain();
-        } 
-        
-        if(!isSnapping || Mathf.Abs(GetMousePositionOnPlane().x) > 0.3f){
-            PhysicalRangeShower.s.HideRange();
-            
-            if (sourceSnapLocation != null && UpgradesController.s.WorldCartCount() <= 0) {
-                if (sourceSnapLocation.snapTransform.childCount > 0 && prevCartTrainSnapIndex > 0) {
-                    var prevCart = sourceSnapLocation.GetComponentInChildren<Cart>();
-                    if (prevCart != null) {
-                        UpgradesController.s.RemoveCartFromShop(prevCart);
-                        Train.s.AddCartAtIndex(prevCartTrainSnapIndex, prevCart);
-                    }
-                }
-            }
-            prevCartTrainSnapIndex = -1;
-
-            if (carts.Contains(selectedCart)) {
-                Train.s.RemoveCart(selectedCart);
-                UpgradesController.s.AddCartToShop(selectedCart, UpgradesController.CartLocation.world);
-                isSnapping = false;
-            }
-
-            if (!selectedCart.isCargo || !PlayStateMaster.s.isShop()) { // we dont want cargo to snap to flea market locations
-                RaycastHit hit;
-                Ray ray = GetRay();
-
-                if (Physics.Raycast(ray, out hit, 100f, LevelReferences.s.cartSnapLocationsLayer)) {
-                    var snapLocation = hit.collider.gameObject.GetComponentInParent<SnapCartLocation>();
-
-                    var snapLocationValidAndNew = snapLocation != null && snapLocation != currentSnapLoc;
-                    var snapLocationCanAcceptCart = (!snapLocation.onlySnapCargo || selectedCart.isCargo);
-                    var snapLocationEmpty = snapLocation.snapTransform.childCount == 0;
-                    var canSnap = snapLocationValidAndNew && snapLocationCanAcceptCart && snapLocationEmpty && !snapLocation.snapNothing;
-
-                    if (canSnap) {
-                        isSnapping = true;
-                        selectedCart.transform.SetParent(snapLocation.snapTransform);
-                        currentSnapLoc = snapLocation;
-                        UpgradesController.s.ChangeCartLocation(selectedCart, snapLocation.myLocation);
-                        print("snapping to location");
-                    }
-                } else {
-                    if (currentSnapLoc != null) {
-                        isSnapping = false;
-                        print("stopped snapping");
-                        currentSnapLoc = null;
-                        selectedCart.transform.SetParent(null);
-                        UpgradesController.s.ChangeCartLocation(selectedCart, UpgradesController.CartLocation.world);
-                    }
-                }
-            }
+    public List<SnapLocation> onTrainCartSnapLocations = new List<SnapLocation>();
+    public GameObject onTrainCartSnapPrefab;
+    void MakeOnTrainCartSnapLocations() { // we call this AFTER removing the previous cart from the train
+        var reqNumber = Train.s.carts.Count;
+        while (onTrainCartSnapLocations.Count > reqNumber) {
+            Destroy(onTrainCartSnapLocations[0].gameObject);
+            onTrainCartSnapLocations.RemoveAt(0);
         }
 
-        if (PlayStateMaster.s.isShop()) {
-            UpgradesController.s.UpdateCartShopHighlights();
+        while (onTrainCartSnapLocations.Count < reqNumber) {
+            var newLoc = Instantiate(onTrainCartSnapPrefab, transform).GetComponent<SnapLocation>();
+            onTrainCartSnapLocations.Add(newLoc);
+        }
+    }
+
+    void UpdateOnTrainCartSnapLocationPositions() {
+        var adjustedTrainLength = Train.s.GetTrainLength();
+
+        var myCart = (currentSelectedThing as Cart);
+
+        if (Train.s.carts.Contains(myCart)) {
+            //adjustedTrainLength -= myCart.length;
         } else {
-            UpgradesController.s.UpdateCargoHighlights();
-        }
-    }
-
-    public int prevCartTrainSnapIndex = -1;
-    private bool SnapToTrain() {
-        var carts = Train.s.carts;
-        var zPos = GetMousePositionOnPlane().z;
-
-        var totalLength = 0f;
-        for (int i = 0; i < carts.Count; i++) {
-            totalLength += carts[i].length;
+            adjustedTrainLength += myCart.length;
         }
 
-        var currentSpot = transform.localPosition - Vector3.back * (totalLength / 2f);
+        var currentDistance = (adjustedTrainLength / 2f);
+        currentDistance -= Train.s.carts[0].length;
 
-        bool inserted = false;
-        float distance = 0;
+        for (int i = 0; i < onTrainCartSnapLocations.Count; i++) {
+            var thisLoc = onTrainCartSnapLocations[i];
 
-        var sourceSnapIsMarket = sourceSnapLocation != null && sourceSnapLocation.myLocation == UpgradesController.CartLocation.market;
-        
-        for (int i = 0; i < carts.Count; i++) {
-            var cart = carts[i];
-            currentSpot += -Vector3.forward * cart.length;
-
-            if (i != 0 || sourceSnapIsMarket) {
-                distance = Mathf.Abs((currentSpot.z + (cart.length / 2f)) - zPos);
-                if (currentSpot.z + (cart.length / 2f) < zPos && distance < cart.length*4) {
-                    if (cart != selectedCart) {
-                        if (carts.Contains(selectedCart)) {
-                            Train.s.RemoveCart(selectedCart);
-                        } else {
-                            UpgradesController.s.RemoveCartFromShop(selectedCart);
-                        }
-
-                        var canBeSwapped = true;
-                        if (sourceSnapLocation != null && UpgradesController.s.WorldCartCount() <= 0) {
-                            if (sourceSnapLocation.snapTransform.childCount > 0) {
-                                swapCart = sourceSnapLocation.GetComponentInChildren<Cart>();
-                                if (swapCart != null) {
-                                    UpgradesController.s.RemoveCartFromShop(swapCart);
-                                    Train.s.AddCartAtIndex(prevCartTrainSnapIndex, swapCart);
-                                }
-                            }
-
-                            if (sourceSnapIsMarket) {
-                                swapCart = Train.s.carts[i];
-                                canBeSwapped = !swapCart.isCargo && !swapCart.isMainEngine;
-                                if (canBeSwapped) {
-                                    Train.s.RemoveCart(swapCart);
-                                    UpgradesController.s.AddCartToShop(swapCart, sourceSnapLocation.myLocation);
-                                    swapCart.transform.SetParent(sourceSnapLocation.snapTransform);
-                                    prevCartTrainSnapIndex = i;
-                                } else {
-                                    i += 1;
-                                }
-                            }
-                        }
-
-                        //if (canBeSwapped) {
-                            inserted = true;
-                            Train.s.AddCartAtIndex(i, selectedCart);
-                            PhysicalRangeShower.s.ShowCartRange(selectedCart,false);
-                        //}
-                    } else {
-                        inserted = true;
-                    }
-
-                    if(inserted)
-                        return true;
-                }
-            }
-        }
-
-        if (!inserted) {
-            if (carts[carts.Count - 1] != selectedCart && distance < carts[0].length*4) {
-                if (carts.Contains(selectedCart)) {
-                    Train.s.RemoveCart(selectedCart);
-                } else {
-                    UpgradesController.s.RemoveCartFromShop(selectedCart);
-                }
-
-                Train.s.AddCartAtIndex(carts.Count, selectedCart);
-                PhysicalRangeShower.s.ShowCartRange(selectedCart, false);
-                return true;
-            }
-        }
-        
-        return false;
-    }
-
-
-    public float lerpSpeed = 5;
-    public float slerpSpeed = 20;
-
-    void UpdateTrainCartPositionsSlowly() {
-        var carts = Train.s.carts;
-
-        var isBasic = !PlayStateMaster.s.isCombatStarted();
-        
-        if(carts.Count == 0)
-            return;
-        
-        var totalLength = 0f;
-        for (int i = 0; i < carts.Count; i++) {
-            totalLength += carts[i].length;
-        }
-        
-        var currentDistance = (totalLength / 2f);
-        var currentSpot =  Vector3.zero;
-
-        /*Debug.Log($"normal: {transform.localPosition - Vector3.back * (totalLength / 2f)}");
-        Debug.Log( $"Brole: {- Vector3.back * (totalLength / 2f)}");*/
-        
-        for (int i = 0; i < carts.Count; i++) {
-            var cart = carts[i];
-            
-
-            
-            if (isBasic) {
-                currentSpot = Vector3.forward*currentDistance;
+            thisLoc.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
+            thisLoc.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance);
+            if (i+1 < Train.s.carts.Count) {
+                currentDistance -= Train.s.carts[i+1].length;
             } else {
-                currentSpot = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
-                cart.transform.rotation = Quaternion.Slerp(cart.transform.localRotation,PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance),slerpSpeed * Time.deltaTime);
+                currentDistance -= myCart.length;
             }
-            
-            if (cart == selectedCart && !cart.isMainEngine )
-                currentSpot += Vector3.up * (isDragging() ? 0.4f : 0.05f);
-            currentDistance += -cart.length;
-
-            cart.transform.localPosition = Vector3.Lerp(cart.transform.localPosition, currentSpot, lerpSpeed * Time.deltaTime);
-            
-            var artifact = cart.myAttachedArtifact;
-            if (artifact != null) {
-                artifact.transform.localPosition = Vector3.MoveTowards(artifact.transform.localPosition, Vector3.zero, 2*lerpSpeed * Time.deltaTime);
-                artifact.transform.localRotation = Quaternion.Slerp(artifact.transform.localRotation, Quaternion.identity, 5*slerpSpeed * Time.deltaTime);
-            }
-
-            /*if (cart == selectedCart && !cart.isMainEngine)
-                currentSpot -= Vector3.up * (isDragging() ? 0.4f : 0.05f);
-
-
-            currentSpot += -Vector3.forward * cart.length;*/
-            var index = i;
-            cart.name = $"Cart {index}";
         }
     }
 
-    public float repairAmountPerClick = 50f; // dont use this
-    public float repairAmountMultiplier = 1; 
-    public float reloadAmountPerClick = 2; // dont use this
-    public float reloadAmountPerClickBoost = 0; 
-    public float reloadAmountMultiplier = 1;
-    public float shieldUpAmountPerClick = 100f; // dont use this
-    public float shieldUpAmountMultiplier = 1; 
-
-    public float GetReloadAmount() {
-        return (reloadAmountPerClick+reloadAmountPerClickBoost) * reloadAmountMultiplier;
-    }
-
-    public float GetRepairAmount(ModuleHealth health) {
-        var repairAmount = repairAmountPerClick * repairAmountMultiplier;
-        repairAmount = Mathf.Clamp(repairAmount, 0, health.maxHealth - health.currentHealth);
-        if (repairAmount > curRepairCapacity) {
-            repairAmount = curRepairCapacity;
-        }
-        curRepairCapacity -= repairAmount;
-        curRepairRechargeDelay = repairRechargeDelay;
+    public bool isSnapping = false;
+    public SnapLocation sourceSnapLocation;
+    public SnapLocation currentSnapLoc;
+    public Artifact displacedArtifact;
+    private void DoDrag() {
+        if(currentSelectedThing is Cart)
+            UpdateOnTrainCartSnapLocationPositions();
         
-        
-        return repairAmount;
-    }
-    
-    public float GetShieldUpAmount() {
-        return shieldUpAmountPerClick * shieldUpAmountMultiplier;
-    }
+        var newSnapLoc = GetSnapLoc();
 
+        var shouldSnap = newSnapLoc != null;
+        if (isSnapping != shouldSnap) {
+            isSnapping = shouldSnap;
+            if (isSnapping) {
+                AudioManager.PlayOneShot(SfxTypes.OnCargoDrop);
+            } else {
+                AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
+                currentSelectedThingMonoBehaviour.transform.SetParent(null);
 
-    private bool shielding = false;
-    private float holdTimer;
-    void CheckAndDoClick() {
-        if (!isDragging()) {
-            if (selectedCart != null) {
-                /*if (DragStarted(clickCart, ref clickCartTime, ref clickCartPos, ref clickCartFired) || shielding) {
-                    HideInfo();
-                    TryShieldCartContinuous(selectedCart);
-                    shielding = true;
-
-                    if (!clickCart.action.IsPressed())
-                        shielding = false;
-                    //SelectBuilding(selectedCart, true, true);
-                } else if (clickCart.action.WasReleasedThisFrame() /*|| dragClick.action.IsPressed()#1#) {
-                    HideInfo();
-                    TryRepairCart(selectedCart);
-                } else*/ if (clickCart.action.WasPerformedThisFrame() && DirectControlMaster.s.directControlLock <= 0) {
-
-                    PerformClick();
-
-                }else if (clickCart.action.IsInProgress()) {
-                    holdTimer -= Time.deltaTime;
-                    if (holdTimer <= 0) {
-                        holdTimer = 0.25f;
-                        PerformClick();
-                    }
-                } else {
-                    holdTimer = 1f;
+                if (currentSelectedThing is Cart selectedCart) {
+                    Train.s.RemoveCart(selectedCart);
+                    UpgradesController.s.AddCartToShop(selectedCart);
                 }
-            } else if (selectedEnemy != null) {
-                if (clickCart.action.WasPerformedThisFrame()) {
-                    HideInfo();
-                }
+                
+                
+                dragBasePos = currentSelectedThingMonoBehaviour.transform.position;
+                offset = dragBasePos - GetMousePositionOnPlane();
             }
-        } else {
-            holdTimer = 1f;
         }
-    }
+        isSnapping = newSnapLoc != null;
 
-    void PerformClick() {
-        SelectBuilding(selectedCart, true, false);
+        var lerpToMouse = !isSnapping;
+
+        if (isSnapping) {
+            if (newSnapLoc != currentSnapLoc) {
+                if (currentSelectedThing is Cart selectedCart) {
                     
-        switch (currentSelectMode) {
-            case SelectMode.cart:
-                //TryRepairShieldCart(selectedCart);
-
-                break;
-            case SelectMode.directControl:
-            case SelectMode.topButton:
-                //var stateChanger = selectedCart.GetComponentInChildren<CursorStateChanger>();
-                var directControllable = selectedCart.GetComponentInChildren<DirectControllable>();
-
-                if (directControllable) {
-                    DirectControlMaster.s.AssumeDirectControl(selectedCart.GetComponentInChildren<DirectControllable>());
-                } /*else if (stateChanger) {
-                            SetCursorState(stateChanger.targetState, stateChanger.color);
-                        }*/
-                break;
-            case SelectMode.reload:
-                var moduleAmmo = selectedCart.GetComponentInChildren<ModuleAmmo>(true);
-                if (moduleAmmo) {
-                    moduleAmmo.Reload(GetReloadAmount());
+                    Assert.IsTrue(newSnapLoc.IsEmpty()); // you should not be able to snap carts to full locations in the current implementation
+                    
+                    newSnapLoc.SnapObject(selectedCart.gameObject);
+                    var onTrainIndex = onTrainCartSnapLocations.IndexOf(newSnapLoc);
+                    if (onTrainIndex != -1) {
+                        Train.s.AddCartAtIndex(onTrainIndex+1, selectedCart);
+                        UpgradesController.s.RemoveCartFromShop(selectedCart);
+                    } else {
+                        Train.s.RemoveCart(selectedCart);
+                        UpgradesController.s.AddCartToShop(selectedCart);
+                    }
+                }else if (currentSelectedThing is Artifact selectedArtifact) {
+                    if (displacedArtifact != null) {
+                        displacedArtifact.AttachToSnapLoc(currentSnapLoc);
+                    }
+                    
+                    
+                    if (newSnapLoc.IsEmpty()) {
+                        selectedArtifact.AttachToSnapLoc(newSnapLoc);
+                    } else {
+                        displacedArtifact = newSnapLoc.GetSnappedObject().GetComponent<Artifact>();
+                        if (sourceSnapLocation != null) {
+                            displacedArtifact.DetachFromCart();
+                        } else {
+                            displacedArtifact.AttachToSnapLoc(sourceSnapLocation);
+                        }
+                        
+                        selectedArtifact.AttachToSnapLoc(newSnapLoc);
+                    }
                 }
 
-                break;
-            case SelectMode.engineBoost:
-                SpeedController.s.ActivateBoost();
-                break;
+                currentSnapLoc = newSnapLoc;
+            }
+
+        } else {
+            currentSnapLoc = null;
         }
-    }
-
-    public void UIRepair(Cart cart) {
-        TryRepairShieldCart(cart);
-    }
-
-    void TryRepairShieldCart(Cart cart) {
-        if (CanRepair(cart)) {
-            return;
-            cart.GetHealthModule()?.Repair(GetRepairAmount(cart.GetHealthModule()));
-        }else if (CanShield(cart)) {
-            cart.GetHealthModule()?.ShieldUp(GetShieldUpAmount());
-        }
-        if(selectedCart != null)
-            SelectBuilding(selectedCart, true);
-    }
-
-    void TryRepairCart(Cart cart) {
-        return;
-        cart.GetHealthModule()?.Repair(GetRepairAmount(cart.GetHealthModule()));
         
-
-        if(selectedCart != null)
-            SelectBuilding(selectedCart, true, true, repairColor);
+        
+        if(lerpToMouse) {
+            currentSelectedThingMonoBehaviour.transform.position = GetMousePositionOnPlane() + offset;
+            currentSelectedThingMonoBehaviour.transform.rotation = Quaternion.Slerp(currentSelectedThingMonoBehaviour.transform.rotation, Quaternion.identity, slerpSpeed * Time.deltaTime);
+            if (currentSelectedThing is Cart) {
+                offset = Vector3.Lerp(offset, Vector3.zero, lerpSpeed * Time.deltaTime);
+            } else {
+                offset = Vector3.Lerp(offset, Vector3.up / 2f, lerpSpeed * Time.deltaTime);
+            }
+        }
     }
 
-    void TryShieldCartContinuous(Cart cart) {
-        cart.GetHealthModule()?.ShieldUp(GetShieldUpAmount() * Time.deltaTime);
-        if(selectedCart != null)
-            SelectBuilding(selectedCart, true, true, shieldColor);
+    SnapLocation GetSnapLoc() {
+        var checkPos = GetMousePositionOnPlane();
+        checkPos.y = 0;
+
+        SnapLocation closestValidSnapLocation = null;
+        var closestDistance = float.MaxValue;
+        for (int i = 0; i < LevelReferences.s.allSnapLocations.Count; i++) {
+            var thisSnapLoc = LevelReferences.s.allSnapLocations[i];
+
+            if (thisSnapLoc.CanSnap(currentSelectedThing)) {
+                var snapPos = thisSnapLoc.transform.position;
+                snapPos.y = 0;
+                
+                var distance = Vector3.Distance(snapPos, checkPos);
+                if (distance < thisSnapLoc.snapDistance && distance < closestDistance) {
+                    closestDistance = distance;
+                    closestValidSnapLocation = thisSnapLoc;
+                }
+            }
+        }
+
+        return closestValidSnapLocation;
     }
 
-    public void CartHPUIButton(Cart cart) {
-        if (PlayStateMaster.s.isCombatInProgress()) {
-            var moduleAmmo = cart.GetComponentInChildren<ModuleAmmo>();
-            if (moduleAmmo != null) {
-                moduleAmmo.Reload(GetReloadAmount());
-            }
 
-            if (cart.GetComponentInChildren<DirectControllable>()) {
-                DirectControlMaster.s.AssumeDirectControl(cart.GetComponentInChildren<DirectControllable>());
+    void EndDrag() {
+        isHoldDragStarted = false;
+        isToggleDragStarted = false;
+        
+        if (!isSnapping) {
+            currentSelectedThing.SetHoldingState(false);
+        }
+        
+        if (PlayStateMaster.s.isShop()) {
+            if (currentSelectedThing is Cart || currentSelectedThing is Artifact) {
+                UpgradesController.s.SaveCartStateWithDelay();
+                Train.s.SaveTrainState();
             }
+        }
+        
+        
+        AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
+    }
 
-            if (cart.GetComponentInChildren<EngineBoostable>()) {
-                SpeedController.s.ActivateBoost();
-            }
+    public const float lerpSpeed = 10;
+    public const float slerpSpeed = 20;
+    
+    void CheckAndDoCombatClick() {
+        if (!isDragging()) {
+            if (currentSelectedThing != null ) {
+                if (currentSelectedThing is Cart selectedCart) {
+                    if (selectedCart.IsAttachedToTrain()) {
+                        if (clickCart.action.WasPerformedThisFrame() && DirectControlMaster.s.directControlLock <= 0) {
+                            PerformCartClick(selectedCart);
+
+                        }
+                    }
+                }else if (currentSelectedThing is EnemyHealth) {
+                    if (clickCart.action.WasPerformedThisFrame()) {
+                        HideInfo();
+                    }
+                }
+            } 
+        } 
+    }
+
+    void PerformCartClick(Cart selectedCart) {
+        var directControllable = selectedCart.GetComponentInChildren<IDirectControllable>();
+
+        if (directControllable != null) {
+            DirectControlMaster.s.AssumeDirectControl(selectedCart.GetComponentInChildren<IDirectControllable>());
         }
     }
 
@@ -1281,11 +531,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
-    public enum SelectMode {
-        cart, reload, topButton, engineBoost, emptyCart, topSkill, directControl
-    }
+    
 
-    public SelectMode currentSelectMode = SelectMode.cart;
 
     public float sphereCastRadiusGamepad = 0.3f;
     public float sphereCastRadiusMouse = 0.1f;
@@ -1301,162 +548,76 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public MiniGUI_BuildingInfoCard buildingInfoCard;
     public MiniGUI_BuildingInfoCard enemyInfoCard;
     public MiniGUI_BuildingInfoCard artifactInfoCard;
-    [ReadOnly]
-    public Color selectingTopButtonColor;
 
-    
     private float alternateClickTime = 0;
     private Vector3 alternateClickPos;
     private bool alternateClickFired;
-    void CastRayToOutlineCart() {
-        RaycastHit hit;
-        Ray ray = GetRay();
+    
+    private float meepleHoldTime = 0;
+    void CastRayToOutline() {
+        var newSelectable = GetFirstPriorityItem();
 
-        if (Physics.SphereCast(ray, GetSphereCastRadius(), out hit, 100f, LevelReferences.s.buildingLayer)) {
-            var lastSelectMode = currentSelectMode;
-            currentSelectMode = SelectMode.emptyCart;
-            
-            if(hit.collider.GetComponentInParent<ModuleHealth>() && canRepair)
-                currentSelectMode = SelectMode.cart;
-            
-            
-            
-            var topButton = hit.rigidbody.gameObject.GetComponentInChildren<IShowButtonOnCartUIDisplay>();
-            if (topButton != null) {
-                currentSelectMode = SelectMode.topButton;
-                selectingTopButtonColor = topButton.GetColor();
+        if (newSelectable != null) {
+            if (currentSelectedThing is Meeple) {
+                meepleHoldTime += Time.deltaTime;
             }
             
-            var directControllable = hit.rigidbody.gameObject.GetComponentInChildren<DirectControllable>();
-            if (directControllable != null) {
-                currentSelectMode = SelectMode.directControl;
-            }
-            
-            var reloadable = hit.rigidbody.gameObject.GetComponentInChildren<Reloadable>();
-            if (reloadable != null && canReload) {
-                currentSelectMode = SelectMode.reload;
-            }
-            
-            var engineBoostable = hit.rigidbody.gameObject.GetComponentInChildren<EngineBoostable>();
-            if (engineBoostable != null) {
-                currentSelectMode = SelectMode.engineBoost;
-            }
-            
-            var cart = hit.collider.GetComponentInParent<Cart>();
-
-            if (cart.isDestroyed) {
-                currentSelectMode = SelectMode.cart;
-            }
-            
-            
-            
-            if (cart != selectedCart || lastSelectMode != currentSelectMode) {
-                SelectBuilding(cart, true);
-
+            if (newSelectable != currentSelectedThing) {
+                SelectThing(newSelectable, true);
+                
                 // SFX
                 AudioManager.PlayOneShot(SfxTypes.OnCargoHover);
-            } else {
-                if ((showDetailClick.action.WasPerformedThisFrame() || DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired))) {
+                
+                meepleHoldTime = 0;
+            }else {
+                if ((showDetailClick.action.WasPerformedThisFrame() || DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired) || meepleHoldTime > 1f)) {
                     ShowSelectedThingInfo();
                 }
             }
-
         } else {
-            if(selectedCart != null)
-                Deselect();
+            Deselect();
         }
     }
-    
-    void CastRayToOutlineEnemy() {
+
+    private IPlayerHoldable GetFirstPriorityItem() {
+        // selection preference: artifact -> cart -> enemy -> meeple
         RaycastHit hit;
         Ray ray = GetRay();
+        
+        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.artifactLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<Artifact>();
+        }
+        
+        if (Physics.SphereCast(ray, GetSphereCastRadius(), out hit, 100f, LevelReferences.s.buildingLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<Cart>();
+        }
 
         if (Physics.SphereCast(ray, GetSphereCastRadius(), out hit, 100f, LevelReferences.s.enemyLayer)) {
-            var enemy = hit.collider.GetComponentInParent<EnemyHealth>();
-            if (enemy != null) {
-                if (enemy != selectedEnemy) {
-                    SelectEnemy(enemy, true);
-                } else {
-                    if (PlayStateMaster.s.isShopOrEndGame() && showDetailClick.action.WasPerformedThisFrame() /*|| (holdOverTimer > infoShowTime && !SettingsController.GamepadMode())*/) {
-                        ShowSelectedThingInfo();
-                    }
-                }
-            }
-
-        } else {
-            if(selectedEnemy != null)
-                Deselect();
+            return hit.collider.GetComponentInParent<EnemyHealth>();
         }
-    }
-    
-    
-    void CastRayToOutlineArtifact() {
-        RaycastHit hit;
-        Ray ray = GetRay();
-
-        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.artifactLayer)) {
-            var artifact = hit.collider.GetComponentInParent<Artifact>();
-            //print($"{artifact} - {selectedArtifact}");
-            if (artifact != null) {
-                if (artifact != selectedArtifact) {
-                    SelectArtifact(artifact, true);
-                } else {
-                    if (showDetailClick.action.WasPerformedThisFrame() || DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired)) {
-                        ShowSelectedThingInfo();
-                    }
-                }
-            }
-        } else {
-            if (selectedArtifact != null)
-                Deselect();
-        }
-        
-    }
-
-
-    private float meepleHoldTime = 0;
-    void CastRayToOutlineMeeple() {
-        RaycastHit hit;
-        Ray ray = GetRay();
 
         if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.meepleLayer)) {
-            var meeple = hit.collider.GetComponentInParent<Meeple>();
-            //print($"{artifact} - {selectedArtifact}");
-            if (meeple != null) {
-                meepleHoldTime += Time.deltaTime;
-                if (meeple != selectedMeeple) {
-                    meepleHoldTime = 0;
-                    SelectMeeple(meeple, true);
-                } else {
-                    if (showDetailClick.action.WasPerformedThisFrame() || 
-                        DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired)||
-                        meepleHoldTime > 1f) {
-                        selectedMeeple.ShowChat();
-                        //ShowSelectedThingInfo();
-                    }
-                }
-            }
-        } else {
-            meepleHoldTime = 0;
-            if (selectedMeeple != null)
-                Deselect();
+            return hit.collider.GetComponentInParent<Meeple>();
         }
-        
-    }
 
+        return null;
+    }
 
     private bool infoCardActive = false;
     void ShowSelectedThingInfo() {
         if (!infoCardActive) {
             infoCardActive = true;
-            if(selectedCart != null)
-                buildingInfoCard.SetUp(selectedCart);
-            else if (selectedEnemy != null)
-                enemyInfoCard.SetUp(selectedEnemy);
-            else if (selectedArtifact != null)
-                artifactInfoCard.SetUp(selectedArtifact);
-            else
+            if (currentSelectedThing is Artifact artifact) {
+                artifactInfoCard.SetUp(artifact);
+            }else if ( currentSelectedThing is Cart cart) {
+                buildingInfoCard.SetUp(cart);
+            }else if (currentSelectedThing is EnemyHealth enemyHealth) {
+                enemyInfoCard.SetUp(enemyHealth);
+            }else if (currentSelectedThing is Meeple meeple) {
+                meeple.ShowChat();
+            } else {
                 infoCardActive = false;
+            }
 
             //SFX
             AudioManager.PlayOneShot(SfxTypes.OnInfoSelected);
@@ -1471,37 +632,20 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     public void Deselect() {
-        if (selectedCart != null) {
-            var cart = selectedCart;
-            selectedCart = null;
-            SelectBuilding(cart, false);
+        if (currentSelectedThing != null) {
+            var temp = currentSelectedThing;
+            currentSelectedThing = null;
+            SelectThing(temp, false);
         }
 
-        if (selectedEnemy != null) {
-            var enemy = selectedEnemy;
-            selectedEnemy = null;
-            SelectEnemy(enemy, false);
-        }
-        
-        if (selectedArtifact != null) {
-            var artifact = selectedArtifact;
-            selectedArtifact = null;
-            SelectArtifact(artifact, false);
-        }
-
-        if (selectedMeeple != null) {
-            var meeple = selectedMeeple;
-            selectedMeeple = null;
-            SelectMeeple(meeple, false);
-        }
-        
         HideInfo();
     }
 
-    public void SelectEnemy(EnemyHealth enemy, bool isSelecting, bool showShowDetails = true) {
-        if(isSelecting && enemy == selectedEnemy)
+
+    public void DirectControlSelectEnemy(EnemyHealth enemy, bool isSelecting, bool showShowDetails = true) {
+        if(isSelecting && enemy == (EnemyHealth)currentSelectedThing)
             return;
-        //Debug.Log("selecting enemy");
+        
         Deselect();
 
         HighlightEffect outline = null;
@@ -1511,54 +655,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (isSelecting) {
             if(showShowDetails)
                 GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
-            selectedEnemy = enemy;
+            currentSelectedThing = enemy;
         } else {
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
-        }
-
-        if (enemy != null) {
-            outline.highlighted = isSelecting;
-        }
-
-        OnSelectEnemy?.Invoke(enemy, isSelecting);
-    }
-    
-    void SelectArtifact(Artifact artifact, bool isSelecting) {
-        Deselect();
-
-        HighlightEffect outline = null;
-        if(artifact != null)
-            outline = artifact.GetComponentInChildren<HighlightEffect>();
-        
-        if (isSelecting) {
-            if (PlayStateMaster.s.isShopOrEndGame()) {
-                PhysicalRangeShower.s.ShowArtifactRange(artifact,true);
-            }
-            
-            Color myColor = moveColor;
-            if (PlayStateMaster.s.isShopOrEndGame()) {
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
-                if (!CanDragArtifact(artifact)) {
-                    myColor = cantActColor;
-                    GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
-                    GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
-                }
-            } else {
-                myColor = cantActColor;
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
-            }
-            selectedArtifact = artifact;
-            
-            outline.outlineColor = myColor;
-        } else {
-            if (PlayStateMaster.s.isShopOrEndGame()) {
-                PhysicalRangeShower.s.HideRange();
-            }
-            
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
         }
 
@@ -1566,171 +664,170 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             outline.highlighted = isSelecting;
         }
 
-        OnSelectArtifact?.Invoke(artifact, isSelecting);
+        OnSelectSomething?.Invoke(enemy, isSelecting);
     }
     
-    void SelectMeeple(Meeple meeple, bool isSelecting) {
-        Deselect();
-
-        HighlightEffect outline = null;
-        if(meeple != null)
-            outline = meeple.GetComponentInChildren<HighlightEffect>();
-        
-        if (isSelecting) {
-            selectedMeeple = meeple;
-            
-            //GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
-        } else {
-            meeple.shownChat = false;
-            //GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
-        }
-
-        if (outline != null) {
-            outline.highlighted = isSelecting;
-        }
-    }
-
-    bool CanShield(Cart cart) {
-        if (cart == null) {
-            Debug.Log($"Cart is null {cart}");
-        }
-        var healthModule = cart.GetHealthModule();
-        if (healthModule.maxShields > 0) {
-            return true;
-        } else {
-            return false;
-        }
+    Color SelectEnemy(EnemyHealth enemy) {
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+        return enemyColor;
     }
     
-    bool CanRepair(Cart cart) {
-        var healthModule = cart.GetHealthModule();
-        if (healthModule.currentHealth < healthModule.maxHealth) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    Color SelectArtifact(Artifact artifact) {
 
-    void SelectBuilding(Cart building, bool isSelecting, bool isDefaultClick = true, bool isMove = false) {
-        SelectBuilding(building, isSelecting, false, Color.white, isDefaultClick, isMove);
-    }
-
-    [HideInInspector]
-    public UnityEvent<Cart, bool> OnSelectBuilding = new UnityEvent<Cart, bool>();
-    [HideInInspector]
-    public UnityEvent<EnemyHealth, bool> OnSelectEnemy = new UnityEvent<EnemyHealth, bool>();
-    [HideInInspector]
-    public UnityEvent<Artifact, bool> OnSelectArtifact = new UnityEvent<Artifact, bool>();
-    [HideInInspector]
-    public UnityEvent<IClickableWorldItem, bool> OnSelectGate = new UnityEvent<IClickableWorldItem, bool>();
-    void SelectBuilding(Cart building, bool isSelecting, bool forceColor, Color forcedColor, bool isDefaultClick = true, bool isMove = false) {
-        Deselect();
-        
-        HighlightEffect outline = null;
-        if(building != null)
-            outline = building.GetComponentInChildren<HighlightEffect>();
-
-        if (isSelecting) {
-            if (PlayStateMaster.s.isShopOrEndGame()) {
-                PhysicalRangeShower.s.ShowCartRange(building,true);
-            }
-            
-            if(!isMove)
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
-            
-            Color myColor = cantActColor;
-            if (PlayStateMaster.s.isShopOrEndGame()) {
-                myColor = moveColor;
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
-            }
-
-            if (building!= null && !CanDragCart(building)) {
+        Color myColor = moveColor;
+        if (PlayStateMaster.s.isShopOrEndGame()) {
+            GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+            GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
+            GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
+            if (!CanDragArtifact(artifact)) {
                 myColor = cantActColor;
                 GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
                 GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             }
-
-            if (PlayStateMaster.s.isCombatInProgress() && !isMove) {
-                /*if (CanShield(building)) {
-                    myColor = shieldColor;
-                    GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shield);
-                }
-
-                if (CanRepair(building)) {
-                    myColor = repairColor;
-                }
-
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.repair);*/
-                
-                switch (currentSelectMode) {
-                    case SelectMode.cart:
-                        // do nothing. This will do the default action button
-                        break;
-                    case SelectMode.topButton:
-                            myColor = selectingTopButtonColor;
-                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.selectTopButton);
-                        break;
-                    case SelectMode.directControl:
-                            myColor = directControlColor;
-                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControl);
-                        break;
-                    case SelectMode.reload:
-                            myColor = reloadColor;
-                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.reload);
-                        break;
-                    case SelectMode.engineBoost:
-                            myColor = engineBoostColor;
-                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.engineBoost);
-                        break;
-                    case SelectMode.emptyCart:
-                            myColor = cantActColor;
-                        break;
-                }
-            }
-
-            if (outline != null) {
-                if (forceColor) {
-                    outline.outlineColor = forcedColor;
-                } else {
-                    outline.outlineColor = myColor;
-                }
-
-                //outline.outlineWidth = 5;
-            }
-
-            selectedCart = building;
         } else {
-            if (PlayStateMaster.s.isShopOrEndGame()) {
-                PhysicalRangeShower.s.HideRange();
+            myColor = cantActColor;
+            GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+        }
+
+        return myColor;
+    }
+    
+    Color SelectMeeple(Meeple meeple) {
+        return meepleColor;
+    }
+
+    void DeselectMeeple(Meeple meeple) {
+        
+    }
+
+    [HideInInspector]
+    public UnityEvent<IPlayerHoldable, bool> OnSelectSomething = new UnityEvent<IPlayerHoldable, bool>();
+    void SelectThing(IPlayerHoldable newSelectableThing, bool isSelecting) {
+        Deselect();
+
+        if (newSelectableThing == null) {
+            return;
+        }
+        
+        HighlightEffect outline = null;
+        outline = ((MonoBehaviour)newSelectableThing).GetComponentInChildren<HighlightEffect>();
+
+        if (isSelecting) {
+            
+            GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+
+            Color myColor = cantActColor;
+            if (newSelectableThing is Artifact artifact) {
+                myColor = SelectArtifact(artifact);
+            }else if ( newSelectableThing is Cart cart) {
+                myColor = SelectCart(cart);
+            }else if (newSelectableThing is EnemyHealth enemyHealth) {
+                myColor = SelectEnemy(enemyHealth);
+            }else if (newSelectableThing is Meeple meeple) {
+                myColor = SelectMeeple(meeple);
             }
             
+            if (outline != null) {
+                outline.outlineColor = myColor;
+            }
+            
+            currentSelectedThing = newSelectableThing;
+        } else {
+            if (newSelectableThing is Cart cart) {
+                DeselectCart(cart);
+            }
+
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repair);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.reload);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControl);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.engineBoost);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.selectTopButton);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.shield);
+            
+            
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repairControl);
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.reloadControl);
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.gunControl);
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.engineControl);
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.shieldControl);
         }
         
 
-        if (building != null) {
+        if (outline != null) {
             outline.highlighted = isSelecting;
-            var ranges = building.GetComponentsInChildren<RangeVisualizer>();
-            for (int i = 0; i < ranges.Length; i++) {
-                ranges[i].ChangeVisualizerEdgeShowState(isSelecting);
-            }
+        }
 
+        OnSelectSomething?.Invoke(newSelectableThing, isSelecting);
+    }
 
-            foreach (var artifactSlot in building.GetComponentsInChildren<VisualizeArtifactSlot>()) {
-                artifactSlot.SetState(isSelecting && PlayStateMaster.s.isShopOrEndGame());
+    Color SelectCart(Cart selectedCart) {
+        Color myColor = cantActColor;
+        
+
+        myColor = moveColor;
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
+        
+
+        if (!CanDragCart(selectedCart)) {
+            myColor = cantActColor;
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
+        }
+
+        if (PlayStateMaster.s.isCombatInProgress() && selectedCart.IsAttachedToTrain()) {
+            if (selectedCart.isDestroyed) {
+                myColor = destroyedColor;
+            } else {
+
+                var directControllable = selectedCart.GetComponentInChildren<IDirectControllable>();
+                if (directControllable != null) {
+                    myColor = directControllable.GetHighlightColor();
+                    GamepadControlsHelper.s.AddPossibleActions(directControllable.GetActionKey());
+                }
+
+                /*switch (currentSelectMode) {
+                    case SelectMode.cart:
+                        // do nothing. This will do the default action button
+                        break;
+                    case SelectMode.directControl:
+                        myColor = directControlColor;
+                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControl);
+                        break;
+                    case SelectMode.reload:
+                        myColor = reloadColor;
+                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.reload);
+                        break;
+                    case SelectMode.engineBoost:
+                        myColor = engineBoostColor;
+                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.engineBoost);
+                        break;
+                    case SelectMode.emptyCart:
+                        myColor = cantActColor;
+                        break;
+                }*/
             }
         }
 
-        OnSelectBuilding?.Invoke(building, isSelecting);
+        var ranges = selectedCart.GetComponentsInChildren<RangeVisualizer>();
+        for (int i = 0; i < ranges.Length; i++) {
+            ranges[i].ChangeVisualizerEdgeShowState(true);
+        }
+
+
+        foreach (var artifactSlot in selectedCart.myArtifactLocations) {
+            artifactSlot.SetVisualizeState(PlayStateMaster.s.isShopOrEndGame());
+        }
+
+        return myColor;
+    } 
+    
+    void DeselectCart(Cart deselectedCart) {
+         var ranges = deselectedCart.GetComponentsInChildren<RangeVisualizer>();
+         for (int i = 0; i < ranges.Length; i++) {
+             ranges[i].ChangeVisualizerEdgeShowState(false);
+         }
+         
+         foreach (var artifactSlot in deselectedCart.myArtifactLocations) {
+             artifactSlot.SetVisualizeState(false);
+         }
     }
     
 
@@ -1806,11 +903,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             return Vector3.zero;
         }
     }
-
 }
 
 public interface IPlayerHoldable {
-    
+    public Transform GetUITargetTransform();
+    public void SetHoldingState(bool state);
 }
 
 

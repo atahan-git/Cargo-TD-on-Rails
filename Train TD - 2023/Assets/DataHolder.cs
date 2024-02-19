@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,6 +21,12 @@ public class DataHolder : MonoBehaviour {
     public EncounterTitle[] encounters;
     public PowerUpScriptable[] powerUps;
     public LevelArchetypeScriptable[] levelArchetypeScriptables;
+    public GunModule[] swappableTier1Guns;
+    public GunModule[] swappableTier2Guns;
+
+    public Cart tier1GunCart;
+    public Cart tier2GunCart;
+    public Cart tier3GunCart;
     
     
     public PowerUpScriptable GetPowerUp(string powerUpUniqueName) {
@@ -67,12 +74,46 @@ public class DataHolder : MonoBehaviour {
                 return buildings[i];
             }
         }
+        
+        // cant find building, maybe its a gun?
+        var tier1Gun = GetTier1Gun(buildingName);
+        if (tier1Gun != null) {
+            return tier1GunCart;
+        }
+        
+        var tier2Gun = GetTier2Gun(buildingName);
+
+        if (tier2Gun != null) {
+            return tier2GunCart;
+        }
 
         Debug.LogError($"Can't find building <{buildingName}>");
-        for (int i = 0; i < buildings.Length; i++) {
-			Debug.LogError(PreProcess(buildings[i].uniqueName));
+        var allBuildings = GetAllPossibleBuildingNames();
+        for (int i = 0; i < allBuildings.Count; i++) {
+			Debug.LogError(PreProcess(allBuildings[i]));
 		}
-        PlayStateMaster.s.OpenMainMenu(); // bail
+        
+        SettingsController.s.ResetTrainAndBail();
+        
+        return null;
+    }
+    
+    
+    public GunModule GetTier1Gun(string gunName) {
+        for (int i = 0; i < swappableTier1Guns.Length; i++) {
+            if (PreProcess(swappableTier1Guns[i].gunUniqueName) == PreProcess(gunName)) {
+                return swappableTier1Guns[i];
+            }
+        }
+        
+        return null;
+    }
+    public GunModule GetTier2Gun(string gunName) {
+        for (int i = 0; i < swappableTier2Guns.Length; i++) {
+            if (PreProcess(swappableTier2Guns[i].gunUniqueName) == PreProcess(gunName)) {
+                return swappableTier2Guns[i];
+            }
+        }
         
         return null;
     }
@@ -90,5 +131,22 @@ public class DataHolder : MonoBehaviour {
 
     string PreProcess(string input) {
         return input.Replace(" ", "").ToLower();
+    }
+
+
+    public List<string> GetAllPossibleBuildingNames() {
+        var buildingNames = new List<string>();
+        buildingNames.Add("");
+        for (int i = 0; i < buildings.Length; i++) {
+            buildingNames.Add(buildings[i].uniqueName);
+        }
+        for (int i = 0; i < swappableTier1Guns.Length; i++) {
+            buildingNames.Add(swappableTier1Guns[i].gunUniqueName);
+        }
+        for (int i = 0; i < swappableTier2Guns.Length; i++) {
+            buildingNames.Add(swappableTier2Guns[i].gunUniqueName);
+        }
+
+        return buildingNames;
     }
 }

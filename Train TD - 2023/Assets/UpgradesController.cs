@@ -27,7 +27,7 @@ public class UpgradesController : MonoBehaviour {
 	private List<string> regularArtifacts = new List<string>();
 	private List<string> bossArtifacts = new List<string>();
 
-	public SnapCartLocation[] fleaMarketLocations;
+	public SnapLocation[] fleaMarketLocations;
 	public Transform shopableComponentsParent;
 	public GameObject buildingCargo;
 
@@ -95,19 +95,12 @@ public class UpgradesController : MonoBehaviour {
 		SaveShopState();
 	}
 
-	public void AddCartToShop(Cart cart, CartLocation location, bool doSave = true) {
-		cart.myLocation = location;
+	public void AddCartToShop(Cart cart, bool doSave = true) {
 		shopCarts.Add(cart);
 		if(doSave)
 			SaveShopState();
 	}
 
-	public void ChangeCartLocation(Cart cart, CartLocation location) {
-		cart.myLocation = location;
-		SaveShopState();
-	}
-	
-	
 	public void RemoveArtifactFromShop(Artifact artifact, bool doSave = true) {
 		if (shopArtifacts.Contains(artifact)) {
 			shopArtifacts.Remove(artifact);
@@ -116,18 +109,11 @@ public class UpgradesController : MonoBehaviour {
 		}
 	}
 
-	public void AddArtifactToShop(Artifact artifact, CartLocation location, bool doSave = true) {
+	public void AddArtifactToShop(Artifact artifact, bool doSave = true) {
 		if (!shopArtifacts.Contains(artifact)) {
 			shopArtifacts.Add(artifact);
 			if(doSave)
 				SaveShopState();
-		}
-	}
-	
-	public void ChangeArtifactLocation(Artifact artifact, CartLocation location) {
-		if (artifact.myLocation != location) {
-			artifact.myLocation = location;
-			SaveShopState();
 		}
 	}
 
@@ -136,41 +122,15 @@ public class UpgradesController : MonoBehaviour {
 		Invoke(nameof(SaveShopState), 2f);
 	}
 
-	public SnapCartLocation[] cargoSwapLocations;
-	
-	public void UpdateCargoHighlights() {
-		/*for (int i = 0; i < cargoSwapLocations.Length; i++) {
-			cargoSwapLocations[i].SetEmptyStatus(cargoSwapLocations[i].IsEmpty());
-		}*/
-	}
-
-	public void UpdateCartShopHighlights() {
-		for (int i = 0; i < fleaMarketLocations.Length; i++) {
-			fleaMarketLocations[i].SetEmptyStatus(fleaMarketLocations[i].IsEmpty());
-		}
-	}
-
-
-	public float destinationCargoLerpSpeed = 5f;
-	public float destinationCargoSlerpSpeed = 20f;
-	private void Update() {
-	}
-
-	
 	public void SaveShopState() {
 		var shopState = new ShopState();
 		for (int i = 0; i < shopCarts.Count; i++) {
 			var cart = shopCarts[i];
 			if (cart.isCargo && !PlayStateMaster.s.isEndGame()) { // in the end game area cargos are also regular carts
 				var cargo = cart.GetComponentInChildren<CargoModule>();
-				if (cargo.GetState().isLeftCargo) { 
-					shopState.leftCargo =  DataSaver.TrainState.CartState.CargoState.GetStateFromModule(cargo);
-				} else { 
-					shopState.rightCargo =  DataSaver.TrainState.CartState.CargoState.GetStateFromModule(cargo);
-				}
 			} else {
 				shopState.cartStates.Add(new WorldCartState() {
-					location = cart.myLocation,
+					isSnapped =  cart.GetComponentInParent<SnapLocation>(),
 					pos = cart.transform.position,
 					rot = cart.transform.rotation,
 					state = Train.GetStateFromCart(cart)
@@ -183,7 +143,7 @@ public class UpgradesController : MonoBehaviour {
 
 			if (myArtifact != null) {
 				shopState.artifactStates.Add(new WorldArtifactState() {
-					location =  myArtifact.myLocation,
+					isSnapped =  myArtifact.GetComponentInParent<SnapLocation>(),
 					pos = myArtifact.transform.position,
 					rot = myArtifact.transform.rotation,
 					state = Train.GetStateFromArtifact(myArtifact),
@@ -200,13 +160,11 @@ public class UpgradesController : MonoBehaviour {
 	public class ShopState {
 		public List<WorldArtifactState> artifactStates = new List<WorldArtifactState>();
 		public List<WorldCartState> cartStates = new List<WorldCartState>();
-		public DataSaver.TrainState.CartState.CargoState leftCargo;
-		public DataSaver.TrainState.CartState.CargoState rightCargo;
 	}
 	
 	[Serializable]
 	public class WorldArtifactState {
-		public CartLocation location;
+		public bool isSnapped;
 		public Vector3 pos;
 		public Quaternion rot;
 		public DataSaver.TrainState.ArtifactState state = new DataSaver.TrainState.ArtifactState();
@@ -214,15 +172,10 @@ public class UpgradesController : MonoBehaviour {
 	
 	[Serializable]
 	public class WorldCartState {
-		public CartLocation location;
+		public bool isSnapped;
 		public Vector3 pos;
 		public Quaternion rot;
 		public DataSaver.TrainState.CartState state = new DataSaver.TrainState.CartState();
-	}
-
-	[Serializable]
-	public enum CartLocation {
-		train = 0, market = 1, world = 2, forge = 3, destinationSelect = 4, cargoDelivery = 5, rewardDisplay = 6
 	}
 
 	void InitializeShop(DataSaver.SaveFile state) {
@@ -721,15 +674,6 @@ public class UpgradesController : MonoBehaviour {
 		return buildingNames;
 	}
 
-	public int WorldCartCount() {
-		var count = 0;
-		for (int i = 0; i < shopCarts.Count; i++) {
-			if (shopCarts[i].myLocation == CartLocation.world)
-				count += 1;
-		}
-
-		return count;
-	}
 	
 	/*public string GetRandomDestinationArtifact(ref bool didRollEpic) {
 		if(!hasArtifactsGeneratedOnce)
@@ -896,13 +840,13 @@ public class UpgradesController : MonoBehaviour {
 
 	public void OnCombatStart() {
 		for (int i = 0; i < shopCarts.Count; i++) {
-			if (shopCarts[i].myLocation == CartLocation.world) {
+			if (shopCarts[i].GetComponentInParent<SnapLocation>() == null) {
 				shopCarts[i].gameObject.AddComponent<RubbleFollowFloor>().InstantAttachToFloor();
 			}
 		}
 
 		for (int i = 0; i < shopArtifacts.Count; i++) {
-			if (shopArtifacts[i].myLocation == CartLocation.world) {
+			if (shopArtifacts[i].GetComponentInParent<SnapLocation>() == null) {
 				shopArtifacts[i].gameObject.AddComponent<RubbleFollowFloor>().InstantAttachToFloor();
 			}
 		}

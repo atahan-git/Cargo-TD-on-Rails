@@ -17,8 +17,12 @@ public class PhysicalAmmoBar : MonoBehaviour {
     public Transform noAmmoPos;
     public Transform reloadSpawnPos;
 
+    public bool ammoTypeSet = false;
+
     void Start() {
-        OnAmmoTypeChange();
+        if (!ammoTypeSet) {
+            OnAmmoTypeChange();
+        }
     }
 
 
@@ -33,7 +37,11 @@ public class PhysicalAmmoBar : MonoBehaviour {
 
 
     public void OnAmmoTypeChange() {
-        ammoChunk = LevelReferences.s.bullet_regular;
+        if (GetComponentInParent<Cart>()) {
+            ammoChunk = LevelReferences.s.ammo_player;
+        } else {
+            ammoChunk = LevelReferences.s.ammo_enemy;
+        }
 
         var oldAmmo = new List<GameObject>(allAmmoChunks);
         allAmmoChunks.Clear();
@@ -46,10 +54,10 @@ public class PhysicalAmmoBar : MonoBehaviour {
         }
         
         allAmmoChunks.Reverse();
+        ammoTypeSet = true;
     }
 
     public void OnReload(bool showEffect, float curAmmo) {
-        ammoChunk = LevelReferences.s.bullet_regular;
         var delta = Vector3.zero;
         while ( allAmmoChunks.Count < curAmmo) {
             var newOne = Instantiate(ammoChunk, reloadSpawnPos);
@@ -80,6 +88,7 @@ public class PhysicalAmmoBar : MonoBehaviour {
                 allAmmoChunks[i].transform.position = Vector3.MoveTowards(allAmmoChunks[i].transform.position, target, velocity[i] * Time.deltaTime);
                 velocity[i] += acceleration * Time.deltaTime;
             } else {
+                allAmmoChunks[i].transform.position = target;
                 velocity[i] = 0;
             }
 

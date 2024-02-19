@@ -17,16 +17,18 @@ public class LightShellController : MonoBehaviour {
 
     public ParticleSystem shellParticles;
 
-    private bool lightsActive = true;
+    public bool lightsActive = true;
     public GameObject engineParticles;
 
     private Vector3 boneScale;
 
     private void Start() {
         boneScale = innerBones[0].transform.localScale;
+        curLightAmount = 0;
     }
 
-    public float lightAmount = 1f;
+    public float curLightAmount = 1f;
+    public float lightMultiplier = 0.8f;
 
     void LateUpdate() {
         if (Train.s.carts.Count > 0) {
@@ -39,7 +41,8 @@ public class LightShellController : MonoBehaviour {
         if (!PlayStateMaster.s.isCombatInProgress()) {
             targetLightAmount = 0;
         }
-        lightAmount = Mathf.Lerp(lightAmount, targetLightAmount , 1f * Time.deltaTime);
+        
+        curLightAmount = Mathf.Lerp(curLightAmount, targetLightAmount , 1f * Time.deltaTime);
 
         var minDistance = float.MinValue;
         var maxDistance = float.MaxValue;
@@ -62,10 +65,15 @@ public class LightShellController : MonoBehaviour {
                 var dist = Mathf.Clamp(realDist, minDistance, maxDistance);
                 lights[i].transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(realDist) + Vector3.up*lightYOffset;
                 
-                var scaleLerp = Mathf.Abs(realDist - dist) / 5f;
-                scaleLerp = 1f-Mathf.Clamp01(scaleLerp);
+                /*var scaleLerp = Mathf.Abs(realDist - dist) / 10f;
+                scaleLerp = 1f-Mathf.Clamp01(scaleLerp);*/
+                var scaleLerp = Mathf.Min(Mathf.Abs(realDist - minDistance),Mathf.Abs(realDist - maxDistance))/2f;
+                scaleLerp = Mathf.Clamp01(scaleLerp);
 
-                lights[i].intensity = lightAmount * scaleLerp * 0.8f;
+                var inLegalZone = realDist > minDistance && realDist < maxDistance;
+
+                lights[i].intensity = curLightAmount * scaleLerp * lightMultiplier;
+                lights[i].enabled = inLegalZone && lightsActive;
             }
         }
         
@@ -85,7 +93,7 @@ public class LightShellController : MonoBehaviour {
                 var scaleLerp = Mathf.Abs(realDist - dist) / 5f;
                 scaleLerp = 1f-Mathf.Clamp01(scaleLerp);
                 
-                innerBones[i].transform.localScale = boneScale*scaleLerp*lightAmount;
+                innerBones[i].transform.localScale = boneScale*scaleLerp*curLightAmount;
             }
         }
 
@@ -104,7 +112,7 @@ public class LightShellController : MonoBehaviour {
                 var scaleLerp = Mathf.Abs(realDist - dist) / 5f;
                 scaleLerp = 1f-Mathf.Clamp01(scaleLerp);
                 
-                outerBones[i].transform.localScale = boneScale*scaleLerp*lightAmount;
+                outerBones[i].transform.localScale = boneScale*scaleLerp*curLightAmount;
             }
         }
         
@@ -112,7 +120,7 @@ public class LightShellController : MonoBehaviour {
         var insideStationScaling = 1f - Mathf.Clamp01(Mathf.Abs(Mathf.Clamp(0, minDistance, maxDistance)/5f));
 
 
-        if (lightAmount < 0.05f) {
+        if (curLightAmount < 0.05f) {
             if (lightsActive) {
                 for (int i = 0; i < lights.Length; i++) {
                     lights[i].enabled = false;
@@ -133,9 +141,9 @@ public class LightShellController : MonoBehaviour {
 
         } else {
             if (!lightsActive) {
-                for (int i = 0; i < lights.Length; i++) {
+                /*for (int i = 0; i < lights.Length; i++) {
                     lights[i].enabled = true;
-                }
+                }*/
                 
                 var particles = engineParticles.GetComponentsInChildren<ParticleSystem>();
                 for (int i = 0; i < particles.Length; i++) {
@@ -149,7 +157,7 @@ public class LightShellController : MonoBehaviour {
                 lightsActive = true;
             }
             
-            engineParticles.transform.localScale = Vector3.one*lightAmount;
+            engineParticles.transform.localScale = Vector3.one*curLightAmount;
 
             var forceOverLifetime = shellParticles.forceOverLifetime;
             forceOverLifetime.z = SpeedController.s.internalRealSpeed*insideStationScaling;

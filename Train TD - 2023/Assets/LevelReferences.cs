@@ -6,14 +6,7 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class LevelReferences : MonoBehaviour {
-
     public static LevelReferences s;
-
-    public Transform playerTransform {
-        get {
-            return transform;
-        }
-    }
 
     public Camera mainCam {
         get {
@@ -21,6 +14,7 @@ public class LevelReferences : MonoBehaviour {
         }
     }
 
+    public Material cartOverlayMaterial;
     public GameObject burningEffect;
     
     [Space]
@@ -36,12 +30,8 @@ public class LevelReferences : MonoBehaviour {
     public GameObject waveDisplayPrefab;
     public GameObject enemyHealthPrefab;
     public GameObject bulletHealthPrefab;
-    public GameObject cartHealthPrefab;
-    public Transform cartHealthParent;
     public GameObject damageNumbersPrefab;
     public Transform uiDisplayParent;
-
-    public GameObject luckyNegate;
     
     [Space]
     
@@ -78,28 +68,24 @@ public class LevelReferences : MonoBehaviour {
 
     public float speed = 1f;
 
-    public static List<PossibleTarget> allTargets = new List<PossibleTarget>();
-    public static TargetValues[] allTargetValues = new TargetValues[0];
-    public static bool targetsDirty;
+    public List<PossibleTarget> allTargets = new List<PossibleTarget>();
+    public TargetValues[] allTargetValues = new TargetValues[0];
+    public bool targetsDirty;
 
+    
+    public List<SnapLocation> allSnapLocations = new List<SnapLocation>();
     public struct TargetValues {
         public PossibleTarget.Type type;
-        //public float health;
         public Vector3 position;
         public bool avoid;
         public bool flying;
         public TargetValues(PossibleTarget target) {
             type = target.myType;
-            //health = target.GetHealth();
             position = target.targetTransform.position;
             avoid = target.avoid;
             flying = target.flying;
         }
     }
-
-    [Space]
-    public Train train;
-
 
     [Space]
     public LayerMask groundLayer;
@@ -121,10 +107,7 @@ public class LevelReferences : MonoBehaviour {
     [Space]
     public Sprite encounterIcon;
     public Color encounterColor = Color.cyan;
-    public Sprite smallEnemyIcon;
-    public Sprite eliteEnemyIcon;
     public Color eliteColor = Color.red;
-    public Sprite bossEnemyIcon;
 
     [Space]
     public GameObject enemyHasArtifactStar;
@@ -137,7 +120,11 @@ public class LevelReferences : MonoBehaviour {
     public GameObject noAmmoWarning;
 
     [Space] 
-    public GameObject bullet_regular;
+    public GameObject ammo_player;
+
+    public GameObject ammo_enemy;
+    public Material ammoLightUnactiveMat;
+    public Material ammoLightActiveMat;
 
     [Space] public float smallEffectFirstActivateTimeAfterCombatStarts = 10f;
     public float bigEffectFirstActivateTimeAfterCombatStarts = 15;
@@ -145,25 +132,7 @@ public class LevelReferences : MonoBehaviour {
     public GameObject growthEffectPrefab;
 
     [Space] public GameObject coinDrop;
-    /*public GameObject GetResourceParticle(ResourceTypes types) {
-        switch (types) {
-            case ResourceTypes.scraps:
-                return resourceParticleScraps;
-            default:
-                return null;
-        }
-    }
-    
-    public GameObject GetResourceLostParticle(ResourceTypes types) {
-        switch (types) {
-            case ResourceTypes.scraps:
-                return resourceLostParticleScraps;
-            default:
-                return null;
-        }
-    }*/
-    
-    
+
     public AnimationCurve selectMarkerPulseCurve;
     public AnimationCurve alphaPulseCurve;
     [Space] 
@@ -174,77 +143,6 @@ public class LevelReferences : MonoBehaviour {
         s = this;
         
     }
-
-    const int maxMoneyPileCount = 5;
-
-    public void SpawnResourceAtLocation(ResourceTypes type, float amount, Vector3 location) {
-        return;
-        //SpawnResourceAtLocation(type, Mathf.RoundToInt(amount), location);
-    }
-    /*public void SpawnResourceAtLocation(ResourceTypes type, int amount, Vector3 location, bool customCollectTarget = false, Transform customCollectTargetTransform = null) {
-        if (amount == 0)
-            return;
-        
-        int count = Mathf.CeilToInt(amount / (float)maxMoneyPileCount);
-
-        GameObject prefab = null;
-
-        switch (type) {
-            case ResourceTypes.scraps:
-                //prefab = scrapPile;
-                break;
-        }
-
-        if (prefab == null) {
-            return;
-        }
-
-        while(amount > 0) {
-            //var random = Random.insideUnitCircle * (count / 4f);
-            var pile = Instantiate(prefab, location /*+ new Vector3(random.x, 0, random.y)#1#, Quaternion.identity);
-            var pileComp = pile.GetComponent<ScrapPile>();
-            var targetAmount = maxMoneyPileCount;
-            if (amount < maxMoneyPileCount)
-                targetAmount = amount;
-            pileComp.SetUp(targetAmount, type);
-            amount -= maxMoneyPileCount;
-
-            StartCoroutine(ThrowPile(pile, customCollectTarget, customCollectTargetTransform));
-        }
-    }
-    */
-    
-    
-    /*[Space]
-    public float throwHorizontalSpeed = 1f;
-    public float throwVerticalSpeed = 3f;
-    public float throwGravity = 9.81f;
-
-    IEnumerator ThrowPile(GameObject pile, bool customCollectTarget = false, Transform customCollectTargetTransform = null) {
-        var random = Random.insideUnitCircle.normalized;
-        var direction = new Vector3(random.x, 0, random.y);
-        if (customCollectTarget) {
-            direction =  customCollectTargetTransform.position - pile.transform.position;
-            direction.y = 0;
-        }
-        
-        direction.Normalize();
-        var verticalSpeed = throwVerticalSpeed;
-
-        while (verticalSpeed > -throwVerticalSpeed) {
-            pile.transform.position += (direction * throwHorizontalSpeed + Vector3.up * verticalSpeed) * Time.deltaTime;
-
-
-            verticalSpeed -= throwGravity * Time.deltaTime;
-            yield return null;
-        }
-
-        if (!customCollectTarget) {
-            pile.GetComponent<ScrapPile>().CollectPile();
-        } else {
-            pile.GetComponent<ScrapPile>().CollectPileWithTarget(customCollectTargetTransform);
-        }
-    }*/
 
     private void Update() {
         if (allTargetValues.Length != allTargets.Count || targetsDirty) {

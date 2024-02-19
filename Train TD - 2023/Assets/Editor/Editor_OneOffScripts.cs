@@ -21,6 +21,11 @@ public class Editor_OneOffScripts : EditorWindow
         {
             AddAndMoveComponent();
         }
+        
+        if (GUILayout.Button("Unpack Prefab"))
+        {
+            UnpackPrefab();
+        }
     }
 
     void AddAndMoveComponent() {
@@ -51,8 +56,6 @@ public class Editor_OneOffScripts : EditorWindow
 
         // Move the new component to the top of the components list
         Component[] components = enemy.GetComponents<Component>();
-        SerializedObject serializedObject = new SerializedObject(enemy);
-        SerializedProperty componentsProperty = serializedObject.FindProperty("m_Component");
 
         // Find the index of the new component
         int newIndex = Array.IndexOf(components, enemyInSwarm);
@@ -76,5 +79,26 @@ public class Editor_OneOffScripts : EditorWindow
         
         Debug.Log("success!");
 
+    }
+    
+    
+    void UnpackPrefab() {
+
+        GameObject myCart = null;
+        // Iterate through selected prefabs
+        foreach (GameObject selectedObject in Selection.gameObjects)
+        {
+            if (selectedObject.GetComponent<Cart>()) {
+                myCart = selectedObject;
+            }
+        }
+
+        if (myCart == null) {
+            return;
+        }
+        
+        PrefabUtility.UnpackPrefabInstance(myCart, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
+        
+        Debug.Log("success!");
     }
 }

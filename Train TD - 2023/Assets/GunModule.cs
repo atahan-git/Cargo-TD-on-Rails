@@ -8,6 +8,8 @@ using Random = UnityEngine.Random;
 
 public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringCombat, IResetState {
 
+    [Tooltip("only used for serializing player carts")]
+    public string gunUniqueName = "unset unique name";
     public Sprite gunSprite;
     [System.Serializable]
     public class TransformWithActivation {
@@ -76,6 +78,9 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float bonusBurnDamage = 0;
     public float damageMultiplier = 1f;
     public float sniperDamageMultiplier = 1f;
+    public float directControlDamageMultiplier = 1f;
+    public float directControlFirerateMultiplier = 1f;
+    public float directControlAmmoUseMultiplier = 1f;
     public float burnDamageMultiplier = 1f;
     public float regularToBurnDamageConversionMultiplier = 0;
     //public float regularToIceDamageConversionMultiplier = 0;
@@ -167,11 +172,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public bool beingDirectControlled = false;
 
+    public bool isLockOn = false;
+    
     public bool isHoming = false;
-
-    public float boostDamageOnUpgrade = 0.5f;
-    public void ResetState(int level) {
-        damageMultiplier = 1 + (boostDamageOnUpgrade*level);
+    public void ResetState() {
+        damageMultiplier = 1;
         sniperDamageMultiplier = 1;
         fireRateMultiplier = 1;
         fireRateDivider = 1;

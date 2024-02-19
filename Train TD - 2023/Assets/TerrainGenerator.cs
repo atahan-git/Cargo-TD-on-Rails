@@ -98,6 +98,10 @@ public class TerrainGenerator : MonoBehaviour
         var trainTerrainData = terrain.GetComponent<TrainTerrainData>();
         var terrainInformation = trainTerrainData.data;
         terrain.gameObject.name = $"Terrain {coordinates.x}, {coordinates.y}";
+        
+        
+        detailGridSize = terrain.terrainData.detailWidth;
+        
         if (!trainTerrainData.isInitialized) {
             terrain.terrainData = TerrainDataCloner.Clone(terrain.terrainData);
             /*var terrainInformation = new TrainTerrain() {
@@ -114,6 +118,10 @@ public class TerrainGenerator : MonoBehaviour
             terrainInformation.heightmap = new float[gridSize, gridSize];
             terrainInformation.terrain = terrain;
             terrainInformation.pathAndTerrainGenerator = GetComponent<PathAndTerrainGenerator>();
+            terrainInformation.detailmap0 = new int[detailGridSize, detailGridSize];
+            terrainInformation.detailmap1 = new int[detailGridSize, detailGridSize];
+
+            trainTerrainData.isInitialized = true;
         }
 
         terrainInformation.coordinates = coordinates;
@@ -122,11 +130,6 @@ public class TerrainGenerator : MonoBehaviour
         terrainInformation.bounds.SetMinMax(terrainInformation.topLeftPos, terrainInformation.topLeftPos + new Vector3(terrainWidth,10,terrainWidth));
         terrain.transform.position= terrainInformation.topLeftPos;
         
-        
-        detailGridSize = terrainInformation.terrain.terrainData.detailWidth;
-        
-        terrainInformation.detailmap0 =    terrainInformation.terrain.terrainData.GetDetailLayer(0,0,detailGridSize, detailGridSize, 0);
-        terrainInformation.detailmap1 =    terrainInformation.terrain.terrainData.GetDetailLayer(0,0,detailGridSize, detailGridSize, 1);
 
         ResetPostAndDistMap(terrainInformation);
         ImprintNeighborEdges(terrainInformation);

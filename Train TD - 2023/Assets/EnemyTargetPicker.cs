@@ -55,14 +55,14 @@ public class EnemyTargetPicker : MonoBehaviour
     }
 
     private Transform ClosestTarget(bool doAvoidCheck) {
-        if (LevelReferences.targetsDirty) {
+        if (LevelReferences.s.targetsDirty) {
             return null;
         }
         
         var closestTargetDistance = range + 1;
         Transform closestTarget = null;
-        var allTargets = LevelReferences.allTargetValues;
-        var allTargetsReal = LevelReferences.allTargets;
+        var allTargets = LevelReferences.s.allTargetValues;
+        var allTargetsReal = LevelReferences.s.allTargets;
         var myId = -1;
         if (mySelfTarget != null) {
             myId = mySelfTarget.myId;

@@ -5,7 +5,7 @@ using UnityEngine;
 public class CarrierEnemy : MonoBehaviour {
     public GameObject[] carriedThings = new GameObject[3];
     public bool[] canCarry = new bool[]{true,true,true};
-    public GameObject[] carryAwards = new GameObject[3];
+    public DataSaver.TrainState.CartState[] carryAwards = new DataSaver.TrainState.CartState[3];
     public Transform awardSpawnPos;
     
     public int currentCarry;
@@ -36,6 +36,13 @@ public class CarrierEnemy : MonoBehaviour {
 
 
     public void AwardTheCarriedThingOnDeath() {
-        Instantiate(carryAwards[currentCarry], awardSpawnPos.position, awardSpawnPos.rotation);
+        var award = carryAwards[Random.Range(0, carryAwards.Length)];
+        
+        var awardCart = Instantiate(DataHolder.s.GetCart(award.uniqueName).gameObject, awardSpawnPos.position, awardSpawnPos.rotation).GetComponent<Cart>();
+
+        awardCart.gameObject.AddComponent<RubbleFollowFloor>();
+        
+        Train.ApplyStateToCart(awardCart, award);
+        awardCart.SetHoldingState(false);
     }
 }

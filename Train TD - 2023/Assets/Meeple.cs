@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
-public class Meeple : MonoBehaviour {
+public class Meeple : MonoBehaviour, IPlayerHoldable {
 
     public MeepleZone myZone;
 
@@ -127,12 +127,14 @@ public class Meeple : MonoBehaviour {
     private bool stopBeingHandledWhenHitGround = false;
 
     private float fallDelta;
-    public void SetHandlingState(bool state) {
+    public void SetHoldingState(bool state) {
         if (state) {
             isBeingHandled = true;
             CancelInvoke();
             GetComponent<Rigidbody>().isKinematic = true;
             GetComponent<Rigidbody>().useGravity = false;
+
+            GetClicked();
         } else {
             GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().useGravity = true;
@@ -157,15 +159,18 @@ public class Meeple : MonoBehaviour {
             Invoke(nameof(PickNewTarget), fallDelta);
         }
     }
-
-
-    public bool shownChat = false;
+    
+    public bool chatIsShowing = false;
 
     public void ShowChat() {
-        if (!shownChat && !isSpecialMeeple) {
+        if (!chatIsShowing && !isSpecialMeeple) {
             heroSound.PlayClip();
-            shownChat = true;
+            chatIsShowing = true;
         }
+    }
+
+    public void HideChat() {
+        chatIsShowing = false;
     }
 
 
@@ -221,5 +226,9 @@ public class Meeple : MonoBehaviour {
                 MeepleSpeechMaster.s.Speak(this, speech[Random.Range(0, speech.Length)]);
             }
         }
+    }
+
+    public Transform GetUITargetTransform() {
+        return transform;
     }
 }

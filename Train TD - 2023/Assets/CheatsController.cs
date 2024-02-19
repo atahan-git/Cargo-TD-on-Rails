@@ -26,6 +26,10 @@ public class CheatsController : MonoBehaviour
 
     public bool setInstantEnterShopAnimation = false;
 
+    public bool overrideTrainState = false;
+    
+    public DataSaver.TrainState trainState;
+
     private void Awake() {
         if (!Application.isEditor) {
             ResetDebugOptions();
@@ -41,10 +45,11 @@ public class CheatsController : MonoBehaviour
         playerDealMaxDamage = false;
         autoPlayTest = false;
         setInstantEnterShopAnimation = false;
+        overrideTrainState = false;
     }
 
     [Button]
-    void SetMissionRewards() {
+    void EnterMissionRewardsArea() {
         DataSaver.s.GetCurrentSave().isInEndRunArea = true;
         DataSaver.s.GetCurrentSave().endRunAreaInfo = new DataSaver.EndRunAreaInfo();
     }
@@ -52,11 +57,15 @@ public class CheatsController : MonoBehaviour
     private void Start() {
         if (Application.isEditor) {
             if (debugNoRegularSpawns  || instantEnterPlayMode ||playerIsImmune
-                  || everyPathIsEncounter  || setInstantEnterShopAnimation)
+                  || everyPathIsEncounter  || setInstantEnterShopAnimation || overrideTrainState)
                 Debug.LogError("Debug options active! See _CheatsController for more info");
 
             //LevelArchetypeScriptable.everyPathEncounterCheat = everyPathIsEncounter;
-                
+
+            if (overrideTrainState) {
+                DataSaver.s.GetCurrentSave().myTrain = trainState;
+                DataSaver.s.SaveActiveGame();
+            }
             
             if (debugNoRegularSpawns)
                 EnemyWavesController.s.debugNoRegularSpawns = true;

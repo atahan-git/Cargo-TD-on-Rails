@@ -7,8 +7,8 @@ using UnityEngine;
 public class SmitheryController : MonoBehaviour
 {
     
-    public SnapCartLocation location1;
-    public SnapCartLocation location2;
+    public SnapLocation location1;
+    public SnapLocation location2;
 
     public GameObject allParent;
 
@@ -24,16 +24,16 @@ public class SmitheryController : MonoBehaviour
     void Update()
     {
         if (!isEngaged && !PlayerWorldInteractionController.s.isDragging() && PlayerWorldInteractionController.s.canSmith) {
-            if (location1.snapTransform.childCount > 0 && location2.snapTransform.childCount > 0)
+            if (!location1.IsEmpty() && !location2.IsEmpty())
                 CheckAndDoUpgrade();
         }
 
         if (PlayerWorldInteractionController.s.canSmith) {
-            location1.snapNothing = false;
-            location2.snapNothing = false;
+            location1.myAllowedSnaps = SnapLocation.AllowedSnaps.nothing;
+            location2.myAllowedSnaps = SnapLocation.AllowedSnaps.nothing;
         } else {
-            location1.snapNothing = true;
-            location2.snapNothing = true;
+            location1.myAllowedSnaps = SnapLocation.AllowedSnaps.cart;
+            location2.myAllowedSnaps = SnapLocation.AllowedSnaps.cart;
         }
     }
 

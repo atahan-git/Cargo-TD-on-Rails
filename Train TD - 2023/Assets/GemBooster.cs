@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GemBooster : MonoBehaviour, IBooster, IResetState
+public class GemBooster : MonoBehaviour,  IResetState
 {
 	
 	public int baseRange = 1;
@@ -23,8 +23,8 @@ public class GemBooster : MonoBehaviour, IBooster, IResetState
 		return myColor;
 	}
 
-	public void ResetState(int level) {
-		rangeBoost = level;
+	public void ResetState() {
+		rangeBoost = 0;
 		var artifact = GetComponentInParent<Cart>().GetComponentInChildren<Artifact>();
 		if (artifact) {
 			artifact.ApplyToTarget.AddListener(AddChunk);
@@ -34,14 +34,14 @@ public class GemBooster : MonoBehaviour, IBooster, IResetState
 
 	private List<Transform> parents =new List<Transform>();
 	public void AddChunk(Cart target) {
-		var artifact = GetComponentInParent<Cart>().GetComponentInChildren<Artifact>();
+		/*var artifact = GetComponentInParent<Cart>().GetComponentInChildren<Artifact>();
 		var material = artifact.GetComponentInChildren<MeshRenderer>().material;
 
 		var targetTransform = target.artifactChunkTransform;
 		var chunk = Instantiate(artifactChunk, targetTransform);
 		chunk.GetComponentInChildren<MeshRenderer>().material = material;
 		chunk.transform.rotation = Random.rotation;
-		parents.Add(targetTransform);
+		parents.Add(targetTransform);*/
 
 		Invoke(nameof(SetPos), 0.01f);
 	}

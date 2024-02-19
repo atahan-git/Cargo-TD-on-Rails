@@ -47,7 +47,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public void SetUpOnMissionStart() {
         ResetDistance();
-        DisableLowPower();
         PlayEngineStartEffects();
     }
 
@@ -88,7 +87,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         speedMultiplier = 1;
         speedAmount = 0;
         delicateMachinery = false;
-        boostEffectMultiplier = 1;
     }
     
     public void AddEngine(EngineModule engineModule) {
@@ -182,15 +180,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     private void Update() {
         CalculateSpeedBasedOnCartCapacity();
 
-        if (isBoosting || isSlow) {
-            targetSpeed *= currentBoostMultiplier;
-            if (isBoosting) {
-                boostTimer -= Time.deltaTime;
-            } else {
-                boostTimer += Time.deltaTime;
-            }
-        }
-
         speedDisplayArea.UpdateValues(targetSpeed,  LevelReferences.s.speed);
         speedDisplayAreaShop.UpdateValues(targetSpeed, LevelReferences.s.speed);
 
@@ -278,122 +267,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public string GetCurrentTime() {
         return GetNiceTime(currentTime);
-    }
-
-    [Header("Boost stuff")]
-    public bool canBoost = true;
-    public bool isBoosting = false;
-    public bool isSlow = false;
-    public float boostDuration = 30f;
-    public float boostMultiplier = 2f;
-    public float lowPowerMultiplier = 0.5f;
-    public float boostEffectMultiplier = 1f;
-    public float lowPowerDuration = 60f;
-    public float currentBoostMultiplier = 1;
-    public float boostTimer;
-    public float boostTotalTime;
-    public float boostGraphicPercent {
-        get {
-            return Mathf.Clamp((boostTimer*2) / boostTotalTime,0,2f);
-        }
-    }
-[HideInInspector]
-    public UnityEvent OnSpeedBoostActivated = new UnityEvent();
-    public void ActivateBoost() {
-        if (canBoost && !encounterOverride) {
-            for (int i = 0; i < engines.Count; i++) {
-                var boostable = engines[i].GetComponentInChildren<EngineBoostable>(true);
-                if (boostable) {
-                    boostable.gameObject.SetActive(false);
-                }
-            }
-
-            isBoosting = true;
-
-            if (!PlayerWorldInteractionController.s.engineBoostDamageInstead) {
-                currentBoostMultiplier = Mathf.Clamp((boostMultiplier-1) * boostEffectMultiplier,0,2) + 1;
-            } else {
-                var boostable = Train.s.GetComponentInChildren<EngineBoostable>(true);
-                if (boostable != null) {
-                    boostable.engineDamageBoostActive = true;
-                    boostable.engineDamageReductionActive = false;
-                }
-                Train.s.ArtifactsChanged();
-            }
-
-            PlayEngineStartEffects();
-            SetEngineBoostEffects(true, false);
-            CameraController.s.BoostFOV();
-            boostTimer = boostDuration;
-            boostTotalTime = boostDuration;
-            Invoke(nameof(DisableBoostAndActivateLowPowerMode), boostDuration);
-            OnSpeedBoostActivated?.Invoke();
-        }
-    }
-
-
-    void DisableBoostAndActivateLowPowerMode() {
-        if (!PlayerWorldInteractionController.s.engineBoostDamageInstead) {
-            currentBoostMultiplier = 1- Mathf.Clamp(lowPowerMultiplier / Mathf.Max(0.01f,boostEffectMultiplier), 0, 0.95f);;
-        } else {
-            var boostable = Train.s.GetComponentInChildren<EngineBoostable>(true);
-            if (boostable != null) {
-                boostable.engineDamageBoostActive = false;
-                boostable.engineDamageReductionActive = true;
-            }
-
-            Train.s.ArtifactsChanged();
-        }
-        CameraController.s.SlowFOV();
-
-        isSlow = true;
-        isBoosting = false;
-    
-        boostTimer = 0;
-        boostTotalTime = lowPowerDuration;
-        SetEngineBoostEffects(false, true);
-        Invoke(nameof(DisableLowPower), lowPowerDuration);
-    }
-
-    public void DisableLowPower() {
-        CancelInvoke(nameof(DisableBoostAndActivateLowPowerMode));
-        CancelInvoke(nameof(DisableLowPower));
-        
-        SetEngineBoostEffects(false, false);
-        PlayEngineStartEffects();
-        CameraController.s.ReturnToRegularFOV();
-        
-        canBoost = true;
-        
-        if (!PlayerWorldInteractionController.s.engineBoostDamageInstead) {
-            currentBoostMultiplier = 1;
-        } else {
-            var boostable = Train.s.GetComponentInChildren<EngineBoostable>(true);
-            if (boostable != null) {
-                boostable.engineDamageBoostActive = false;
-                boostable.engineDamageReductionActive = false;
-            }
-
-            Train.s.ArtifactsChanged();
-        }
-        
-        isBoosting = false;
-        isSlow = false;
-        
-        
-        boostTimer = 1;
-        boostTotalTime = 2;
-        
-        for (int i = 0; i < engines.Count; i++) {
-            var boostable = engines[i].GetComponentInChildren<EngineBoostable>(true);
-            if (boostable) {
-                boostable.gameObject.SetActive(true);
-            }
-        }
-    }
-
-    public void OnCombatFinished(bool realCombat) {
-        DisableLowPower();
     }
 
     public float GetDistance() {

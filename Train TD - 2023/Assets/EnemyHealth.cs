@@ -8,7 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class EnemyHealth : MonoBehaviour, IHealth {
+public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 
 	public float baseHealth = 200f;
 	
@@ -239,7 +239,7 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 			Instantiate(deathPrefab, pos, rot);
 		
 		if(!isComponentEnemy)
-			GetComponentInParent<EnemySwarmMaker>().EnemyDeath(this);
+			GetComponent<EnemyInSwarm>().mySwarm.EnemyDeath(this);
 
 		Destroy(gameObject);
 	}
@@ -318,6 +318,14 @@ public class EnemyHealth : MonoBehaviour, IHealth {
 				outline.highlighted = isHighlighted;
 			}
 		}
+	}
+
+	public Transform GetUITargetTransform() {
+		return uiTransform;
+	}
+
+	public void SetHoldingState(bool state) {
+		// do nothing. Enemy health is not holdable
 	}
 }
 

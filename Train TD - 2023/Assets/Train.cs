@@ -13,12 +13,10 @@ public class Train : MonoBehaviour {
     public Transform trainFront;
     public Transform trainBack;
     public Transform trainMiddle;
-    public Vector3 trainFrontOffset;
+    public float trainFrontBackDistanceOffset = 0.199f;
+    public float trainFrontBackMiddleYOffset = 0.639f;
 
     public List<Cart> carts = new List<Cart>();
-    public List<Vector3> cartDefPositions = new List<Vector3>();
-
-    private int cargoCount = 0;
 
     public UnityEvent onTrainCartsChanged = new UnityEvent();
 
@@ -26,22 +24,9 @@ public class Train : MonoBehaviour {
 
     public bool isMainTrain = false;
 
-    public int GetCargoCount() {
-        return cargoCount;
-    }
-
-
     private void Awake() {
         if (isMainTrain) {
             s = this;
-        }
-    }
-
-
-    private void Start() {
-        //UpdateBasedOnLevelData();
-        if (isMainTrain) {
-            LevelReferences.s.train = this;
         }
     }
 
@@ -52,7 +37,6 @@ public class Train : MonoBehaviour {
 
     public void DrawTrainBasedOnSaveData() {
         DrawTrain(DataSaver.s.GetCurrentSave().myTrain);
-        //ArtifactsController.s.CreateArtifactsBasedOnSaveData();
     }
 
     public void DrawTrain(DataSaver.TrainState trainState) {
@@ -62,7 +46,6 @@ public class Train : MonoBehaviour {
         suppressRedraw = false;
         
         carts = new List<Cart>();
-        cartDefPositions = new List<Vector3>();
 
         if (trainFront != null)
             Destroy(trainFront.gameObject);
@@ -78,7 +61,6 @@ public class Train : MonoBehaviour {
                 var cart = Instantiate(DataHolder.s.GetCart(cartState.uniqueName).gameObject, transform).GetComponent<Cart>();
                 ApplyStateToCart(cart, cartState);
                 carts.Add(cart);
-                cartDefPositions.Add(cart.transform.localPosition);
             }
 
             trainFront = new GameObject().transform;
@@ -95,7 +77,7 @@ public class Train : MonoBehaviour {
             trainMiddle.gameObject.name = "Train Middle";
         }
 
-        UpdateCartPositions();
+        UpdateCartPositions(true);
         
         isTrainDrawn = true;
         
@@ -155,16 +137,18 @@ public class Train : MonoBehaviour {
             } else {
                 buildingState.ammo = -1;
             }
-            
-            if (cart.myAttachedArtifact != null) {
-                var artifactState = buildingState.attachedArtifact;
-                if(artifactState == null) 
-                    artifactState = new DataSaver.TrainState.ArtifactState();
-                
-                ApplyArtifactToState(cart.myAttachedArtifact, artifactState);
-                buildingState.attachedArtifact = artifactState;
+
+            buildingState.attachedArtifacts = new List<DataSaver.TrainState.ArtifactState>();
+            for (int i = 0; i < cart.myArtifactLocations.Count; i++) {
+                var attachedArtifact = cart.myArtifactLocations[i].GetSnappedObject();
+                if (attachedArtifact != null) {
+                    var artifactState = new DataSaver.TrainState.ArtifactState();
+
+                    ApplyArtifactToState(attachedArtifact.GetComponent<Artifact>(), artifactState);
+                    buildingState.attachedArtifacts.Add(artifactState);
+                }
             }
-            
+
         } else {
             buildingState.EmptyState();
         }
@@ -177,13 +161,24 @@ public class Train : MonoBehaviour {
     }
 
     public static void ApplyStateToCart(Cart cart, DataSaver.TrainState.CartState cartState) {
+        var tier1GunModuleSpawner = cart.GetComponentInChildren<Tier1GunModuleSpawner>();
+        if (tier1GunModuleSpawner != null) {
+            tier1GunModuleSpawner.SpawnGuns(cartState.uniqueName);
+        }
+        
+        var tier2GunModuleSpawner = cart.GetComponentInChildren<Tier2GunModuleSpawner>();
+        if (tier2GunModuleSpawner != null) {
+            tier2GunModuleSpawner.SpawnGun(cartState.uniqueName);
+        }
+        
+        
         cart.SetUpOverlays();
-
+        
         if (cartState.health > 0) {
             cart.SetCurrentHealth(cartState.health);
         }
 
-        if (cartState.ammo >= 0) {
+        /*if (cartState.ammo >= 0) {
             var ammo = cart.GetComponentInChildren<ModuleAmmo>();
             if (ammo != null) 
                 ammo.SetAmmo(cartState.ammo);
@@ -195,20 +190,23 @@ public class Train : MonoBehaviour {
             } else {
                 cartState.ammo = -1;
             }
-        }*/
+        }#1#*/
 
 
         var cargoModule = cart.GetComponentInChildren<CargoModule>();
         if (cargoModule != null) {
             cargoModule.SetCargo(cartState.cargoState);
         }
-        
-        if (cartState.attachedArtifact != null && cartState.attachedArtifact.uniqueName!= null && cartState.attachedArtifact.uniqueName.Length > 0) {
-            var artifact = Instantiate( DataHolder.s.GetArtifact(cartState.attachedArtifact.uniqueName).gameObject).GetComponent<Artifact>();
-            ApplyStateToArtifact(artifact, cartState.attachedArtifact);
-            artifact.AttachToCart(cart, false,false);
+
+        for (int i = 0; i < cartState.attachedArtifacts.Count; i++) {
+            var attachedArtifact = cartState.attachedArtifacts[i];
+            if (attachedArtifact != null && attachedArtifact.uniqueName != null && attachedArtifact.uniqueName.Length > 0) {
+                var artifact = Instantiate( DataHolder.s.GetArtifact(attachedArtifact.uniqueName).gameObject).GetComponent<Artifact>();
+                ApplyStateToArtifact(artifact, attachedArtifact);
+                artifact.AttachToSnapLoc(cart.myArtifactLocations[i], false,false);
+            }
         }
-        
+
         cart.ResetState();
     }
     
@@ -229,12 +227,7 @@ public class Train : MonoBehaviour {
     public static void ApplyStateToArtifact(Artifact artifact, DataSaver.TrainState.ArtifactState artifactState) {
     }
 
-    public void OnLeaveCombat(bool realCombat) {
-        StopShake();
-    }
-    
     public void RightBeforeLeaveMissionRewardArea() {
-        StopShake();
         StopCoroutine(nameof(LerpTrain));
         StartCoroutine(LerpTrain(Vector3.zero, GetTrainForward()*3, 4f ,false));
         showEntryMovement = true;
@@ -243,7 +236,6 @@ public class Train : MonoBehaviour {
     public static bool showEntryMovement = false;
 
     public void OnEnterShopArea() {
-        StopShake();
         StopCoroutine(nameof(LerpTrain));
         if (showEntryMovement) {
             // only show this if the player just left the mission reward area
@@ -298,8 +290,11 @@ public class Train : MonoBehaviour {
 
         return totalLength;
     }
-    
-    public void UpdateCartPositions() {
+
+
+    float lerpSpeed => PlayerWorldInteractionController.lerpSpeed;
+    float slerpSpeed => PlayerWorldInteractionController.slerpSpeed;
+    public void UpdateCartPositions(bool instant = false) {
         if(carts.Count == 0)
             return;
 
@@ -307,32 +302,53 @@ public class Train : MonoBehaviour {
 
         var currentDistance = (totalLength / 2f);
 
-        if (cartDefPositions.Count != carts.Count) {
-            cartDefPositions.Clear();
-            for (int i = 0; i < carts.Count; i++) {
-                cartDefPositions.Add(Vector3.zero);
-            }
-        }
+        var specialTreatmentForSelectedCart = PlayStateMaster.s.isShopOrEndGame();
+        var selectedCart = PlayerWorldInteractionController.s.currentSelectedThing as Cart;
 
         for (int i = 0; i < carts.Count; i++) {
             var cart = carts[i];
-            cart.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
-            cart.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance);
+            var currentSpot = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
+            var currentRot = PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance);
+            if (specialTreatmentForSelectedCart && cart == selectedCart && !cart.isMainEngine )
+                currentSpot += Vector3.up * (PlayerWorldInteractionController.s.isDragging() ? 0.4f : 0.05f);
+
+            var cartTransform = cart.transform;
+            if (!instant) {
+                cartTransform.position = Vector3.Lerp(cartTransform.position, currentSpot, lerpSpeed * Time.deltaTime);
+                cartTransform.rotation = Quaternion.Slerp(cartTransform.rotation, currentRot, slerpSpeed * Time.deltaTime);
+            } else {
+                cartTransform.position = currentSpot;
+                cartTransform.rotation = currentRot;
+            }
+
             currentDistance += -cart.length;
             var index = i;
             cart.name = $"Cart {index }";
             cart.trainIndex = index;
-            cartDefPositions[i] = cart.transform.localPosition;
 
-            if (cart.artifactParent.childCount > 1) {
-                cart.artifactParent.GetChild(1).ResetTransformation();
+            if (instant) {
+                for (int j = 0; j < cart.myArtifactLocations.Count; j++) {
+                    if(!cart.myArtifactLocations[j].IsEmpty())
+                        cart.myArtifactLocations[j].GetSnappedObject().ResetTransformation();
+                }
             }
         }
-        
-        trainFront.transform.localPosition = carts[0].transform.localPosition + trainFrontOffset + carts[0].length*Vector3.forward;
-        trainBack.transform.localPosition = carts[carts.Count-1].transform.localPosition + trainFrontOffset - carts[carts.Count-1].length*Vector3.forward;
 
-        trainMiddle.transform.localPosition = PathAndTerrainGenerator.s.GetPointOnActivePath(totalLength / 2f);
+
+        var upOffset = Vector3.up * trainFrontBackMiddleYOffset;
+        
+        var frontDist = (totalLength / 2f) + trainFrontBackDistanceOffset;
+        trainFront.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(frontDist) + upOffset;
+        trainFront.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(frontDist);
+        
+        trainBack.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(-frontDist) + upOffset;
+        trainBack.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(-frontDist);
+
+        trainMiddle.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
+        trainMiddle.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
+        
+        
+        DoShake();
     }
     
 
@@ -340,46 +356,15 @@ public class Train : MonoBehaviour {
     public void CartDestroyed(Cart cart) {
         if(suppressRedraw)
             return;
-        
-        StopShake();
 
-        
         var index = carts.IndexOf(cart);
 
         if (index > -1) {
             RemoveCart(cart);
-        } /*else {
-            Debug.Log($"Cart with illegal index {index} {cart} {cart.gameObject.name}");
-        }*/
-        
-        RestartShake();
-
-        /*var hasEngine = false;
-        var hasCriticalComponent = false;
-
-        for (int i = 0; i < carts.Count; i++) {
-            if (carts[i].isMainEngine) {
-                hasEngine = true;
-            }
-
-            if (carts[i].isMysteriousCart) {
-                hasCriticalComponent = true;
-            }
-        }
-
-        var lostGame = carts.Count <= 0 || !hasEngine || !hasCriticalComponent;
-
-        if (lostGame && PlayStateMaster.s.isCombatInProgress()) {
-            if (!hasEngine) {
-                MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noEngine);
-            } else {
-                MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.noMysteryCargo);
-            }
-        }*/
+        } 
 
         CheckHealth();
-
-
+        
         // draw train already calls this
         //trainUpdatedThroughNonBuildingActions?.Invoke();
     }
@@ -400,82 +385,27 @@ public class Train : MonoBehaviour {
     }
 
 
-    [Header("Train Shake Settings")] 
-    public Vector2 shakeDistance = new Vector2(1, 3);
-    public Vector3 shakeOffsetMax = new Vector3(0.01f, 0.02f, 0.005f);
-
-    private float curDistance = 0.1f;
-    public float restoreDelay = 0.1f;
-
-    public bool doShake = true;
-    public float shakeBlock = 0f;
-
     private void Update() {
-        if (PlayStateMaster.s.isCombatInProgress()) {
-            /*if (doShake) {
-                if (curDistance < 0) {
-                    StartCoroutine(ShakeWave());
-                    StartCoroutine(RestoreWave(restoreDelay));
-                    curDistance += Random.Range(shakeDistance.x, shakeDistance.y);
-                } else {
-                    curDistance -= LevelReferences.s.speed * Time.deltaTime;
-                }
-            } else {
-                shakeBlock -= Time.deltaTime;
-                if (shakeBlock <= 0) {
-                    _RestartShake();
-                }
-            }*/
-            
-            UpdateCartPositions();
-            
-        } else {
-            doShake = false;
-        }
-    }
-
-    public void HpBarsCleanup(bool activate) {
-        for (int i = 0; i < LevelReferences.s.cartHealthParent.childCount; i++) {
-            LevelReferences.s.cartHealthParent.GetChild(i).gameObject.SetActive(false);
-        }
-        
-        for (int i = 0; i < carts.Count; i++) {
-            carts[i].transform.SetSiblingIndex((carts.Count - 1) - i);
-        }
-        
-        for (int i = 0; i < carts.Count; i++) {
-            carts[i].GetHealthModule()?.InitializeUIBar(activate);
-        }
-    }
-
-    public void TrainCleanupAfterCartMoveStopped() {
         UpdateCartPositions();
     }
-    
+
     public void UpdateThingsAffectingOtherThings(bool isActivating) {
         if (isActivating) {
             SetArtifactStatus(true);
 
-            for (int i = 0; i < carts.Count; i++) {
-                carts[i].SetAttachedToTrainModulesMode(true);
-            }
-            HpBarsCleanup(true);
-            
-            /*CancelInvoke(nameof(_HpBarsCleanup));
-            Invoke(nameof(_HpBarsCleanup),0.1f);*/
-            
             SpeedController.s.CalculateSpeedBasedOnCartCapacity();
 
             for (int i = 0; i < carts.Count; i++) {
                 carts[i].GetHealthModule().UpdateHpState();
             }
+            
+            GetComponent<AmmoTracker>().RegisterAmmoProviders();
 
             MaxHealthModified();
         } else {
             SetArtifactStatus(false);
             
             for (int i = 0; i < carts.Count; i++) {
-                carts[i].SetAttachedToTrainModulesMode(false);
                 carts[i].ResetState();
             }
             
@@ -528,7 +458,6 @@ public class Train : MonoBehaviour {
         UpdateThingsAffectingOtherThings(false);
         
         carts.Remove(cart);
-        cart.myLocation = UpgradesController.CartLocation.world;
         cart.transform.SetParent(null);
         
         for (int i = 0; i < carts.Count; i++) {
@@ -541,35 +470,28 @@ public class Train : MonoBehaviour {
     }
 
     public void AddCartAtIndex(int index, Cart cart) {
-        
-        var wasShaking = doShake;
-        if (wasShaking) {
-            StopShake();
+        var existingIndex = carts.IndexOf(cart);
+        if (existingIndex != -1) {
+            RemoveCart(cart);
         }
         
         UpdateThingsAffectingOtherThings(false);
         
         carts.Insert(index, cart);
-        cart.myLocation = UpgradesController.CartLocation.train;
         cart.transform.SetParent(transform);
 
         for (int i = 0; i < carts.Count; i++) {
             carts[i].trainIndex = i;
         }
         
-        
         UpdateThingsAffectingOtherThings(true);
-        
-
-        if (wasShaking) {
-            RestartShake();
-        }
         
         onTrainCartsChanged?.Invoke();
     }
 
     public void ArtifactsChanged() {
         if (isTrainDrawn) {
+            ArtifactsController.s.ArtifactsChanged();
             UpdateThingsAffectingOtherThings(false);
             UpdateThingsAffectingOtherThings(true);
             CheckHealth();
@@ -581,35 +503,6 @@ public class Train : MonoBehaviour {
         UpdateThingsAffectingOtherThings(true);
     }
 
-    public void StopShake(float _shakeBlock = 1, bool fixPos = true) {
-        if (doShake) {
-            StopCoroutine(nameof(_RestartShake));
-            StopCoroutine(nameof(ShakeWave));
-            StopCoroutine(nameof(RestoreWave));
-            if (fixPos) {
-                for (int i = 0; i < carts.Count; i++) {
-                    carts[i].transform.localPosition = cartDefPositions[i];
-                }
-            }
-
-            doShake = false;
-            //print("stop shake");
-        }
-        
-        
-        shakeBlock = _shakeBlock;
-    }
-
-    public void RestartShake(float delay = 0.01f, bool overrideShakeBlock = false) {
-        if (overrideShakeBlock) {
-            shakeBlock = delay;
-        } else {
-            shakeBlock = Mathf.Max(delay, shakeBlock);
-        }
-        /*if(shakeBlock < 0f)
-            Invoke(nameof(_RestartShake), delay); // one frame later so that any transform changes have been applied*/
-    }
-
     public void SwapCarts(Cart cart1, Cart cart2) {
         var cart1Index = carts.IndexOf(cart1);
         var cart2Index = carts.IndexOf(cart2);
@@ -619,7 +512,6 @@ public class Train : MonoBehaviour {
             return;
         }
         
-        StopShake();
         UpdateThingsAffectingOtherThings(false);
         
         RemoveCart(cart1);
@@ -631,88 +523,51 @@ public class Train : MonoBehaviour {
         AddCartAtIndex(cart2Index, cart1);
         
         UpdateThingsAffectingOtherThings(true);
-
-        RestartShake();
-        
-        
-    }
-
-    void _RestartShake() {
-        if (!doShake) {
-            UpdateCartPositions();
-            
-            for (int i = 0; i < carts.Count; i++) {
-                cartDefPositions[i] = carts[i].transform.localPosition;
-            }
-
-            doShake = true;
-        }
-    }
-
-
-    IEnumerator ShakeWave() {
-        if (PlayStateMaster.s.isCombatInProgress()) {
-            var curShakePos = 0f;
-
-            var cartCount = carts.Count;
-            var cartLength = DataHolder.s.cartLength;
-            var lastCart = -1;
-            while (curShakePos < cartCount * cartLength) {
-                if(!doShake)
-                    yield break;
-                var curCart = Mathf.FloorToInt(curShakePos / cartLength);
-                curCart = Mathf.Clamp(curCart, 0, cartCount - 1);
-
-                if (curCart != lastCart) {
-                    carts[curCart].transform.localPosition = cartDefPositions[curCart] + new Vector3(
-                        Random.Range(-shakeOffsetMax.x, shakeOffsetMax.x),
-                        Random.Range(-shakeOffsetMax.y, shakeOffsetMax.y),
-                        Random.Range(-shakeOffsetMax.z, shakeOffsetMax.z)
-                    );
-
-                    lastCart = curCart;
-                }
-
-                curShakePos += LevelReferences.s.speed * Time.deltaTime;
-                yield return null;
-            }
-        }
     }
     
-    IEnumerator RestoreWave(float delay) {
+
+    [Header("Train Shake Settings")] 
+    public Vector3 shakeOffsetMax = new Vector3(0.005f, 0.012f, 0.005f);
+    public float distancePerShake = 5f;
+    public Vector3[] shakeOffsets;
+    public bool[] shakeOffsetSet;
+    void DoShake() {
         if (PlayStateMaster.s.isCombatInProgress()) {
-            yield return new WaitForSeconds(delay);
-            
-            var curShakePos = 0f;
-
             var cartCount = carts.Count;
-            var cartLength = DataHolder.s.cartLength;
-            var lastCart = -1;
-            while (curShakePos < cartCount * cartLength) {
-                if(!doShake)
-                    yield break;
-                
-                var curCart = Mathf.FloorToInt(curShakePos / cartLength);
-                curCart = Mathf.Clamp(curCart, 0, cartCount - 1);
+            
+            if (shakeOffsets == null || shakeOffsets.Length != cartCount) {
+                shakeOffsets = new Vector3[cartCount];
+                shakeOffsetSet = new bool[cartCount];
+            }
+            
+            
+            var currentDistance = SpeedController.s.currentDistance;
 
-                if (curCart != lastCart) {
-                    carts[curCart].transform.localPosition = cartDefPositions[curCart];
+            if (currentDistance > 7) {
+                for (int i = 0; i < carts.Count; i++) {
+                    var myCart = carts[i];
+
+                    if (currentDistance % distancePerShake < 1f) {
+                        if (!shakeOffsetSet[i]) {
+                            shakeOffsets[i] = new Vector3(
+                                Random.Range(-shakeOffsetMax.x, shakeOffsetMax.x),
+                                Random.Range(-shakeOffsetMax.y, shakeOffsetMax.y),
+                                Random.Range(-shakeOffsetMax.z, shakeOffsetMax.z)
+                            );
+                            shakeOffsetSet[i] = true;
+                            
+                            carts[i].transform.localPosition += shakeOffsets[i];
+                        }
+
+                    } else {
+                        shakeOffsetSet[i] = false;
+                    }
+
+                    currentDistance += -myCart.length;
                 }
-
-                curShakePos += LevelReferences.s.speed * Time.deltaTime;
-                yield return null;
             }
         }
     }
-
-    public void ResetTrainPosition() {
-        transform.ResetTransformation();
-    }
-
-    public void TrainUpdated() {
-        onTrainCartsChanged?.Invoke();
-    }
-
 
     public void MaxHealthModified() {
         MiniGUI_TrainOverallHealthBar.s.MaxHealthChanged();
@@ -722,126 +577,6 @@ public class Train : MonoBehaviour {
         MiniGUI_TrainOverallHealthBar.s.HealthChanged();
     }
 
-
-    public bool UpdateTrainCartsBasedOnRotation(float rotationStartZ, float rotationEndZ, float maxXOffset, float arcLength, bool isGoingLeft) {// rotation angle is 45 degrees
-        StopShake();
-        shakeBlock = 1f;
-
-
-        bool hasRotatedAtAll = false; // not super accurate
-
-        if (rotationStartZ > 0) { // before we start rotating the ground
-            for (int i = 0; i < carts.Count; i++) {
-                var curCart = carts[i];
-
-                if (curCart.transform.position.z > rotationEndZ) { // pass the curve in the flat area
-                    var pos = curCart.transform.position;
-                    var posDelta = (pos.z - rotationEndZ);
-                    pos.x = 1-Mathf.Cos(45 * Mathf.Deg2Rad);
-                    pos.x *= maxXOffset;
-                    pos.x += posDelta;
-                    pos.x *= (isGoingLeft ? -1 : 1);
-                    
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.Euler(0,45*(isGoingLeft ? -1 : 1),0);
-
-                }else if (curCart.transform.position.z > rotationStartZ) { // in the curve
-                    var pos = curCart.transform.position;
-                    var posDelta = (pos.z - rotationStartZ)/arcLength;
-
-                    var angle = posDelta * 45f;
-                    pos.x = 1-Mathf.Cos(angle * Mathf.Deg2Rad);
-                    pos.x *= maxXOffset;
-                    pos.x *= (isGoingLeft ? -1 : 1);
-
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.Euler(0,angle*(isGoingLeft ? -1 : 1),0);
-
-                    hasRotatedAtAll = true;
-                } // rest of the carts are flat
-            }
-        }else if (rotationEndZ > 0) { // before we stop rotating
-            for (int i = 0; i < carts.Count; i++) {
-                var curCart = carts[i];
-                
-                var pos = curCart.transform.position;
-                var angleDelta = Mathf.Clamp(pos.z, rotationStartZ, rotationEndZ);
-                var angle = (angleDelta/arcLength) * 45f;
-                var absAngle = Mathf.Abs(angle);
-
-                if (pos.z > rotationEndZ) { // pass the curve in the flat area
-                    var posDelta = (pos.z - rotationEndZ);
-                    
-                    pos.x = 1-Mathf.Cos(absAngle * Mathf.Deg2Rad);
-                    pos.x *= maxXOffset;
-                    pos.x += posDelta * (Mathf.Sin(absAngle * Mathf.Deg2Rad)/Mathf.Sin((90-absAngle)*Mathf.Deg2Rad));
-                    pos.x *= (isGoingLeft ? -1 : 1);
-                    
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.Euler(0,angle*(isGoingLeft ? -1 : 1),0);
-
-                }else if (pos.z > rotationStartZ) { // in the curve
-                    
-                    pos.x = Mathf.Abs(1-Mathf.Cos(absAngle * Mathf.Deg2Rad));
-                    pos.x *= maxXOffset;
-                    pos.x *= (isGoingLeft ? -1 : 1);
-                    
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.Euler(0,angle*(isGoingLeft ? -1 : 1),0);
-                } else { // behind the curve
-                    
-                    var posDelta = (rotationStartZ - pos.z);
-                    
-                    pos.x = 1-Mathf.Cos(absAngle * Mathf.Deg2Rad);
-                    pos.x *= maxXOffset;
-                    pos.x += posDelta * (Mathf.Sin(absAngle * Mathf.Deg2Rad)/Mathf.Sin((90-absAngle)*Mathf.Deg2Rad));
-                    pos.x *= (isGoingLeft ? -1 : 1);
-                    
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.Euler(0,angle*(isGoingLeft ? -1 : 1),0);
-                }
-            }
-            
-        } else { // after we stop rotating
-            for (int i = 0; i < carts.Count; i++) {
-                var curCart = carts[i];
-
-                if (curCart.transform.position.z < rotationStartZ) { // pass the curve in the flat area in the waaay back
-                    var pos = curCart.transform.position;
-                    var posDelta = (pos.z - rotationEndZ);
-                    pos.x = 1-Mathf.Cos(45 * Mathf.Deg2Rad);
-                    pos.x *= maxXOffset;
-                    pos.x += posDelta;
-                    pos.x *= (isGoingLeft ? -1 : 1);
-                    
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.Euler(0,45*(isGoingLeft ? -1 : 1),0);
-
-                }else if (curCart.transform.position.z < rotationEndZ) { // in the curve
-                    var pos = curCart.transform.position;
-                    var posDelta = (pos.z - rotationEndZ)/arcLength;
-
-                    var angle = posDelta * 45f;
-                    pos.x = 1-Mathf.Cos(angle * Mathf.Deg2Rad);
-                    pos.x *= maxXOffset;
-                    pos.x *= (isGoingLeft ? -1 : 1);
-
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.Euler(0,angle*(isGoingLeft ? -1 : 1),0);
-                } else {// rest of the carts are flat
-                    var pos = curCart.transform.position;
-                    pos.x = 0;
-
-                    curCart.transform.position = pos;
-                    curCart.transform.rotation = Quaternion.identity;
-                } 
-            }
-        }
-
-        return hasRotatedAtAll;
-    }
-
-
     public Cart GetNextBuilding(int amount, Cart cart) {
         var nextCart = cart.trainIndex - amount;
         if (nextCart >= 0 && nextCart < carts.Count) {
@@ -850,82 +585,18 @@ public class Train : MonoBehaviour {
             return null;
         }
     }
-}
-
-public abstract class ActivateWhenAttachedToTrain : MonoBehaviour {
-
-    [ShowIf("spawnAttachmentThings")]
-    public Transform attachmentThingParent;
-    [ShowIf("spawnAttachmentThings")]
-    public GameObject attachmentThing;
-    [ShowIf("spawnAttachmentThings")]
-    public List<GameObject> attachmentThings = new List<GameObject>();
-
-    public bool isAttached = false;
-
-    public bool spawnAttachmentThings = true;
-
-    public void AttachedToTrain() {
-        if (isAttached == false) {
-            isAttached = true;
-            
-            _AttachedToTrain();
-        }
-    }
-
-    protected abstract void _AttachedToTrain();
-
-    protected abstract bool CanApply(Cart target);
-
-    protected void ApplyBoost(Cart target, bool doApply) {
-        if(target == null)
-            return;
-        if (CanApply(target)) {
-            if (doApply) {
-                if(spawnAttachmentThings)
-                    attachmentThings.Add(
-                        Instantiate(attachmentThing, attachmentThingParent).GetComponent<AttachmentThingScript>().SetUp(GetComponentInParent<Cart>(), target)
-                    );
-                _ApplyBoost(target, doApply);
-            } else {
-                _ApplyBoost(target, doApply);
-            }
-        }
-    }
-
-    protected abstract void _ApplyBoost(Cart target, bool doApply);
-
-    public void DetachedFromTrain() {
-        if (isAttached == true) {
-            isAttached = false;
-			
-            DeleteAllAttachments();
-
-            _DetachedFromTrain();
-        }
-    }
     
     
-    protected abstract void _DetachedFromTrain();
-	
-    void DeleteAllAttachments() {
-        for (int i = 0; i < attachmentThings.Count; i++) {
-            if (attachmentThings[i] != null) {
-                Destroy(attachmentThings[i]);
-            }
+    
+
+    public DataSaver.TrainState minimumTrain;
+    public List<DataSaver.TrainState.CartState> minimumTrainLastCarts = new List<DataSaver.TrainState.CartState>();
+    public void CheckSetMinimumTrain() {
+        var saveData = DataSaver.s.GetCurrentSave();
+
+        if (saveData.myTrain == null || saveData.myTrain.myCarts.Count <= 3) {
+            saveData.myTrain = minimumTrain;
+            saveData.myTrain.myCarts.Add(minimumTrainLastCarts[Random.Range(0, minimumTrainLastCarts.Count)]);
         }
-        
-        attachmentThings.Clear();
-    }
-
-    private void OnDestroy() {
-        DeleteAllAttachments();
     }
 }
-
-public interface IBooster {
-    public void ModifyStats(int range, float value);
-    public int GetRange();
-    public Color GetColor();
-}
-

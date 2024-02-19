@@ -7,23 +7,14 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Cart : MonoBehaviour {
+public class Cart : MonoBehaviour, IPlayerHoldable {
     public bool isMainEngine = false;
     public bool isCargo = false;
 
-    public Artifact myAttachedArtifact;
-
-    public Transform artifactParent;
-    public bool canAcceptComponentArtifact = false;
-    public Transform artifactChunkTransform;
+    public List<SnapLocation> myArtifactLocations = new List<SnapLocation>();
     
     public bool isBeingDisabled = false;
     public int trainIndex;
-
-    public bool isFragile = false;
-    public bool isSturdy = false;
-
-    public UpgradesController.CartLocation myLocation = UpgradesController.CartLocation.train;
 
     public float length = 1.4f;
     [HideInInspector]
@@ -52,7 +43,7 @@ public class Cart : MonoBehaviour {
     }
 
 
-    public Material cartOverlayMaterial;
+    private Material cartOverlayMaterial;
 
     public Transform genericParticlesParent;
     
@@ -60,18 +51,17 @@ public class Cart : MonoBehaviour {
         SetUpOverlays();
         SetUpOutlines();
         genericParticlesParent.DeleteAllChildren();
-        var level = 0;
-        GetHealthModule().ResetState(level);
-        
-        artifactChunkTransform.DeleteAllChildren();
+        GetHealthModule().ResetState();
 
-        if (myAttachedArtifact != null) {
-            myAttachedArtifact.ResetState();
+        for (int i = 0; i < myArtifactLocations.Count; i++) {
+            if (!myArtifactLocations[i].IsEmpty()) { 
+                myArtifactLocations[i].GetSnappedObject().GetComponent<Artifact>().ResetState();
+            }
         }
         
         var modulesWithResetStates = GetComponentsInChildren<IResetState>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
-            modulesWithResetStates[i].ResetState(level); // level goes 0, 1, 2
+            modulesWithResetStates[i].ResetState(); // level goes 0, 1, 2
         }
     }
 
@@ -83,26 +73,23 @@ public class Cart : MonoBehaviour {
 
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
-                if (isSturdy) {
-                    engineModule.OnEngineLowPower?.Invoke(true);
-                    engineModule.isHalfPower = true;
-                } else {
-                    engineModule.enabled = false;
-                    GetComponentInChildren<EngineFireController>().StopEngineFire();
-                }
+                engineModule.OnEngineLowPower?.Invoke(true);
+                engineModule.isHalfPower = true;
             }
 
             var gunModules = GetComponentsInChildren<GunModule>();
             for (int i = 0; i < gunModules.Length; i++) {
                 gunModules[i].DeactivateGun();
             
-                if (gunModules[i].beingDirectControlled) {
-                    DirectControlMaster.s.DisableDirectControl();
-                } 
-            
                 if(GetComponentInChildren<TargetPicker>()){
                     GetComponentInChildren<TargetPicker>().enabled = false;
                 }
+            }
+
+            var directControlModule = GetComponentInChildren<IDirectControllable>();
+            if (directControlModule != null) {
+                if(DirectControlMaster.s.directControlInProgress && directControlModule == DirectControlMaster.s.currentDirectControllable)
+                    DirectControlMaster.s.DisableDirectControl();
             }
         
             /*var attachedToTrain = GetComponentsInChildren<ActivateWhenAttachedToTrain>();
@@ -114,14 +101,9 @@ public class Cart : MonoBehaviour {
             var duringCombat = GetComponentsInChildren<IActiveDuringCombat>();
 
             for (int i = 0; i < duringCombat.Length; i++) {
-                if (isSturdy) {
-                    if (!(duringCombat is EngineModule)) {//dont disable engine mod if sturdy
-                        duringCombat[i].Disable();
-                    } 
-                } else {
-                    
+                if (!(duringCombat is EngineModule)) {//dont disable engine mod if sturdy
                     duringCombat[i].Disable();
-                }
+                } 
             }
         } else {
             GetComponent<PossibleTarget>().enabled = true;
@@ -176,6 +158,16 @@ public class Cart : MonoBehaviour {
         return uiTargetTransform;
     }
 
+    public void SetHoldingState(bool state) {
+        if (state) {
+            GetComponent<Rigidbody>().isKinematic = true;
+            GetComponent<Rigidbody>().useGravity = false;
+        } else {
+            GetComponent<Rigidbody>().isKinematic = false;
+            GetComponent<Rigidbody>().useGravity = true;
+        }
+    }
+
     public void SetComponentCombatShopMode() {
         var duringCombat = GetComponentsInChildren<IActiveDuringCombat>();
         var duringShopping = GetComponentsInChildren<IActiveDuringShopping>();
@@ -201,7 +193,7 @@ public class Cart : MonoBehaviour {
             Destroy(cartOverlayMaterial);
         }
 
-        if(GetComponentInParent<Train>() != null)
+        if(IsAttachedToTrain())
             Train.s.CartDestroyed(this);
         
         if(currentlyRepairingUIThing != null)
@@ -228,7 +220,7 @@ public class Cart : MonoBehaviour {
 
     public void SetUpOverlays() {
         if (_meshes == null || _meshes.Length == 0) {
-            cartOverlayMaterial = Instantiate(cartOverlayMaterial);
+            cartOverlayMaterial = Instantiate(LevelReferences.s.cartOverlayMaterial);
             
             _meshes = GetComponentsInChildren<MeshRenderer>(true);
 
@@ -272,15 +264,8 @@ public class Cart : MonoBehaviour {
         GetComponent<ModuleHealth>().SetHealth(health);
     }
 
-    public void SetAttachedToTrainModulesMode(bool isAttached) {
-        var attachedToTrain = GetComponentsInChildren<ActivateWhenAttachedToTrain>();
-        for (int i = 0; i < attachedToTrain.Length; i++) {
-            if (isAttached && !isDestroyed) {
-                attachedToTrain[i].AttachedToTrain();
-            } else {
-                attachedToTrain[i].DetachedFromTrain();
-            }
-        }
+    public bool IsAttachedToTrain() {
+        return GetComponentInParent<Train>() != null;
     }
 }
 
@@ -296,5 +281,5 @@ public interface IActiveDuringShopping {
 
 
 public interface IResetState {
-    public void ResetState(int level);
+    public void ResetState();
 }

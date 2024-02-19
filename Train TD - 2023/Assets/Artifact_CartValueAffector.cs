@@ -16,7 +16,6 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
     public bool glassCart = false;
     public bool canHaveNoShields = false;
     public bool reflectiveShields = false;
-    public bool luckyCart = false;
     
     public float addShieldAsHpPercent = 0f;
     public float addShieldAmount = 0;
@@ -24,7 +23,6 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
     public float currentAddShieldAmount = 0;
     public float addShieldAmountPerLevel = 0;
     public float healthMultiplier = 1;
-    public float shieldDecayMultiplier = 1f;
     public float fireDecayRateMultiplier = 1f;
 
     [Space]
@@ -38,17 +36,6 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
 
     public float addFireDamage = 0;
     public float addExplosionRange = 0;
-    [Space]
-    
-
-    public int boosterRangeModification = 0;
-    public float boosterEffectMultiplier = 1;
-    [Space]
-
-    public float repairEfficiency = 1;
-    public float reloadEfficiency = 1;
-    public float shieldUpEfficiency = 1;
-    
 
     protected override void _Arm() {
         var targets = new List<Cart>();
@@ -114,20 +101,12 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
                 if(reflectiveShields)
                     healthModule.reflectiveShields = reflectiveShields;
 
-                if (luckyCart)
-                    healthModule.luckyCart = luckyCart;
-
                 healthModule.burnReductionMultiplier *= fireDecayRateMultiplier;
-
-                healthModule.repairEfficiency += repairEfficiency - 1;
-                healthModule.shieldUpEfficiency += shieldUpEfficiency - 1;
-                healthModule.shieldDecayMultiplier *= shieldDecayMultiplier;
             }
 
             var moduleAmmo = cart.GetComponentInChildren<ModuleAmmo>();
             if (moduleAmmo != null) {
                 moduleAmmo.ChangeMaxAmmo(ammoMultiplier-1);
-                moduleAmmo.reloadEfficiency += reloadEfficiency - 1;
             }
             
             foreach (var gunModule in cart.GetComponentsInChildren<GunModule>()) {
@@ -147,10 +126,6 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
                     gunModule.isHoming = true;
 
                 gunModule.explosionRangeBoost += addExplosionRange;
-            }
-
-            foreach (var booster in cart.GetComponentsInChildren<IBooster>()) {
-                booster.ModifyStats(boosterRangeModification, boosterEffectMultiplier-1f);
             }
         }
     }

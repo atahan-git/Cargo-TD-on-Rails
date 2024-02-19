@@ -141,9 +141,6 @@ public class MissionWinFinisher : MonoBehaviour {
 			scriptsToDisable[i].enabled = true;
 		}
 
-		
-		UpgradesController.s.UpdateCargoHighlights();
-		
 		PlayStateMaster.s.EnterMissionRewardArea();
 
 		Invoke(nameof(SplitSecondLater), 0.05f);

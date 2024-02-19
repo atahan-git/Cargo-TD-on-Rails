@@ -345,7 +345,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i];
             var legalCartType = !cart.GetHealthModule().invincible;
-            var hasDirectControl = cart.GetComponentInChildren<DirectControllable>() != null;
+            var hasDirectControl = cart.GetComponentInChildren<IDirectControllable>() != null;
             if (!cart.isDestroyed && legalCartType && !cart.isBeingDisabled && !hasDirectControl) {
                 carts.Add(cart);
             }
@@ -378,7 +378,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i];
             var legalCartType = !cart.isCargo && !cart.isMainEngine;
-            var hasDirectControl = cart.GetComponentInChildren<DirectControllable>() != null;
+            var hasDirectControl = cart.GetComponentInChildren<IDirectControllable>() != null;
             if (!cart.isDestroyed && legalCartType && !cart.isBeingDisabled && !hasDirectControl) {
                 carts.Add(cart);
             }

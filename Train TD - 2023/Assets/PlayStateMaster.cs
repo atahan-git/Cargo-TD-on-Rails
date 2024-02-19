@@ -43,7 +43,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
 
         //OnShopEntered.AddListener(SpeedController.s.ResetDistance);
-        OnShopEntered.AddListener(MissionLoseFinisher.s.CheckMinimumTrain);
+        OnShopEntered.AddListener(Train.s.CheckSetMinimumTrain);
         OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
         OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
         //OnShopEntered.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
@@ -71,9 +71,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatFinished.AddListener(TimeController.s.OnCombatEnd);
         OnCombatFinished.AddListener(FirstTimeTutorialController.s.OnFinishCombat);
         OnCombatFinished.AddListener(EncounterController.s.ResetEncounter);
-        OnCombatFinished.AddListener(SpeedController.s.OnCombatFinished);
         OnCombatFinished.AddListener(ArtifactsController.s.OnAfterCombat);
-        OnCombatFinished.AddListener(Train.s.OnLeaveCombat);
         OnCombatFinished.AddListener(PlayerWorldInteractionController.s.OnLeaveCombat);
         
         OnEnterMissionRewardArea.AddListener(VignetteController.s.ResetVignette);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FullSerializer;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 
 [Serializable]
@@ -255,17 +256,11 @@ public class DataSaver {
 			[HideInInspector]
 			public int health = -1;
 			[HideInInspector]
-			public int ammo = -1;/*
-			[HideInInspector]
-			public bool isFire = false;
-			[HideInInspector]
-			public bool isSticky = false;
-			[HideInInspector]
-			public bool isExplosive = false;*/
+			public int ammo = -1;
 
 			public CargoState cargoState;
 
-			public ArtifactState attachedArtifact = new ArtifactState();
+			public List<ArtifactState> attachedArtifacts = new List<ArtifactState>();
 			
 			[Serializable]
 			public class CargoState { // dont forget to update the copy function
@@ -280,13 +275,7 @@ public class DataSaver {
 				public bool isLeftCargo;
 				
 				private static IEnumerable GetAllModuleNames() {
-					var buildings = GameObject.FindObjectOfType<DataHolder>().buildings;
-					var buildingNames = new List<string>();
-					buildingNames.Add("");
-					for (int i = 0; i < buildings.Length; i++) {
-						buildingNames.Add(buildings[i].uniqueName);
-					}
-					return buildingNames;
+					return GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
 				}
 
 				public static CargoState GetStateFromModule(CargoModule module) {
@@ -307,22 +296,11 @@ public class DataSaver {
 				uniqueName = "";
 				health = -1;
 				ammo = -1;
-				/*isFire = false;
-				isSticky = false;
-				isExplosive = false;*/
-				attachedArtifact = new ArtifactState();
-				/*cargoCost = -1;
-				cargoReward = -1;*/
+				attachedArtifacts = new List<ArtifactState>();
 			}
 			
 			private static IEnumerable GetAllModuleNames() {
-				var buildings = GameObject.FindObjectOfType<DataHolder>().buildings;
-				var buildingNames = new List<string>();
-				buildingNames.Add("");
-				for (int i = 0; i < buildings.Length; i++) {
-					buildingNames.Add(buildings[i].uniqueName);
-				}
-				return buildingNames;
+				return GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
 			}
 			
 			private static IEnumerable GetAllArtifactNames() {
@@ -333,19 +311,6 @@ public class DataSaver {
 					artifactNames.Add(artifacts[i].uniqueName);
 				}
 				return artifactNames;
-			}
-
-			public CartState Copy() {
-				var copyState = new CartState();
-				copyState.uniqueName = uniqueName;
-				copyState.health = health;
-				copyState.ammo = ammo;
-				/*copyState.isFire = isFire;
-				copyState.isSticky = isSticky;
-				copyState.isExplosive = isExplosive;*/
-				copyState.attachedArtifact = attachedArtifact;
-				copyState.cargoState = new CargoState(cargoState.cargoReward, cargoState.artifactReward, cargoState.isLeftCargo, cargoState.cargoLevel, cargoState.artifactLevel);
-				return copyState;
 			}
 		}
 
@@ -368,16 +333,6 @@ public class DataSaver {
 				uniqueName = "";
 				level = 0;
 			}
-		}
-
-		public TrainState Copy() {
-			var copyState = new TrainState();
-
-			for (int i = 0; i < myCarts.Count; i++) {
-				copyState.myCarts.Add(myCarts[i].Copy());
-			}
-
-			return copyState;
 		}
 	}
 }
