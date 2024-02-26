@@ -48,7 +48,7 @@ public class BuildingScrapperController : MonoBehaviour
         }
 
         if (didUpgrade) {
-            Train.s.CartOrArtifactUpgraded();
+            Train.s.TrainChanged();
         }
     }
 

@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DroneRepairController : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
+public class DroneRepairController : MonoBehaviour {
+
+    public Transform droneDockedPosition;
+    public GameObject drone;
+    public bool beingDirectControlled = false;
+    public void ActivateAutoDrone() {
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    public void DisableAutoDrone() {
         
     }
 }

@@ -79,6 +79,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public Color reloadColor = Color.yellow;
     public Color directControlColor = Color.magenta;
     public Color engineBoostColor = Color.red;
+    public Color repairColor = Color.green;
     public Color enemyColor = Color.white;
     public Color meepleColor = Color.white;
 

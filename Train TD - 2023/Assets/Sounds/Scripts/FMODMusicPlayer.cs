@@ -103,7 +103,7 @@ public class FMODMusicPlayer : MonoBehaviour
             Debug.LogError("FMODMusicPlayer should be a singleton class, but multiple instances are found!");
         s = this;
 
-        currentDynamicGameMusic = dynamicGameMusicList[Random.Range(0, dynamicGameMusicList.Count + 1)];
+        currentDynamicGameMusic = dynamicGameMusicList[Random.Range(0, dynamicGameMusicList.Count)];
     }
 
     private void Start()

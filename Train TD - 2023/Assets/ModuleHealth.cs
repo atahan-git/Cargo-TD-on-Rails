@@ -455,7 +455,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     void SelfDamage() {
         var myModule = GetComponent<Cart>();
 
-        var multiplier = TweakablesMaster.s.myTweakables.engineOverloadDamageMultiplier;
+        var multiplier = 1;
         DealDamage(selfDamageAmounts[0] * multiplier);
         var prefab = LevelReferences.s.smallDamagePrefab;
         Instantiate(prefab, transform.position, Quaternion.identity);

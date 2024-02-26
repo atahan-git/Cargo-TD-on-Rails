@@ -20,11 +20,12 @@ public class DirectControlMaster : MonoBehaviour {
 		hitAud = GetComponent<AudioSource>();
 	}
 
+	[Header("Input")]
 	public InputActionReference cancelDirectControlAction;
 	public InputActionReference directControlShootAction;
-
-	[Space]
 	public IDirectControllable currentDirectControllable;
+
+	[Header("Shooting")]
 	public GameObject exitToReload;
 
 	private AudioSource hitAud;
@@ -33,13 +34,43 @@ public class DirectControlMaster : MonoBehaviour {
 	public Slider ammoSlider;
 	public Slider gatlinificationSlider;
 	public Image fadeToBlackImage;
+	
+	public float directControlFirerateMultiplier = 2f;
+	public float directControlDamageMultiplier = 2f;
+	public float directControlAmmoUseMultiplier = 0.5f;
 
-	[Space] public GameObject ammo_perfect;
+	public GameObject isFire;
+	public GameObject isExplosive;
+	public GameObject isSticky;
+	
+	
+	public LayerMask gunLookMask;
+
+	public Image gunCrosshair;
+	public GameObject rocketCrosshairEverything;
+	public Image rocketCrosshairMain;
+	public Image rocketCrosshairLock;
+	public TMP_Text rocketLockStatus;
+	
+	
+	public enum GunMode {
+		Gun, LockOn
+	}
+
+	public TMP_Text sniperAmount;
+	
+	[Header("Ammo")]
+	public GameObject ammo_perfect;
 	public GameObject ammo_good;
 	public GameObject ammo_full;
 	public GameObject ammo_fail;
+
+	[Header("Repair")]
+	public Image validRepairImage;
+	public Slider repairingSlider;
+	public LayerMask repairLookMask;
 	
-	[Space]
+	[Header("UI")]
 	public GameObject masterDirectControlUI;
 	
 	public GameObject gunCrosshairsUI;
@@ -47,13 +78,13 @@ public class DirectControlMaster : MonoBehaviour {
 	public GameObject shieldMoveUI;
 	public GameObject repairControlUI;
 	public GameObject trainEngineControlUI;
-	[Space]
+	
+	[Header("Shared")]
+	public float directControlLock = 0;
+	public bool enterDirectControlShootLock = false;
 
 	public bool directControlInProgress = false;
 
-	public float directControlFirerateMultiplier = 2f;
-	public float directControlDamageMultiplier = 2f;
-	public float directControlAmmoUseMultiplier = 0.5f;
 	
 	private void OnEnable() {
 		cancelDirectControlAction.action.Enable();
@@ -67,12 +98,7 @@ public class DirectControlMaster : MonoBehaviour {
 		cancelDirectControlAction.action.performed -= DisableDirectControl;
 	}
 
-	public float directControlLock = 0;
-	public bool enterDirectControlShootLock = false;
 
-	public GameObject isFire;
-	public GameObject isExplosive;
-	public GameObject isSticky;
 	public void AssumeDirectControl(IDirectControllable source) {
 		if (!directControlInProgress && directControlLock <= 0) {
 			currentDirectControllable = source;
@@ -118,19 +144,7 @@ public class DirectControlMaster : MonoBehaviour {
 		DisableDirectControl(new InputAction.CallbackContext());
 	}
 
-	public LayerMask lookMask;
-
-	public Image gunCrosshair;
-	public GameObject rocketCrosshairEverything;
-	public Image rocketCrosshairMain;
-	public Image rocketCrosshairLock;
-	public TMP_Text rocketLockStatus;
 	
-	public enum DirectControlMode {
-		Gun, LockOn
-	}
-
-	public TMP_Text sniperAmount;
 	private void Update() {
 		if (directControlInProgress && !Pauser.s.isPaused) {
 			currentDirectControllable.UpdateDirectControl();

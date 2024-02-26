@@ -81,7 +81,7 @@ public class Train : MonoBehaviour {
         
         isTrainDrawn = true;
         
-        Invoke(nameof(ArtifactsChanged),0.01f);
+        Invoke(nameof(TrainChanged),0.01f);
 
         onTrainCartsChanged?.Invoke();
     }
@@ -489,18 +489,13 @@ public class Train : MonoBehaviour {
         onTrainCartsChanged?.Invoke();
     }
 
-    public void ArtifactsChanged() {
+    public void TrainChanged() {
         if (isTrainDrawn) {
             ArtifactsController.s.ArtifactsChanged();
             UpdateThingsAffectingOtherThings(false);
             UpdateThingsAffectingOtherThings(true);
             CheckHealth();
         }
-    }
-
-    public void CartOrArtifactUpgraded() {
-        UpdateThingsAffectingOtherThings(false);
-        UpdateThingsAffectingOtherThings(true);
     }
 
     public void SwapCarts(Cart cart1, Cart cart2) {

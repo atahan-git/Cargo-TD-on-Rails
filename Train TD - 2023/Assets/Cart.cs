@@ -138,7 +138,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
             }
         }
         
-        Train.s.ArtifactsChanged();
+        Train.s.TrainChanged();
 
     }
 

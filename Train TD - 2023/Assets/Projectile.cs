@@ -383,9 +383,9 @@ public class Projectile : MonoBehaviour {
         if (health != null) {
             DealDamage(health);
             
-            GameObject miniHitPrefab = LevelReferences.s.mortarMiniHitPrefab;
+            /*GameObject miniHitPrefab = LevelReferences.s.mortarMiniHitPrefab;
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            Instantiate(miniHitPrefab, closestPoint, Quaternion.identity);
+            Instantiate(miniHitPrefab, closestPoint, Quaternion.identity);*/
         }
     }
 
@@ -557,14 +557,14 @@ public class Projectile : MonoBehaviour {
             } else if (isHeal) {
                 target.Repair(dmg);
             } else {
-                if (dmg > 0) {
+                if (dmg > 1) {
                     target.DealDamage(dmg);
                     Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                         .GetComponent<MiniGUI_DamageNumber>()
                         .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
                 }
 
-                if (burnDamage > 0) {
+                if (burnDamage > 1) {
                     target.BurnDamage(burnDamage);
                     Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                         .GetComponent<MiniGUI_DamageNumber>()

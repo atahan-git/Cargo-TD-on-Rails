@@ -73,7 +73,9 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float fireRateMultiplier = 1f; // higher means GOOD
     public float fireRateDivider = 1f; // higher means BAD
     public float GetFireBarrageDelay() { return fireBarrageDelay * GetAttackSpeedMultiplier();}
+    [Tooltip("beware that if damage is less than 1 then damage numbers won't show up")]
     public float projectileDamage = 2f; // dont use this
+    [Tooltip("beware that if burn damage is less than 1 then damage numbers won't show up")]
     public float burnDamage = 0; // dont use this
     public float bonusBurnDamage = 0;
     public float damageMultiplier = 1f;
@@ -304,6 +306,9 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
         if (isPlayer) {
             boost /= TweakablesMaster.s.myTweakables.playerFirerateBoost;
+            if (beingDirectControlled) {
+                boost /= directControlFirerateMultiplier;
+            }
         } else {
             boost /= TweakablesMaster.s.myTweakables.enemyFirerateBoost;
         }
@@ -318,6 +323,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
             dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().damageUpgradesBought * 0.2f);
             dmgMul *= sniperDamageMultiplier;
+
+            if (beingDirectControlled) {
+                dmgMul *= directControlDamageMultiplier;
+            }
+            
         } else {
             dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
         }
@@ -331,12 +341,31 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
             dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().damageUpgradesBought * 0.2f);
+            dmgMul *= sniperDamageMultiplier;
+            
+            if (beingDirectControlled) {
+                dmgMul *= directControlDamageMultiplier;
+            }
+            
         } else {
             dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
         }
         
 
         return dmgMul;
+    }
+    
+    float AmmoUseWithMultipliers() {
+        var ammoUse = ammoPerBarrage * ammoPerBarrageMultiplier;
+
+        if (beingDirectControlled)
+            ammoUse *= directControlAmmoUseMultiplier;
+
+        if (isPlayer) {
+            ammoUse *= TweakablesMaster.s.myTweakables.playerAmmoUseMultiplier;
+        }
+
+        return ammoUse;
     }
 
 
@@ -483,19 +512,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             //yield return new WaitForSeconds(GetFireBarrageDelay());
         }
     }
-    
-    float AmmoUseWithMultipliers() {
-        var ammoUse = ammoPerBarrage * ammoPerBarrageMultiplier;
 
-        /*if (myGunModule.beingDirectControlled)
-            ammoUse /= DirectControlMaster.s.directControlAmmoConservationBoost;*/
 
-        //ammoUse /= TweakablesMaster.s.myTweakables.playerMagazineSizeMultiplier;
-
-        return ammoUse;
-    }
-
-    
     public bool gotShootCredits = false;
     public bool needShootCredits = false;
     public float shootCreditsUse = 1f;

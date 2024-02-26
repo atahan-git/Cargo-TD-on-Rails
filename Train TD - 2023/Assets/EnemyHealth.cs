@@ -112,7 +112,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 			
 		}else if (activeBurnEffects.Count < targetBurnEffectCount) {
 
-			var n = 5;
+			var n = 10;
 			while (activeBurnEffects.Count < targetBurnEffectCount && n > 0) {
 				var randomOnCircle = Random.insideUnitCircle * totalSize;
 				var rayOrigin = transform.position + Vector3.up * 2 + new Vector3(randomOnCircle.x, 0, randomOnCircle.y);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
@@ -6,7 +7,37 @@ using UnityEngine;
 public class TrainTerrainData : MonoBehaviour {
    public TerrainGenerator.TrainTerrain data = new TerrainGenerator.TrainTerrain();
    public bool isInitialized = false;
+   
+   private void Start() {
+      if(!isInitialized)
+         InitializeData();
+   }
 
+
+   public void InitializeData() {
+      var terrain = GetComponent<Terrain>();
+      var gridSize = TerrainGenerator.gridSize;
+      var detailGridSize = terrain.terrainData.detailWidth;
+      terrain.terrainData = TerrainDataCloner.Clone(terrain.terrainData);
+      /*var terrainInformation = new TrainTerrain() {
+          coordinates = coordinates,
+          bounds =  new Bounds(),
+          /*positionMap = new Vector3[gridSize, gridSize],#1#
+          distanceMap = new float[gridSize, gridSize],
+          heightmap = new float[gridSize, gridSize],
+          pathAndTerrainGenerator =  GetComponent<PathAndTerrainGenerator>(),
+          terrain = terrain,
+          needToBePurged =  false
+      };*/
+      data.distanceMap = new float[gridSize, gridSize];
+      data.heightmap = new float[gridSize, gridSize];
+      data.terrain = terrain;
+      data.pathAndTerrainGenerator = PathAndTerrainGenerator.s;
+      data.detailmap0 = new int[detailGridSize, detailGridSize];
+      data.detailmap1 = new int[detailGridSize, detailGridSize];
+
+      isInitialized = true;
+   }
 
    [Button]
    public void DebugPrintDetailMaps() {

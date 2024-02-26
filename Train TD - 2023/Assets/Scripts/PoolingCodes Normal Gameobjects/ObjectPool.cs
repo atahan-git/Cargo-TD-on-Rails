@@ -43,6 +43,9 @@ public class ObjectPool : MonoBehaviour {
 	GameObject[] objs;
 	Queue<int> activeIds = new Queue<int>();
 
+	public GameObject[] GetAllObjs() {
+		return objs;
+	}
 
 	public void RePopulateWithNewObject(GameObject obj) {
 		if (myObject != obj || !setUpAtLeastOnce) {

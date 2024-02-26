@@ -60,6 +60,12 @@ public class CheatsController : MonoBehaviour
                   || everyPathIsEncounter  || setInstantEnterShopAnimation || overrideTrainState)
                 Debug.LogError("Debug options active! See _CheatsController for more info");
 
+
+            var tweakables = TweakablesMaster.s.myTweakables;
+            if (tweakables.enemyDamageMultiplier != 1 || tweakables.enemyFirerateBoost != 1 || tweakables.playerDamageMultiplier != 1 || tweakables.playerFirerateBoost != 1 || tweakables.playerAmmoUseMultiplier != 1) {
+                Debug.Log("Tweakables values not all zero. Beware numbers not matching");
+            }
+
             //LevelArchetypeScriptable.everyPathEncounterCheat = everyPathIsEncounter;
 
             if (overrideTrainState) {

@@ -64,7 +64,7 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
             UpgradesController.s.RemoveArtifactFromShop(this, doSave);
             
             if(doTriggerChange && newCart.IsAttachedToTrain())
-                newCart.GetComponentInParent<Train>().ArtifactsChanged();
+                newCart.GetComponentInParent<Train>().TrainChanged();
             
             
             attachedToCartPart.SetActive(true);
@@ -88,7 +88,7 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
 
 
         if (oldCart != null) {
-            Train.s.ArtifactsChanged();
+            Train.s.TrainChanged();
         }
 
         isAttached = false;

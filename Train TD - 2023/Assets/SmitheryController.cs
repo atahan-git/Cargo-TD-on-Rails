@@ -141,7 +141,7 @@ public class SmitheryController : MonoBehaviour
         }*/
 
 
-        Train.s.CartOrArtifactUpgraded();
+        Train.s.TrainChanged();
     }
 
     void SetColliderStatus(GameObject target, bool status) {

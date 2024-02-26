@@ -87,6 +87,15 @@ public class TerrainGenerator : MonoBehaviour
         var terrainCount = (int)Mathf.Pow( viewCount,2);
         
         terrainPool.ExpandPoolToSize(Mathf.CeilToInt(terrainCount * 1.35f));
+
+        var allTerrains = terrainPool.GetAllObjs();
+        
+        for (int i = 0; i < allTerrains.Length; i++) {
+            var trainTerrainData = allTerrains[i].GetComponent<TrainTerrainData>();
+            if (!trainTerrainData.isInitialized) {
+                trainTerrainData.InitializeData();
+            }
+        }
     }
 
     public void MakeTerrainDistanceMaps(Vector2Int coordinates, Vector3 currentOffset, List<PathGenerator.TrainPath> paths, Action completeCallback) {
@@ -99,29 +108,10 @@ public class TerrainGenerator : MonoBehaviour
         var terrainInformation = trainTerrainData.data;
         terrain.gameObject.name = $"Terrain {coordinates.x}, {coordinates.y}";
         
-        
         detailGridSize = terrain.terrainData.detailWidth;
         
         if (!trainTerrainData.isInitialized) {
-            terrain.terrainData = TerrainDataCloner.Clone(terrain.terrainData);
-            /*var terrainInformation = new TrainTerrain() {
-                coordinates = coordinates,
-                bounds =  new Bounds(),
-                /*positionMap = new Vector3[gridSize, gridSize],#1#
-                distanceMap = new float[gridSize, gridSize],
-                heightmap = new float[gridSize, gridSize],
-                pathAndTerrainGenerator =  GetComponent<PathAndTerrainGenerator>(),
-                terrain = terrain,
-                needToBePurged =  false
-            };*/
-            terrainInformation.distanceMap = new float[gridSize, gridSize];
-            terrainInformation.heightmap = new float[gridSize, gridSize];
-            terrainInformation.terrain = terrain;
-            terrainInformation.pathAndTerrainGenerator = GetComponent<PathAndTerrainGenerator>();
-            terrainInformation.detailmap0 = new int[detailGridSize, detailGridSize];
-            terrainInformation.detailmap1 = new int[detailGridSize, detailGridSize];
-
-            trainTerrainData.isInitialized = true;
+            trainTerrainData.InitializeData();
         }
 
         terrainInformation.coordinates = coordinates;
@@ -129,7 +119,6 @@ public class TerrainGenerator : MonoBehaviour
         terrainInformation.topLeftPos = new Vector3(coordinates.x*terrainWidth - terrainWidth/2f, 0 ,coordinates.y*terrainWidth - terrainWidth/2f) + currentOffset;
         terrainInformation.bounds.SetMinMax(terrainInformation.topLeftPos, terrainInformation.topLeftPos + new Vector3(terrainWidth,10,terrainWidth));
         terrain.transform.position= terrainInformation.topLeftPos;
-        
 
         ResetPostAndDistMap(terrainInformation);
         ImprintNeighborEdges(terrainInformation);

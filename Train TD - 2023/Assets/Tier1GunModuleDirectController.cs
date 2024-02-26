@@ -84,15 +84,15 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 
 		CameraShakeController.s.rotationalShake = true;
 
-		currentMode = myActiveGun.isLockOn ? DirectControlMaster.DirectControlMode.LockOn : DirectControlMaster.DirectControlMode.Gun;
+		currentMode = myActiveGun.isLockOn ? DirectControlMaster.GunMode.LockOn : DirectControlMaster.GunMode.Gun;
 		
 		switch (currentMode) {
-			case DirectControlMaster.DirectControlMode.Gun:
+			case DirectControlMaster.GunMode.Gun:
 				gunCrosshair.gameObject.SetActive(true);
 				rocketCrosshairEverything.gameObject.SetActive(false);
 				CameraController.s.velocityAdjustment = true;
 				break;
-			case DirectControlMaster.DirectControlMode.LockOn:
+			case DirectControlMaster.GunMode.LockOn:
 				gunCrosshair.gameObject.SetActive(false);
 				rocketCrosshairEverything.gameObject.SetActive(true);
 				CameraController.s.velocityAdjustment = false;
@@ -167,7 +167,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		}
 	}
 
-	public LayerMask lookMask => DirectControlMaster.s.lookMask;
+	public LayerMask gunLookMask => DirectControlMaster.s.gunLookMask;
 
 	public Image gunCrosshair => DirectControlMaster.s.gunCrosshair;
 	public GameObject rocketCrosshairEverything => DirectControlMaster.s.rocketCrosshairEverything;
@@ -182,7 +182,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 	private float onHitAlpha = 0f;
 	public float onHitAlphaDecay = 2f;
 
-	public DirectControlMaster.DirectControlMode currentMode;
+	public DirectControlMaster.GunMode currentMode;
 
 	private bool reticleIsGreen = false;
 	public TMP_Text sniperAmount => DirectControlMaster.s.sniperAmount;
@@ -213,7 +213,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		RaycastHit hit;
 		bool didHit = false;
 
-		if (Physics.Raycast(ray, out hit, 30, lookMask)) {
+		if (Physics.Raycast(ray, out hit, 30, gunLookMask)) {
 			myActiveGun.LookAtLocation(hit.point);
 			didHit = true;
 			//Debug.DrawLine(ray.origin, hit.point);
@@ -224,7 +224,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 
 		float reTargetingTime = myActiveGun.fireDelay - Mathf.Min(1, myActiveGun.fireDelay / 2f);
 
-		if (currentMode == DirectControlMaster.DirectControlMode.LockOn) {
+		if (currentMode == DirectControlMaster.GunMode.LockOn) {
 			if (didHit && curCooldown > reTargetingTime) {
 				var possibleTarget = hit.collider.GetComponentInParent<PossibleTarget>();
 				if (possibleTarget == null) {
@@ -296,7 +296,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 
 		if (hasAmmo) {
 			switch (currentMode) {
-				case DirectControlMaster.DirectControlMode.Gun:
+				case DirectControlMaster.GunMode.Gun:
 					if (curCooldown >= myActiveGun.GetFireDelay() && directControlShootAction.action.IsPressed() && !enterDirectControlShootLock) {
 						ApplyBulletTypes();
 						myActiveGun.ShootBarrage(false, OnShoot, OnHit, OnMiss);
@@ -312,7 +312,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 					}
 
 					break;
-				case DirectControlMaster.DirectControlMode.LockOn:
+				case DirectControlMaster.GunMode.LockOn:
 					if ((curRocketLockInTime >= rocketLockOnTime && hasTarget)) {
 						if (curCooldown >= myActiveGun.GetFireDelay() && directControlShootAction.action.IsPressed() && !enterDirectControlShootLock) {
 							ApplyBulletTypes();

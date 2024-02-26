@@ -21,30 +21,20 @@ public class TweakablesMaster : MonoBehaviour {
     }
 
 
-    [HideInInspector]
-    public UnityEvent tweakableChanged = new UnityEvent();
+    /*[HideInInspector]
+    public UnityEvent tweakableChanged = new UnityEvent();*/
 
 
     public void ApplyTweakableChange() {
-        CalculateArmorAndHealthValues();
-        tweakableChanged?.Invoke();
-        
-        //myTweakables.GetType().GetField("yeet").SetValue();
-    }
-
-
-    private void CalculateArmorAndHealthValues() {
-        var saveData = DataSaver.s.GetCurrentSave();
         ResetTweakable();
-        myTweakables.playerMagazineSizeMultiplier *= 0.7f + (saveData.ammoUpgradesBought * 0.15f);
+        Train.s.TrainChanged();
+        //tweakableChanged?.Invoke();
     }
 }
 
 
 [System.Serializable]
 public class Tweakables {
-    public float scrapEnemyRewardMultiplier = 1f;
-
     
     public float enemyDamageMultiplier = 1f;
     public float playerDamageMultiplier = 1f;
@@ -52,11 +42,7 @@ public class Tweakables {
     public float enemyFirerateBoost = 1f;
     public float playerFirerateBoost = 1f;
 
-    
-    public float playerMagazineSizeMultiplier = 1f;
-    public float gunSteamUseMultiplier = 1f;
-    
-    public float engineOverloadDamageMultiplier = 1f;
+    public float playerAmmoUseMultiplier = 1f;
 
     public Tweakables Copy() {
         var serialized = SerializationUtility.SerializeValue(this, DataFormat.Binary);
