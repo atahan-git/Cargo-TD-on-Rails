@@ -112,12 +112,12 @@ public class AOEDamage : MonoBehaviour {
                 target.Repair(dmg);
             } else {
                 target.BurnDamage(burnDamage);
-                target.DealDamage(dmg);
-                Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                target.DealDamage(dmg, transform.position);
+                VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                     .GetComponent<MiniGUI_DamageNumber>()
                     .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
                 
-                Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                     .GetComponent<MiniGUI_DamageNumber>()
                     .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);
             }

@@ -4982,6 +4982,7 @@ MonoBehaviour:
   - {fileID: 7284298388434460237}
   isBeingDisabled: 0
   trainIndex: 0
+  cartPosOffset: 0
   length: 0.8
   canPlayerDrag: 1
   displayName: Nuclear Engine
@@ -5004,15 +5005,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b09e23bb0990b1b4e9262ab25f3b6442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canHaveShields: 1
-  maxShields: 0
-  currentShields: 0
-  shieldRegenDelayMultiplier: 1
-  shieldRegenDelayDivider: 1
-  shieldRegenRateMultiplier: 1
-  shieldRegenRateDivider: 1
-  curShieldDelay: 0
-  baseShields: 0
   baseHealth: 1000
   maxHealth: 1000
   currentHealth: 1000
@@ -5024,16 +5016,12 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   unDying: 0
   invincible: 0
-  repairEfficiency: 1
-  shieldUpEfficiency: 1
-  burnReductionMultiplier: 1
-  glassCart: 0
-  reflectiveShields: 0
+  mainCollider: {fileID: 8988436854954373751}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0
   burnSpeed: 0
-  isShieldActive: 0
+  activeBurnEffects: []
 --- !u!114 &4764124627092903387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93915,6 +93903,10 @@ PrefabInstance:
       propertyPath: m_Convex
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -666642640593939133, guid: 9b5530fb68255ee4ab13c75f725155e6, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     - target: {fileID: 571713239885048624, guid: 9b5530fb68255ee4ab13c75f725155e6, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -93936,6 +93928,11 @@ PrefabInstance:
 --- !u!4 &975155505337843935 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9b5530fb68255ee4ab13c75f725155e6, type: 3}
+  m_PrefabInstance: {fileID: 721362909498746676}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &8988436854954373751 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: -666642640593939133, guid: 9b5530fb68255ee4ab13c75f725155e6, type: 3}
   m_PrefabInstance: {fileID: 721362909498746676}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1330154242402350782

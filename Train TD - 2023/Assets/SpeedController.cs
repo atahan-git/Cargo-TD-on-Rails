@@ -17,7 +17,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public float debugSpeedOverride = -1f;
 
-    public float currentTime = 0;
     public float currentDistance = 0;
 
     public float missionDistance = 300; //100 engine power goes 1 distance per second
@@ -206,9 +205,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
                     ToggleSlowedEffect(false);
                 }
 
-                currentTime += Time.deltaTime;
-                timeText.text = GetNiceTime(currentTime);
-
                 currentDistance += LevelReferences.s.speed * Time.deltaTime;
 
                 distanceText.text = ((int)currentDistance).ToString();
@@ -259,16 +255,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         beforeStopDistance = missionDistance;
     }
 
-    public static string GetNiceTime(float time) {
-        var minutes = (int) (time / 60);
-        var remainingSeconds = (int) (time - minutes * 60);
-        return (minutes.ToString("00") + ':' + remainingSeconds.ToString("00"));
-    }
-
-    public string GetCurrentTime() {
-        return GetNiceTime(currentTime);
-    }
-
     public float GetDistance() {
         return currentDistance;
     }
@@ -304,7 +290,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     void ToggleSlowedEffect(bool isOn) {
         if (isOn && !isSlowedOn) {
             for (int i = 0; i < engines.Count; i++) {
-                var effect = Instantiate(LevelReferences.s.currentlySlowedEffect, engines[i].transform.position, Quaternion.identity);
+                var effect = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.currentlySlowedEffect, engines[i].transform.position, Quaternion.identity);
                 effect.transform.SetParent(engines[i].transform);
                 activeSlowedEffects.Add(effect);
             }

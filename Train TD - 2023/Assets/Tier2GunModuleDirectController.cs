@@ -169,7 +169,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 	public TMP_Text sniperAmount => DirectControlMaster.s.sniperAmount;
 
 	public void UpdateDirectControl() {
-		if (myHealth == null || myHealth.isDead || myGun == null) {
+		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myGun == null) {
 			// in case our module gets destroyed
 			DirectControlMaster.s.DisableDirectControl();
 			return;

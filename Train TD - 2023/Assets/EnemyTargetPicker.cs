@@ -26,31 +26,32 @@ public class EnemyTargetPicker : MonoBehaviour
         mySelfTarget = GetComponentInParent<PossibleTarget>();
     }
 
-    private Transform lastTarget;
     private void Update() {
-        var closestTargetNotAvoided = ClosestTarget(true);
+        if (targeter.SearchingForTargets()) {
+            var closestTargetNotAvoided = ClosestTarget(true);
 
-        if (closestTargetNotAvoided!=null)  {
-            if (closestTargetNotAvoided != lastTarget) {
-                targeter.SetTarget(closestTargetNotAvoided);
-                lastTarget = closestTargetNotAvoided;
-                OnTargetChanged?.Invoke(lastTarget);
-            }
-        } else {
-            var closestTarget = ClosestTarget(false);
-
-            if (closestTarget != null) {
-                if (closestTarget != lastTarget) {
-                    targeter.SetTarget(closestTarget);
-                    lastTarget = closestTarget;
-                    OnTargetChanged?.Invoke(lastTarget);
+            if (closestTargetNotAvoided != null) {
+                if (closestTargetNotAvoided != targeter.GetActiveTarget()) {
+                    targeter.SetTarget(closestTargetNotAvoided);
+                    OnTargetChanged?.Invoke(closestTargetNotAvoided);
                 }
             } else {
-                if (lastTarget != null) {
-                    targeter.UnsetTarget();
-                    OnTargetUnset?.Invoke();
+                var closestTarget = ClosestTarget(false);
+
+                if (closestTarget != null) {
+                    if (closestTarget != targeter.GetActiveTarget()) {
+                        targeter.SetTarget(closestTarget);
+                        OnTargetChanged?.Invoke(closestTargetNotAvoided);
+                    }
+                } else {
+                    if (targeter.GetActiveTarget() != null) {
+                        targeter.UnsetTarget();
+                        OnTargetUnset?.Invoke();
+                    }
                 }
             }
+        } else {
+            targeter.UnsetTarget();
         }
     }
 
@@ -74,11 +75,12 @@ public class EnemyTargetPicker : MonoBehaviour
         for (int i = 0; i < allTargets.Length; i++) {
             if (i != myId) {
                 var target = allTargets[i];
+                var targetActive = target.active;
                 var canTarget = target.type == PossibleTarget.Type.player;
-                //var targetHasEnoughHealth = !doHealthCheck || (allTargets[i].health >= myDamage);
+                var targetHasEnoughHealth = target.health > 0;
                 var targetNotAvoided = !target.avoid || !doAvoidCheck;
 
-                if (canTarget && targetNotAvoided) {
+                if (targetActive && canTarget && targetNotAvoided && targetHasEnoughHealth) {
                     if (IsPointInsideRange(allTargets[i].position, myPosition, range, out float distance)) {
                         if (distance < closestTargetDistance) {
                             closestTarget = allTargetsReal[i].targetTransform;

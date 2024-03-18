@@ -23,9 +23,9 @@ public class Artifact_GlassTrain: ActivateWhenOnArtifactRow
             roboRepair.amountMultiplier += 1;
         }
 
-        foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
+        /*foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
             target.GetHealthModule().maxShields *= 2;
-        }
+        }*/
 
         foreach (var engineModule in target.GetComponentsInChildren<EngineModule>()) {
             engineModule.extraSpeedAdd += 0.1f;

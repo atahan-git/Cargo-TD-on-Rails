@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IActiveDuringCombat
+public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IActiveDuringCombat, IApplyToEnemyWithGem
 {
     
     //[Space]
@@ -51,7 +51,7 @@ public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
         if (!hasAmmo) {
             target.GetHealthModule().Repair(repairAmount);
         }
-        Instantiate(LevelReferences.s.growthEffectPrefab, target.uiTargetTransform);
+        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.growthEffectPrefab, target.uiTargetTransform, VisualEffectsController.EffectPriority.High);
     }
 
     protected override void _Disarm() {
@@ -74,17 +74,33 @@ public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
             if (activeDelay <= 0) {
                 activeDelay = currentReloadDelay;
 
-                var range = GetComponent<Artifact>().range;
-                ApplyReloadOrHealth(GetComponentInParent<Cart>());
-                for (int i = 1; i < range + 1; i++) {
-                    ApplyReloadOrHealth(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-                    ApplyReloadOrHealth(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                if (enemyToApplyTo) {
+                    ApplyToEnemy();
+                } else {
+                    var range = GetComponent<Artifact>().range;
+                    ApplyReloadOrHealth(GetComponentInParent<Cart>());
+                    for (int i = 1; i < range + 1; i++) {
+                        ApplyReloadOrHealth(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
+                        ApplyReloadOrHealth(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                    }
                 }
             }
         }
     }
 
+   
     public void Disable() {
         this.enabled = false;
+    }
+    
+    void ApplyToEnemy() {
+        enemyToApplyTo.GetComponent<EnemyHealth>().Repair(repairAmount);
+        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.growthEffectPrefab, enemyToApplyTo.transform, VisualEffectsController.EffectPriority.High);
+    }
+
+    private EnemyInSwarm enemyToApplyTo;
+    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
+        enemyToApplyTo = enemy;
+        //throw new NotImplementedException();
     }
 }

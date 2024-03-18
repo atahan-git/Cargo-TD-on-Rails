@@ -39,9 +39,9 @@ public class Artifact_Gatlinificator : ActivateWhenOnArtifactRow
         foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
             var hp = target.GetHealthModule();
             
-            hp.maxShields /= 2;
+            /*hp.maxShields /= 2;
             hp.shieldRegenDelayMultiplier += 1;
-            hp.shieldRegenRateMultiplier += 1;
+            hp.shieldRegenRateMultiplier += 1;*/
         }
     }
 

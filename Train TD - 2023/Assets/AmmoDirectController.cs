@@ -8,6 +8,16 @@ using Random = UnityEngine.Random;
 
 public class AmmoDirectController : MonoBehaviour, IDirectControllable {
 
+    
+    private void Start() {
+        myHealth = GetComponentInParent<ModuleHealth>();
+        myModuleAmmo = GetComponentInChildren<ModuleAmmo>();
+        myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
+    }
+
+    public ModuleHealth myHealth;
+    public PhysicalAmmoBar myAmmoBar;
+    public ModuleAmmo myModuleAmmo;
     public Transform[] directControlCamPositions;
 
     public Transform dropAmmoPos;
@@ -28,8 +38,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
     public float curDelay = 0;
     public bool needNewOnes = false;
     
-    public PhysicalAmmoBar myAmmoBar;
-    public ModuleAmmo myModuleAmmo;
 
     public bool dropping = false;
 
@@ -45,11 +53,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
     public GameObject ammo_good=> DirectControlMaster.s.ammo_good;
     public GameObject ammo_full=> DirectControlMaster.s.ammo_full;
     public GameObject ammo_fail=> DirectControlMaster.s.ammo_fail;
-
-    private void Start() {
-        myModuleAmmo = GetComponentInChildren<ModuleAmmo>();
-        myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
-    }
 
     public int baseReloadCount = 4;
     public int curReloadCount = 4;
@@ -89,12 +92,18 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
         curReloadCount = baseReloadCount;
         needNewOnes = true;
         
-        myModuleAmmo.UseAmmo(10000);
+        //myModuleAmmo.UseAmmo(10000);
     }
 
     private bool ammoFull = false;
     Color ammoFullColor = Color.white;
     public void UpdateDirectControl() {
+        if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myModuleAmmo == null || myAmmoBar == null) {
+            // in case our module gets destroyed
+            DirectControlMaster.s.DisableDirectControl();
+            return;
+        }
+        
         if (needNewOnes) {
             if (curDelay > 0) {
                 curDelay -= Time.deltaTime;

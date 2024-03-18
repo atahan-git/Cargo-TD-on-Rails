@@ -154,7 +154,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3928923087274676877}
-  - component: {fileID: 7577422826695899271}
   m_Layer: 11
   m_Name: Cart gfx loc
   m_TagString: Untagged
@@ -180,19 +179,6 @@ Transform:
   m_Father: {fileID: 1063128118414717790}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &7577422826695899271
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1759067782845933841}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.4370825, y: 0.44548568, z: 0.8620656}
-  m_Center: {x: 0, y: 0.029392406, z: -0.0009963214}
 --- !u!1 &3399934084524781478
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +242,7 @@ MonoBehaviour:
   - {fileID: 3289705527311693164}
   isBeingDisabled: 0
   trainIndex: 0
+  cartPosOffset: 0
   length: 0.8620656
   canPlayerDrag: 1
   displayName: Unnamed But Nice in game name
@@ -278,15 +265,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b09e23bb0990b1b4e9262ab25f3b6442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canHaveShields: 1
-  maxShields: 0
-  currentShields: 0
-  shieldRegenDelayMultiplier: 1
-  shieldRegenDelayDivider: 1
-  shieldRegenRateMultiplier: 1
-  shieldRegenRateDivider: 1
-  curShieldDelay: 0
-  baseShields: 0
   baseHealth: 2000
   maxHealth: 500
   currentHealth: 2000
@@ -298,16 +276,12 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   unDying: 0
   invincible: 0
-  repairEfficiency: 1
-  shieldUpEfficiency: 1
-  burnReductionMultiplier: 1
-  glassCart: 0
-  reflectiveShields: 0
+  mainCollider: {fileID: 232269251456713494}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0
   burnSpeed: 0
-  isShieldActive: 0
+  activeBurnEffects: []
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1095,8 +1069,17 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3451118302482216456, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+--- !u!64 &232269251456713494 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+  m_PrefabInstance: {fileID: 3233015435865617694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3123038626739557109 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
@@ -1691,6 +1674,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3451118302482216456, guid: 0bde51db4531a7a4bb6edfa521dee460, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0bde51db4531a7a4bb6edfa521dee460, type: 3}
 --- !u!4 &7931635340401288687 stripped

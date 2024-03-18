@@ -624,6 +624,19 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         Destroy(target);
     }
 
+    public void CheckDestroySelf() {
+        var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
+        var activeEnemies = 0;
+        for (int i = 0; i < allSwarmMakers.Length; i++) {
+            if(allSwarmMakers[i] != null)
+                activeEnemies += allSwarmMakers[i].activeEnemies.Count;
+        }
+
+        if (activeEnemies <= 0) {
+            Destroy(gameObject);
+        }
+    }
+
 
     public void Leave(bool _isForwardLeave) {
         isLeaving = true;

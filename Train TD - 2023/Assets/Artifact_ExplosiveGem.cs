@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_ExplosiveGem: ActivateWhenOnArtifactRow, IResetStateArtifact
+public class Artifact_ExplosiveGem: ActivateWhenOnArtifactRow, IResetStateArtifact, IApplyToEnemyWithGem
 {
     
     //[Space]
@@ -80,4 +80,10 @@ public class Artifact_ExplosiveGem: ActivateWhenOnArtifactRow, IResetStateArtifa
     /*public string GetInfoText() {
         return "When leveled up deals more fire damage and causes bigger bursts";
     }*/
+
+    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
+        foreach (var gunModule in enemy.GetComponentsInChildren<GunModule>()) {
+            gunModule.regularToRangeConversionMultiplier += activeRangeBoost;
+        }
+    }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_IronGem : ActivateWhenOnArtifactRow, IResetStateArtifact
+public class Artifact_IronGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IApplyToEnemyWithGem
 {
     
     //[Space]
@@ -41,13 +41,13 @@ public class Artifact_IronGem : ActivateWhenOnArtifactRow, IResetStateArtifact
             roboRepair.firerateDivider += baseFirerateReduction;
             didApply = true;
         }
-        foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
+        /*foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
             var hp = target.GetHealthModule();
             hp.maxShields += curEngineHpIncrease;
             hp.shieldRegenDelayDivider += baseFirerateReduction;
             hp.shieldRegenRateDivider += baseFirerateReduction;
             didApply = true;
-        }
+        }*/
         
         foreach (var engine in target.GetComponentsInChildren<EngineModule>()) {
             engine.extraEnginePower += 1;
@@ -87,4 +87,10 @@ public class Artifact_IronGem : ActivateWhenOnArtifactRow, IResetStateArtifact
     /*public string GetInfoText() {
         return "When leveled up slows down enemies more and shots more ice shards";
     }*/
+    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
+        foreach (var gunModule in enemy.GetComponentsInChildren<GunModule>()) {
+            gunModule.damageMultiplier += curDamageMultiplier;
+            gunModule.fireRateDivider += baseFirerateReduction;
+        }
+    }
 }

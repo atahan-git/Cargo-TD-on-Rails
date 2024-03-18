@@ -45,7 +45,7 @@ public class CursorAnimator : MonoBehaviour {
 		    if (health != null) {
 			    prefab = LevelReferences.s.metalBulletHitEffectPrefab;
 		    }
-		    Instantiate(prefab, pos, rot);
+		    VisualEffectsController.s.SmartInstantiate(prefab, pos, rot);
 	    }
     }
     

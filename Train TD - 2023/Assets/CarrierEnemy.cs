@@ -42,7 +42,12 @@ public class CarrierEnemy : MonoBehaviour {
 
         awardCart.gameObject.AddComponent<RubbleFollowFloor>();
         
+        LevelReferences.s.combatHoldableThings.Add(awardCart);
+        
         Train.ApplyStateToCart(awardCart, award);
         awardCart.SetHoldingState(false);
+        
+        awardCart.GetComponent<Rigidbody>().AddForce(Vector3.up*Random.Range(2000,2500) + Vector3.left * Random.Range(500,1000) * (Random.value > 0.5f ? 1 : -1));
+        awardCart.GetComponent<Rigidbody>().AddTorque(Vector3.one*2000);
     }
 }

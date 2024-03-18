@@ -88,7 +88,7 @@ public class MissionWinFinisher : MonoBehaviour {
 				new Dictionary<string, object> {
 					{ "Level", PlayStateMaster.s.currentLevel.levelName },
 					{ "enemiesLeftAlive", EnemyHealth.enemySpawned - EnemyHealth.enemyKilled },
-					{ "winTime", SpeedController.s.currentTime },
+					{ "winTime", WorldDifficultyController.s.GetMissionTime()},
 				}
 			);
 			

@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Random = UnityEngine.Random;
 
 //It is common to create a class to contain all of your
@@ -51,15 +52,10 @@ public static class ExtensionMethods {
 
         ls.Insert(index, item);
     }
-
-
-    public static void Shuffle<T>(this IList<T> list) {
-        int n = list.Count;
-        while (n > 1) {
-            n--;
-            int k = Random.Range(0, n - 1);
-            (list[k], list[n]) = (list[n], list[k]);
-        }
+    
+    
+    public static List<T> Shuffle<T>(List<T> list) {
+        return list.OrderBy(x => Random.value).ToList();
     }
 
     public static float Remap(this float value, float from1, float to1, float from2, float to2) {
@@ -122,6 +118,33 @@ public static class ExtensionMethods {
         float z = Random.Range(bounds.min.z, bounds.max.z);
 
         return new Vector3(x, y, z);
+    }
+    
+    public static Quaternion QuaterionSmoothDamp(Quaternion rot, Quaternion target, ref Quaternion deriv, float time) {
+        if (Time.deltaTime < Mathf.Epsilon) return rot;
+        // account for double-cover
+        var Dot = Quaternion.Dot(rot, target);
+        var Multi = Dot > 0f ? 1f : -1f;
+        target.x *= Multi;
+        target.y *= Multi;
+        target.z *= Multi;
+        target.w *= Multi;
+        // smooth damp (nlerp approx)
+        var Result = new Vector4(
+            Mathf.SmoothDamp(rot.x, target.x, ref deriv.x, time),
+            Mathf.SmoothDamp(rot.y, target.y, ref deriv.y, time),
+            Mathf.SmoothDamp(rot.z, target.z, ref deriv.z, time),
+            Mathf.SmoothDamp(rot.w, target.w, ref deriv.w, time)
+        ).normalized;
+		
+        // ensure deriv is tangent
+        var derivError = Vector4.Project(new Vector4(deriv.x, deriv.y, deriv.z, deriv.w), Result);
+        deriv.x -= derivError.x;
+        deriv.y -= derivError.y;
+        deriv.z -= derivError.z;
+        deriv.w -= derivError.w;		
+		
+        return new Quaternion(Result.x, Result.y, Result.z, Result.w);
     }
 
 }

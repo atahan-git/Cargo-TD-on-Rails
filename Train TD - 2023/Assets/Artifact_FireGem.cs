@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Artifact_FireGem : ActivateWhenOnArtifactRow, IResetStateArtifact
+public class Artifact_FireGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IApplyToEnemyWithGem
 {
     
     //[Space]
@@ -67,4 +67,9 @@ public class Artifact_FireGem : ActivateWhenOnArtifactRow, IResetStateArtifact
     /*public string GetInfoText() {
         return "When leveled up deals more fire damage and causes bigger bursts";
     }*/
+    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
+        foreach (var gunModule in enemy.GetComponentsInChildren<GunModule>()) {
+            gunModule.regularToBurnDamageConversionMultiplier += activeFireDamageBoost;
+        }
+    }
 }

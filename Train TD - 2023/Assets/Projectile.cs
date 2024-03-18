@@ -178,7 +178,7 @@ public class Projectile : MonoBehaviour {
                 var pos = hit.point;
                 var rotation = Quaternion.LookRotation(hit.normal);
 
-                Instantiate(hitPrefab, pos, rotation);
+                VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation);
 
                 SmartDestroySelf();
             }
@@ -243,7 +243,8 @@ public class Projectile : MonoBehaviour {
 
             foreach (var particle in particles) {
                 if (particle.gameObject != instantDestroy) {
-                    particle.transform.SetParent(null);
+                    particle.transform.SetParent(VisualEffectsController.s.transform);
+                    particle.transform.localScale = Vector3.one;
                     particle.Stop();
                     Destroy(particle.gameObject, 1f);
                 }
@@ -288,7 +289,7 @@ public class Projectile : MonoBehaviour {
             }
 
             if (hitPrefab != null) {
-                Instantiate(hitPrefab, transform.position, transform.rotation);
+                VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, transform.rotation);
             }
 
             SmartDestroySelf();
@@ -316,12 +317,12 @@ public class Projectile : MonoBehaviour {
             if (!isPlayerBullet) {
                 var moduleHealth = other.gameObject.GetComponentInParent<ModuleHealth>();
                 if (moduleHealth != null) {
-                    if (moduleHealth.reflectiveShields && moduleHealth.currentShields > 0) {
+                    /*if (moduleHealth.reflectiveShields && moduleHealth.currentShields > 0) {
                         var copy = Instantiate(gameObject).GetComponent<Projectile>();
                         copy.transform.rotation = Quaternion.Inverse(copy.transform.rotation);
                         copy.target = copy.source.transform;
                         copy.isPlayerBullet = true;
-                    }
+                    }*/
                 }
             }
             
@@ -433,10 +434,10 @@ public class Projectile : MonoBehaviour {
             DealDamage(health);
             ApplyHitForceToObject(health);
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            Instantiate(miniHitPrefab, closestPoint, Quaternion.identity);
+            VisualEffectsController.s.SmartInstantiate(miniHitPrefab, closestPoint, Quaternion.identity);
         }
 
-        Instantiate(hitPrefab, transform.position, Quaternion.identity);
+        VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, Quaternion.identity);
     }
 
     private void ExplosiveDamage(Collision other) {
@@ -473,10 +474,10 @@ public class Projectile : MonoBehaviour {
             DealDamage(health);
             ApplyHitForceToObject(health);
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            Instantiate(miniHitPrefab, closestPoint, Quaternion.identity);
+            VisualEffectsController.s.SmartInstantiate(miniHitPrefab, closestPoint, Quaternion.identity);
         }
 
-        Instantiate(hitPrefab, transform.position, Quaternion.identity).transform.localScale = Vector3.one*effectiveRange;
+        VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, Quaternion.identity).transform.localScale = Vector3.one*effectiveRange;
     }
 
     private void ContactDamage(Collision other) {
@@ -515,7 +516,7 @@ public class Projectile : MonoBehaviour {
         }
 
 
-        Instantiate(hitPrefab, pos, rotation);
+        VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation);
     }
 
 
@@ -558,15 +559,15 @@ public class Projectile : MonoBehaviour {
                 target.Repair(dmg);
             } else {
                 if (dmg > 1) {
-                    target.DealDamage(dmg);
-                    Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                    target.DealDamage(dmg, transform.position);
+                    VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                         .GetComponent<MiniGUI_DamageNumber>()
                         .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
                 }
 
                 if (burnDamage > 1) {
                     target.BurnDamage(burnDamage);
-                    Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                    VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                         .GetComponent<MiniGUI_DamageNumber>()
                         .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);
                 }

@@ -11,6 +11,9 @@ public class RubbleFollowFloor : MonoBehaviour {
 
     public bool isAttachedToFloor = false;
 
+
+    public List<TrainTerrainData> addedChunks = new List<TrainTerrainData>();
+
     private void Start() {
         Invoke("DestroyNow", deathTime);
     }
@@ -49,13 +52,16 @@ public class RubbleFollowFloor : MonoBehaviour {
 
 
     void AttachToFloor(GameObject target) {
-        isAttachedToFloor = true;
-        var hexChunk = target.GetComponent<TrainTerrainData>();
-        if (hexChunk) {
-            hexChunk.AddForeignObject(gameObject);
-        } else {
-            transform.SetParent(target.transform);
-            Destroy(gameObject, 30);
+        if (canAttachToFloor) {
+            isAttachedToFloor = true;
+            var hexChunk = target.GetComponent<TrainTerrainData>();
+            if (hexChunk) {
+                hexChunk.AddForeignObject(gameObject);
+                addedChunks.Add(hexChunk);
+            } else {
+                transform.SetParent(target.transform);
+                Invoke(nameof(_DestroySelf), 30);
+            }
         }
     }
 
@@ -64,5 +70,21 @@ public class RubbleFollowFloor : MonoBehaviour {
         if (Physics.Raycast(transform.position+Vector3.up*5, Vector3.down, out RaycastHit hit, 6, LevelReferences.s.groundLayer)) {
             AttachToFloor(hit.collider.gameObject);
         }
+    }
+
+    public bool canAttachToFloor = true;
+    public void UnAttachFromFloor() {
+        for (int i = 0; i < addedChunks.Count; i++) {
+            addedChunks[i].RemoveForeignObject(gameObject);
+        }
+        addedChunks.Clear();
+        
+        transform.SetParent(VisualEffectsController.s.transform);
+        
+        CancelInvoke();
+    }
+
+    void _DestroySelf() {
+        Destroy(gameObject);
     }
 }

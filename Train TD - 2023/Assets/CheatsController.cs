@@ -27,6 +27,8 @@ public class CheatsController : MonoBehaviour
     public bool setInstantEnterShopAnimation = false;
 
     public bool overrideTrainState = false;
+
+    public bool forceDisableFastForward = false;
     
     public DataSaver.TrainState trainState;
 
@@ -46,6 +48,7 @@ public class CheatsController : MonoBehaviour
         autoPlayTest = false;
         setInstantEnterShopAnimation = false;
         overrideTrainState = false;
+        forceDisableFastForward = false;
     }
 
     [Button]
@@ -57,13 +60,17 @@ public class CheatsController : MonoBehaviour
     private void Start() {
         if (Application.isEditor) {
             if (debugNoRegularSpawns  || instantEnterPlayMode ||playerIsImmune
-                  || everyPathIsEncounter  || setInstantEnterShopAnimation || overrideTrainState)
+                  || everyPathIsEncounter  || setInstantEnterShopAnimation || overrideTrainState || forceDisableFastForward)
                 Debug.LogError("Debug options active! See _CheatsController for more info");
 
 
             var tweakables = TweakablesMaster.s.myTweakables;
             if (tweakables.enemyDamageMultiplier != 1 || tweakables.enemyFirerateBoost != 1 || tweakables.playerDamageMultiplier != 1 || tweakables.playerFirerateBoost != 1 || tweakables.playerAmmoUseMultiplier != 1) {
                 Debug.Log("Tweakables values not all zero. Beware numbers not matching");
+            }
+
+            if (forceDisableFastForward) {
+                TimeController.s.debugDisableAbilityToFastForward = true;
             }
 
             //LevelArchetypeScriptable.everyPathEncounterCheat = everyPathIsEncounter;
@@ -134,7 +141,7 @@ public class CheatsController : MonoBehaviour
 
     private void EngageCheat(InputAction.CallbackContext obj) {
 
-        if (!PlayStateMaster.s.isCombatStarted()) {
+        /*if (!PlayStateMaster.s.isCombatStarted()) {
             if (PlayStateMaster.s.isMainMenu())
                 MainMenu.s.StartGame();
 
@@ -154,9 +161,24 @@ public class CheatsController : MonoBehaviour
 
             foreach (var gModuleHealth in healths) {
                 gModuleHealth.DealDamage(gModuleHealth.currentHealth/2);
-            }*/
-        } 
+            }#1#
+        } */
 
+        for (int i = 0; i < Train.s.carts.Count; i++) {
+            var modHealth = Train.s.carts[i].GetComponent<ModuleHealth>();
+
+            var targetHP = modHealth.maxHealth / 4f;
+
+            if (modHealth.currentHealth > targetHP) {
+                modHealth.DealDamage(modHealth.currentHealth-targetHP, null);
+            }
+        }
+    }
+
+
+    [Button]
+    public void DebugSpawnEnemy(GameObject enemy) {
+        EnemyWavesController.s.SpawnEnemy(enemy, SpeedController.s.currentDistance, false, false);
     }
 
 }

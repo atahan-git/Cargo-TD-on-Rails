@@ -12,6 +12,7 @@ public class TimeController : MonoBehaviour {
         s = this;
         PausedEvent = new UnityEvent<bool>();
         debugAlwaysFastForward = false;
+        debugDisableAbilityToFastForward = false;
     }
 
 
@@ -46,6 +47,8 @@ public class TimeController : MonoBehaviour {
     }
 
     public bool debugAlwaysFastForward = false;
+
+    public bool debugDisableAbilityToFastForward = false;
     private void Update() {
         if(!debugAlwaysFastForward)
             ProcessFastForward();
@@ -65,7 +68,7 @@ public class TimeController : MonoBehaviour {
     public bool fastForwarding = false;
     public void ProcessFastForward() {
         //print(fastForwardKey.action.ReadValue<float>());
-        if (fastForwardKey.action.IsPressed() && canFastForward) {
+        if (fastForwardKey.action.IsPressed() && canFastForward && !DirectControlMaster.s.directControlInProgress && !debugDisableAbilityToFastForward) {
             currentTimeScale = 8f;
             if (!isPaused) {
                 Time.timeScale = currentTimeScale;

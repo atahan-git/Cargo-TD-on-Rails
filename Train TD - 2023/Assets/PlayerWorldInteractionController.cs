@@ -315,6 +315,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
         
         
+        var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
+        if (rubbleFollowFloor) {
+            rubbleFollowFloor.UnAttachFromFloor();
+            rubbleFollowFloor.canAttachToFloor = false;
+        }
+        
         currentSelectedThingMonoBehaviour.transform.SetParent(null);
 
         // SFX
@@ -488,6 +494,43 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 UpgradesController.s.SaveCartStateWithDelay();
                 Train.s.SaveTrainState();
             }
+        }
+
+
+        if (currentSelectedThing is Cart myCart) {
+            if (myCart.IsAttachedToTrain()) {
+                if (currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>() != null) {
+                    Destroy(currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>());
+                }
+
+                currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
+            } else {
+                if (currentSelectedThing.GetHoldingDrone() != null) {
+                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
+                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
+                }   
+            }
+        }
+
+        if (currentSelectedThing is Artifact myArtifact) {
+            if (myArtifact.isAttached) {
+                if (currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>() != null) {
+                    Destroy(currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>());
+                }
+                
+                currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
+            } else {
+                if (currentSelectedThing.GetHoldingDrone() != null) {
+                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
+                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
+                }   
+            }
+        }
+        
+            
+        var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
+        if (rubbleFollowFloor) {
+            rubbleFollowFloor.canAttachToFloor = true;
         }
         
         
@@ -727,7 +770,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }else if (newSelectableThing is Meeple meeple) {
                 myColor = SelectMeeple(meeple);
             }
-            
+
             if (outline != null) {
                 outline.outlineColor = myColor;
             }
@@ -909,6 +952,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 public interface IPlayerHoldable {
     public Transform GetUITargetTransform();
     public void SetHoldingState(bool state);
+    public DroneRepairController GetHoldingDrone();
+    public void SetHoldingDrone(DroneRepairController holder);
 }
 
 

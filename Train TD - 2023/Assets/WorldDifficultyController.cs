@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Borodar.FarlandSkies.LowPoly;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,31 +13,126 @@ public class WorldDifficultyController : MonoBehaviour {
         s = this;
     }
 
+
+    public int curLevel;
+    
     public float enemyDamageIncreasePerLevel = 0.2f;
     public float enemyHealthIncreasePerLevel = 0.2f;
 
+    public float damageIncreaseInterval = 60;
 
-    public float baseDamageIncrease = 0.6f;
-    [ReadOnly]
-    public float currentDamageIncrease;
-    [ReadOnly]
-    public float currentHealthIncrease;
+    public TMP_Text infoText;
 
-    public int playerAct;
-    public int playerStar;
+    public float baseDamageMultiplier = 0.6f;
+    public float baseHealthMultiplier = 0.6f;
+    [ReadOnly]
+    public float currentDamageMultiplier;
+    [ReadOnly]
+    public float currentHealthMultiplier;
 
     public UnityEvent OnDifficultyChanged = new UnityEvent();
 
+    public float combatStartTime;
+
+    public float baseAmbientLightStrength;
+    public float baseSunlightStrength;
+    public Color baseFogColor;
+    
+    public int totalDarknessLevel = 10;
+    
+    private void Start() {
+        infoText.text = "";
+
+        baseAmbientLightStrength = RenderSettings.ambientIntensity;
+        baseSunlightStrength = RenderSettings.sun.intensity;
+        baseFogColor = RenderSettings.fogColor;
+    }
+
     public void OnShopEntered() {
-        CalculateDifficulty();
+        OnCombatStart();
+    }
+
+    private void Update() {
+        if (PlayStateMaster.s.isCombatInProgress()) {
+            var curCombatTime = GetMissionTime();
+            var newLevel = Mathf.FloorToInt(curCombatTime / damageIncreaseInterval);
+
+            if (newLevel > curLevel) {
+                curLevel = newLevel;
+                CalculateDifficulty();
+            }
+
+            infoText.text = $"Enemy dmg x{currentDamageMultiplier}\nEnemy hp x{currentHealthMultiplier}\nStage {curLevel} - {FormatTime(curCombatTime)}";
+        }
+    }
+
+    public float GetMissionTime() {
+        return Time.timeSinceLevelLoad - combatStartTime;
     }
 
     [Button]
     public void CalculateDifficulty() {
-        playerAct = 1;
-        currentDamageIncrease = ((playerAct-1)*5 + playerStar) * enemyDamageIncreasePerLevel + baseDamageIncrease;
-        currentHealthIncrease = ((playerAct-1)*5 + playerStar) * enemyHealthIncreasePerLevel;
+        currentDamageMultiplier = curLevel * enemyDamageIncreasePerLevel + baseDamageMultiplier;
+        currentHealthMultiplier = curLevel * enemyHealthIncreasePerLevel + baseHealthMultiplier;
         OnDifficultyChanged?.Invoke();
+
+        StartCoroutine(LerpLights());
+    }
+
+
+    IEnumerator LerpLights() {
+        var transitionPercent = 0f;
+
+        SkyboxController.Instance.AdjustFogColor = false;
+
+        var targetDarknessPercent = curLevel / (float)totalDarknessLevel;
+        targetDarknessPercent = Mathf.Clamp01(targetDarknessPercent);
+
+        var prevAmbientIntensity = RenderSettings.ambientIntensity;
+        var targetAmbientIntensity = Mathf.Lerp(baseAmbientLightStrength, 0, targetDarknessPercent);
+        
+        
+        var prevSunlightIntensity = RenderSettings.sun.intensity;
+        var targetSunlightIntensity = Mathf.Lerp(baseSunlightStrength, 0, targetDarknessPercent);
+
+        var prevSkyboxExposure = SkyboxController.Instance.Exposure;
+        var targetSkyboxExposure = Mathf.Lerp(1, 0, targetDarknessPercent);
+
+        var prevFogColor = RenderSettings.fogColor;
+        var targetFogColor = Color.Lerp(baseFogColor, Color.black, targetDarknessPercent);
+
+        while (transitionPercent < 1f){
+            RenderSettings.ambientIntensity = Mathf.Lerp(prevAmbientIntensity, targetAmbientIntensity, transitionPercent);
+            RenderSettings.sun.intensity = Mathf.Lerp(prevSunlightIntensity, targetSunlightIntensity, transitionPercent);
+            SkyboxController.Instance.Exposure = Mathf.Lerp(prevSkyboxExposure, targetSkyboxExposure, transitionPercent);
+            RenderSettings.fogColor = Color.Lerp(prevFogColor, targetFogColor, transitionPercent);
+            transitionPercent += Time.deltaTime;
+            yield return null;
+        }
+        
+        
+        RenderSettings.ambientIntensity = targetAmbientIntensity;
+        RenderSettings.sun.intensity = targetSunlightIntensity;
+    }
+
+
+    public void OnCombatStart() {
+        curLevel = 0;
+        combatStartTime = Time.timeSinceLevelLoad;
+        CalculateDifficulty();
+    }
+
+    public void OnCombatEnd(bool isReal) {
+        infoText.text = "";
+    }
+    
+    public static string FormatTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+
+        // Return the formatted time as a string
+        return string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
 }

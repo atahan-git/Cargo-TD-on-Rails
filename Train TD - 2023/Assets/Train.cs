@@ -19,6 +19,7 @@ public class Train : MonoBehaviour {
     public List<Cart> carts = new List<Cart>();
 
     public UnityEvent onTrainCartsChanged = new UnityEvent();
+    public UnityEvent onTrainCartsOrHealthOrArtifactsChanged = new UnityEvent();
 
     public bool isTrainDrawn = false;
 
@@ -325,6 +326,7 @@ public class Train : MonoBehaviour {
             var index = i;
             cart.name = $"Cart {index }";
             cart.trainIndex = index;
+            cart.cartPosOffset = currentDistance;
 
             if (instant) {
                 for (int j = 0; j < cart.myArtifactLocations.Count; j++) {
@@ -495,6 +497,7 @@ public class Train : MonoBehaviour {
             UpdateThingsAffectingOtherThings(false);
             UpdateThingsAffectingOtherThings(true);
             CheckHealth();
+            onTrainCartsOrHealthOrArtifactsChanged?.Invoke();
         }
     }
 
@@ -570,6 +573,7 @@ public class Train : MonoBehaviour {
     
     public void HealthModified() {
         MiniGUI_TrainOverallHealthBar.s.HealthChanged();
+        onTrainCartsOrHealthOrArtifactsChanged?.Invoke();
     }
 
     public Cart GetNextBuilding(int amount, Cart cart) {

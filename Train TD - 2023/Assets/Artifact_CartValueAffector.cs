@@ -11,17 +11,7 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
 
     public bool levelIncreasesRange = true;
     
-    [Space]
-    
-    public bool glassCart = false;
-    public bool canHaveNoShields = false;
-    public bool reflectiveShields = false;
-    
-    public float addShieldAsHpPercent = 0f;
-    public float addShieldAmount = 0;
     [NonSerialized]
-    public float currentAddShieldAmount = 0;
-    public float addShieldAmountPerLevel = 0;
     public float healthMultiplier = 1;
     public float fireDecayRateMultiplier = 1f;
 
@@ -70,38 +60,10 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
             
 
             if (healthModule != null) {
-                if (canHaveNoShields) {
-                    healthModule.canHaveShields = false;
-                    healthModule.maxShields = 0;
-                }
-                
-                if (healthModule.canHaveShields) {
-                    healthModule.maxShields += addShieldAsHpPercent * healthModule.maxHealth;
-                    healthModule.maxShields += currentAddShieldAmount;
-
-                    if (!PlayStateMaster.s.isCombatInProgress()) {
-                        healthModule.currentShields = healthModule.maxShields;
-                        if (healthModule.currentShields > 0) {
-                            healthModule.isShieldActive = true;
-                        }
-                    }
-                }
-
-                if (glassCart) {
-                    healthModule.glassCart = glassCart;
-                    healthModule.maxHealth = 100;
-                    healthModule.currentHealth = 100;
-                }
-
                 if (!healthModule.glassCart) {
                     healthModule.maxHealth *= healthMultiplier;
                     healthModule.currentHealth *= healthMultiplier;
                 }
-
-                if(reflectiveShields)
-                    healthModule.reflectiveShields = reflectiveShields;
-
-                healthModule.burnReductionMultiplier *= fireDecayRateMultiplier;
             }
 
             var moduleAmmo = cart.GetComponentInChildren<ModuleAmmo>();
@@ -145,8 +107,6 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
             rangeBoost = 0;
         }
 
-        currentAddShieldAmount = addShieldAmount + (addShieldAmountPerLevel * level);
-
         boostMultiplier = 1;
     }
     public int GetRange() {
@@ -154,10 +114,7 @@ public class Artifact_CartValueAffector : ActivateWhenOnArtifactRow, IResetState
     }
 
     public string GetInfoText() {
-        if (addShieldAmount == 0) {
-            return $"This artifact applies it's effect to {GetRange()} nearby carts";
-        } else {
-            return $"Gives the affected cart {currentAddShieldAmount} shields";
-        }
+        return $"This artifact applies it's effect to {GetRange()} nearby carts";
+        
     }
 }

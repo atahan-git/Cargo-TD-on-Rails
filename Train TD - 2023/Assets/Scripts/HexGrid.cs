@@ -484,6 +484,14 @@ public class NumberWithWeights {
 	public int number;
 	[HorizontalGroup(LabelWidth = 20, Width = 100)]
 	public float weight = 1f;
+
+
+	public NumberWithWeights(){}
+	
+	public NumberWithWeights(int _number, float _weight) {
+		number = _number;
+		weight = _weight;
+	}
 	
 	public static int WeightedRandomRoll(NumberWithWeights[] F) {
 		var totalFreq = 0f;

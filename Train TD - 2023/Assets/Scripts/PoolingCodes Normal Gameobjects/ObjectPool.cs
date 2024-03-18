@@ -125,7 +125,7 @@ public class ObjectPool : MonoBehaviour {
 				return objs [i];
 			}
 		}
-		print ("Not enough pooled objects detected");
+		print ($"{gameObject.name} - Not enough pooled objects detected - {objs.Length} -> {objs.Length*2}");
 
 		//there is no free object left
 		if (autoExpand) {

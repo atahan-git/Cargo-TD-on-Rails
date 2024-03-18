@@ -12,7 +12,22 @@ public class SmartDestroy : MonoBehaviour
             particle.Stop();
             //Destroy(particle.gameObject, 5f);
         }
+
+        var light = GetComponent<Light>();
+
+        if (light != null) {
+            StartCoroutine(FadeLight(light));
+        }
         
         Destroy(gameObject,5f);
+    }
+
+    IEnumerator FadeLight(Light light) {
+        while (light.intensity > 0) {
+            light.intensity = Mathf.MoveTowards(light.intensity, 0, 1 * Time.deltaTime);
+            yield return null;
+        }
+
+        light.enabled = false;
     }
 }

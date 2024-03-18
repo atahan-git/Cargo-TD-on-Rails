@@ -21,6 +21,13 @@ public class PathGenerator : MonoBehaviour {
         public int endRotateStartPoint;
         public bool endPath = false;
         public bool addImprintNoise = true;
+        public bool debugDrawGizmo = true;
+        public int trackObjectsId = -1;
+        public PathType myType;
+    }
+
+    public enum PathType {
+        empty = 0, gunCart = 1, utilityCart = 2, gem =3, cargo =4
     }
 
     public float stepLength = 0.2f;
@@ -29,9 +36,9 @@ public class PathGenerator : MonoBehaviour {
     public float circularPathWidth = 5;
     public float maxAngle = 45;
     public float circularMaxAngle = 25;
-    public Vector2Int baseRandomInterval = new Vector2Int(25, 50);
-    public Vector2Int goBackRandomInterval = new Vector2Int(20, 30);
-    public int minGoBackInterval =10;
+    public Vector2Int baseRandomInterval = new Vector2Int(5, 10);
+    public Vector2Int goBackRandomInterval = new Vector2Int(4, 6);
+    public int minGoBackInterval =2;
     public float turnChance = 0.33f;
     public TrainPath MakeTrainPath(Vector3 startPoint, Vector3 startDirection, Vector3 direction, float length ,bool immediateTurn = false) {
         float curAngle = Vector3.Angle(startDirection,direction);
@@ -59,12 +66,14 @@ public class PathGenerator : MonoBehaviour {
             
             if (doClampAngle) {
                 if (rotAngle > 0) {
-                    if (curAngle <= maxAngle) {
-                        curAngle += rotAngle;
+                    curAngle += rotAngle;
+                    if (curAngle > maxAngle) {
+                        interval = interval % 5; // turn away as fast as possible
                     }
                 } else {
-                    if (curAngle >= -maxAngle) {
-                        curAngle += rotAngle;
+                    curAngle += rotAngle;
+                    if (curAngle < -maxAngle) {
+                        interval = interval % 5; // turn away as fast as possible
                     }
                 }
             } else {
@@ -77,7 +86,7 @@ public class PathGenerator : MonoBehaviour {
             
             path[i] = path[i - 1] + curDirection.normalized * stepLength;
 
-            if (interval < minGoBackInterval) {
+            if (interval < minGoBackInterval*5) {
                 if (DistanceToLine(startPoint, direction, path[i]) > pathWidth) {
                     if (Vector3.Cross(path[i]-startPoint, direction).y < 0) {
                         rotAngle = -turnAngle;
@@ -86,6 +95,7 @@ public class PathGenerator : MonoBehaviour {
                     }
 
                     interval = Random.Range(goBackRandomInterval.x, goBackRandomInterval.y);
+                    interval *= 5;
                 }
             }
 
@@ -102,6 +112,7 @@ public class PathGenerator : MonoBehaviour {
 
 
                 interval = Random.Range(baseRandomInterval.x, baseRandomInterval.y);
+                interval *= 5;
             }
 
             maxEdge.x = Mathf.Max(maxEdge.x, path[i].x);

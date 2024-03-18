@@ -52,7 +52,8 @@ public class LevelArchetypeScriptable : ScriptableObject {
         for (int i = 0; i < input.Length; i++) {
             indexes.Add(i);
         }
-        indexes.Shuffle();
+
+        indexes = ExtensionMethods.Shuffle(indexes);
 
         for (int i = 0; i < collection.Length; i++) {
             collection[i] = input[indexes[i]];

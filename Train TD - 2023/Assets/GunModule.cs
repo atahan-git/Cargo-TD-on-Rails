@@ -100,7 +100,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             return projectileDamage * GetDamageMultiplier();
         }
     }
-    
+
+    public bool SearchingForTargets() {
+        return !beingDirectControlled && gunActive && HasAmmo();
+    }
+
     public float GetBurnDamage() {
         var burnBulletAddonDamage = 0f;
 
@@ -210,7 +214,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             } else {
                 // look at center of targeting area
                 if (rotateTransform.anchor != null) {
-                    SetRotation(Quaternion.LookRotation(GetRangeOrigin().forward, Vector3.up));
+                    if (SearchingForTargets()) {
+                        SetRotation(Quaternion.LookRotation(GetRangeOrigin().forward, Vector3.up));
+                    } else {
+                        SetRotation(Quaternion.LookRotation(GetRangeOrigin().forward - Vector3.up/2f, Vector3.up));
+                    }
                 }
 
                 IsBarrelPointingCorrectly = false;
@@ -219,6 +227,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
                     gatlingAmount -= Time.deltaTime*2;
                     gatlingAmount = Mathf.Clamp(gatlingAmount, 0, maxGatlingAmount);
                 }
+            }
+        } else {
+            if (!beingDirectControlled) {
+                gatlingAmount -= Time.deltaTime * 2;
+                gatlingAmount = Mathf.Clamp(gatlingAmount, 0, maxGatlingAmount);
             }
         }
 
@@ -256,7 +269,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
 
     public void SetRotation(Quaternion rotation) {
-        realRotation = Quaternion.Lerp(realRotation, rotation, rotateSpeed * Time.deltaTime);
+        var searchingForTargets = SearchingForTargets();
+        realRotation = Quaternion.Lerp(realRotation, rotation, searchingForTargets ? rotateSpeed * Time.deltaTime : 2f*Time.deltaTime);
 
         if (Quaternion.Angle(realRotation, rotation) < 5) {
             IsBarrelPointingCorrectly = true;
@@ -329,7 +343,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             }
             
         } else {
-            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
+            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier * WorldDifficultyController.s.currentDamageMultiplier;
         }
 
         return dmgMul;
@@ -348,7 +362,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             }
             
         } else {
-            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier + WorldDifficultyController.s.currentDamageIncrease;
+            dmgMul *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier * WorldDifficultyController.s.currentDamageMultiplier;
         }
         
 
@@ -456,10 +470,24 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             var barrelEnd = GetShootTransform().transform;
             var position = barrelEnd.position;
             var rotation = barrelEnd.rotation;
-            var bullet = Instantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
+
+            var addAngleInaccuracy = 1f;
+            addAngleInaccuracy += gatlingAmount / Mathf.Max(maxGatlingAmount,1) * 3;
+
+            var randomDirection = Random.onUnitSphere;
+            var actualInaccuracy = Random.Range(0, addAngleInaccuracy);
+            
+            var bullet = VisualEffectsController.s.SmartInstantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
+
+            var bulletForward = bullet.transform.forward;
+            
+            bullet.transform.forward = Vector3.RotateTowards(bulletForward, randomDirection,actualInaccuracy*Mathf.Deg2Rad, 0);
+            //print($"{bulletForward} - {randomDirection} - {bullet.transform.forward}");
+            
+            
             bullet.transform.localScale = Vector3.one*(damageMultiplier*1.5f);
             SetColors(bullet);
-            var muzzleFlash = Instantiate(muzzleFlashPrefab, position, rotation);
+            var muzzleFlash = VisualEffectsController.s.SmartInstantiate(muzzleFlashPrefab, position, rotation);
             var projectile = bullet.GetComponent<Projectile>();
             projectile.myOriginObject = this.GetComponentInParent<Rigidbody>().gameObject;
             projectile.projectileDamage = GetDamage();

@@ -736,6 +736,7 @@ public class CameraController : MonoBehaviour {
     public float mouseSensitivity = 1f;
     public float gamepadSensitivity = 1f;
     public float overallSensitivity = 1f;
+    public bool posLerping = true;
     public bool rotLerping = true;
     public bool allowDirectControlFreeLook;
     public float directControlMaxNonFreeLook = 8f;
@@ -770,7 +771,15 @@ public class CameraController : MonoBehaviour {
         
         var targetPos = directControlTransform.position;
         var targetRot = /*directControlTransform.rotation **/ xQuaternion * yQuaternion;
-        cameraLerpDummy.transform.position = Vector3.Lerp(cameraLerpDummy.transform.position, targetPos, posLerpSpeed * Time.unscaledDeltaTime);
+        
+        if (posLerping) {
+            cameraLerpDummy.transform.position = Vector3.Lerp(cameraLerpDummy.transform.position, targetPos, posLerpSpeed * Time.unscaledDeltaTime);
+            if (Vector3.Distance(cameraLerpDummy.transform.position, targetPos) < 0.01f) {
+                posLerping = false;
+            }
+        } else {
+            cameraLerpDummy.transform.position = targetPos;
+        }
 
         if (rotLerping) {
             cameraLerpDummy.transform.rotation = Quaternion.Lerp(cameraLerpDummy.transform.rotation, targetRot, rotLerpSpeed * Time.unscaledDeltaTime);
@@ -788,6 +797,7 @@ public class CameraController : MonoBehaviour {
         rotTarget = new Vector2(target.rotation.eulerAngles.y, -target.rotation.eulerAngles.x);
         freeLookDelta = Vector2.zero;
         rotLerping = true;
+        posLerping = true;
         allowDirectControlFreeLook = allowFreeLook;
         Cursor.lockState = CursorLockMode.Locked;
     }

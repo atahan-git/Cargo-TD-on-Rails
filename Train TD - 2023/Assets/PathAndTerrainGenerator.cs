@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -24,7 +23,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public List<PathGenerator.TrainPath> myPaths = new List<PathGenerator.TrainPath>();
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
-    public Dictionary<Vector3, GameObject> myTracks = new Dictionary<Vector3,GameObject>();
+    public Dictionary<int, Dictionary<Vector3, GameObject>> myTracks = new Dictionary<int, Dictionary<Vector3, GameObject>>();
     public List<PathGenerator.TrainPath> cityStampPaths = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> _comboList = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> comboList {
@@ -42,6 +41,28 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         return _comboList;
     }
     public bool isComboListDirty = false;
+
+
+    private int lastId = 0;
+    void AddToMyPaths(PathGenerator.TrainPath toAdd) {
+        if (toAdd.trackObjectsId <= 0) {
+            lastId += 1;
+            toAdd.trackObjectsId = lastId;
+        }
+        myTracks[toAdd.trackObjectsId] = new Dictionary<Vector3, GameObject>();
+        myPaths.Add(toAdd);
+    }
+
+    void RemoveFromMyPaths(PathGenerator.TrainPath toRemove) {
+        myPaths.Remove(toRemove);
+        myTracks.Remove(toRemove.trackObjectsId);
+    }
+
+    void ClearAllMyPaths() {
+        lastId = 0;
+        myPaths.Clear();
+        myTracks.Clear();
+    }
 
     public Biome[] biomes;
 	
@@ -107,7 +128,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         terrainGenerationProgress = 0;
         needReflectionProbe = true;
         ClearTerrains();
-        myPaths.Clear();
+        ClearAllMyPaths();
         cityStampPaths.Clear();
         terrainViewRange = 20;
 
@@ -115,7 +136,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         var segmentDistance = 5f;
         var endStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward,Vector3.forward, segmentDistance);
-        myPaths.Add(endStationPath);
+        AddToMyPaths(endStationPath);
         isComboListDirty = true;
         
         var cityDistance =   stopDistance + PathGenerator.stationStraightDistance/2f + endStationCenterOffset;
@@ -145,7 +166,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         SpeedController.s.missionDistance = 0;
         SpeedController.s.currentDistance = 0;
 
-        StartCoroutine(ReDrawTerrainAroundCenter());
+        StartCoroutine(ReDrawTerrainAroundCenter(true));
     }
 
 
@@ -159,9 +180,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     [Button]
     public void DebugMakeCityPath() {
-        myPaths.Clear();
+        ClearAllMyPaths();
         var starterStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward, Vector3.forward, Random.Range(30,50));
-        myPaths.Add(starterStationPath);
+        AddToMyPaths(starterStationPath);
         isComboListDirty = true;
     }
 
@@ -177,12 +198,12 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         terrainGenerationProgress = 0;
         needReflectionProbe = true;
         ClearTerrains();
-        myPaths.Clear();
+        ClearAllMyPaths();
         cityStampPaths.Clear();
         terrainViewRange = 20;
         
         var starterStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward, Vector3.forward, Random.Range(30,50));
-        myPaths.Add(starterStationPath);
+        AddToMyPaths(starterStationPath);
         isComboListDirty = true;
         
         var cityDistance =  PathGenerator.stationStraightDistance/2f;
@@ -201,13 +222,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         currentPathTreeOffset = -PathGenerator.stationStraightDistance / 2f;
         generatedPathDepth = 0;
         
-        StartCoroutine(ReDrawTerrainAroundCenter());
+        StartCoroutine(ReDrawTerrainAroundCenter(true));
     }
 
 
     [Button]
     public void DebugMakeCirclePath() {
-        myPaths.Clear();
+        ClearAllMyPaths();
         var isGoodTrack = false;
 
         PathGenerator.TrainPath track = null;
@@ -223,7 +244,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
         }
         Debug.Log($"made good path in {n} tries");
-        myPaths.Add(track);
+        AddToMyPaths(track);
         isComboListDirty = true;
     }
 
@@ -241,7 +262,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             var coordinates = new Vector2Int(offset.x, offset.y);
             GetComponent<TerrainGenerator>().MakeTerrainDistanceMaps(
                 coordinates,
-                center,
+                /*center,*/
                 comboList,
                 TerrainGenDone
             );
@@ -257,12 +278,12 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     
     [Button]
     public void DebugMakeTracks() {
-        var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange);
+        /*var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange);
 
         /*for (int i =  myTracks.Count-1; i >=0; i--) {
             myTracks[i].GetComponent<PooledObject>().DestroyPooledObject();
         }
-        myTracks.Clear();*/
+        myTracks.Clear();#1#
 
         var deleteList = new List<Vector3>();
         foreach (var keyValuePair in myTracks) {
@@ -284,13 +305,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 while (distance < trainPath.length) {
                     var point = PathGenerator.GetPointOnLine(trainPath, distance);
                     if (viewBound.Contains(point) && !myTracks.ContainsKey(point - center)) {
-                        var newTrack = TrackPool.Spawn(point, PathGenerator.GetDirectionOnTheLine(trainPath, distance));
+                        var newTrack = trackPool.Spawn(point, PathGenerator.GetDirectionOnTheLine(trainPath, distance));
                         myTracks[point-center] = newTrack;
                     }
                     distance += trackDistance;
                 }
             }
-        }
+        }*/
     }
 
     
@@ -325,7 +346,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
 
         if (curDistance > maxDistance) {
-            myPaths.Remove(pathTree.myPath);
+            RemoveFromMyPaths(pathTree.myPath);
             isComboListDirty = true;
             if (pathTree.leftPathTree != null) {
                 pathTree.leftPathTree.prevPathTree = null;
@@ -357,9 +378,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
 
     public int generatedPathDepth = 0; // min path before we generate an end station
-    public int minCastleDepth = 2;
+    private int minCastleDepth = 2;
     private float endStationChance = 0.25f;
-    private bool forceEndStation = true;
+    private bool forceEndStation = false;
     void ForkPath(PathTree pathTree, float curDistance, float maxDistance) {
         if(pathTree.myPath.endPath)
             return;
@@ -380,18 +401,63 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 rightStationMakeEnd = true;
             }
         }
-        
+
+        var leftPathType = PathGenerator.PathType.empty;
+        var rightPathType = PathGenerator.PathType.empty;
+
+        if (pathTree.leftPathTree == null || pathTree.rightPathTree == null) {
+            var oneSideEmptyPath = Random.value < 0.2f;
+
+            var pathTypes = new List<PathGenerator.PathType> { PathGenerator.PathType.gunCart, PathGenerator.PathType.utilityCart, PathGenerator.PathType.gem, PathGenerator.PathType.cargo };
+            if (pathTree.leftPathTree != null) {
+                pathTypes.Remove(pathTree.leftPathTree.myPath.myType);
+            }
+
+            if (pathTree.rightPathTree != null) {
+                pathTypes.Remove(pathTree.rightPathTree.myPath.myType);
+            }
+
+            pathTypes = ExtensionMethods.Shuffle(pathTypes);
+            var allItems = "";
+            foreach( var x in pathTypes) {
+                allItems += x.ToString() + " - ";
+            }
+            //print(allItems);
+
+
+            if (oneSideEmptyPath) {
+                if (Random.value < 0.5f) {
+                    leftPathType = pathTypes[0];
+                } else {
+                    rightPathType = pathTypes[0];
+                }
+            } else {
+                leftPathType = pathTypes[0];
+                rightPathType = pathTypes[1];
+            }
+        }
+
         var segmentDistance = activeLevel.GetRandomSegmentLength();
         // left fork
         if(pathTree.leftPathTree == null) {
             generatedPathDepth += 1;
             var leftSegmentDirection = Quaternion.Euler(0, - 30 + Random.Range(-15, 15), 0) * startDirection;
             pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, leftStationMakeEnd, startPoint, startDirection, leftSegmentDirection, segmentDistance);
+            if (pathTree.leftPathTree.myPath.endPath) {
+                pathTree.leftPathTree.myPath.myType = PathGenerator.PathType.empty;
+            } else {
+                pathTree.leftPathTree.myPath.myType = leftPathType;
+            }
         }
         //right fork
         if(pathTree.rightPathTree == null) {
             var rightSegmentDirection = Quaternion.Euler(0,  30 + Random.Range(-15, 15), 0) * startDirection;
             pathTree.rightPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, rightStationMakeEnd, startPoint, startDirection, rightSegmentDirection, segmentDistance);
+            if (pathTree.rightPathTree.myPath.endPath) {
+                pathTree.rightPathTree.myPath.myType = PathGenerator.PathType.empty;
+            } else {
+                pathTree.rightPathTree.myPath.myType = rightPathType;
+            }
         }
     }
 
@@ -401,7 +467,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             var newStationEndPath = _pathGenerator.MakeStationAtEndPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
             var cityDistance = segmentDistance + PathGenerator.stationStraightDistance/2f + endStationCenterOffset;
             var cityStampPath = _pathGenerator.MakeCityStampPath(PathGenerator.GetPointOnLine(newStationEndPath, cityDistance), PathGenerator.GetDirectionOnTheLine(newStationEndPath, cityDistance));
-            myPaths.Add(newStationEndPath);
+            AddToMyPaths(newStationEndPath);
             isComboListDirty = true;
             var newStationEndPathTree = new PathTree() {
                 prevPathTree = pathTree,
@@ -414,7 +480,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             return newStationEndPathTree;
         } else {
             var newPath = _pathGenerator.MakeTrainPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
-            myPaths.Add(newPath);
+            AddToMyPaths(newPath);
             isComboListDirty = true;
             var newPathTree = new PathTree() {
                 prevPathTree = pathTree,
@@ -483,7 +549,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public float terrainViewRange = 10;
     public bool reDrawing = false;
-    IEnumerator ReDrawTerrainAroundCenter() {
+    IEnumerator ReDrawTerrainAroundCenter(bool instant = false) {
         while (reDrawing) {
             yield return null;
         }
@@ -512,7 +578,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
 
         if (!makingTracks) {
-            StartCoroutine(MakeTracksAroundCenter());
+            StartCoroutine(MakeTracksAroundCenter(instant));
         }
 
         var diff =  drawCenter-center;
@@ -535,14 +601,16 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 
                 GetComponent<TerrainGenerator>().MakeTerrainDistanceMaps(
                     coordinates,
-                    center,
+                    /*center,*/
                     comboList,
                     TerrainGenDone
                 );
                 currentTerrainGenCount += 1;
-                yield return null;
-                yield return null;
-                yield return null;
+                if (!instant) {
+                    yield return null;
+                    yield return null;
+                    yield return null;
+                }
             } else {
                 existingTerrain.needToBePurged = false;
             }
@@ -558,7 +626,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             if (myTerrains[i].needToBePurged) {
                 myTerrains[i].terrain.GetComponent<PooledObject>().DestroyPooledObject();
                 myTerrains.RemoveAt(i);
-                yield return null;
+                if (!instant) {
+                    yield return null;
+                }
             }
         }
         reDrawing = false;
@@ -569,6 +639,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         terrainGenerationProgress = 1f;
         if (needReflectionProbe) {
             transform.parent.GetComponentInChildren<ReflectionProbe>().RenderProbe();
+            needReflectionProbe = false;
         }
         
         //Debug.Break();
@@ -694,48 +765,72 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
     }*/
 
-    public ObjectPool TrackPool;
+    public ObjectPool trackPool;
+    public ObjectPool bentTrackPool;
     private PathGenerator _pathGenerator => GetComponent<PathGenerator>();
 
     private bool makingTracks = false;
-    public IEnumerator MakeTracksAroundCenter() {
+    public IEnumerator MakeTracksAroundCenter(bool instant = false) {
         makingTracks = true;
         var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange*2);
         var deleteList = new List<Vector3>();
         var n = 0;
-        foreach (var keyValuePair in myTracks) {
-            if (!viewBound.Contains(keyValuePair.Key+center)) {
-                keyValuePair.Value.GetComponent<PooledObject>().DestroyPooledObject();
-                deleteList.Add(keyValuePair.Key);
+        foreach (var trackDictPair in myTracks) {
+            var curTracks = trackDictPair.Value;
+            foreach (var keyValuePair in curTracks) {
+                if (!viewBound.Contains(keyValuePair.Key + center)) {
+                    keyValuePair.Value.GetComponent<PooledObject>().DestroyPooledObject();
+                    deleteList.Add(keyValuePair.Key);
+                }
+
+                /*if (!instant && n % 300 == 0 && !TimeController.s.fastForwarding) {
+                    yield return null;
+                }*/
+
+                n++;
             }
-
-            if (n % 300 == 0 && !TimeController.s.fastForwarding) {
-                yield return null;
+            
+            foreach (var key in deleteList) {
+                curTracks.Remove(key);
             }
-
-            n++;
         }
-        //print("key pruning done");
 
-        foreach (var key in deleteList) {
-            myTracks.Remove(key);
-        }
+        
 
         for (int i = 0; i < myPaths.Count; i++) {
             if (myPaths[i].bounds.Intersects(viewBound)) {
                 
                 var trainPath = myPaths[i];
-                var distance = 0f;
-                while (distance < trainPath.length) {
-                    var point = PathGenerator.GetPointOnLine(trainPath, distance);
-                    if (viewBound.Contains(point) && !myTracks.ContainsKey(point - center)) {
-                        var newTrack = TrackPool.Spawn(point, PathGenerator.GetDirectionOnTheLine(trainPath, distance));
-                        myTracks[point-center] = newTrack;
+                var index = 0;
+
+                while (index +4 < trainPath.points.Length) {
+                    var point = trainPath.points[index];
+                    if (!myTracks.ContainsKey(trainPath.trackObjectsId)) {
+                        myTracks[trainPath.trackObjectsId] = new Dictionary<Vector3, GameObject>();
+                    }
+                    var curTracks = myTracks[trainPath.trackObjectsId];
+                    
+                    if (viewBound.Contains(point) && !curTracks.ContainsKey(point - center)) {
+                        var direction = trainPath.points[index + 1] - trainPath.points[index];
+                        var directionFurther = trainPath.points[index + 4] - trainPath.points[index];
+                        var rotation = Quaternion.LookRotation(direction);
+
+                        GameObject newTrack;
+                        if (Vector3.Angle(direction, directionFurther) > 0) {
+                            newTrack = bentTrackPool.Spawn(point, rotation);
+                            if (Vector3.Cross(direction, directionFurther).y > 0) {
+                                newTrack.transform.localScale = new Vector3(-1, 1, 1);
+                            }
+                        } else {
+                            newTrack = trackPool.Spawn(point, rotation);
+                        }
+
+                        curTracks[point-center] = newTrack;
                     }
 
-                    distance += trackDistance;
+                    index += 5;
                     
-                    if (n % 20 == 0 && !TimeController.s.fastForwarding) {
+                    if (!instant && n % 20 == 0 && !TimeController.s.fastForwarding) {
                         yield return null;
                     }
 
@@ -754,6 +849,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     
     private void OnDrawGizmosSelected() {
         for (int i = 0; i < myPaths.Count; i++) {
+            if (!myPaths[i].debugDrawGizmo) {
+                continue;
+            }
             var path = myPaths[i].points;
             Vector3 startPoint = transform.position;
             Vector3 direction = Vector3.forward;
@@ -828,6 +926,11 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             myTerrains[i].bounds.center -= point;
         }*/
         transform.position -= point;
+
+        for (int i = 0; i < myTerrains.Count; i++) {
+            myTerrains[i].AddToGrassPositions(-point);
+            myTerrains[i].topLeftPosition = myTerrains[i].terrain.GetPosition();
+        }
 
         drawCenter -= point;
         center -= point;

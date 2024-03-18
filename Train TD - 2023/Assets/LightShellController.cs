@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class LightShellController : MonoBehaviour {
 
-    public Light[] lights;
+    [Tooltip("Light 0 will be used as the prefab to copy over to the others when increasing light count")]
+    public List<Light> lights;
     public float lightYOffset = 1.22f;
     public Transform[] outerBones;
     public Vector2 outerStartEndOffsets;
@@ -25,6 +26,32 @@ public class LightShellController : MonoBehaviour {
     private void Start() {
         boneScale = innerBones[0].transform.localScale;
         curLightAmount = 0;
+        Train.s.onTrainCartsChanged.AddListener(UpdateLightCount);
+    }
+
+
+    void UpdateLightCount() {
+        var trainLength = Train.s.GetTrainLength();
+
+        var lightCount = Mathf.CeilToInt((trainLength + 1) / 1.5f) + 1;
+
+        lightCount = Mathf.Clamp(lightCount, 1, 8);
+
+        if (lightCount != lights.Count) {
+            while (lights.Count > lightCount  ) {
+                var index = lights.Count - 1;
+                var decommissioned = lights[index];
+                lights.RemoveAt(index);
+                decommissioned.GetComponent<SmartDestroy>().Engage();
+            }
+            
+            while (lights.Count < lightCount) {
+                var newLight = Instantiate(lights[0].gameObject, lights[0].transform.parent).GetComponent<Light>();
+                newLight.intensity = 0;
+                newLight.transform.position = lights[^1].transform.position;
+                lights.Add(newLight);
+            }
+        }
     }
 
     public float curLightAmount = 1f;
@@ -42,7 +69,7 @@ public class LightShellController : MonoBehaviour {
             targetLightAmount = 0;
         }
         
-        curLightAmount = Mathf.Lerp(curLightAmount, targetLightAmount , 1f * Time.deltaTime);
+        curLightAmount =  targetLightAmount;
 
         var minDistance = float.MinValue;
         var maxDistance = float.MaxValue;
@@ -59,8 +86,8 @@ public class LightShellController : MonoBehaviour {
             var spanLength = Train.s.GetTrainLength() + 1f;
             var startDist = spanLength / 2f;
 
-            var stepDistance = spanLength / (lights.Length-1);
-            for (int i = 0; i < lights.Length; i++) {
+            var stepDistance = spanLength / (lights.Count-1);
+            for (int i = 0; i < lights.Count; i++) {
                 var realDist = startDist - i * stepDistance;
                 var dist = Mathf.Clamp(realDist, minDistance, maxDistance);
                 lights[i].transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(realDist) + Vector3.up*lightYOffset;
@@ -72,7 +99,7 @@ public class LightShellController : MonoBehaviour {
 
                 var inLegalZone = realDist > minDistance && realDist < maxDistance;
 
-                lights[i].intensity = curLightAmount * scaleLerp * lightMultiplier;
+                lights[i].intensity = Mathf.Lerp(lights[i].intensity, curLightAmount * scaleLerp * lightMultiplier, 1f*Time.deltaTime);
                 lights[i].enabled = inLegalZone && lightsActive;
             }
         }
@@ -122,7 +149,7 @@ public class LightShellController : MonoBehaviour {
 
         if (curLightAmount < 0.05f) {
             if (lightsActive) {
-                for (int i = 0; i < lights.Length; i++) {
+                for (int i = 0; i < lights.Count; i++) {
                     lights[i].enabled = false;
                 }
 

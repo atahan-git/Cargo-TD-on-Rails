@@ -399,7 +399,7 @@ MonoBehaviour:
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
+  directControlShakeMultiplier: 0.5
   isHeal: 0
   rotateSpeed: 10
   gunActive: 1

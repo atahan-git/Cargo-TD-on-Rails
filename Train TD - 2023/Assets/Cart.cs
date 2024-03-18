@@ -15,6 +15,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
     
     public bool isBeingDisabled = false;
     public int trainIndex;
+    public float cartPosOffset;
 
     public float length = 1.4f;
     [HideInInspector]
@@ -33,6 +34,8 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
     public Transform modulesParent;
 
     [NonSerialized] public GameObject currentlyRepairingUIThing;
+
+    private bool avoidByDefault;
     private void Start() {
         SetComponentCombatShopMode();
         PlayStateMaster.s.OnCombatEntered.AddListener(SetComponentCombatShopMode);
@@ -40,6 +43,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
         SetUpOverlays();
         SetUpOutlines();
         ResetState();
+        avoidByDefault = GetComponent<PossibleTarget>().avoid;
     }
 
 
@@ -50,7 +54,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
     public void ResetState() {
         SetUpOverlays();
         SetUpOutlines();
-        genericParticlesParent.DeleteAllChildren();
+        //genericParticlesParent.DeleteAllChildren();
         GetHealthModule().ResetState();
 
         for (int i = 0; i < myArtifactLocations.Count; i++) {
@@ -69,7 +73,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
         var isDisabled = isDestroyed || isBeingDisabled;
 
         if (isDisabled) {
-            GetComponent<PossibleTarget>().enabled = false;
+            GetComponent<PossibleTarget>().avoid = true;
 
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
@@ -106,7 +110,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                 } 
             }
         } else {
-            GetComponent<PossibleTarget>().enabled = true;
+            GetComponent<PossibleTarget>().avoid = avoidByDefault;
         
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
@@ -266,6 +270,15 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
 
     public bool IsAttachedToTrain() {
         return GetComponentInParent<Train>() != null;
+    }
+    
+    private DroneRepairController holdingDrone;
+    public DroneRepairController GetHoldingDrone() {
+        return holdingDrone;
+    }
+
+    public void SetHoldingDrone(DroneRepairController holder) {
+        holdingDrone = holder;
     }
 }
 

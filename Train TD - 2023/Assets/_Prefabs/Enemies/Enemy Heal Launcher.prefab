@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunUniqueName: unset unique name
   gunSprite: {fileID: 21300000, guid: f66cdbf48d45ba8448681a24250118c3, type: 3}
   isGigaGatling: 0
   gatlinificator: 0
@@ -188,15 +189,19 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 980176138545819842, guid: 704ed75930e83c04784fdf7df4f8809c, type: 3}
   target: {fileID: 0}
   mortarRotation: 0
-  fireDelay: 1
+  fireDelay: 2
   fireBarrageCount: 1
   fireBarrageDelay: 0.2
   fireRateMultiplier: 1
-  projectileDamage: 10
+  fireRateDivider: 1
+  projectileDamage: 100
   burnDamage: 0
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
@@ -206,14 +211,11 @@ MonoBehaviour:
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 1
+  ammoPerBarrageMultiplier: 1
   isPlayer: 0
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 0
-  steamUsePerShot: 0
   needWarmUp: 0
   startWarmUpEvent:
     m_PersistentCalls:
@@ -230,12 +232,9 @@ MonoBehaviour:
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
+  isLockOn: 0
   isHoming: 0
-  boostDamageOnUpgrade: 0.5
   waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   explosionRange: 0
   explosionRangeBoost: 0
   gotShootCredits: 0

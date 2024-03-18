@@ -41,8 +41,8 @@ public class EnemyWeaponShoot : MonoBehaviour {
         for (int i = 0; i < fireBarrageCount; i++) {
             var position = barrelEnd.position;
             var rotation = barrelEnd.rotation;
-            var bullet = Instantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
-            var muzzleFlash = Instantiate(muzzleFlashPrefab, position, rotation);
+            var bullet = VisualEffectsController.s.SmartInstantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
+            var muzzleFlash = VisualEffectsController.s.SmartInstantiate(muzzleFlashPrefab, position, rotation);
             bullet.GetComponent<Projectile>().myOriginObject = this.transform.root.gameObject;
 
             yield return new WaitForSeconds(fireBarrageDelay);

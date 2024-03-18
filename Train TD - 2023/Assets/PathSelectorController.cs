@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class PathSelectorController : MonoBehaviour {
@@ -50,6 +51,7 @@ public class PathSelectorController : MonoBehaviour {
 		trackSwitchAction.action.Disable();
 		trackSwitchAction.action.performed -= TrackSwitch;
 	}
+
 	
 	public void SetUpPath() {
 		if (activeLevel == null) {
@@ -60,7 +62,7 @@ public class PathSelectorController : MonoBehaviour {
 
 		DistanceAndEnemyRadarController.s.ClearRadar();
 
-		EnemyWavesController.s.SpawnEnemiesOnSegment(0,  PathAndTerrainGenerator.s.currentPathTree.myPath.length);
+		//EnemyWavesController.s.SpawnEnemiesOnSegment(0,  PathAndTerrainGenerator.s.currentPathTree.myPath.length);
 
 		nextSegmentChangeDistance = PathAndTerrainGenerator.s.currentPathTree.myPath.length + PathAndTerrainGenerator.s.currentPathTreeOffset;
 
@@ -87,6 +89,12 @@ public class PathSelectorController : MonoBehaviour {
 	public MiniGUI_TrackPath bottomTrack;
 	public GameObject topCastleCity;
 	public GameObject bottomCastleCity;
+	public Image topTrackType;
+	public Image bottomTrackType;
+
+	public Sprite[] pathTypeSprites;
+	public Color[] pathTypeColors;
+	
 	void ReAdjustTracks() {
 		var currentPathTree = PathAndTerrainGenerator.s.currentPathTree;
 		mainTrack.SetUpTrack(currentPathTree.myPath.length);
@@ -107,7 +115,9 @@ public class PathSelectorController : MonoBehaviour {
 			
 		} else {
 			topTrack.SetUpTrack(currentPathTree.leftPathTree.myPath.length);
+			SetImageBasedOnPathType(topTrackType, currentPathTree.leftPathTree.myPath.myType);
 			bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
+			SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.myPath.myType);
 			topTrack.SetActiveState(mainLever.topSelected);
 			bottomTrack.SetActiveState(!mainLever.topSelected);
 
@@ -119,6 +129,34 @@ public class PathSelectorController : MonoBehaviour {
 			
 			
 			trainStationEnd.SetActive(false);
+		}
+	}
+
+	void SetImageBasedOnPathType(Image target, PathGenerator.PathType type) {
+		switch (type) {
+			case PathGenerator.PathType.empty:
+				target.enabled = false;
+				break;
+			case PathGenerator.PathType.gunCart:
+				target.enabled = true;
+				target.sprite = pathTypeSprites[0];
+				target.color = pathTypeColors[0];
+				break;
+			case PathGenerator.PathType.utilityCart:
+				target.enabled = true;
+				target.sprite = pathTypeSprites[1];
+				target.color = pathTypeColors[1];
+				break;
+			case PathGenerator.PathType.gem:
+				target.enabled = true;
+				target.sprite = pathTypeSprites[2];
+				target.color = pathTypeColors[2];
+				break;
+			case PathGenerator.PathType.cargo:
+				target.enabled = true;
+				target.sprite = pathTypeSprites[3];
+				target.color = pathTypeColors[3];
+				break;
 		}
 	}
 
@@ -167,8 +205,8 @@ public class PathSelectorController : MonoBehaviour {
 				/*if (upcomingSegment.isEncounter) {
 					EncounterController.s.EngageEncounter(upcomingSegment.levelName);
 				} else {*/
-					EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length);
 				//}
+				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length, upcomingPath.myPath.myType);
 
 				nextSegmentChangeDistance += upcomingPath.myPath.length;
 				/*if (!upcomingPath.endPath) {

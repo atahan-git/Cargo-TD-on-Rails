@@ -24,7 +24,7 @@ public class BulletHealth : MonoBehaviour, IHealth {
 		SetUp();
 	}
 
-	public void DealDamage(float damage) {
+	public void DealDamage(float damage, Vector3? damageHitPoint) {
 
 		currentHealth -= damage;
 
@@ -117,7 +117,7 @@ public class BulletHealth : MonoBehaviour, IHealth {
 			Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
 				.GetComponent<MiniGUI_DamageNumber>()
 				.SetUp(transform, burnDistance, false, false, true);
-			DealDamage(burnDistance);
+			DealDamage(burnDistance, null);
 
 			currentBurn -= burnDistance;
 		}
@@ -136,7 +136,7 @@ public class BulletHealth : MonoBehaviour, IHealth {
 
 	public void SetUp() {
 		maxHealth = baseHealth;
-		maxHealth *= 1 + WorldDifficultyController.s.currentHealthIncrease;
+		maxHealth *= WorldDifficultyController.s.currentHealthMultiplier;
 		currentHealth = maxHealth;
 		
 		enemyUIBar = Instantiate(LevelReferences.s.bulletHealthPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_BulletUIBar>();
@@ -191,7 +191,11 @@ public class BulletHealth : MonoBehaviour, IHealth {
 	public float GetHealthPercent() {
 		return currentHealth /  Mathf.Max(maxHealth,1);
 	}
-	
+
+	public float GetHealth() {
+		return currentHealth;
+	}
+
 	public float GetShieldPercent() {
 		return 0;
 	}

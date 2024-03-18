@@ -738,7 +738,7 @@ public class UpgradesController : MonoBehaviour {
 			indexes.Add(i);
 		}
 		
-		indexes.Shuffle();
+		indexes = ExtensionMethods.Shuffle(indexes);
 
 		var results = new string[count];
 

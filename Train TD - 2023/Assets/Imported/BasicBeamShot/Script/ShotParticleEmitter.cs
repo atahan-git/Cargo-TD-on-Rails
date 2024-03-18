@@ -32,7 +32,7 @@ public class ShotParticleEmitter : MonoBehaviour {
 				
 				q_rnd *= Quaternion.AngleAxis(180f,this.transform.up);
 
-				GameObject pat = (GameObject)GameObject.Instantiate(ShotParticle,Vector3.zero,q_rnd);
+				GameObject pat = (GameObject)VisualEffectsController.s.SmartInstantiate(ShotParticle,Vector3.zero,q_rnd, VisualEffectsController.EffectPriority.Always);
                 //pat.GetComponent<LineRenderer>().SetColors(col, col);
 				pat.transform.parent = this.transform.parent;
 				ShotPowerBuf -= 1.0f;

@@ -47,11 +47,7 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
     }
 
     public float GetHealth() {
-        if (myType == Type.player) {
-            return GetComponent<ModuleHealth>().currentHealth;
-        } else {
-            return GetComponent<EnemyHealth>().currentHealth;
-        }
+        return GetComponent<IHealth>().GetHealth();
     }
 
     public void ActivateForCombat() {

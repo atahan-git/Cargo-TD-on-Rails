@@ -32,7 +32,7 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 	}
 	
 	public void ProtectFromDamage(float damage) {
-		GetComponentInParent<ModuleHealth>().DealDamage(damage);
+		GetComponentInParent<ModuleHealth>().DealDamage(damage, null);
 	}
     
 	public void ProtectFromBurn(float damage) {

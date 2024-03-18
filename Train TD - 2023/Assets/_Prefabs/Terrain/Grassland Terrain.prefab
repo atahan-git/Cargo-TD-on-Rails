@@ -66,7 +66,14 @@ MonoBehaviour:
     pathAndTerrainGenerator: {fileID: 0}
     needToBePurged: 0
     beingProcessed: 0
+    jobsInit: 0
+    needReBatchingForGrass: 0
   isInitialized: 0
+  grassMesh0: {fileID: 4300000, guid: c8542799e804ef04eb35ba93777008a8, type: 2}
+  grassMesh1: {fileID: 4300000, guid: 255522b0d4257624f93e110d4a6135ed, type: 2}
+  grassMaterial0: {fileID: 2100000, guid: fc123ab8f2eb56945b5849155624e2c0, type: 2}
+  grassMaterial1: {fileID: 2100000, guid: fc123ab8f2eb56945b5849155624e2c0, type: 2}
+  drawGrass: 1
 --- !u!218 &2040300268567586271
 Terrain:
   m_ObjectHideFlags: 0

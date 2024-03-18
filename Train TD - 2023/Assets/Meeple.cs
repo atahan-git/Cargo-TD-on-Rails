@@ -231,4 +231,13 @@ public class Meeple : MonoBehaviour, IPlayerHoldable {
     public Transform GetUITargetTransform() {
         return transform;
     }
+    
+    private DroneRepairController holdingDrone;
+    public DroneRepairController GetHoldingDrone() {
+        return holdingDrone;
+    }
+
+    public void SetHoldingDrone(DroneRepairController holder) {
+        holdingDrone = holder;
+    }
 }

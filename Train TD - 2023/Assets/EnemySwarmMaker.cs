@@ -33,7 +33,8 @@ public class EnemySwarmMaker : MonoBehaviour {
         }
 
         if (activeEnemies.Count <= 0) {
-            Destroy(GetComponentInParent<EnemyWave>().gameObject);
+            //Destroy(GetComponentInParent<EnemyWave>().gameObject);
+            GetComponentInParent<EnemyWave>().CheckDestroySelf();
             Destroy(gameObject);
         }
     }

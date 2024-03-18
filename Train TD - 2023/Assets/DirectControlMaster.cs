@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -23,6 +24,11 @@ public class DirectControlMaster : MonoBehaviour {
 	[Header("Input")]
 	public InputActionReference cancelDirectControlAction;
 	public InputActionReference directControlShootAction;
+	
+	public InputActionReference moveAction;
+	public InputActionReference flyUpAction;
+	public InputActionReference flyDownAction;
+	
 	public IDirectControllable currentDirectControllable;
 
 	[Header("Shooting")]
@@ -85,17 +91,26 @@ public class DirectControlMaster : MonoBehaviour {
 
 	public bool directControlInProgress = false;
 
-	
+	[Button]
 	private void OnEnable() {
 		cancelDirectControlAction.action.Enable();
 		directControlShootAction.action.Enable();
 		cancelDirectControlAction.action.performed += DisableDirectControl;
+		
+		moveAction.action.Enable();
+		flyUpAction.action.Enable();
+		flyDownAction.action.Enable();
 	}
 
 	private void OnDisable() {
 		cancelDirectControlAction.action.Disable();
 		directControlShootAction.action.Disable();
 		cancelDirectControlAction.action.performed -= DisableDirectControl;
+		
+		
+		moveAction.action.Disable();
+		flyUpAction.action.Disable();
+		flyDownAction.action.Disable();
 	}
 
 

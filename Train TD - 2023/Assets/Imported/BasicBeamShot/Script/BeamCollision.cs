@@ -41,7 +41,7 @@ public class BeamCollision : MonoBehaviour {
                 {
                     Angle = Quaternion.AngleAxis(180.0f, transform.up) * this.transform.rotation;
                 }
-                GameObject obj = (GameObject)Instantiate(HitEffect,this.transform.position+this.transform.forward*hit.distance,Angle);
+                GameObject obj = (GameObject)VisualEffectsController.s.SmartInstantiate(HitEffect,this.transform.position+this.transform.forward*hit.distance,Angle, VisualEffectsController.EffectPriority.Always);
 				obj.GetComponent<BeamParam>().SetBeamParam(BP);
 				obj.transform.localScale = this.transform.localScale;
 			}

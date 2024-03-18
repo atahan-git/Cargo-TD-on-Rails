@@ -26,7 +26,7 @@ public class TweakablesMaster : MonoBehaviour {
 
 
     public void ApplyTweakableChange() {
-        ResetTweakable();
+        //ResetTweakable();
         Train.s.TrainChanged();
         //tweakableChanged?.Invoke();
     }

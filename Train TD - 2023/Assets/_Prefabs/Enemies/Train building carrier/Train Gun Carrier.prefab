@@ -147,7 +147,7 @@ MonoBehaviour:
   myAmmoBar: {fileID: 0}
   reloadEfficiency: 1
   filled: 0
-  fillPerSecond: 1.5
+  fillPerSecond: 0.75
 --- !u!1 &5605501109073282625
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,7 +369,7 @@ MonoBehaviour:
   - {fileID: 5187563872174184169}
   - {fileID: 3832554237853124936}
   - {fileID: 3344579151184420893}
-  canCarry: 000001
+  canCarry: 010101
   carryAwards:
   - uniqueName: cannon
     health: -1
@@ -2290,6 +2290,10 @@ PrefabInstance:
       propertyPath: ammoPerBarrage
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 2934280374143819819, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
+      propertyPath: projectileDamage
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3146471024428373951, guid: a4c60bfbea1db6349af418df7f9501a0, type: 3}
       propertyPath: m_Name
       value: Gatling
@@ -2450,8 +2454,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2934280374143819819, guid: c2a828c2c3de1204b8d85bc812c6f3c0, type: 3}
+      propertyPath: burnDamage
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2934280374143819819, guid: c2a828c2c3de1204b8d85bc812c6f3c0, type: 3}
       propertyPath: ammoPerBarrage
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3146471024428373951, guid: c2a828c2c3de1204b8d85bc812c6f3c0, type: 3}
       propertyPath: m_Name
@@ -2771,6 +2779,10 @@ PrefabInstance:
     - target: {fileID: 2934280374143819819, guid: 87dae615e5dfebc4a8b1302ef9414a6b, type: 3}
       propertyPath: ammoPerBarrage
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2934280374143819819, guid: 87dae615e5dfebc4a8b1302ef9414a6b, type: 3}
+      propertyPath: projectileDamage
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 3146471024428373951, guid: 87dae615e5dfebc4a8b1302ef9414a6b, type: 3}
       propertyPath: m_Name

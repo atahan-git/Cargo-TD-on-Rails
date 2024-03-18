@@ -190,7 +190,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 	public void UpdateDirectControl() {
 		ProcessCameraFadeAmount();
 		
-		if (myHealth == null || myHealth.isDead || myActiveGun == null) {
+		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myActiveGun == null) {
 			// in case our module gets destroyed
 			DirectControlMaster.s.DisableDirectControl();
 			return;
@@ -198,7 +198,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 
 		var camTrans = MainCameraReference.s.cam.transform;
 		if (!CameraController.s.rotLerping) { // if we finished changing positions then we can cycle between two guns if the camera rotates enough
-			if (Vector3.Dot(camTrans.forward, myActiveGun.transform.forward) < 0) {
+			if (Vector3.Dot(camTrans.forward, myActiveGun.transform.forward) < -0.2f) {
 				SetGunDirectControlStatus(myActiveGun, false);
 				curGunIndex += 1;
 				curGunIndex %= myGuns.Length;

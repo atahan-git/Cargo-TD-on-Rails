@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -16,6 +17,8 @@ public class LevelReferences : MonoBehaviour {
 
     public Material cartOverlayMaterial;
     public GameObject burningEffect;
+    public GameObject cartRepairableDamageEffect;
+    public GameObject repairDoneEffect;
     
     [Space]
 
@@ -79,11 +82,16 @@ public class LevelReferences : MonoBehaviour {
         public Vector3 position;
         public bool avoid;
         public bool flying;
+        public bool active;
+        public int health;
+        
         public TargetValues(PossibleTarget target) {
             type = target.myType;
             position = target.targetTransform.position;
             avoid = target.avoid;
             flying = target.flying;
+            active = target.enabled;
+            health = (int)target.GetHealth();
         }
     }
 
@@ -138,7 +146,17 @@ public class LevelReferences : MonoBehaviour {
     [Space] 
     public GameObject enemyWaveMovingArrow;
     public Material enemyWaveMovingArrowMaterial;
+
     
+    [Space] 
+    [ShowInInspector]
+    public List<IPlayerHoldable> combatHoldableThings = new List<IPlayerHoldable>();
+
+
+    public void ClearCombatHoldableThings() {
+        combatHoldableThings.Clear();
+    }
+
     private void Awake() {
         s = this;
         

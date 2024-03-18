@@ -58,7 +58,9 @@ public class PlayStateMaster : MonoBehaviour {
         OnShopEntered.AddListener(ArtifactsController.s.OnEnterShop);
         OnShopEntered.AddListener(UpgradesController.s.OnShopOpened);
         OnShopEntered.AddListener(VignetteController.s.ResetVignette);
+        OnShopEntered.AddListener(LevelReferences.s.ClearCombatHoldableThings);
         
+        OnCombatEntered.AddListener(WorldDifficultyController.s.OnCombatStart);
         OnCombatEntered.AddListener(FMODMusicPlayer.s.PlayCombatMusic);
         OnCombatEntered.AddListener(SpeedController.s.SetUpOnMissionStart);
         OnCombatEntered.AddListener(PathAndTerrainGenerator.s.MakeLevelTerrain);
@@ -68,6 +70,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatEntered.AddListener(PlayerWorldInteractionController.s.OnEnterCombat);
         OnCombatEntered.AddListener(UpgradesController.s.OnCombatStart);
         
+        OnCombatFinished.AddListener(WorldDifficultyController.s.OnCombatEnd);
         OnCombatFinished.AddListener(TimeController.s.OnCombatEnd);
         OnCombatFinished.AddListener(FirstTimeTutorialController.s.OnFinishCombat);
         OnCombatFinished.AddListener(EncounterController.s.ResetEncounter);

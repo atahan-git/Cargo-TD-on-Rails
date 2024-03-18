@@ -128,7 +128,7 @@ public class MissionLoseFinisher : MonoBehaviour {
             new Dictionary<string, object> {
                 { "Level", PlayStateMaster.s.currentLevel.levelName },
                 { "distance", Mathf.RoundToInt(SpeedController.s.currentDistance / 10) *10},
-                { "time", Mathf.RoundToInt(SpeedController.s.currentTime/10) * 10},
+                { "time", Mathf.RoundToInt(WorldDifficultyController.s.GetMissionTime()/10) * 10},
 
                 { "enemiesLeftAlive", EnemyHealth.enemySpawned - EnemyHealth.enemyKilled},
             }

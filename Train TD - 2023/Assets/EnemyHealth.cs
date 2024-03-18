@@ -42,7 +42,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		SetUp();
 	}
 
-	public void DealDamage(float damage) {
+	public void DealDamage(float damage, Vector3? damageHitPoint) {
 		
 		curShieldDelay = shieldRegenDelay;
 		
@@ -151,7 +151,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 			Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
 				.GetComponent<MiniGUI_DamageNumber>()
 				.SetUp(uiTransform, burnDistance, false, false, true);
-			DealDamage(burnDistance);
+			DealDamage(burnDistance, null);
 
 			currentBurn -= burnDistance;
 		}
@@ -178,8 +178,8 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 
 	void SetUp() {
 		maxHealth = baseHealth;
-		maxHealth *= 1 + WorldDifficultyController.s.currentHealthIncrease;
-		maxShields *= 1 + WorldDifficultyController.s.currentHealthIncrease;
+		maxHealth *= WorldDifficultyController.s.currentHealthMultiplier;
+		maxShields *= WorldDifficultyController.s.currentHealthMultiplier;
 		currentHealth = maxHealth;
 		currentShields = maxShields;
 		
@@ -227,6 +227,11 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 			if (carryAward) {
 				carryAward.AwardTheCarriedThingOnDeath();
 			}
+			
+			var carryAwardGem = GetComponent<GemCarrierEnemy>();
+			if (carryAwardGem) {
+				carryAwardGem.AwardTheCarriedThingOnDeath();
+			}
 		}
 
 		var pos = aliveObject.position;
@@ -236,7 +241,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		Destroy(enemyUIBar.gameObject);
 		
 		if(deathPrefab != null)
-			Instantiate(deathPrefab, pos, rot);
+			VisualEffectsController.s.SmartInstantiate(deathPrefab, pos, rot);
 		
 		if(!isComponentEnemy)
 			GetComponent<EnemyInSwarm>().mySwarm.EnemyDeath(this);
@@ -273,7 +278,11 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 	public float GetHealthPercent() {
 		return currentHealth /  Mathf.Max(maxHealth,1);
 	}
-	
+
+	public float GetHealth() {
+		return currentHealth;
+	}
+
 	public float GetShieldPercent() {
 		return currentShields / Mathf.Max(maxShields,1);
 	}
@@ -327,12 +336,21 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 	public void SetHoldingState(bool state) {
 		// do nothing. Enemy health is not holdable
 	}
+
+	private DroneRepairController holdingDrone;
+	public DroneRepairController GetHoldingDrone() {
+		return holdingDrone;
+	}
+
+	public void SetHoldingDrone(DroneRepairController holder) {
+		holdingDrone = holder;
+	}
 }
 
 
 public interface IHealth {
 	public bool IsAlive();
-	public void DealDamage(float damage);
+	public void DealDamage(float damage, Vector3? damageHitPoint);
 	public void Repair(float heal);
 	public void BurnDamage(float damage);
 	public bool IsPlayer();
@@ -340,6 +358,7 @@ public interface IHealth {
 	public Collider GetMainCollider();
 	public bool HasArmor();
 	public float GetHealthPercent();
+	public float GetHealth();
 	public float GetShieldPercent();
 	public bool IsShieldActive();
 	public string GetHealthRatioString();

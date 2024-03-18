@@ -1206,6 +1206,7 @@ MonoBehaviour:
   - {fileID: 6194929492254337418}
   isBeingDisabled: 0
   trainIndex: 0
+  cartPosOffset: 0
   length: 0.55
   canPlayerDrag: 1
   displayName: Shield Cart
@@ -1228,15 +1229,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b09e23bb0990b1b4e9262ab25f3b6442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canHaveShields: 1
-  maxShields: 0
-  currentShields: 0
-  shieldRegenDelayMultiplier: 1
-  shieldRegenDelayDivider: 1
-  shieldRegenRateMultiplier: 1
-  shieldRegenRateDivider: 1
-  curShieldDelay: 0
-  baseShields: 0
   baseHealth: 500
   maxHealth: 500
   currentHealth: 500
@@ -1248,16 +1240,12 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   unDying: 0
   invincible: 0
-  repairEfficiency: 1
-  shieldUpEfficiency: 1
-  burnReductionMultiplier: 1
-  glassCart: 0
-  reflectiveShields: 0
+  mainCollider: {fileID: 2305579421082905276}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0
   burnSpeed: 0
-  isShieldActive: 0
+  activeBurnEffects: []
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1478,7 +1466,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 2
+  rmsCount: 24
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25
@@ -3097,7 +3085,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1381259676127453602}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
@@ -3246,8 +3234,17 @@ PrefabInstance:
       propertyPath: m_Convex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3451118302482216456, guid: c319f2e9b9c350f49a94d1624248744d, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319f2e9b9c350f49a94d1624248744d, type: 3}
+--- !u!64 &2305579421082905276 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: c319f2e9b9c350f49a94d1624248744d, type: 3}
+  m_PrefabInstance: {fileID: 3466581539693124788}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4004118941137419103 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c319f2e9b9c350f49a94d1624248744d, type: 3}

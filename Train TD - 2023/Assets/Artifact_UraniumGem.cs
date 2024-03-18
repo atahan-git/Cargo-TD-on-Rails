@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IActiveDuringCombat
+public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IActiveDuringCombat,IApplyToEnemyWithGem
 {
     
     //[Space]
@@ -48,12 +48,12 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
             didApply = true;
         }
         
-        foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
+        /*foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
             var hp = target.GetHealthModule();
             hp.shieldRegenDelayMultiplier += activeFireRateBoost;
             hp.shieldRegenRateMultiplier += activeFireRateBoost;
             didApply = true;
-        }
+        }*/
         
         foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
             trainGemBridge.uranium = currentRadiation;
@@ -71,8 +71,8 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
         if(target == null)
             return;
         
-        target.GetHealthModule().DealDamage(Random.Range(radiationDamageAmount.x, radiationDamageAmount.y));
-        Instantiate(LevelReferences.s.radiationDamagePrefab, target.uiTargetTransform);
+        target.GetHealthModule().DealDamage(Random.Range(radiationDamageAmount.x, radiationDamageAmount.y), null);
+        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.radiationDamagePrefab, target.uiTargetTransform);
     }
 
     protected override void _Disarm() {
@@ -95,16 +95,20 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
 
     
     private void Update() {
-        if (myArtifact.isAttached && PlayStateMaster.s.isCombatInProgress()) {
+        if ((myArtifact == null || myArtifact.isAttached) && PlayStateMaster.s.isCombatInProgress()) {
             radiationDelay -= Time.deltaTime;
             if (radiationDelay <= 0) {
                 radiationDelay = Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
 
-                var range = GetComponent<Artifact>().range;
-                ApplyDamage(Train.s.GetNextBuilding(0, GetComponentInParent<Cart>()));
-                for (int i = 1; i < range + 1; i++) {
-                    ApplyDamage(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-                    ApplyDamage(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                if (enemyToApplyTo) {
+                    ApplyToEnemy();
+                } else {
+                    var range = GetComponent<Artifact>().range;
+                    ApplyDamage(Train.s.GetNextBuilding(0, GetComponentInParent<Cart>()));
+                    for (int i = 1; i < range + 1; i++) {
+                        ApplyDamage(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
+                        ApplyDamage(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                    }
                 }
             }
         }
@@ -112,5 +116,18 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
 
     public void Disable() {
         this.enabled = false;
+    }
+
+    void ApplyToEnemy() {
+        enemyToApplyTo.GetComponent<EnemyHealth>().DealDamage(Random.Range(radiationDamageAmount.x, radiationDamageAmount.y), null);
+        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.radiationDamagePrefab, enemyToApplyTo.transform);
+    }
+
+    private EnemyInSwarm enemyToApplyTo;
+    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
+        enemyToApplyTo =enemy;
+        foreach (var gunModule in enemy.GetComponentsInChildren<GunModule>()) {
+            gunModule.fireRateMultiplier += activeFireRateBoost;
+        }
     }
 }

@@ -4840,7 +4840,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4908573584345181807}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.14, y: 0.5979, z: 1.4997001}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4861,12 +4861,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed22b7720cff2244a8c914a8c7f08ab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  curSpeed: 0
   acceleration: 0
   seekAcceleration: 100
   speed: 2
   projectileDamage: 20
   burnDamage: 0
-  mortarRange: 2
+  explosionRange: 0
   isHeal: 0
   hitForceMultiplier: 300
   lifetime: 1.25
@@ -4885,6 +4886,7 @@ MonoBehaviour:
   myLine: {fileID: 0}
   isPhaseThrough: 0
   isSlowDamage: 0
+  isHoming: 0
   hitScanLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -5028,6 +5030,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1088330562847815569}
   - component: {fileID: 6135259819408559982}
+  - component: {fileID: 7348302726184530987}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -5112,6 +5115,26 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &7348302726184530987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6466888252943429903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!1 &6632918677113457126
 GameObject:
   m_ObjectHideFlags: 0
@@ -5400,8 +5423,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.3
-      minScalar: 0.7
+      scalar: 1
+      minScalar: 0.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -5784,7 +5807,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 0.64, y: 0.28, z: 0.96}
+    m_Scale: {x: 0.5, y: 0.15, z: 0.8}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -6092,8 +6115,8 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 3
-        scalar: 20
-        minScalar: 10
+        scalar: 10
+        minScalar: 7
         maxCurve:
           serializedVersion: 2
           m_Curve:

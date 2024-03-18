@@ -53,7 +53,7 @@ public class PhysicalShieldBar : MonoBehaviour {
             if (!myHp.IsShieldActive()) {
                 if (bars[i].activeSelf) {
                     bars[i].SetActive(false);
-                    Instantiate(shieldBreakEffect, bars[i].transform.position, bars[i].transform.rotation);
+                    VisualEffectsController.s.SmartInstantiate(shieldBreakEffect, bars[i].transform.position, bars[i].transform.rotation);
                 }
 
                 continue;

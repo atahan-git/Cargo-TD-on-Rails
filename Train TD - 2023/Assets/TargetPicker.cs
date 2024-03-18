@@ -24,18 +24,22 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat {
     }
 
     private void Update() {
-        var closestTargetNotAvoided = ClosestTarget(true);
+        if (targeter.SearchingForTargets()) {
+            var closestTargetNotAvoided = ClosestTarget(true);
 
-        if (closestTargetNotAvoided!=null)  {
-            targeter.SetTarget(closestTargetNotAvoided);
-        } else {
-            var closestTarget = ClosestTarget(false);
-
-            if (closestTarget != null) {
-                targeter.SetTarget(closestTarget);
+            if (closestTargetNotAvoided != null) {
+                targeter.SetTarget(closestTargetNotAvoided);
             } else {
-                targeter.UnsetTarget();
+                var closestTarget = ClosestTarget(false);
+
+                if (closestTarget != null) {
+                    targeter.SetTarget(closestTarget);
+                } else {
+                    targeter.UnsetTarget();
+                }
             }
+        } else {
+            targeter.UnsetTarget();
         }
     }
 
@@ -60,12 +64,13 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat {
         for (int i = 0; i < allTargets.Length; i++) {
             if (i != myId) {
                 var target = allTargets[i];
+                var targetActive = target.active;
                 var canTarget = myPossibleTargets.Contains(target.type);
                 //var targetHasEnoughHealth = !doHealthCheck || (allTargets[i].health >= myDamage);
                 var targetNotAvoided = !target.avoid || !doAvoidCheck;
                 var canHitBecauseFlying = canHitFlying || !target.flying;
 
-                if (canTarget && targetNotAvoided && canHitBecauseFlying) {
+                if (targetActive && canTarget && targetNotAvoided && canHitBecauseFlying) {
                     if (IsPointInsideCone(allTargets[i].position, myPosition, myForward, rotationSpan, range, out float distance)) {
                         if (distance < closestTargetDistance) {
                             closestTarget = allTargetsReal[i].targetTransform;
@@ -142,4 +147,6 @@ public interface IComponentWithTarget {
     public Transform GetActiveTarget();
 
     public float GetDamage();
+
+    public bool SearchingForTargets();
 } 
