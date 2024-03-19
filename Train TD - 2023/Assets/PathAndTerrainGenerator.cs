@@ -402,40 +402,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
         }
 
-        var leftPathType = PathGenerator.PathType.empty;
-        var rightPathType = PathGenerator.PathType.empty;
-
-        if (pathTree.leftPathTree == null || pathTree.rightPathTree == null) {
-            var oneSideEmptyPath = Random.value < 0.2f;
-
-            var pathTypes = new List<PathGenerator.PathType> { PathGenerator.PathType.gunCart, PathGenerator.PathType.utilityCart, PathGenerator.PathType.gem, PathGenerator.PathType.cargo };
-            if (pathTree.leftPathTree != null) {
-                pathTypes.Remove(pathTree.leftPathTree.myPath.myType);
-            }
-
-            if (pathTree.rightPathTree != null) {
-                pathTypes.Remove(pathTree.rightPathTree.myPath.myType);
-            }
-
-            pathTypes = ExtensionMethods.Shuffle(pathTypes);
-            var allItems = "";
-            foreach( var x in pathTypes) {
-                allItems += x.ToString() + " - ";
-            }
-            //print(allItems);
-
-
-            if (oneSideEmptyPath) {
-                if (Random.value < 0.5f) {
-                    leftPathType = pathTypes[0];
-                } else {
-                    rightPathType = pathTypes[0];
-                }
-            } else {
-                leftPathType = pathTypes[0];
-                rightPathType = pathTypes[1];
-            }
-        }
+        var leftReward = UpgradesController.s.GetRandomReward();
+        var rightReward = UpgradesController.s.GetRandomReward();
 
         var segmentDistance = activeLevel.GetRandomSegmentLength();
         // left fork
@@ -444,9 +412,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             var leftSegmentDirection = Quaternion.Euler(0, - 30 + Random.Range(-15, 15), 0) * startDirection;
             pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, leftStationMakeEnd, startPoint, startDirection, leftSegmentDirection, segmentDistance);
             if (pathTree.leftPathTree.myPath.endPath) {
-                pathTree.leftPathTree.myPath.myType = PathGenerator.PathType.empty;
+                pathTree.leftPathTree.myPath.pathRewardUniqueName = "";
             } else {
-                pathTree.leftPathTree.myPath.myType = leftPathType;
+                pathTree.leftPathTree.myPath.pathRewardUniqueName = leftReward;
             }
         }
         //right fork
@@ -454,9 +422,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             var rightSegmentDirection = Quaternion.Euler(0,  30 + Random.Range(-15, 15), 0) * startDirection;
             pathTree.rightPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, rightStationMakeEnd, startPoint, startDirection, rightSegmentDirection, segmentDistance);
             if (pathTree.rightPathTree.myPath.endPath) {
-                pathTree.rightPathTree.myPath.myType = PathGenerator.PathType.empty;
+                pathTree.rightPathTree.myPath.pathRewardUniqueName = "";
             } else {
-                pathTree.rightPathTree.myPath.myType = rightPathType;
+                pathTree.rightPathTree.myPath.pathRewardUniqueName = rightReward;
             }
         }
     }

@@ -206,7 +206,7 @@ public class DataSaver {
 		public EndRunAreaInfo endRunAreaInfo;
 		
 		public bool shopInitialized = false;
-		public UpgradesController.ShopState shopState;
+		public ShopStateController.ShopState shopState;
 		
 		public string runGameVersion;
 

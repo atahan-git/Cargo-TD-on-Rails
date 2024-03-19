@@ -23,12 +23,9 @@ public class PathGenerator : MonoBehaviour {
         public bool addImprintNoise = true;
         public bool debugDrawGizmo = true;
         public int trackObjectsId = -1;
-        public PathType myType;
+        public string pathRewardUniqueName = "";
     }
 
-    public enum PathType {
-        empty = 0, gunCart = 1, utilityCart = 2, gem =3, cargo =4
-    }
 
     public float stepLength = 0.2f;
     public float turnAngle = 0.5f;
@@ -55,7 +52,10 @@ public class PathGenerator : MonoBehaviour {
                 rotAngle = -rotAngle;
             }
         }
-        var path = new Vector3[Mathf.CeilToInt(length/stepLength)+1];
+        
+        var trackPieceCount = Mathf.CeilToInt((length / stepLength)/5)*5 + 1;
+        var path = new Vector3[trackPieceCount];
+        length = (path.Length - 1) * stepLength;
 
         var minEdge = new Vector3();
         var maxEdge = new Vector3(0,10,0);// give volume to the bounds
@@ -154,7 +154,7 @@ public class PathGenerator : MonoBehaviour {
         combinedPath.bounds.Encapsulate(curvyPath.bounds);
         combinedPath.bounds.Encapsulate(straightPath.bounds);
 
-        combinedPath.length = length + stationStraightDistance;
+        combinedPath.length = curvyPath.length + straightPath.length;
         combinedPath.stepLength = stepLength;
 
         combinedPath.endPath = true;
@@ -183,14 +183,16 @@ public class PathGenerator : MonoBehaviour {
         combinedPath.bounds.Encapsulate(curvyPath.bounds);
         combinedPath.bounds.Encapsulate(straightPath.bounds);
 
-        combinedPath.length = length + stationStraightDistance;
+        combinedPath.length = curvyPath.length + straightPath.length;
         combinedPath.stepLength = stepLength;
 
         return combinedPath;
     }
 
     public TrainPath MakeStraightPath(Vector3 startPoint, Vector3 direction, float length) {
-        var path = new Vector3[Mathf.CeilToInt(length/stepLength)+1];
+        var trackPieceCount = Mathf.CeilToInt((length / stepLength)/5)*5 + 1;
+        var path = new Vector3[trackPieceCount];
+        length = (path.Length - 1) * stepLength;
 
         var minEdge = new Vector3();
         var maxEdge = new Vector3(0,10,0);// give volume to the bounds

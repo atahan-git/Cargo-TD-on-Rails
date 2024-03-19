@@ -42,7 +42,7 @@ public class MiniGUI_ProfileDisplay : MonoBehaviour {
         } else {
             moneyText.text = "0";
             profileName.text = "yeet";
-            playTime.text = WorldDifficultyController.FormatTime(0);
+            playTime.text = ExtensionMethods.FormatTime(0);
             
             fuelText.text = $"-";
             scrapsText.text = $"-";

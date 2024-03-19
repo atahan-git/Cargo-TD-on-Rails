@@ -150,7 +150,7 @@ public abstract class ActivateWhenOnArtifactRow : MonoBehaviour {
 	public List<Cart> GetAllCarts() {
 		var carts = new List<Cart>();
 		carts.AddRange(Train.s.carts);
-		carts.AddRange(UpgradesController.s.shopCarts);
+		carts.AddRange(ShopStateController.s.shopCarts);
 		return carts;
 	}
 }

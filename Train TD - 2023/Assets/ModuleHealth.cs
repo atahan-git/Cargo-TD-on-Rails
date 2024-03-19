@@ -352,7 +352,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                 if (selfDamageTimer <= 0) {
                     selfDamageTimer = 10;
 
-                    SelfDamage();
+                    SelfDamage(selfDamageAmounts[0], true, selfDamageAmounts[1]);
                 }
             }
         }
@@ -367,18 +367,20 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         }
     }
 
-    void SelfDamage() {
+    public void SelfDamage(float amount, bool damageNear = false, float damageNearAmount = 0f) {
         var myModule = GetComponent<Cart>();
 
-        var multiplier = 1;
-        DealDamage(selfDamageAmounts[0] * multiplier, null);
+
+        DealDamage(amount, null);
         var prefab = LevelReferences.s.smallDamagePrefab;
         Instantiate(prefab, transform.position, Quaternion.identity);
-        
-        DealDamageToBuilding(Train.s.GetNextBuilding(1, myModule), prefab, selfDamageAmounts[1] * multiplier);
-        DealDamageToBuilding(Train.s.GetNextBuilding(-1, myModule), prefab, selfDamageAmounts[1] * multiplier);
+
+        if (damageNear) {
+            DealDamageToBuilding(Train.s.GetNextBuilding(1, myModule), prefab,  damageNearAmount);
+            DealDamageToBuilding(Train.s.GetNextBuilding(-1, myModule), prefab, damageNearAmount);
+        }
     }
-    
+
 
     [NonSerialized]
     public UnityEvent dieEvent = new UnityEvent();

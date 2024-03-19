@@ -30,19 +30,12 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	void UpdateBackToProfileOrAbandonButton() {
-		/*if (PlayStateMaster.s.isCombatInProgress()) {
-			backToProfileOrAbandonText.text = "Abandon Run";
-		} else {*/
-			backToProfileOrAbandonText.text = "Back to Main Menu";
-		//}
+		
+		backToProfileOrAbandonText.text = "Back to Main Menu";
 	}
 	public void BackToMainMenuOrAbandon() {
-		/*if (PlayStateMaster.s.isCombatInProgress()) {
-			Pauser.s.AbandonMission();
-		} else {*/
-			Pauser.s.Unpause();
-			BackToMainMenu();
-		//}
+		Pauser.s.Unpause();
+		BackToMainMenu();
 	}
 	
 	public void BackToMainMenu() {
@@ -80,15 +73,12 @@ public class ShopStateController : MonoBehaviour {
 
 		} else {
 			PathSelectorController.s.trainStationStart.SetActive(true);
-			UpgradesController.s.DrawShopOptions();
+			DrawShopOptions();
 			UpdateBackToProfileOrAbandonButton();
 		}
 	}
 
-	public void SetStarterUIStatus(bool status) {
-		starterUI.SetActive(status);
-	}
-
+	
 	public GateScript gateScript;
 
 	public void StartLevel() {
@@ -105,8 +95,6 @@ public class ShopStateController : MonoBehaviour {
 			GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.openMap);
 			//mapDisabledDuringBattleOverlay.SetActive(true);
 
-			ClearStaticTrackers();
-
 			gameUI.SetActive(true);
 			
 			UpdateBackToProfileOrAbandonButton();
@@ -121,31 +109,184 @@ public class ShopStateController : MonoBehaviour {
 				/*if(currentLevel.isBossLevel)
 					MiniGUI_BossNameUI.s.ShowBossName(currentLevel.levelNiceName);*/
 			} 
-			/*} else {
-				SceneLoader.s.FinishLevel();
-				EncounterController.s.EngageEncounter(currentLevel);
-			}*/ // stuf to do during encounters
+			
 		}
 	}
 
-	/*public void DebugEngageEncounter(string encounterName) {
-		var playerStar = DataSaver.s.GetCurrentSave().currentRun.map.GetPlayerStar();
-		starterUI.SetActive(false);
-
-		mapOpenButton.interactable = false;
-		//mapDisabledDuringBattleOverlay.SetActive(true);
-
-		PlayStateMaster.s.FinishCombat();
-		EncounterController.s.EngageEncounter(encounterName);
-	}*/
-
-	void ClearStaticTrackers() {
-		EnemyHealth.enemySpawned = 0;
-		EnemyHealth.enemyKilled = 0;
-		//PlayerBuildingController.s.currentLevelStats = new Dictionary<string, PlayerBuildingController.BuildingData>();
-	}
-	
 	public void QuickStart() {
 		StartLevel();
+	}
+
+	public List<Artifact> shopArtifacts;
+	public List<Cart> shopCarts;
+	
+	public MiniGUI_DepartureChecklist shopChecklist;
+	public MiniGUI_DepartureChecklist endGameAreaChecklist;
+
+	public void RemoveCartFromShop(Cart cart) {
+		shopCarts.Remove(cart);
+		SaveShopState();
+	}
+
+	public void AddCartToShop(Cart cart, bool doSave = true) {
+		shopCarts.Add(cart);
+		if(doSave)
+			SaveShopState();
+	}
+
+	public void RemoveArtifactFromShop(Artifact artifact, bool doSave = true) {
+		if (shopArtifacts.Contains(artifact)) {
+			shopArtifacts.Remove(artifact);
+			if(doSave)
+				SaveShopState();
+		}
+	}
+
+	public void AddArtifactToShop(Artifact artifact, bool doSave = true) {
+		if (!shopArtifacts.Contains(artifact)) {
+			shopArtifacts.Add(artifact);
+			if(doSave)
+				SaveShopState();
+		}
+	}
+
+	public void SaveCartStateWithDelay() {
+		CancelInvoke(nameof(SaveShopState));
+		Invoke(nameof(SaveShopState), 2f);
+	}
+
+	public void SaveShopState() {
+		var shopState = new ShopState();
+		for (int i = 0; i < shopCarts.Count; i++) {
+			var cart = shopCarts[i];
+			if (cart.isCargo && !PlayStateMaster.s.isEndGame()) { // in the end game area cargos are also regular carts
+				var cargo = cart.GetComponentInChildren<CargoModule>();
+			} else {
+				shopState.cartStates.Add(new WorldCartState() {
+					isSnapped =  cart.GetComponentInParent<SnapLocation>(),
+					pos = cart.transform.position,
+					rot = cart.transform.rotation,
+					state = Train.GetStateFromCart(cart)
+				});
+			}
+		}
+
+		for (int i = 0; i < shopArtifacts.Count; i++) {
+			var myArtifact = shopArtifacts[i];
+
+			if (myArtifact != null) {
+				shopState.artifactStates.Add(new WorldArtifactState() {
+					isSnapped =  myArtifact.GetComponentInParent<SnapLocation>(),
+					pos = myArtifact.transform.position,
+					rot = myArtifact.transform.rotation,
+					state = Train.GetStateFromArtifact(myArtifact),
+				});
+			}
+		}
+
+		DataSaver.s.GetCurrentSave().shopState = shopState;
+		DataSaver.s.SaveActiveGame();
+	}
+	
+
+	[System.Serializable]
+	public class ShopState {
+		public List<WorldArtifactState> artifactStates = new List<WorldArtifactState>();
+		public List<WorldCartState> cartStates = new List<WorldCartState>();
+	}
+	
+	[Serializable]
+	public class WorldArtifactState {
+		public bool isSnapped;
+		public Vector3 pos;
+		public Quaternion rot;
+		public DataSaver.TrainState.ArtifactState state = new DataSaver.TrainState.ArtifactState();
+	}
+	
+	[Serializable]
+	public class WorldCartState {
+		public bool isSnapped;
+		public Vector3 pos;
+		public Quaternion rot;
+		public DataSaver.TrainState.CartState state = new DataSaver.TrainState.CartState();
+	}
+
+	void InitializeShop(DataSaver.SaveFile state) {
+		state.shopState = new ShopState();
+		
+		state.shopInitialized = true;
+		DataSaver.s.SaveActiveGame();
+	}
+
+	public void DrawShopOptions() {
+		if (!DataSaver.s.GetCurrentSave().shopInitialized) {
+			InitializeShop(DataSaver.s.GetCurrentSave());
+		}
+		
+		SpawnShopItems();
+	}
+
+	public void ClearCurrentShop() {
+		transform.DeleteAllChildren();
+		for (int i = shopCarts.Count-1; i >= 0; i--) {
+			if(shopCarts[i] != null && shopCarts[i].gameObject != null)
+				Destroy(shopCarts[i].gameObject);
+		}
+		shopCarts.Clear();
+		
+		
+		for (int i = shopArtifacts.Count-1; i >= 0; i--) {
+			if(shopArtifacts[i] != null && shopArtifacts[i].gameObject != null)
+				Destroy(shopArtifacts[i].gameObject);
+		}
+		shopArtifacts.Clear();
+		
+		DataSaver.s.GetCurrentSave().shopState = new ShopState();
+		DataSaver.s.SaveActiveGame();
+	}
+
+	
+	void SpawnShopItems() {
+		transform.DeleteAllChildren();
+		for (int i = shopCarts.Count-1; i >= 0; i--) {
+			if(shopCarts[i] != null && shopCarts[i].gameObject != null)
+				Destroy(shopCarts[i].gameObject);
+		}
+		shopCarts.Clear();
+		
+		for (int i = shopArtifacts.Count-1; i >= 0; i--) {
+			if(shopArtifacts[i] != null && shopArtifacts[i].gameObject != null)
+				Destroy(shopArtifacts[i].gameObject);
+		}
+		shopArtifacts.Clear();
+
+		/*for (int i = 0; i < fleaMarketLocations.Length; i++) {
+			var buildings = fleaMarketLocations[i].GetComponentsInChildren<Cart>();
+			for (int j = 0; j < buildings.Length; j++) {
+				Destroy(buildings[j].gameObject);
+			}
+			
+			fleaMarketLocations[i].transform.rotation = Quaternion.Euler(0,Random.Range(0,360),0);
+
+			if (i >= fleaMarketLocationCount) {
+				fleaMarketLocations[i].gameObject.SetActive(false);
+			}
+		}*/
+
+		SaveShopState();
+	}
+	
+	public void OnCombatStart() {
+		for (int i = 0; i < shopCarts.Count; i++) {
+			if (shopCarts[i].GetComponentInParent<SnapLocation>() == null) {
+				shopCarts[i].gameObject.AddComponent<RubbleFollowFloor>().InstantAttachToFloor();
+			}
+		}
+
+		for (int i = 0; i < shopArtifacts.Count; i++) {
+			if (shopArtifacts[i].GetComponentInParent<SnapLocation>() == null) {
+				shopArtifacts[i].gameObject.AddComponent<RubbleFollowFloor>().InstantAttachToFloor();
+			}
+		}
 	}
 }

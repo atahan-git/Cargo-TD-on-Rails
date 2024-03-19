@@ -308,7 +308,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (currentSelectedThing is Cart selectedCart) {
             if (Train.s.carts.Contains(selectedCart)) {
                 Train.s.RemoveCart(selectedCart);
-                UpgradesController.s.AddCartToShop(selectedCart);
+                ShopStateController.s.AddCartToShop(selectedCart);
             } 
             
             MakeOnTrainCartSnapLocations();
@@ -390,7 +390,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
                 if (currentSelectedThing is Cart selectedCart) {
                     Train.s.RemoveCart(selectedCart);
-                    UpgradesController.s.AddCartToShop(selectedCart);
+                    ShopStateController.s.AddCartToShop(selectedCart);
                 }
                 
                 
@@ -412,10 +412,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     var onTrainIndex = onTrainCartSnapLocations.IndexOf(newSnapLoc);
                     if (onTrainIndex != -1) {
                         Train.s.AddCartAtIndex(onTrainIndex+1, selectedCart);
-                        UpgradesController.s.RemoveCartFromShop(selectedCart);
+                        ShopStateController.s.RemoveCartFromShop(selectedCart);
                     } else {
                         Train.s.RemoveCart(selectedCart);
-                        UpgradesController.s.AddCartToShop(selectedCart);
+                        ShopStateController.s.AddCartToShop(selectedCart);
                     }
                 }else if (currentSelectedThing is Artifact selectedArtifact) {
                     if (displacedArtifact != null) {
@@ -491,7 +491,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         
         if (PlayStateMaster.s.isShop()) {
             if (currentSelectedThing is Cart || currentSelectedThing is Artifact) {
-                UpgradesController.s.SaveCartStateWithDelay();
+                ShopStateController.s.SaveCartStateWithDelay();
                 Train.s.SaveTrainState();
             }
         }

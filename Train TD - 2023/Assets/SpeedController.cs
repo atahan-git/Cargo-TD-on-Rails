@@ -72,8 +72,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
     }
 
 
-    public int cartCapacity;
-    public int cartCapacityModifier = 0;
+    public float cartCapacity;
+    public float cartCapacityModifier = 0;
     public float targetSpeed = 0;
     public float speedMultiplier = 1;
     public float speedAmount = 0;
@@ -104,8 +104,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         cartCapacity = 0;
         targetSpeed = 0;
         for (int i = 0; i < engines.Count; i++) {
-            cartCapacity += (int)((engines[i].enginePower + engines[i].extraEnginePower) * (engines[i].isHalfPower ? 0.5f : 1f));
-            targetSpeed += (int)((engines[i].speedAdd + engines[i].extraSpeedAdd) * (engines[i].isHalfPower ? 0.5f : 1f));
+            cartCapacity += engines[i].GetEnginePower();
+            targetSpeed += engines[i].GetSpeedAdd();
         }
 
         enginePower = cartCapacity;

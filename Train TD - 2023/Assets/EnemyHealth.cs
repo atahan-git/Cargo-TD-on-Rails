@@ -19,9 +19,6 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 	public GameObject deathPrefab;
 	public Transform aliveObject;
 
-	public static int enemySpawned;
-	public static int enemyKilled;
-
 	public bool isAlive = true;
 
 	public Transform uiTransform;
@@ -185,7 +182,6 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		
 		enemyUIBar = Instantiate(LevelReferences.s.enemyHealthPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_EnemyUIBar>();
 		enemyUIBar.SetUp(this);
-		enemySpawned += 1;
 
 		if (!isComponentEnemy) {
 			GetComponentInParent<EnemySwarmMaker>().EnemySpawn(this);
@@ -201,7 +197,6 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 
 	
 	void Die(bool giveRewards = true) {
-		enemyKilled += 1;
 		isAlive = false;
 
 		var extraRewards = GetComponentsInChildren<EnemyReward>();
@@ -219,8 +214,10 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 				}
 			}
 
+			rewardMoney *= 5;
+
 			if (rewardMoney > 0) {
-				Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(uiTransform.position, rewardMoney);
+				Instantiate(LevelReferences.s.crystalDrop, LevelReferences.s.uiDisplayParent).GetComponent<CrystalDrop>().SetUp(uiTransform.position, rewardMoney);
 			}
 
 			var carryAward = GetComponent<CarrierEnemy>();

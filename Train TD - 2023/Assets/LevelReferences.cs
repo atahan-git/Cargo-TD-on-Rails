@@ -140,6 +140,7 @@ public class LevelReferences : MonoBehaviour {
     public GameObject growthEffectPrefab;
 
     [Space] public GameObject coinDrop;
+    public GameObject crystalDrop;
 
     public AnimationCurve selectMarkerPulseCurve;
     public AnimationCurve alphaPulseCurve;

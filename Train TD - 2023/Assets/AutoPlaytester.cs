@@ -141,7 +141,7 @@ public class AutoPlaytester : MonoBehaviour {
         
         CameraController.s.ResetCameraPos();
         
-        UpgradesController.s.SaveCartStateWithDelay();
+        ShopStateController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
         
         print("Got destination cargo");
@@ -150,12 +150,12 @@ public class AutoPlaytester : MonoBehaviour {
 
         var emptyCart = Train.s.carts[Train.s.carts.Count - 1];
         
-        var fleaMarketCart = UpgradesController.s.shopCarts[0];
+        var fleaMarketCart = ShopStateController.s.shopCarts[0];
 
-        for (int i = 0; i < UpgradesController.s.shopCarts.Count; i++) {
-            var ammo = UpgradesController.s.shopCarts[i].GetComponentInChildren<ModuleAmmo>();
+        for (int i = 0; i < ShopStateController.s.shopCarts.Count; i++) {
+            var ammo = ShopStateController.s.shopCarts[i].GetComponentInChildren<ModuleAmmo>();
             if (ammo != null) {
-                fleaMarketCart = UpgradesController.s.shopCarts[i];
+                fleaMarketCart = ShopStateController.s.shopCarts[i];
             }
         }
         
@@ -163,7 +163,7 @@ public class AutoPlaytester : MonoBehaviour {
         
         var fleaLocation = fleaMarketCart.GetComponentInParent<SnapLocation>();
         
-        UpgradesController.s.RemoveCartFromShop(fleaMarketCart);
+        ShopStateController.s.RemoveCartFromShop(fleaMarketCart);
         Train.s.AddCartAtIndex(Train.s.carts.Count-1, fleaMarketCart);
         
         
@@ -172,7 +172,7 @@ public class AutoPlaytester : MonoBehaviour {
         Train.s.RemoveCart(emptyCart);
 
         yield return new WaitForSeconds(0.2f);
-        UpgradesController.s.SaveCartStateWithDelay();
+        ShopStateController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
         
         print("Swapped empty cart around");
@@ -219,7 +219,7 @@ public class AutoPlaytester : MonoBehaviour {
         
         yield return new WaitForSeconds(4f);
         
-        UpgradesController.s.SaveCartStateWithDelay();
+        ShopStateController.s.SaveCartStateWithDelay();
         Train.s.SaveTrainState();
         
         print("Got destination cargo");
@@ -395,7 +395,7 @@ public class AutoPlaytester : MonoBehaviour {
         yield return new WaitForSeconds(10f);
 
         var rewardCart = regularDeliveryLoc.transform.parent.GetComponentInChildren<Cart>();
-        UpgradesController.s.RemoveCartFromShop(rewardCart);
+        ShopStateController.s.RemoveCartFromShop(rewardCart);
         Train.s.AddCartAtIndex(Train.s.carts.Count, rewardCart);
 
         var rewardArtifact = regularDeliveryLoc.transform.parent.GetComponentInChildren<Artifact>();

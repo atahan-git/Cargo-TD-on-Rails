@@ -49,7 +49,7 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
     public UnityEvent<Cart> ApplyToTarget = new UnityEvent<Cart>();
 
     public void AttachToSnapLoc(SnapLocation loc, bool doSave=true, bool doTriggerChange = true) {
-        UpgradesController.s.AddArtifactToShop(this,  doSave);
+        ShopStateController.s.AddArtifactToShop(this,  doSave);
         
         loc.SnapObject(gameObject);
         GetComponent<Rigidbody>().isKinematic = true;
@@ -61,7 +61,7 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
         var newCart = GetComponentInParent<Cart>();
         
         if (newCart != null) {
-            UpgradesController.s.RemoveArtifactFromShop(this, doSave);
+            ShopStateController.s.RemoveArtifactFromShop(this, doSave);
             
             if(doTriggerChange && newCart.IsAttachedToTrain())
                 newCart.GetComponentInParent<Train>().TrainChanged();
@@ -75,7 +75,7 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
     }
 
     public void DetachFromCart( bool doSave = true) {
-        UpgradesController.s.AddArtifactToShop(this, doSave);
+        ShopStateController.s.AddArtifactToShop(this, doSave);
         var oldCart = GetComponentInParent<Cart>();
         
         attachedToCartPart.SetActive(false);

@@ -411,18 +411,16 @@ public class Train : MonoBehaviour {
                 carts[i].ResetState();
             }
             
-            for (int i = 0; i < UpgradesController.s.shopCarts.Count; i++) {
-                if(UpgradesController.s.shopCarts[i] != null && UpgradesController.s.shopCarts[i].gameObject != null)
-                    UpgradesController.s.shopCarts[i].ResetState();
+            for (int i = 0; i < ShopStateController.s.shopCarts.Count; i++) {
+                if(ShopStateController.s.shopCarts[i] != null && ShopStateController.s.shopCarts[i].gameObject != null)
+                    ShopStateController.s.shopCarts[i].ResetState();
             }
-            for (int i = 0; i < UpgradesController.s.shopArtifacts.Count; i++) {
-                if(UpgradesController.s.shopArtifacts[i] != null && UpgradesController.s.shopArtifacts[i].gameObject != null)
-                    UpgradesController.s.shopArtifacts[i].ResetState();
+            for (int i = 0; i < ShopStateController.s.shopArtifacts.Count; i++) {
+                if(ShopStateController.s.shopArtifacts[i] != null && ShopStateController.s.shopArtifacts[i].gameObject != null)
+                    ShopStateController.s.shopArtifacts[i].ResetState();
             }
             
-            //HpBarsCleanup(false);
             
-            UpgradesController.s.ResetFleaMarketAndDestCargoValues();
             PlayerWorldInteractionController.s.ResetValues();
             SpeedController.s.ResetMultipliers();
             SpeedController.s.CalculateSpeedBasedOnCartCapacity();

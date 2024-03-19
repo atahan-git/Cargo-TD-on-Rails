@@ -10,11 +10,14 @@ public class InfiniteRampartsMaker : MonoBehaviour {
     public GameObject prefab;
     
     public Transform lastPosObj;
+    public int curCount = 0;
+    public int maxCount = 20;
     
     [Button]
     void DebugMakeInfiniteRamparts(int count = 3) {
         transform.DeleteAllChildrenEditor();
 
+        curCount = 0;
         lastPosObj = MakeLastPos();
 
         for (int i = 0; i < count; i++) {
@@ -52,6 +55,7 @@ public class InfiniteRampartsMaker : MonoBehaviour {
 
     void ResetStartPos() {
         //print("reset start pos");
+        curCount = 0;
         transform.DeleteAllChildren();
         lastPosObj = MakeLastPos();
     }
@@ -78,7 +82,7 @@ public class InfiniteRampartsMaker : MonoBehaviour {
         //Debug.Log($"New rampart starter {lastPosObj.transform.position}");
         var n = 0;
         var legalRampart = true;
-        while (legalRampart) {
+        while (legalRampart && curCount <= maxCount) {
             legalRampart = MakeSingleRampart();
             //Debug.Log($"Rampart State : {legalRampart} - {lastPosObj.transform.position}");
             yield return null;
@@ -160,6 +164,7 @@ public class InfiniteRampartsMaker : MonoBehaviour {
 
         lastPosObj.transform.position = lastPos;
 
+        curCount += 1;
         return true;
     }
     

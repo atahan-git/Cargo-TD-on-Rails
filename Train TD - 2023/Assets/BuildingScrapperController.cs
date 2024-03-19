@@ -28,7 +28,7 @@ public class BuildingScrapperController : MonoBehaviour
 
         if (cart != null) {
             if (cart.uniqueName != scrapCart) {
-                UpgradesController.s.RemoveCartFromShop(cart);
+                ShopStateController.s.RemoveCartFromShop(cart);
                 Destroy(cart.gameObject);
                 Instantiate(poofEffect, target.transform);
                 Instantiate(DataHolder.s.GetCart(scrapCart), target.transform);
@@ -40,7 +40,7 @@ public class BuildingScrapperController : MonoBehaviour
         var artifact = target.GetComponentInChildren<Artifact>();
 
         if (artifact != null) {
-            UpgradesController.s.RemoveArtifactFromShop(artifact);
+            ShopStateController.s.RemoveArtifactFromShop(artifact);
             Destroy(artifact.gameObject);
             Instantiate(poofEffect, target.transform);
             Instantiate(DataHolder.s.GetCart(scrapCart), target.transform);

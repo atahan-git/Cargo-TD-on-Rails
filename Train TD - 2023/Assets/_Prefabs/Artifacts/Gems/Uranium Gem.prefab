@@ -112,6 +112,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: mySprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c3a6c6dc95c3db74cb6d1ad6c9ea6e56, type: 3}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: uniqueName
       value: uranium_gem
       objectReference: {fileID: 0}

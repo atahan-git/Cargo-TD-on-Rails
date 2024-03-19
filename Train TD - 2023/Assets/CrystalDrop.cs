@@ -22,7 +22,7 @@ public class CrystalDrop : MonoBehaviour {
         while(count > 0) {
             var am = 1;
 
-            Instantiate(LevelReferences.s.coinDrop, LevelReferences.s.uiDisplayParent).GetComponent<CoinDrop>().SetUp(source /*+ Random.insideUnitSphere * 0.5f*/, am, true);
+            Instantiate(LevelReferences.s.crystalDrop, LevelReferences.s.uiDisplayParent).GetComponent<CrystalDrop>().SetUp(source /*+ Random.insideUnitSphere * 0.5f*/, am, true);
 
             count -= am;
             //yield return new WaitForSeconds(Random.Range(0.05f, 0.15f));
@@ -47,13 +47,13 @@ public class CrystalDrop : MonoBehaviour {
             }
             spreadTime -= Time.deltaTime;
         } else {
-            var targetPos = CrystalsController.s.coinGoPosition.position;
+            var targetPos = CrystalsAndWarpController.s.coinGoPosition.position;
             transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
             speed += Time.deltaTime * 10;
             speed = Mathf.Clamp(speed, 0, 20);
 
             if (Vector3.Distance(transform.position, targetPos) < 0.01f) {
-                DataSaver.s.GetCurrentSave().money += amount;
+                CrystalsAndWarpController.s.GetCrystal(amount);
                 Destroy(gameObject);
             }
         }

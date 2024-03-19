@@ -68,7 +68,7 @@ public class DataHolder : MonoBehaviour {
         return null;
     }
     
-    public Cart GetCart(string buildingName) {
+    public Cart GetCart(string buildingName, bool suppressWarning = false) {
         for (int i = 0; i < buildings.Length; i++) {
             if (PreProcess(buildings[i].uniqueName) == PreProcess(buildingName)) {
                 return buildings[i];
@@ -87,14 +87,16 @@ public class DataHolder : MonoBehaviour {
             return tier2GunCart;
         }
 
-        Debug.LogError($"Can't find building <{buildingName}>");
-        var allBuildings = GetAllPossibleBuildingNames();
-        for (int i = 0; i < allBuildings.Count; i++) {
-			Debug.LogError(PreProcess(allBuildings[i]));
-		}
-        
-        SettingsController.s.ResetTrainAndBail();
-        
+        if (!suppressWarning) {
+            Debug.LogError($"Can't find building <{buildingName}>");
+            var allBuildings = GetAllPossibleBuildingNames();
+            for (int i = 0; i < allBuildings.Count; i++) {
+                Debug.LogError(PreProcess(allBuildings[i]));
+            }
+
+            SettingsController.s.ResetTrainAndBail();
+        }
+
         return null;
     }
     
@@ -148,5 +150,15 @@ public class DataHolder : MonoBehaviour {
         }
 
         return buildingNames;
+    }
+    
+    
+    public List<string> GetAllPossibleArtifactNames() {
+        var artifactNames = new List<string>();
+        artifactNames.Add("");
+        for (int i = 0; i < artifacts.Length; i++) {
+            artifactNames.Add(artifacts[i].uniqueName);
+        }
+        return artifactNames;
     }
 }

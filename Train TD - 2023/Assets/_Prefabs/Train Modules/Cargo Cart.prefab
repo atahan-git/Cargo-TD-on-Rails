@@ -621,7 +621,7 @@ MonoBehaviour:
   canPlayerDrag: 1
   displayName: Cargo Cart
   uniqueName: cargo_cart
-  Icon: {fileID: 21300000, guid: 391ae3273dddd1641b0260083c50ff47, type: 3}
+  Icon: {fileID: 21300000, guid: a9aba5b990a2e704c95e832a4a39c735, type: 3}
   isDestroyed: 0
   uiTargetTransform: {fileID: 317267816422079952}
   shootingTargetTransform: {fileID: 317267816422079952}

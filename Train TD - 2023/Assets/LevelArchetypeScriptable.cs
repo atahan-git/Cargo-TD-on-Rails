@@ -23,10 +23,13 @@ public class LevelArchetypeScriptable : ScriptableObject {
     public ConstructedLevel GenerateLevel() {
         var level = new ConstructedLevel();
 
-        level.gunCartBattalions = MakeRandomCollection(possibleGunCartBattalions);
-        level.utilityCartBattalions = MakeRandomCollection(possibleUtilityCartBattalions);
-        level.gemBattalions = MakeRandomCollection(possibleGemBattalions);
-        level.cargoBattalions = MakeRandomCollection(possibleCargoBattalions);
+        var battalions = new List<GameObject>();
+        battalions.AddRange(MakeRandomCollection(possibleGunCartBattalions));
+        battalions.AddRange(MakeRandomCollection(possibleUtilityCartBattalions));
+        battalions.AddRange(MakeRandomCollection(possibleGemBattalions));
+        battalions.AddRange(MakeRandomCollection(possibleCargoBattalions));
+
+        level.rewardBattalions = battalions.ToArray();
         //level.encounters = MakeRandomCollection(possibleEncounters);
         level.dynamicBattalions = MakeRandomCollection(possibleDynamicBattalions);
 
@@ -68,12 +71,9 @@ public class LevelArchetypeScriptable : ScriptableObject {
 [Serializable]
 public class ConstructedLevel {
     public string levelName = "unset";
-    
-    
-    public GameObject[] gunCartBattalions;
-    public GameObject[] utilityCartBattalions;
-    public GameObject[] gemBattalions;
-    public GameObject[] cargoBattalions;
+
+
+    public GameObject[] rewardBattalions;
     //public EncounterTitle[] encounters;
     public GameObject[] dynamicBattalions;
 
@@ -94,10 +94,7 @@ public class ConstructedLevel {
         var copy = new ConstructedLevel();
 
         copy.levelName = levelName;
-        copy.gunCartBattalions = gunCartBattalions;
-        copy.utilityCartBattalions = utilityCartBattalions;
-        copy.gemBattalions = gemBattalions;
-        copy.cargoBattalions = cargoBattalions;
+        copy.rewardBattalions = rewardBattalions;
         //copy.encounters = encounters;
         copy.dynamicBattalions = dynamicBattalions;
         copy.bossBattalion = bossBattalion;

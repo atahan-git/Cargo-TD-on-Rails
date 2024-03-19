@@ -78,7 +78,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
                 engineModule.OnEngineLowPower?.Invoke(true);
-                engineModule.isHalfPower = true;
+                engineModule.isDestroyed = true;
             }
 
             var gunModules = GetComponentsInChildren<GunModule>();

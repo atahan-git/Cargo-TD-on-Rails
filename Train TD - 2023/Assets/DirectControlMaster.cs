@@ -75,6 +75,10 @@ public class DirectControlMaster : MonoBehaviour {
 	public Image validRepairImage;
 	public Slider repairingSlider;
 	public LayerMask repairLookMask;
+
+	[Header("Engine Control")] 
+	public SpeedometerScript pressureGauge;
+	public TMP_Text pressureInfo;
 	
 	[Header("UI")]
 	public GameObject masterDirectControlUI;

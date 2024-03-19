@@ -92,7 +92,6 @@ public class PathSelectorController : MonoBehaviour {
 	public Image topTrackType;
 	public Image bottomTrackType;
 
-	public Sprite[] pathTypeSprites;
 	public Color[] pathTypeColors;
 	
 	void ReAdjustTracks() {
@@ -115,9 +114,9 @@ public class PathSelectorController : MonoBehaviour {
 			
 		} else {
 			topTrack.SetUpTrack(currentPathTree.leftPathTree.myPath.length);
-			SetImageBasedOnPathType(topTrackType, currentPathTree.leftPathTree.myPath.myType);
+			SetImageBasedOnPathType(topTrackType, currentPathTree.leftPathTree.myPath.pathRewardUniqueName);
 			bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
-			SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.myPath.myType);
+			SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.myPath.pathRewardUniqueName);
 			topTrack.SetActiveState(mainLever.topSelected);
 			bottomTrack.SetActiveState(!mainLever.topSelected);
 
@@ -132,31 +131,26 @@ public class PathSelectorController : MonoBehaviour {
 		}
 	}
 
-	void SetImageBasedOnPathType(Image target, PathGenerator.PathType type) {
-		switch (type) {
-			case PathGenerator.PathType.empty:
-				target.enabled = false;
-				break;
-			case PathGenerator.PathType.gunCart:
-				target.enabled = true;
-				target.sprite = pathTypeSprites[0];
-				target.color = pathTypeColors[0];
-				break;
-			case PathGenerator.PathType.utilityCart:
-				target.enabled = true;
-				target.sprite = pathTypeSprites[1];
-				target.color = pathTypeColors[1];
-				break;
-			case PathGenerator.PathType.gem:
-				target.enabled = true;
-				target.sprite = pathTypeSprites[2];
-				target.color = pathTypeColors[2];
-				break;
-			case PathGenerator.PathType.cargo:
-				target.enabled = true;
-				target.sprite = pathTypeSprites[3];
+	void SetImageBasedOnPathType(Image target, string uniqueName) {
+		if (uniqueName.Length == 0) {
+			target.enabled = false;
+		} else if(DataHolder.s.GetTier1Gun(uniqueName) is var gunModule && gunModule != null){
+			target.sprite = gunModule.gunSprite;
+			target.color = pathTypeColors[0];
+		}else if (DataHolder.s.GetCart(uniqueName, true) is var utilityCart && utilityCart != null) {
+			target.sprite = utilityCart.Icon;
+
+			if (utilityCart.GetComponentInChildren<CrystalStorageModule>()) {
 				target.color = pathTypeColors[3];
-				break;
+			} else {
+				target.color = pathTypeColors[1];
+			}
+			
+		}else if(DataHolder.s.GetArtifact(uniqueName) is var artifact && artifact != null) {
+			target.sprite = artifact.mySprite;
+			target.color = pathTypeColors[2];
+		} else {
+			target.enabled = false;
 		}
 	}
 
@@ -206,7 +200,7 @@ public class PathSelectorController : MonoBehaviour {
 					EncounterController.s.EngageEncounter(upcomingSegment.levelName);
 				} else {*/
 				//}
-				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length, upcomingPath.myPath.myType);
+				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length, upcomingPath.myPath.pathRewardUniqueName);
 
 				nextSegmentChangeDistance += upcomingPath.myPath.length;
 				/*if (!upcomingPath.endPath) {

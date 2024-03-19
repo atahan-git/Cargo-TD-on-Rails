@@ -62,7 +62,7 @@ public class WorldDifficultyController : MonoBehaviour {
                 CalculateDifficulty();
             }
 
-            infoText.text = $"Enemy dmg x{currentDamageMultiplier}\nEnemy hp x{currentHealthMultiplier}\nStage {curLevel} - {FormatTime(curCombatTime)}";
+            infoText.text = $"Enemy dmg x{currentDamageMultiplier}\nEnemy hp x{currentHealthMultiplier}\nStage {curLevel} - {ExtensionMethods.FormatTime(curCombatTime)}";
         }
     }
 
@@ -124,15 +124,6 @@ public class WorldDifficultyController : MonoBehaviour {
 
     public void OnCombatEnd(bool isReal) {
         infoText.text = "";
-    }
-    
-    public static string FormatTime(float time)
-    {
-        int minutes = Mathf.FloorToInt(time / 60);
-        int seconds = Mathf.FloorToInt(time % 60);
-
-        // Return the formatted time as a string
-        return string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
 }

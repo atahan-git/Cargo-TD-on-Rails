@@ -52,15 +52,15 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
 
         var cargoModule = fullPlatform.GetComponentInChildren<CargoModule>();
         GameObject rewardCart = null;
-        if (UpgradesController.s.rewardDestinationCart) {
+        /*if (ShopStateController.s.rewardDestinationCart) {
             rewardCart = Instantiate(DataHolder.s.GetCart(cargoModule.GetState().cargoReward).gameObject, emptyPlatform.transform);
         }
 
         GameObject rewardArtifact = null;
-        if (UpgradesController.s.rewardDestinationArtifact) {
+        if (ShopStateController.s.rewardDestinationArtifact) {
             rewardArtifact = Instantiate(DataHolder.s.GetArtifact(cargoModule.GetState().artifactReward).gameObject, artifactLocation1);
             rewardArtifact.transform.position += Vector3.up * 0.2f;
-        }
+        }*/
 
         GameObject bonusRewardArtifact = null;
         var gotBonusArtifact = ArtifactsController.s.gotBonusArtifact;
@@ -91,11 +91,11 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
         SetColliderStatus(rotatingPlatform.gameObject, true);
         Destroy(fullPlatform.GetSnappedObject().gameObject);
 
-        if (UpgradesController.s.rewardDestinationCart) {
+        /*if (UpgradesController.s.rewardDestinationCart) {
             UpgradesController.s.AddCartToShop(rewardCart.GetComponent<Cart>());
         }
 
-        UpgradesController.s.RemoveCartFromShop(fullPlatform.GetSnappedObject().GetComponent<Cart>());
+        UpgradesController.s.RemoveCartFromShop(fullPlatform.GetSnappedObject().GetComponent<Cart>());*/
 
 
         FirstTimeTutorialController.s.CargoHintShown();

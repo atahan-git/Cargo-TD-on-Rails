@@ -3,29 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GemCarrierEnemy : MonoBehaviour {
-    
-    public NumberWithWeights[] carriedThingsSpawnWeights = new NumberWithWeights[3];
     public GameObject[] carriedThings = new GameObject[3];
-    public bool[] canCarry = new bool[]{true,true,true};
     public DataSaver.TrainState.ArtifactState[] carryAwards = new DataSaver.TrainState.ArtifactState[3];
     public Transform awardSpawnPos;
     
     public int currentCarry;
-    // Start is called before the first frame update
-    void Start()
-    {
-        SetWhatIsBeingCarried();
-    }
+    
+    public void SetWhatIsBeingCarried(string uniqueName) {
+        for (int i = 0; i < carryAwards.Length; i++) {
+            if (carryAwards[i].uniqueName == uniqueName) {
+                currentCarry = i;
+            }
+        }
 
-
-    void SetWhatIsBeingCarried() {
-        currentCarry = NumberWithWeights.WeightedRandomRoll(carriedThingsSpawnWeights);
-        
         for (int i = 0; i < carriedThings.Length; i++) {
             carriedThings[i].SetActive(i == currentCarry);
-            if (i == currentCarry) {
-                carriedThings[i].GetComponent<IApplyToEnemyWithGem>().ApplyToEnemyWithGem(GetComponent<EnemyInSwarm>());
-            }
         }
     }
 

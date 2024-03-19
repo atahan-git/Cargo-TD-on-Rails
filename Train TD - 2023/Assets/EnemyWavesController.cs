@@ -31,44 +31,59 @@ public class EnemyWavesController : MonoBehaviour {
 	
 	public void SetUpLevel() {
 		Cleanup();
+
+		enemiesInitialized = true;
+		curMiniWaveTime = 20;
 	}
 
-	public void SpawnEnemiesOnSegment(float segmentStartDistance, float segmentLength, PathGenerator.PathType type) {
+	public void SpawnEnemiesOnSegment(float segmentStartDistance, float segmentLength, string rewardUniqueName) {
 		if (debugNoRegularSpawns)
 			return;
+		
+		var distance = Random.Range(segmentLength / 10f, segmentLength);
+
+		GameObject enemyPrefab = GetRandomEnemyWithReward(PlayStateMaster.s.currentLevel.rewardBattalions, rewardUniqueName);
+
+		if (enemyPrefab != null) {
+			var enemy = SpawnEnemy(enemyPrefab, segmentStartDistance + distance, false, Random.value > 0.5f);
+			enemy.GetComponentInChildren<CarrierEnemy>()?.SetWhatIsBeingCarried(rewardUniqueName);
+			enemy.GetComponentInChildren<GemCarrierEnemy>()?.SetWhatIsBeingCarried(rewardUniqueName);
+		}
+	}
 
 
-		enemiesInitialized = true; // ie for empty segments
-		if (enemiesInitialized) {
-			var distance = Random.Range(segmentLength / 10f, segmentLength);
-
-			GameObject enemyPrefab;
-
-			switch (type) {
-				case PathGenerator.PathType.empty:
-					enemyPrefab = null;
-					break;
-				case PathGenerator.PathType.gunCart:
-					enemyPrefab = PlayStateMaster.s.currentLevel.gunCartBattalions[Random.Range(0, PlayStateMaster.s.currentLevel.gunCartBattalions.Length)];
-					break;
-				case PathGenerator.PathType.utilityCart:
-					enemyPrefab = PlayStateMaster.s.currentLevel.utilityCartBattalions[Random.Range(0, PlayStateMaster.s.currentLevel.utilityCartBattalions.Length)];
-					break;
-				case PathGenerator.PathType.gem:
-					enemyPrefab = PlayStateMaster.s.currentLevel.gemBattalions[Random.Range(0, PlayStateMaster.s.currentLevel.gemBattalions.Length)];
-					break;
-				case PathGenerator.PathType.cargo:
-					enemyPrefab = PlayStateMaster.s.currentLevel.cargoBattalions[Random.Range(0, PlayStateMaster.s.currentLevel.cargoBattalions.Length)];
-					break;
-				default:
-					enemyPrefab = null;
-					break;
+	GameObject GetRandomEnemyWithReward(GameObject[] possiblePrefabs, string uniqueName) {
+		var legalPrefabs = new List<GameObject>();
+		
+		for (int i = 0; i < possiblePrefabs.Length; i++) {
+			var carrier = possiblePrefabs[i].GetComponentInChildren<CarrierEnemy>();
+			if (carrier != null) {
+				for (int j = 0; j < carrier.carryAwards.Length; j++) {
+					if (carrier.carryAwards[j].uniqueName == uniqueName) {
+						legalPrefabs.Add(possiblePrefabs[i]);
+						break;
+					}
+				}
+				continue;
 			}
-
-			if (enemyPrefab != null) {
-				SpawnEnemy(enemyPrefab, segmentStartDistance + distance, false, Random.value > 0.5f);
+			
+			var gemCarrier = possiblePrefabs[i].GetComponentInChildren<GemCarrierEnemy>();
+			if (gemCarrier != null) {
+				for (int j = 0; j < gemCarrier.carryAwards.Length; j++) {
+					if (gemCarrier.carryAwards[j].uniqueName == uniqueName) {
+						legalPrefabs.Add(possiblePrefabs[i]);
+						break;
+					}
+				}
+				continue;
 			}
 		}
+
+		if (legalPrefabs.Count <= 0) {
+			return null;
+		}
+
+		return legalPrefabs[Random.Range(0, legalPrefabs.Count)];
 	}
 
 
@@ -114,8 +129,13 @@ public class EnemyWavesController : MonoBehaviour {
 	public Vector2Int miniWaveSize = new Vector2Int(1, 5);
 	
 	void Update() {
+		if (PlayStateMaster.s.isCombatInProgress()) {
+			if (SpeedController.s.currentDistance < 30) {
+				curMiniWaveTime = 5;
+			}
+		}
+		
 		if (PlayStateMaster.s.isCombatInProgress() && enemiesInitialized) {
-
 			var playerDistance = SpeedController.s.currentDistance;
 
 			for (int i = 0; i < waves.Count; i++) {
@@ -135,9 +155,9 @@ public class EnemyWavesController : MonoBehaviour {
 				if (curMiniWaveTime <= 0) {
 					curMiniWaveTime = Random.Range(newMiniWaveRandomTime.x, newMiniWaveRandomTime.y);
 
-					if (Random.value < miniWaveChance) {
+					if (Random.value < miniWaveChance || waves.Count == 0) {
 						var enemyPrefab = PlayStateMaster.s.currentLevel.dynamicBattalions[Random.Range(0, PlayStateMaster.s.currentLevel.dynamicBattalions.Length)];
-						var dynamicWave = SpawnEnemy(enemyPrefab, SpeedController.s.currentDistance - 50, true,Random.value < 0.5f);
+						var dynamicWave = SpawnEnemy(enemyPrefab, SpeedController.s.currentDistance - 30, true,Random.value < 0.5f);
 						
 						dynamicWave.GetComponentInChildren<DynamicSpawnEnemies>().SpawnEnemies(Random.Range(miniWaveSize.x, miniWaveSize.y+1));
 					}

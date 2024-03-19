@@ -47,6 +47,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		//CameraShakeController.s.rotationalShake = true;
 
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shoot);
+		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.repairDroneMove);
+		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.repairDroneUp);
+		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.repairDroneDown);
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
 
 		curRepairTime = 0;
@@ -66,6 +69,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		DirectControlMaster.s.repairControlUI.SetActive(false);
 		
 		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.shoot);
+		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repairDroneMove);
+		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repairDroneUp);
+		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repairDroneDown);
 		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
 
 		SetRepairControllerStatus(myRepairController, false);

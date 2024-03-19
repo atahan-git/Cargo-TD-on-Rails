@@ -9,6 +9,15 @@ using Random = UnityEngine.Random;
 //extension methods. This class must be static.
 public static class ExtensionMethods {
 
+    public static string FormatTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+
+        // Return the formatted time as a string
+        return string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+    
     public static void ResetTransformation(this Transform trans) {
         trans.localPosition = Vector3.zero;
         trans.localRotation = Quaternion.identity;

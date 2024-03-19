@@ -76,6 +76,10 @@ PrefabInstance:
       value: Iron Gem
       objectReference: {fileID: 0}
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: mySprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d08a9e4c47b0f9a4f87a4ee9df8104cb, type: 3}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: uniqueName
       value: iron_gem
       objectReference: {fileID: 0}

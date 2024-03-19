@@ -10194,6 +10194,37 @@ Transform:
   m_Father: {fileID: 3155236870814131088}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2058387526988324086
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2311973318849027932}
+  m_Layer: 11
+  m_Name: direct control cam pos left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2311973318849027932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058387526988324086}
+  m_LocalRotation: {x: 0.091996156, y: 0.69479346, z: -0.09033655, w: 0.70755786}
+  m_LocalPosition: {x: -1.758577, y: 0.9284977, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4157481161145799235}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 14.816, y: 88.957, z: 0}
 --- !u!1 &2302778430203564679
 GameObject:
   m_ObjectHideFlags: 0
@@ -29892,6 +29923,37 @@ Transform:
   m_Father: {fileID: 8999384730579769365}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4181327527988660514
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3327034061576637923}
+  m_Layer: 11
+  m_Name: direct control cam pos right
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3327034061576637923
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4181327527988660514}
+  m_LocalRotation: {x: 0.091996156, y: -0.69479346, z: 0.09033655, w: 0.70755786}
+  m_LocalPosition: {x: 1.7585773, y: 0.9284977, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4157481161145799235}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 14.816, y: -88.957, z: 0}
 --- !u!1 &4250995386021180533
 GameObject:
   m_ObjectHideFlags: 0
@@ -34852,6 +34914,7 @@ GameObject:
   - component: {fileID: 7377662431111089309}
   - component: {fileID: 3204952741828938182}
   - component: {fileID: 8604652415522148574}
+  - component: {fileID: 314266103082093664}
   m_Layer: 11
   m_Name: BasicNuclearEngine
   m_TagString: Untagged
@@ -34873,6 +34936,7 @@ Transform:
   m_Children:
   - {fileID: 3625494044461237040}
   - {fileID: 1838091285933671186}
+  - {fileID: 4157481161145799235}
   m_Father: {fileID: 181116478649855367}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -34918,8 +34982,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: The Nuclear Engine. Lets you carry 6 carts. Base speed of 30.
+    text: The Nuclear Engine. Click on this to add fuel to the engine.
   info: Nuclear Engine
+--- !u!114 &314266103082093664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4328223185496132333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20447499ddd92104a8438b1b87582bc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myHealth: {fileID: 0}
+  myAmmoBar: {fileID: 0}
+  myModuleAmmo: {fileID: 0}
+  directControlCamPositions:
+  - {fileID: 3327034061576637923}
+  - {fileID: 2311973318849027932}
 --- !u!1 &4500730424651155858
 GameObject:
   m_ObjectHideFlags: 0
@@ -93777,6 +93859,39 @@ Transform:
   - {fileID: 1585700060709859347}
   m_Father: {fileID: 7937548940546306751}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9110888318495316092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4157481161145799235}
+  m_Layer: 11
+  m_Name: Direct Control Minigame Positions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4157481161145799235
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9110888318495316092}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.081}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3327034061576637923}
+  - {fileID: 2311973318849027932}
+  m_Father: {fileID: 7377662431111089309}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &699302803013943096
 PrefabInstance:

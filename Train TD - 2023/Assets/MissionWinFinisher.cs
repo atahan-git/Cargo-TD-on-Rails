@@ -63,7 +63,7 @@ public class MissionWinFinisher : MonoBehaviour {
 
 		// mission rewards
 		if (!isShowingPrevRewards) {
-			UpgradesController.s.ClearCurrentShop();
+			ShopStateController.s.ClearCurrentShop();
 			GenerateMissionRewards();
 		}
 		
@@ -87,7 +87,6 @@ public class MissionWinFinisher : MonoBehaviour {
 				"LevelWon",
 				new Dictionary<string, object> {
 					{ "Level", PlayStateMaster.s.currentLevel.levelName },
-					{ "enemiesLeftAlive", EnemyHealth.enemySpawned - EnemyHealth.enemyKilled },
 					{ "winTime", WorldDifficultyController.s.GetMissionTime()},
 				}
 			);

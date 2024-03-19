@@ -58,8 +58,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         if (isMoving) {
             currentSpeed = mySpeed;
         }
-        
-        DistanceAndEnemyRadarController.s.RegisterUnit(this);
 
         teleportTimer = 0;
 
@@ -80,7 +78,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             mySpeed = Mathf.Min(mySpeed, allEnemiesInSwarm[i].speed);
 
             if (allEnemiesInSwarm[i].primeEnemy) {
-                mainSprite = allEnemiesInSwarm[i].enemyIcon;
                 primeEnemy = allEnemiesInSwarm[i];
             }
         }
@@ -114,7 +111,8 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             EnemyWavesController.s.AddEnemySwarmMaker(allSwarmMakers[i]);
         }
         
-        //Update();
+        
+        DistanceAndEnemyRadarController.s.RegisterUnit(this);
     }
 
     void SetLeftyness(bool _isLeft) {
