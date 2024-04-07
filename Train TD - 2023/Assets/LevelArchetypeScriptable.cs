@@ -71,8 +71,7 @@ public class LevelArchetypeScriptable : ScriptableObject {
 [Serializable]
 public class ConstructedLevel {
     public string levelName = "unset";
-
-
+    
     public GameObject[] rewardBattalions;
     //public EncounterTitle[] encounters;
     public GameObject[] dynamicBattalions;

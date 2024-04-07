@@ -169,4 +169,3 @@ MonoBehaviour:
   reloadDelayBase: 10
   reloadBoostPerLevel: -2
   currentReloadDelay: 0
-  repairAmount: 50

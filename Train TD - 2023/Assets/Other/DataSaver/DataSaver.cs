@@ -202,9 +202,6 @@ public class DataSaver {
 		public float playtime;
 		public TrainState myTrain = new TrainState();
 
-		public bool isInEndRunArea = false;
-		public EndRunAreaInfo endRunAreaInfo;
-		
 		public bool shopInitialized = false;
 		public ShopStateController.ShopState shopState;
 		
@@ -212,16 +209,40 @@ public class DataSaver {
 
 		public bool showWakeUp = false;
 
-		public int armorUpgradesBought = 0;
-		public int damageUpgradesBought = 0;
-		public int ammoUpgradesBought = 0;
-
-		public int recoveryUpgradesBought = 0;
+		public NewspaperUpgradesProgress newspaperUpgradesProgress = new NewspaperUpgradesProgress();
+		public CityUpgradesProgress cityUpgradesProgress = new CityUpgradesProgress();
 
 		public int castlesTraveled = 0;
 		public int money = 0;
 		
 		public TutorialProgress tutorialProgress = new TutorialProgress();
+	}
+	
+	[Serializable]
+	public class NewspaperUpgradesProgress {
+		public int totalEarnedInk = 0;
+		public int inkCount = 0;
+
+		public bool gunCartLimit = true;
+		public bool ammoCartLimit = true;
+		public bool repairCartLimit = true;
+		public int overallCartLimitIncrease = 0;
+
+		public bool gatlingUnlock = false;
+		public bool shieldUnlock = false;
+		public bool growthUnlock = false;
+		public bool uraniumUnlock = false;
+
+		public bool bossUnlocked = false;
+	}
+	
+	[Serializable]
+	public class CityUpgradesProgress {
+		public int armorUpgradesBought = 0;
+        public int damageUpgradesBought = 0;
+        public int ammoUpgradesBought = 0;
+
+        public int recoveryUpgradesBought = 0;
 	}
 
 	[Serializable]
@@ -239,12 +260,6 @@ public class DataSaver {
 	}
 
 	[Serializable]
-	public class EndRunAreaInfo {
-		public bool gotBonusArtifact = false;
-		public string bonusArtifactUniqueName;
-	}
-
-	[Serializable]
 	public class TrainState {
 		public List<CartState> myCarts = new List<CartState>();
 
@@ -254,9 +269,11 @@ public class DataSaver {
 			public string uniqueName = "";
 
 			[HideInInspector]
-			public int health = -1;
+			public float health = -1;
 			[HideInInspector]
-			public int ammo = -1;
+			public float maxHealthReduction = -1;
+			[HideInInspector]
+			public float ammo = -1;
 
 			public CargoState cargoState;
 
@@ -295,6 +312,7 @@ public class DataSaver {
 			public void EmptyState() {
 				uniqueName = "";
 				health = -1;
+				maxHealthReduction = -1;
 				ammo = -1;
 				attachedArtifacts = new List<ArtifactState>();
 			}

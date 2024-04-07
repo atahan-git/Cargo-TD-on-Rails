@@ -63,12 +63,6 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
         }*/
 
         GameObject bonusRewardArtifact = null;
-        var gotBonusArtifact = ArtifactsController.s.gotBonusArtifact;
-        if (gotBonusArtifact) {
-            bonusRewardArtifact = Instantiate(DataHolder.s.GetArtifact(ArtifactsController.s.bonusArtifactUniqueName).gameObject, artifactLocation2);
-            bonusRewardArtifact.transform.position += Vector3.up*0.2f;
-            ArtifactsController.s.BonusArtifactRewarded(artifactLocation2);
-        }
 
         SetColliderStatus(rotatingPlatform.gameObject, false);
 
@@ -102,9 +96,6 @@ public class CargoDeliveryAreaScript : MonoBehaviour {
         
         yield return new WaitForSeconds(0.5f);
 
-        if (gotBonusArtifact) {
-            extraArtifactEffect.gameObject.SetActive(true);
-        }
 
         isEngaged = false;
     }

@@ -270,7 +270,12 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public void SetRotation(Quaternion rotation) {
         var searchingForTargets = SearchingForTargets();
-        realRotation = Quaternion.Lerp(realRotation, rotation, searchingForTargets ? rotateSpeed * Time.deltaTime : 2f*Time.deltaTime);
+        var _rotateSpeed = (searchingForTargets ? rotateSpeed : 2f);
+        _rotateSpeed *= 40 * Time.deltaTime;
+        if (beingDirectControlled) {
+            _rotateSpeed *= 2;
+        }
+        realRotation = Quaternion.RotateTowards(realRotation, rotation, _rotateSpeed);
 
         if (Quaternion.Angle(realRotation, rotation) < 5) {
             IsBarrelPointingCorrectly = true;
@@ -312,6 +317,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             preAnchor.SetParent(realAnchor.transform);
             rangeOrigin = realAnchor.transform;
         }
+
+        realRotation = rotateTransform.centerBarrelEnd.rotation;
     }
 
     float GetAttackSpeedMultiplier() {
@@ -335,7 +342,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
-            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().damageUpgradesBought * 0.2f);
+            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().cityUpgradesProgress.damageUpgradesBought * 0.2f);
             dmgMul *= sniperDamageMultiplier;
 
             if (beingDirectControlled) {
@@ -354,7 +361,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
-            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().damageUpgradesBought * 0.2f);
+            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().cityUpgradesProgress.damageUpgradesBought * 0.2f);
             dmgMul *= sniperDamageMultiplier;
             
             if (beingDirectControlled) {
@@ -413,6 +420,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     
     public float explosionRange = 0;
     public float explosionRangeBoost = 0;
+
+    public float inaccuracyMultiplier = 1f;
 
     public float GetExplosionRange() {
         var damageToRangeConversion = 0f;
@@ -476,6 +485,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
             var randomDirection = Random.onUnitSphere;
             var actualInaccuracy = Random.Range(0, addAngleInaccuracy);
+            actualInaccuracy *= inaccuracyMultiplier;
             
             var bullet = VisualEffectsController.s.SmartInstantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
 

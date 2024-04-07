@@ -55,8 +55,8 @@ public class PlayStateMaster : MonoBehaviour {
         OnShopEntered.AddListener(FirstTimeTutorialController.s.OnEnterShop);
         OnShopEntered.AddListener(Train.s.OnEnterShopArea);
         OnShopEntered.AddListener(WorldDifficultyController.s.OnShopEntered);
-        OnShopEntered.AddListener(ArtifactsController.s.OnEnterShop);
         OnShopEntered.AddListener(VignetteController.s.ResetVignette);
+        OnShopEntered.AddListener(ScreenFadeToWhiteController.s.ResetFadeToWhite);
         OnShopEntered.AddListener(LevelReferences.s.ClearCombatHoldableThings);
         
         OnCombatEntered.AddListener(WorldDifficultyController.s.OnCombatStart);
@@ -74,7 +74,6 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatFinished.AddListener(TimeController.s.OnCombatEnd);
         OnCombatFinished.AddListener(FirstTimeTutorialController.s.OnFinishCombat);
         OnCombatFinished.AddListener(EncounterController.s.ResetEncounter);
-        OnCombatFinished.AddListener(ArtifactsController.s.OnAfterCombat);
         OnCombatFinished.AddListener(PlayerWorldInteractionController.s.OnLeaveCombat);
         
         OnEnterMissionRewardArea.AddListener(VignetteController.s.ResetVignette);
@@ -229,6 +228,13 @@ public class PlayStateMaster : MonoBehaviour {
             () => {OnShopEntered?.Invoke();}));*/
     }
 
+    public void FinishWarpToTeleportBackToShop() {
+        Train.s.ShowEntrySparkles();
+        enterShopOnLoad = true;
+        
+        StartCoroutine(Transition(false, () => { SceneLoader.s.ForceReloadScene(); }, NoProgress));
+    }
+    
     public void EnterShopState() {
         _gameState = GameState.shop;
 

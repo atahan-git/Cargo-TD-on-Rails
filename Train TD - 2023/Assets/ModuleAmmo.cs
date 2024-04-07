@@ -23,7 +23,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         maxAmmoMultiplier = 1;
         reloadEfficiency = 1;
 
-        maxAmmoMultiplier = 0.7f + (DataSaver.s.GetCurrentSave().ammoUpgradesBought * 0.15f);
+        maxAmmoMultiplier = 0.7f + (DataSaver.s.GetCurrentSave().cityUpgradesProgress.ammoUpgradesBought * 0.15f);
 
         myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
         myAmmoBar.OnAmmoTypeChange();

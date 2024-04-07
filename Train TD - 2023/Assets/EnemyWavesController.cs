@@ -17,6 +17,7 @@ public class EnemyWavesController : MonoBehaviour {
 	}
 
 	public List<EnemyWave> waves = new List<EnemyWave>();
+	public List<EnemyWave> dynamicWaves = new List<EnemyWave>();
 
 	public bool enemiesInitialized = false;
 
@@ -36,26 +37,40 @@ public class EnemyWavesController : MonoBehaviour {
 		curMiniWaveTime = 20;
 	}
 
-	public void SpawnEnemiesOnSegment(float segmentStartDistance, float segmentLength, string rewardUniqueName) {
+	public void SpawnEnemiesOnSegment(float segmentStartDistance, float segmentLength, string rewardUniqueName, bool mergeReward) {
 		if (debugNoRegularSpawns)
 			return;
 		
 		var distance = Random.Range(segmentLength / 10f, segmentLength);
 
-		GameObject enemyPrefab = GetRandomEnemyWithReward(PlayStateMaster.s.currentLevel.rewardBattalions, rewardUniqueName);
+		GameObject enemyPrefab = GetRandomEnemyWithReward(PlayStateMaster.s.currentLevel.rewardBattalions, rewardUniqueName, mergeReward);
 
 		if (enemyPrefab != null) {
 			var enemy = SpawnEnemy(enemyPrefab, segmentStartDistance + distance, false, Random.value > 0.5f);
 			enemy.GetComponentInChildren<CarrierEnemy>()?.SetWhatIsBeingCarried(rewardUniqueName);
 			enemy.GetComponentInChildren<GemCarrierEnemy>()?.SetWhatIsBeingCarried(rewardUniqueName);
+		} else {
+			Debug.LogError($"Cannot find enemy with {rewardUniqueName} and merge={mergeReward}");
 		}
 	}
 
 
-	GameObject GetRandomEnemyWithReward(GameObject[] possiblePrefabs, string uniqueName) {
+	GameObject GetRandomEnemyWithReward(GameObject[] possiblePrefabs, string uniqueName, bool mergeReward) {
 		var legalPrefabs = new List<GameObject>();
 		
 		for (int i = 0; i < possiblePrefabs.Length; i++) {
+			var mergeCarrier = possiblePrefabs[i].GetComponentInChildren<MergeCarrierEnemy>();
+			if (mergeReward) {
+				if (mergeCarrier == null) {
+					continue;
+				}
+			} else {
+				if (mergeCarrier != null) {
+					continue;
+				}
+			}
+			
+			
 			var carrier = possiblePrefabs[i].GetComponentInChildren<CarrierEnemy>();
 			if (carrier != null) {
 				for (int j = 0; j < carrier.carryAwards.Length; j++) {
@@ -89,12 +104,15 @@ public class EnemyWavesController : MonoBehaviour {
 
 	public int maxConcurrentWaves = 6;
 
-	public EnemyWave SpawnEnemy(GameObject enemyPrefab, float distance, bool startMoving, bool isLeft) {
+	public EnemyWave SpawnEnemy(GameObject enemyPrefab, float distance, bool startMoving, bool isLeft, bool isDynamic = false) {
 		var playerDistance = SpeedController.s.currentDistance;
 		var wave = Instantiate(enemyPrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
 		wave.transform.SetParent(transform);
 		wave.SetUp(distance, startMoving, isLeft);
 		waves.Add(wave);
+		
+		if(isDynamic)
+			dynamicWaves.Add(wave);
 
 		return wave;
 		//UpdateEnemyTargetables();
@@ -127,6 +145,22 @@ public class EnemyWavesController : MonoBehaviour {
 	public float curMiniWaveTime;
 	public float miniWaveChance = 0.2f;
 	public Vector2Int miniWaveSize = new Vector2Int(1, 5);
+
+	public float miniWaveChanceMultiplier = 1;
+	public float miniWaveCountdownSpeed = 1;
+	public float maxWaveCountMultiplier = 1;
+
+	public void SetWarpingMode(bool isWarping) {
+		if (isWarping) {
+			miniWaveChanceMultiplier = 3;
+			miniWaveCountdownSpeed = 2;
+			maxWaveCountMultiplier = 1.5f;
+		} else {
+			miniWaveChanceMultiplier = 1;
+			miniWaveCountdownSpeed = 1;
+			maxWaveCountMultiplier = 1;
+		}
+	}
 	
 	void Update() {
 		if (PlayStateMaster.s.isCombatInProgress()) {
@@ -146,18 +180,22 @@ public class EnemyWavesController : MonoBehaviour {
 			if (debugNoRegularSpawns)
 				return;
 
-			if (waves.Count < maxConcurrentWaves) {
+			if (waves.Count < maxConcurrentWaves*maxWaveCountMultiplier) {
 				if (encounterMode) {
 					return;
 				}
 
-				curMiniWaveTime -= Time.deltaTime;
+				curMiniWaveTime -= Time.deltaTime*miniWaveCountdownSpeed;
+				if (dynamicWaves.Count == 0) {
+					curMiniWaveTime -= Time.deltaTime*5f;
+				}
+				
 				if (curMiniWaveTime <= 0) {
 					curMiniWaveTime = Random.Range(newMiniWaveRandomTime.x, newMiniWaveRandomTime.y);
 
-					if (Random.value < miniWaveChance || waves.Count == 0) {
+					if (Random.value < (miniWaveChance*miniWaveChanceMultiplier) || dynamicWaves.Count == 0) {
 						var enemyPrefab = PlayStateMaster.s.currentLevel.dynamicBattalions[Random.Range(0, PlayStateMaster.s.currentLevel.dynamicBattalions.Length)];
-						var dynamicWave = SpawnEnemy(enemyPrefab, SpeedController.s.currentDistance - 30, true,Random.value < 0.5f);
+						var dynamicWave = SpawnEnemy(enemyPrefab, SpeedController.s.currentDistance - 30, true,Random.value < 0.5f, true);
 						
 						dynamicWave.GetComponentInChildren<DynamicSpawnEnemies>().SpawnEnemies(Random.Range(miniWaveSize.x, miniWaveSize.y+1));
 					}
@@ -177,12 +215,17 @@ public class EnemyWavesController : MonoBehaviour {
 
 	public void RemoveWave(EnemyWave toRemove) {
 		waves.Remove(toRemove);
+
+		if (dynamicWaves.Contains(toRemove)) {
+			dynamicWaves.Remove(toRemove);
+		}
 	}
 
 	public void Cleanup() {
 		transform.DeleteAllChildren();
 		enemySwarmMakers.Clear();
 		waves.Clear();
+		dynamicWaves.Clear();
 		enemiesInitialized = false;
 	}
 	

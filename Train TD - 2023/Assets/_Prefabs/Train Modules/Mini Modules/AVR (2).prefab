@@ -336,7 +336,7 @@ GameObject:
   - component: {fileID: 8519729033857090827}
   - component: {fileID: 6515414645870886260}
   - component: {fileID: 4389583665060343709}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: avr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,6 +456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunUniqueName: unset unique name
   gunSprite: {fileID: 0}
   isGigaGatling: 0
   gatlinificator: 0
@@ -487,6 +488,9 @@ MonoBehaviour:
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
@@ -496,14 +500,11 @@ MonoBehaviour:
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 1
+  ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 0
-  steamUsePerShot: 0
   needWarmUp: 0
   startWarmUpEvent:
     m_PersistentCalls:
@@ -520,11 +521,12 @@ MonoBehaviour:
   gunShakeOnShoot: 1
   gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
+  isLockOn: 0
   isHoming: 0
-  boostDamageOnUpgrade: 0.5
   waitTimer: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 1

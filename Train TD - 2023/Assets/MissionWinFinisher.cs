@@ -70,7 +70,6 @@ public class MissionWinFinisher : MonoBehaviour {
 		
 		// save our resources
 		Train.s.SaveTrainState(true);
-		mySave.isInEndRunArea = true;
 		
 		DataSaver.s.SaveActiveGame();
 		
@@ -167,7 +166,6 @@ public class MissionWinFinisher : MonoBehaviour {
 	public void CleanupWhenLeavingMissionRewardArea() {
 		//PathSelectorController.s.trainStationEnd.SetActive(false);
 		DataSaver.s.GetCurrentSave().shopInitialized = false;
-		DataSaver.s.GetCurrentSave().isInEndRunArea = false;
 		Train.s.SaveTrainState(true);
 		DataSaver.s.SaveActiveGame();
 	}

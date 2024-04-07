@@ -14,23 +14,30 @@ public class UpgradesController : MonoBehaviour {
 		s = this;
 	}
 
-	public RewardWithWeight[] rewards;
+	public RewardWithWeight[] gemRewards;
+	public RewardWithWeight[] cartRewards;
+	public RewardWithWeight[] componentRewards;
+	
 	public float noRewardChance = 0.2f;
 
-	private List<string> recentRewards = new List<string>();
+	private List<string> recentGemRewards = new List<string>();
+	private bool lastRewardWasNoReward = true;
 
-	public string GetRandomReward(bool noRewardPossible = true) {
-		if (noRewardPossible) {
+	public string GetGemReward(bool noRewardPossible = true) {
+		if (noRewardPossible && !lastRewardWasNoReward) {
 			if (Random.value < noRewardChance) {
+				lastRewardWasNoReward = true;
 				return "";
 			}
 		}
+
+		lastRewardWasNoReward = false;
 		
-		var rewardUniqueName = rewards[RewardWithWeight.WeightedRandomRoll(rewards)].uniqueName;
+		var rewardUniqueName = gemRewards.WeightedRandomRoll().uniqueName;
 
 		int n = 0;
-		while (recentRewards.Contains(rewardUniqueName)) {
-			rewardUniqueName = rewards[RewardWithWeight.WeightedRandomRoll(rewards)].uniqueName;
+		while (recentGemRewards.Contains(rewardUniqueName)) {
+			rewardUniqueName = gemRewards.WeightedRandomRoll().uniqueName;
 
 			n++;
 			if (n > 5) {
@@ -39,11 +46,26 @@ public class UpgradesController : MonoBehaviour {
 		}
 		
 		
-		recentRewards.Add(rewardUniqueName);
-		if (recentRewards.Count > 7) {
-			recentRewards.RemoveAt(0);
+		recentGemRewards.Add(rewardUniqueName);
+		if (recentGemRewards.Count > 1) {
+			recentGemRewards.RemoveAt(0);
 		}
 
 		return rewardUniqueName;
+	}
+
+	private int timesWithoutEliteRolls = 0;
+	public bool GetIfElite(string reward) {
+		if (reward.Length <= 0) {
+			return false;
+		}
+		var makeElite = Random.value < timesWithoutEliteRolls*0.07f;
+		if (makeElite) {
+			timesWithoutEliteRolls = 0;
+		} else {
+			timesWithoutEliteRolls += 1;
+		}
+
+		return makeElite;
 	}
 }

@@ -177,9 +177,19 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
                     targetSpeed = Mathf.Min(mySpeed,Mathf.FloorToInt(LevelReferences.s.speed - 1));
                 }
 
-                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, speedChangeDelta * Time.deltaTime);
+                var inTheSameDirection = (currentSpeed > 0 && targetSpeed > 0) || (currentSpeed < 0 && targetSpeed < 0);
+                var speedChangeMultiplier = 1f;
+                if (!inTheSameDirection || Mathf.Abs(currentSpeed) > Mathf.Abs(targetSpeed)) { // slowing down
+                    speedChangeMultiplier = 10;
+                }
+                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, speedChangeMultiplier* speedChangeDelta * Time.deltaTime);
 
                 wavePosition += currentSpeed * Time.deltaTime;
+
+
+                if (distance > 75 && wavePosition < playerPos) { // if we are sooo much behind the player (because they are speeding) then leave.
+                    Leave(false);
+                }
             }
 
             var adjustedWavePosition = wavePosition - playerPos + currentDistanceOffset;

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3794319236452520140}
   - component: {fileID: 8439244643568051820}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: RangeVisualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 2775307946320475505}
   - component: {fileID: 7604171903514991123}
   - component: {fileID: 8665234557837103407}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,7 +143,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9060155755661591850}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: barrel_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,7 +175,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Range Edge Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 3491152898792926885}
   - component: {fileID: 2934280374143819819}
   - component: {fileID: 7371494607064308679}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Gatling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -401,7 +401,7 @@ MonoBehaviour:
   dontGetAffectByMultipliers: 0
   directControlShakeMultiplier: 0.5
   isHeal: 0
-  rotateSpeed: 10
+  rotateSpeed: 20
   gunActive: 1
   IsBarrelPointingCorrectly: 0
   ammoPerBarrage: 0.1
@@ -430,6 +430,7 @@ MonoBehaviour:
   waitTimer: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 0.1
@@ -459,7 +460,7 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Targeting Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -591,7 +592,7 @@ GameObject:
   - component: {fileID: 6907664562015558031}
   - component: {fileID: 7406160953269289486}
   - component: {fileID: 8699265797873930014}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -674,7 +675,7 @@ GameObject:
   - component: {fileID: 4887558387702784393}
   - component: {fileID: 4161540031439350422}
   - component: {fileID: 9184544723874755981}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -757,7 +758,7 @@ GameObject:
   - component: {fileID: 6483988906469013072}
   - component: {fileID: 9132381856761774638}
   - component: {fileID: 5400481851492300953}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -838,7 +839,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7351534438779255672}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: barrel centered
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -871,7 +872,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6428232684007577200}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -906,7 +907,7 @@ GameObject:
   - component: {fileID: 6637031524188555893}
   - component: {fileID: 3214340997545362078}
   - component: {fileID: 2323390346110032259}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Gatling Animator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -946,6 +947,7 @@ MonoBehaviour:
   rotationSpeed: 1800
   slowDownDelta: 900
   revSpeaker: {fileID: 2323390346110032259}
+  playSound: 1
   isRotating: 0
   curSpeed: 0
 --- !u!114 &2323390346110032259
@@ -980,7 +982,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 483469733385342657}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: gatling gfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1108,7 +1110,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: Loop
@@ -1190,7 +1192,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Volume

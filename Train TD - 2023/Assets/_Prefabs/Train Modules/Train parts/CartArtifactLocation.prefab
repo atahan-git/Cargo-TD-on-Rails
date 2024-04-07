@@ -95,7 +95,7 @@ MonoBehaviour:
   snapTransform: {fileID: 6507951113280827310}
   visualizeEffect: {fileID: 3883602322274237903}
   snapDistance: 0.3
-  lerpChild: 0
+  lerpChild: 1
 --- !u!1 &4848967153825798583
 GameObject:
   m_ObjectHideFlags: 0

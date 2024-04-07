@@ -15,7 +15,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             Destroy(myTerrains[i].terrain.gameObject);
         }
 
-        myTracks.Clear();
+        ClearAllMyPaths();
         myTerrains.Clear();
         currentTerrainGenCount = 0;
         SetBiomes();
@@ -23,7 +23,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public List<PathGenerator.TrainPath> myPaths = new List<PathGenerator.TrainPath>();
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
-    public Dictionary<int, Dictionary<Vector3, GameObject>> myTracks = new Dictionary<int, Dictionary<Vector3, GameObject>>();
+    public Dictionary<int, List<GameObject>> myTracks = new Dictionary<int, List<GameObject>>();
     public List<PathGenerator.TrainPath> cityStampPaths = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> _comboList = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> comboList {
@@ -41,26 +41,35 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         return _comboList;
     }
     public bool isComboListDirty = false;
-
-
+    
     private int lastId = 0;
     void AddToMyPaths(PathGenerator.TrainPath toAdd) {
         if (toAdd.trackObjectsId <= 0) {
             lastId += 1;
             toAdd.trackObjectsId = lastId;
         }
-        myTracks[toAdd.trackObjectsId] = new Dictionary<Vector3, GameObject>();
         myPaths.Add(toAdd);
     }
 
     void RemoveFromMyPaths(PathGenerator.TrainPath toRemove) {
         myPaths.Remove(toRemove);
+        if (myTracks.ContainsKey(toRemove.trackObjectsId)) {
+            var listOfTracks = myTracks[toRemove.trackObjectsId];
+            for (int i = 0; i < listOfTracks.Count; i++) {
+                listOfTracks[i].GetComponent<PooledObject>().DestroyPooledObject();
+            }
+        }
         myTracks.Remove(toRemove.trackObjectsId);
     }
 
     void ClearAllMyPaths() {
         lastId = 0;
         myPaths.Clear();
+        foreach (var keyValuePair in myTracks) {
+            for (int i = 0; i < keyValuePair.Value.Count; i++) {
+                keyValuePair.Value[i].GetComponent<PooledObject>().DestroyPooledObject();
+            }
+        }
         myTracks.Clear();
     }
 
@@ -124,7 +133,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     }
 
 
-    public void MakeFakePathForMissionRewards() {
+    /*public void MakeFakePathForMissionRewards() {
         terrainGenerationProgress = 0;
         needReflectionProbe = true;
         ClearTerrains();
@@ -167,7 +176,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         SpeedController.s.currentDistance = 0;
 
         StartCoroutine(ReDrawTerrainAroundCenter(true));
-    }
+    }*/
 
 
     [Button]
@@ -190,11 +199,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public float terrainGenerationProgress = 0;
     private bool needReflectionProbe = false;
     public void MakeStarterAreaTerrain() {
-        if (!PlayStateMaster.s.isMainMenu() && DataSaver.s.GetCurrentSave().isInEndRunArea) {
-            MakeFakePathForMissionRewards();
-            return;
-        }
-        
         terrainGenerationProgress = 0;
         needReflectionProbe = true;
         ClearTerrains();
@@ -389,6 +393,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         var startDirection = PathGenerator.GetDirectionVectorOnTheLine(pathTree.myPath, pathTree.myPath.length);
         
         var makeEndStation = generatedPathDepth > (Mathf.Pow(2,minCastleDepth)) && Random.value < endStationChance;
+        makeEndStation = false;
         if (forceEndStation) {
             makeEndStation = true;
         }
@@ -402,8 +407,10 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
         }
 
-        var leftReward = UpgradesController.s.GetRandomReward();
-        var rightReward = UpgradesController.s.GetRandomReward();
+        var leftReward = UpgradesController.s.GetGemReward();
+        var rightReward = UpgradesController.s.GetGemReward();
+        var leftElite = UpgradesController.s.GetIfElite(leftReward);
+        var rightElite = UpgradesController.s.GetIfElite(rightReward);
 
         var segmentDistance = activeLevel.GetRandomSegmentLength();
         // left fork
@@ -415,6 +422,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 pathTree.leftPathTree.myPath.pathRewardUniqueName = "";
             } else {
                 pathTree.leftPathTree.myPath.pathRewardUniqueName = leftReward;
+                pathTree.leftPathTree.myPath.pathRewardMerge = leftElite;
             }
         }
         //right fork
@@ -425,6 +433,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 pathTree.rightPathTree.myPath.pathRewardUniqueName = "";
             } else {
                 pathTree.rightPathTree.myPath.pathRewardUniqueName = rightReward;
+                pathTree.rightPathTree.myPath.pathRewardMerge = rightElite;
             }
         }
     }
@@ -741,44 +750,21 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public IEnumerator MakeTracksAroundCenter(bool instant = false) {
         makingTracks = true;
         var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange*2);
-        var deleteList = new List<Vector3>();
+
         var n = 0;
-        foreach (var trackDictPair in myTracks) {
-            var curTracks = trackDictPair.Value;
-            foreach (var keyValuePair in curTracks) {
-                if (!viewBound.Contains(keyValuePair.Key + center)) {
-                    keyValuePair.Value.GetComponent<PooledObject>().DestroyPooledObject();
-                    deleteList.Add(keyValuePair.Key);
-                }
-
-                /*if (!instant && n % 300 == 0 && !TimeController.s.fastForwarding) {
-                    yield return null;
-                }*/
-
-                n++;
-            }
-            
-            foreach (var key in deleteList) {
-                curTracks.Remove(key);
-            }
-        }
-
-        
-
         for (int i = 0; i < myPaths.Count; i++) {
-            if (myPaths[i].bounds.Intersects(viewBound)) {
-                
-                var trainPath = myPaths[i];
+            var trainPath = myPaths[i];
+            //print(trainPath.bounds);
+            if (trainPath.bounds.Intersects(viewBound)) {
                 var index = 0;
-
-                while (index +4 < trainPath.points.Length) {
-                    var point = trainPath.points[index];
-                    if (!myTracks.ContainsKey(trainPath.trackObjectsId)) {
-                        myTracks[trainPath.trackObjectsId] = new Dictionary<Vector3, GameObject>();
-                    }
-                    var curTracks = myTracks[trainPath.trackObjectsId];
+                
+                if (!myTracks.ContainsKey(trainPath.trackObjectsId)) {
+                    myTracks[trainPath.trackObjectsId] = new List<GameObject>();
                     
-                    if (viewBound.Contains(point) && !curTracks.ContainsKey(point - center)) {
+                    var curTracks = myTracks[trainPath.trackObjectsId];
+
+                    while (index +4 < trainPath.points.Length) {
+                        var point = trainPath.points[index];
                         var direction = trainPath.points[index + 1] - trainPath.points[index];
                         var directionFurther = trainPath.points[index + 4] - trainPath.points[index];
                         var rotation = Quaternion.LookRotation(direction);
@@ -786,6 +772,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                         GameObject newTrack;
                         if (Vector3.Angle(direction, directionFurther) > 0) {
                             newTrack = bentTrackPool.Spawn(point, rotation);
+                            Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+direction,Color.red, 1000f);
+                            Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+directionFurther,Color.blue, 1000f);
+                            Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+Vector3.Cross(direction, directionFurther).normalized,Color.green, 1000f);
                             if (Vector3.Cross(direction, directionFurther).y > 0) {
                                 newTrack.transform.localScale = new Vector3(-1, 1, 1);
                             }
@@ -793,22 +782,27 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                             newTrack = trackPool.Spawn(point, rotation);
                         }
 
-                        curTracks[point-center] = newTrack;
-                    }
+                        curTracks.Add(newTrack);
 
-                    index += 5;
+                        index += 5;
                     
-                    if (!instant && n % 20 == 0 && !TimeController.s.fastForwarding) {
-                        yield return null;
-                    }
+                        if (!instant && n % 20 == 0 && !TimeController.s.fastForwarding) {
+                            yield return null;
+                        }
 
-                    n++;
+                        n++;
+                    }
                 }
+            } else {
+                if (myTracks.ContainsKey(trainPath.trackObjectsId)) {
+                    var listOfTracks = myTracks[trainPath.trackObjectsId];
+                    for (int j = 0; j < listOfTracks.Count; j++) {
+                        listOfTracks[j].GetComponent<PooledObject>().DestroyPooledObject();
+                    }
+                }
+                myTracks.Remove(trainPath.trackObjectsId);
             }
         }
-        
-        
-        //print("track adding done");
 
         makingTracks = false;
         yield return null;
@@ -838,6 +832,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 Gizmos.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up);    
             }
             
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireCube(myPaths[i].bounds.center, myPaths[i].bounds.size);
+
             /*Gizmos.color = Color.red;
             Gizmos.DrawSphere(path[myPaths[i].endPoint], 2);
             Gizmos.color = Color.yellow;
@@ -856,6 +853,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
     }
 
+    [Button]
+    void _DebugDisableAllGizmoDraw() {
+        for (int i = 0; i < myPaths.Count; i++) {
+            myPaths[i].debugDrawGizmo = false;
+        }
+    }
+    
     private void Update() {
         if (terrainStabilizedTimer > 0) {
             terrainStabilizedTimer -= Time.deltaTime;
@@ -878,6 +882,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             for (int j = 0; j < points.Length; j++) {
                 points[j] -= point;
             }
+
+            myPaths[i].bounds.center -= point;
         }
         
         for (int i = 0; i < cityStampPaths.Count; i++) {
@@ -885,6 +891,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             for (int j = 0; j < points.Length; j++) {
                 points[j] -= point;
             }
+
+            cityStampPaths[i].bounds.center -= point;
         }
         
 

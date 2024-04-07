@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class DroneRepairController : MonoBehaviour {
@@ -53,17 +54,20 @@ public class DroneRepairController : MonoBehaviour {
     public bool caughtCarry;
     private Vector3 targetVelocity;
     public Vector3 catchPosition;
+    [ShowInInspector]
     public IPlayerHoldable myCarry;
+
+    public float autoRepairTime = 2f;
 
     private void LateUpdate() {
         var moveSpeed = 1f;
         var rotateSpeed = 120;
 
-        if (myHealth.maxHealth - myHealth.currentHealth >= 50) {
+        if (myHealth.GetMaxHealth() - myHealth.currentHealth >= ModuleHealth.repairChunkSize) {
             repairCharge += selfRepairPerSecond * Time.deltaTime;
-            if (repairCharge >= 50) {
-                myHealth.Repair(50);
-                repairCharge -= 50;
+            if (repairCharge >= ModuleHealth.repairChunkSize) {
+                myHealth.RepairChunk();
+                repairCharge -= ModuleHealth.repairChunkSize;
             }
         } else {
             repairCharge -= Time.deltaTime;
@@ -88,6 +92,11 @@ public class DroneRepairController : MonoBehaviour {
         }
 
         if (carryDraggableMode) {
+            if (myCarry == null) {
+                StopHoldingThing();
+                return;
+            }
+
             droneScript.SetCurrentlyRepairingState(false);
 
             var carryMono = (MonoBehaviour)myCarry;
@@ -123,10 +132,10 @@ public class DroneRepairController : MonoBehaviour {
                 targetHoldPos.z += Mathf.Sin(Time.time*0.2f)*0.2f;
 
                 if (catchPosition.magnitude > 2) {
-                    catchPosition = Vector3.MoveTowards(catchPosition,Vector3.zero, 0.5f * Time.deltaTime);
+                    catchPosition = Vector3.SmoothDamp(catchPosition,Vector3.zero, ref targetVelocity, 1 * Time.deltaTime);
                 }
 
-                carryMono.transform.position = Vector3.SmoothDamp(carryMono.transform.position, targetHoldPos, ref targetVelocity, 1f);
+                carryMono.transform.position = Vector3.SmoothDamp(carryMono.transform.position, targetHoldPos, ref targetVelocity, 0.1f*Time.deltaTime);
                 carryMono.transform.rotation = Quaternion.Slerp(carryMono.transform.rotation, Quaternion.identity, 1 * Time.deltaTime);
             }
             
@@ -170,7 +179,7 @@ public class DroneRepairController : MonoBehaviour {
                         droneScript.SetCurrentlyRepairingState(true);
 
 
-                        if (repairTimer >= 2) {
+                        if (repairTimer >= autoRepairTime) {
                             health.RepairChunk(target);
                             TryGetNewTarget();
 

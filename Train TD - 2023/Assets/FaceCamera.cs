@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class FaceCamera : MonoBehaviour {
@@ -11,5 +12,10 @@ public class FaceCamera : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 	    transform.LookAt(camera);
+    }
+
+    [Button]
+    void DebugFaceCam() {
+	    transform.LookAt(Camera.main.transform);
     }
 }

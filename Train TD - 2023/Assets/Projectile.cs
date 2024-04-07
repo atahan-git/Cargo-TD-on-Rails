@@ -147,6 +147,8 @@ public class Projectile : MonoBehaviour {
         var hitPrefab = LevelReferences.s.laserHitPrefab;
 
         if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, hitScanRange, hitScanLayerMask)) {
+            if (!hit.rigidbody)
+                return;
             if (hit.rigidbody.gameObject != myOriginObject) {
                 var otherProjectile = hit.transform.root.GetComponent<Projectile>();
                 if (otherProjectile != null) {
@@ -556,7 +558,9 @@ public class Projectile : MonoBehaviour {
                     target.GetGameObject().GetComponentInParent<EnemyWave>().AddSlow(projectileDamage);
                 }
             } else if (isHeal) {
-                target.Repair(dmg);
+                for (int i = 0; i < dmg/ModuleHealth.repairChunkSize; i++) {
+                    target.RepairChunk();
+                }
             } else {
                 if (dmg > 1) {
                     target.DealDamage(dmg, transform.position);

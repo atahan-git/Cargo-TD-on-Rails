@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3794319236452520140}
   - component: {fileID: 8439244643568051820}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: RangeVisualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7568409994605518643}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: lazer gfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Range Edge Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 4086146798339006166}
   - component: {fileID: 2934280374143819819}
   - component: {fileID: 7371494607064308679}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Laser Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,13 +313,16 @@ MonoBehaviour:
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
   directControlShakeMultiplier: 1
   isHeal: 0
-  rotateSpeed: 10
+  rotateSpeed: 50
   gunActive: 1
   IsBarrelPointingCorrectly: 0
   ammoPerBarrage: 0
@@ -348,6 +351,7 @@ MonoBehaviour:
   waitTimer: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 1
@@ -363,7 +367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 60
+  rotationSpan: 180
   range: 7
   myPossibleTargets: 00000000
   canHitFlying: 0
@@ -377,7 +381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Targeting Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -509,7 +513,7 @@ GameObject:
   - component: {fileID: 4923406623015440858}
   - component: {fileID: 8566510990559336486}
   - component: {fileID: 1398841709946885737}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: lazor_gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -591,7 +595,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4904598894062401398}
   - component: {fileID: 1460709658764666001}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: laser turret animator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -653,7 +657,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3990362144964828962}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Barrel_End (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -777,7 +781,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Pitch
@@ -855,7 +859,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: Loop
@@ -896,13 +900,41 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3990362144964828962}
     m_Modifications:
+    - target: {fileID: 100000, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 100006, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
       propertyPath: m_Name
       value: GeroBeam
       objectReference: {fileID: 0}
     - target: {fileID: 100006, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 100010, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 100012, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 18e6997b0cea7f249bf0e687ba9da449, type: 3}
       propertyPath: m_RootOrder

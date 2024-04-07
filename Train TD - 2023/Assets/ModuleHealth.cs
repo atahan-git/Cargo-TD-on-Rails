@@ -15,6 +15,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     public float baseHealth = 50;
     [ReadOnly]
     public float maxHealth = 50;
+    public float maxHealthReduction = 0;
     public float currentHealth = 50;
 
     public float damageReductionMultiplier = 1f;
@@ -37,10 +38,8 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     }
 
     private HPLowStates hpState;
-
-    public bool unDying = false;
+    
     public bool invincible = false;
-
 
     private float repairEffectSpawnDistance = 2;
 
@@ -51,12 +50,12 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
 
     [NonSerialized] public bool glassCart;
     public void ResetState() {
-        maxHealth = baseHealth * (0.6f + (DataSaver.s.GetCurrentSave().armorUpgradesBought* 0.2f));
+        maxHealth = baseHealth;
 
         if (PlayStateMaster.s.isCombatInProgress()) {
-            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+            currentHealth = Mathf.Clamp(currentHealth, 0, GetMaxHealth());
         } else {
-            currentHealth = maxHealth;
+            currentHealth = GetMaxHealth();
         }
 
         glassCart = false;
@@ -64,54 +63,33 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         UpdateHpState();
     }
 
+    public ShieldGeneratorModule myProtector;
+
     private float invincibilityTime = 0;
     [Button]
     public void DealDamage(float damage, Vector3? hitPoint) {
         Assert.IsTrue(damage > 0);
         if(isImmune || invincible)
             return;
-
-        /*if (luckyCart && Random.value < DataSaver.s.GetCurrentSave().currentRun.luck) {
-            Instantiate(LevelReferences.s.luckyNegate, transform.position, Quaternion.identity);
-            return;
-        }*/
-
+        
         if (invincibilityTime > 0) {
             return;
         }
 
+
         myCart = GetComponent<Cart>();
         if (!isDead && (myCart == null || !myCart.isDestroyed)) {
-            damage *= damageReductionMultiplier;
-
-            var prevHpPercent = currentHealth / maxHealth;
-
-            /*if (myCart.isFragile) { // lose less hp the less hp you have if this is a fragile cart
-                damage *= Mathf.Clamp(prevHpPercent*2,0.5f,1f);
-            }*/
+            if (myProtector != null) {
+                myProtector.ProtectFromDamage(damage);
+                return;
+            }
             
+            damage *= damageReductionMultiplier;
             
             currentHealth -= damage;
 
-            /*if (myCart.isFragile) { // never be able to get one shot lose a fragile cart
-                if (prevHpPercent > 0.1f) {
-                    if (currentHealth <= 0) {
-                        currentHealth = Mathf.Min(5, Mathf.CeilToInt(maxHealth*0.05f));
-                    }
-
-                    invincibilityTime = 0.5f;
-                }
-            }*/
-
             if(currentHealth <= 0) {
-                //if (!myCart.isFragile) {
-                    GetDestroyed();
-                /*} else {
-                    if(!unDying)
-                        Die();
-                    else 
-                        currentHealth = 1;
-                }*/
+                GetDestroyed();
             }
 
             UpdateHpState(hitPoint);
@@ -123,19 +101,16 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         }
     }
 
-    public void Repair(float heal) {
-        Repair(heal, true);
-    }
-
     public void UpdateHpState(Vector3? hitPoint = null) {
         Train.s.HealthModified();
         UpdateHPCriticalIndicators();
         SetBuildingShaderHealth();
         SetBuildingRepairableBurnChunks(hitPoint);
+        SetBuildingMaxHealthReductionChunks();
     }
     
     void UpdateHPCriticalIndicators() {
-        var hpPercent = currentHealth / maxHealth;
+        var hpPercent = currentHealth / GetMaxHealth(false);
         if(isDead)
             return;
         myCart = GetComponent<Cart>();
@@ -176,33 +151,46 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         }
     }
 
-    public void Repair(float heal, bool showEffect = true) {
+    void Repair(float heal, bool showEffect = true) {
         Assert.IsTrue(heal >= 0);
         if(heal <= 0)
             return;
 
-        if (currentHealth < maxHealth) {
+        if (currentHealth < GetMaxHealth()) {
             currentHealth += heal;
 
             if (heal > 5 && showEffect) {
                 Instantiate(LevelReferences.s.repairEffectPrefab, GetUITransform());
             }
 
-            if (myCart.isDestroyed && currentHealth > maxHealth / 2) {
+            if (myCart.isDestroyed && currentHealth > GetMaxHealth(false) / 2) {
                 GetUnDestroyed();
             }
 
-            if (currentHealth > maxHealth) {
-                currentHealth = maxHealth;
+            if (currentHealth > GetMaxHealth()) {
+                currentHealth = GetMaxHealth();
             }
 
             UpdateHpState();
         }
     }
-    
 
-    public void SetHealth(float health) {
-        currentHealth = Mathf.Clamp(health, 0, maxHealth);
+    public float GetMaxHealth(bool withReduction = true) {
+        if (withReduction) {
+            return maxHealth - maxHealthReduction;
+        } else {
+            return maxHealth;
+        }
+    }
+
+    public void SetHealth(float health, float _maxHealthReduction) {
+        if (_maxHealthReduction > 0) {
+            maxHealthReduction = _maxHealthReduction;
+        } else {
+            maxHealthReduction = 0;
+        }
+
+        currentHealth = Mathf.Clamp(health, 0, GetMaxHealth());
         
         if(currentHealth <= 0) {
             if (true) {
@@ -213,7 +201,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         }
         
         myCart = GetComponent<Cart>();
-        if (myCart.isDestroyed && currentHealth > maxHealth / 2) {
+        if (myCart.isDestroyed && currentHealth > GetMaxHealth(false) / 2) {
             GetUnDestroyed();
         }
         
@@ -441,7 +429,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     }
     
     void SetBuildingShaderHealth() {
-        var hpPercent = currentHealth / maxHealth;
+        var hpPercent = currentHealth / GetMaxHealth(false);
         var _renderers = myCart._meshes;
         for (int j = 0; j < _renderers.Length; j++) {
             var rend = _renderers[j];
@@ -475,13 +463,14 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     }
     
     public List<RepairableBurnEffect> activeBurnEffects = new List<RepairableBurnEffect>();
+    public List<GameObject> activeMaxHealthReductionPlates = new List<GameObject>();
 
     void SetBuildingRepairableBurnChunks() {
         SetBuildingRepairableBurnChunks(null);
     }
     void SetBuildingRepairableBurnChunks(Vector3? sourcePoint) {
-        var missingHealth = maxHealth - currentHealth;
-        var targetBurnEffectCount = Mathf.CeilToInt(missingHealth / 50);
+        var missingHealth = GetMaxHealth() - currentHealth;
+        var targetBurnEffectCount = Mathf.CeilToInt(missingHealth / repairChunkSize);
 
         if (activeBurnEffects.Count > targetBurnEffectCount) {
 			
@@ -521,12 +510,13 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                 var ray = new Ray(rayOrigin, rayDirection);
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, 5, LevelReferences.s.buildingLayer)) {
-                    if (hit.collider.GetComponentInParent<RepairableBurnEffect>()) { // dont spawn over another effect
+                    if (hit.collider.GetComponentInParent<RepairableBurnEffect>()
+                        || activeMaxHealthReductionPlates.Contains(hit.collider.gameObject)) { // dont spawn over another effect
                         continue;
                     }
                     var hitBuilding = hit.collider.GetComponentInParent<ModuleHealth>();
                     if (hitBuilding == this) {
-                        var burnEffect = Instantiate(LevelReferences.s.cartRepairableDamageEffect, hit.point, Quaternion.identity);
+                        var burnEffect = Instantiate(LevelReferences.s.cartRepairableDamageEffect, hit.point, Quaternion.LookRotation(hit.normal));
                         burnEffect.transform.SetParent(myCart.genericParticlesParent);
                         activeBurnEffects.Add(burnEffect.GetComponent<RepairableBurnEffect>());
                     }
@@ -539,15 +529,88 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
             Invoke(nameof(SetBuildingRepairableBurnChunks),0.01f);
         }
     }
+    
+    
+    void SetBuildingMaxHealthReductionChunks() {
+        var targetMissingHealthPlatesCount = Mathf.CeilToInt(maxHealthReduction / maxHealthReductionChunkSize);
 
+        if (activeMaxHealthReductionPlates.Count > targetMissingHealthPlatesCount) {
+            while (activeMaxHealthReductionPlates.Count > targetMissingHealthPlatesCount) {
+                var decommissioned = activeMaxHealthReductionPlates[0];
+                activeMaxHealthReductionPlates.RemoveAt(0);
+                Destroy(decommissioned.gameObject);
+            }
+			
+        }else if (activeMaxHealthReductionPlates.Count < targetMissingHealthPlatesCount) {
+
+            var n = 10;
+            while (activeMaxHealthReductionPlates.Count < targetMissingHealthPlatesCount && n > 0) {
+                var raySourceDirection = Random.insideUnitSphere;
+
+                if (raySourceDirection.y < 0) {
+                    raySourceDirection.y = 0;
+                }
+                raySourceDirection.Normalize();
+                
+                var rayOrigin = GetUITransform().position + raySourceDirection * repairEffectSpawnDistance;
+                
+                var rayDirection =  transform.position - rayOrigin;
+                var ray = new Ray(rayOrigin, rayDirection);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, 5, LevelReferences.s.buildingLayer)) {
+                    if (hit.collider.GetComponentInParent<RepairableBurnEffect>()
+                        || activeMaxHealthReductionPlates.Contains(hit.collider.gameObject)) { // dont spawn over another effect
+                        continue;
+                    }
+                    var hitBuilding = hit.collider.GetComponentInParent<ModuleHealth>();
+                    if (hitBuilding == this) {
+                        SetBuildingMaxHealthReductionChunks(hit.point, Quaternion.LookRotation(hit.normal));
+                    }
+                }
+                n -= 1;
+            }
+        }
+
+        if (activeMaxHealthReductionPlates.Count < targetMissingHealthPlatesCount) {
+            Invoke(nameof(SetBuildingMaxHealthReductionChunks),0.01f);
+        }
+    }
+    void SetBuildingMaxHealthReductionChunks(Vector3 targetPoint, Quaternion targetRotation) {
+        var plate = Instantiate(LevelReferences.s.maxHealthReductionPlatePrefab, targetPoint, targetRotation);
+        plate.transform.SetParent(myCart.genericParticlesParent);
+        activeMaxHealthReductionPlates.Add(plate);
+    }
+
+    public const int repairChunkSize = 50;
+    public const int maxHealthReductionChunkSize = 5;
     public void RepairChunk(RepairableBurnEffect toRepair) {
+        if (invincible)
+            return;
+        maxHealthReduction += maxHealthReductionChunkSize;
+        
         if (toRepair.canRepair) {
             var effect = Instantiate(LevelReferences.s.repairDoneEffect, toRepair.transform.position, toRepair.transform.rotation);
             effect.transform.SetParent(myCart.genericParticlesParent);
             toRepair.Repair();
             activeBurnEffects.Remove(toRepair);
+            
+            SetBuildingMaxHealthReductionChunks(toRepair.transform.position, toRepair.transform.rotation);
         }
-        Repair(50, false);
+        
+        Repair(repairChunkSize, false);
+    }
+    
+    public void RepairChunk() {
+        if (invincible)
+            return;
+        maxHealthReduction += maxHealthReductionChunkSize;
+        Repair(repairChunkSize, false);
+    }
+    
+    public void RepairChunk(int count) {
+        for (int i = 0; i < count; i++) {
+            RepairChunk();
+        }
     }
 
     public bool IsPlayer() {
@@ -595,10 +658,10 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         return false;
     }
     public float GetHealthPercent() {
-        return currentHealth /  Mathf.Max(maxHealth,1);
+        return currentHealth /  Mathf.Max(GetMaxHealth(),1);
     }
     public string GetHealthRatioString() {
-        return $"{currentHealth}/{maxHealth}";
+        return $"{currentHealth}/{GetMaxHealth()}";
     }
 
     public Transform GetUITransform() {

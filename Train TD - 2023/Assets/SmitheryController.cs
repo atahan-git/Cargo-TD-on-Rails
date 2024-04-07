@@ -13,9 +13,8 @@ public class SmitheryController : MonoBehaviour
     public GameObject allParent;
 
     public Mini_Smithery smithery;
-    
-    [ValueDropdown("GetAllModuleNames")]
-    public string scrapCart = "";
+
+    public ScrapPaymentSlot paymentSlot;
 
     private void Start() {
         smithery.OnStuffCollided.AddListener(UpgradeDone);
@@ -24,16 +23,16 @@ public class SmitheryController : MonoBehaviour
     void Update()
     {
         if (!isEngaged && !PlayerWorldInteractionController.s.isDragging() && PlayerWorldInteractionController.s.canSmith) {
-            if (!location1.IsEmpty() && !location2.IsEmpty())
+            if (!location1.IsEmpty() && !location2.IsEmpty() && paymentSlot.AllSlotsFull())
                 CheckAndDoUpgrade();
         }
 
         if (PlayerWorldInteractionController.s.canSmith) {
-            location1.myAllowedSnaps = SnapLocation.AllowedSnaps.nothing;
-            location2.myAllowedSnaps = SnapLocation.AllowedSnaps.nothing;
+            location1.allowSnap = false;
+            location2.allowSnap = false;
         } else {
-            location1.myAllowedSnaps = SnapLocation.AllowedSnaps.cart;
-            location2.myAllowedSnaps = SnapLocation.AllowedSnaps.cart;
+            location1.allowSnap = true;
+            location2.allowSnap = true;
         }
     }
 
@@ -42,8 +41,6 @@ public class SmitheryController : MonoBehaviour
     void CheckAndDoUpgrade() {
         var cart1 = location1.GetComponentInChildren<Cart>();
         var cart2 = location2.GetComponentInChildren<Cart>();
-        var artifact1 = location1.GetComponentInChildren<Artifact>();
-        var artifact2 = location2.GetComponentInChildren<Artifact>();
 
         /*if (cart1 != null && cart1.uniqueName == scrapCart) {
             if (cart2 != null) {
@@ -87,6 +84,19 @@ public class SmitheryController : MonoBehaviour
                 return;
             }
         }*/
+
+        // if cannot upgrade then unsnap the carts
+        
+        if (cart1 != null) {
+            cart1.transform.SetParent(null);
+            cart1.GetComponent<Rigidbody>().isKinematic = false;
+            cart1.GetComponent<Rigidbody>().useGravity = true;
+        }
+        if (cart2 != null) {
+            cart2.transform.SetParent(null);
+            cart2.GetComponent<Rigidbody>().isKinematic = false;
+            cart2.GetComponent<Rigidbody>().useGravity = true;
+        }
     }
     
     
@@ -103,6 +113,8 @@ public class SmitheryController : MonoBehaviour
         PlayerWorldInteractionController.s.Deselect();
         SetColliderStatus(allParent, false);
         smithery.EngageAnim();
+        
+        paymentSlot.DoPayment();
     }
 
     void UpgradeDone() {

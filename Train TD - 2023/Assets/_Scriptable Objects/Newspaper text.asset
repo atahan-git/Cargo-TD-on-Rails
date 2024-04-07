@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 897eb50b569e0a04583ce5631d02ae48, type: 3}
+  m_Name: Newspaper text
+  m_EditorClassIdentifier: 
+  introText: In a daring display of technological fusion, a nuclear-powered train,
+    fueled by meteorite crystal fragments dubbed "StellarFuel", embarked on a journey
+    shrouded in mystery. Departing from a bustling station amidst both anticipation
+    and trepidation, the train embarked on an expedition promising to push the boundaries
+    of transportation and exploration.
+  cartTypesTexts:
+  - 'Laden with essential cargo the train''s exact composition remained a subject
+    of speculation, '
+  - 'Laden with essential cargo, including {0} the train''s exact composition remained
+    a subject of speculation, '
+  - 'Laden with essential cargo, including {0} and {1}, the train''s exact composition
+    remained a subject of speculation, '
+  - 'Laden with essential cargo, including {0}, {1}, and {2}, the train''s exact
+    composition remained a subject of speculation, '
+  totalCartCountText:
+  - yet the truth eluded certainty.
+  - with some sources suggesting {0}, yet the truth eluded certainty.
+  cartTechTexts:
+  - Fortunately all the cart technology was ready in time for the train's departure.
+  - Unfortunately {0} technology wasn't ready at the time of the train's departure.
+  - Unfortunately {0} and {1} technology wasn't ready at the time of the train's
+    departure.
+  gemTechTexts:
+  - Gem research was also completed in time.
+  - Research on {0} gem is also still in progress.
+  - Research on {0} and {1} gems is also still in progress.
+  didNotMakeItText: 'However, the train''s departure marked the beginning of a saga
+    that would leave observers haunted by unanswered questions. Despite the initial
+    fanfare, the train''s journey was marred by uncertainty and unease. Weeks turned
+    into months, and still, the nuclear locomotive {0}. As speculation gave way to
+    concern and eventually to despair, the fate of the enigmatic train became a somber
+    reminder of the risks inherent in pushing the boundaries of scientific exploration.
+
+    
+
+    What
+    will the fate of our city without the supplies promised by the train? We must
+    endure...'
+  didMakeItText: However, the train's departure marked the beginning of a saga that
+    would leave observers haunted by unanswered questions. Despite the initial fanfare,
+    the train's journey was marred by uncertainty and unease. But in the end the
+    locomotive made it's way back and everyone was happy!

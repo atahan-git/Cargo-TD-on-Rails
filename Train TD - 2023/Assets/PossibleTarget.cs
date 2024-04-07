@@ -49,6 +49,10 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
     public float GetHealth() {
         return GetComponent<IHealth>().GetHealth();
     }
+    
+    public float GetHealthPercent() {
+        return GetComponent<IHealth>().GetHealthPercent();
+    }
 
     public void ActivateForCombat() {
         this.enabled = true;
@@ -68,7 +72,7 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
             previous = transform.position;
         }
 
-        if (isCartTarget) {
+        /*if (isCartTarget) {
             var selectedCart = PlayerWorldInteractionController.s.currentSelectedThing as Cart;
             if (myCart != selectedCart) {
                 if (enemiesTargetingMe.Count > 0) {
@@ -85,7 +89,7 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
                     _outline.highlighted = false;
                 }
             }
-        }
+        }*/
     }
 
 

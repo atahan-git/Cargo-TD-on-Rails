@@ -91,8 +91,8 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    }
 
    private void Update() {
-      if (currentPressure > 0) {
-         currentPressure -= GetPressureUse() * Time.deltaTime;
+      if (currentPressure > 0 && !SpeedController.s.isWarping) {
+         currentPressure -= GetPressureUse() * Time.deltaTime * 0.75f;
 
          currentPressure = Mathf.Clamp(currentPressure, 0, 3);
 

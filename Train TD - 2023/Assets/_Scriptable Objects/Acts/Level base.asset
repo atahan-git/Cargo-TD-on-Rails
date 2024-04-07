@@ -20,6 +20,9 @@ MonoBehaviour:
   - {fileID: 1982649860289487492, guid: c7f65ccbb3a42ba4b83a6220ddaa089f, type: 3}
   possibleCargoBattalions:
   - {fileID: 1166004863492220417, guid: 79be24fc4c9f54a4489ba77fb3663452, type: 3}
+  possibleEliteBattalions:
+  - {fileID: 1166004863492220417, guid: 020d7b50a7936464f81f01b621baff61, type: 3}
+  - {fileID: 1166004863492220417, guid: 6a02e3838cb894e4cba86eb21d94dabb, type: 3}
   possibleDynamicBattalions:
   - {fileID: 1166004863492220417, guid: 5142e1d63f75f494baf2b7351ced5391, type: 3}
   possibleBossBattalions:

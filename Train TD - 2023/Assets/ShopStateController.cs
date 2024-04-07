@@ -62,20 +62,12 @@ public class ShopStateController : MonoBehaviour {
 
 		mapOpenButton.interactable = true;
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.openMap);
-		//mapDisabledDuringBattleOverlay.SetActive(false);
 		
 		CameraController.s.ResetCameraPos();
-		
-		if (DataSaver.s.GetCurrentSave().isInEndRunArea) {
-			starterUI.SetActive(false);
-			MissionWinFinisher.s.ShowUnclaimedRewards();
-			//HexGrid.s.CreateEndAreaChunk();
 
-		} else {
-			PathSelectorController.s.trainStationStart.SetActive(true);
-			DrawShopOptions();
-			UpdateBackToProfileOrAbandonButton();
-		}
+		PathSelectorController.s.trainStationStart.SetActive(true);
+		DrawShopOptions();
+		UpdateBackToProfileOrAbandonButton();
 	}
 
 	
@@ -151,6 +143,7 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	public void SaveCartStateWithDelay() {
+		SaveShopState();
 		CancelInvoke(nameof(SaveShopState));
 		Invoke(nameof(SaveShopState), 2f);
 	}

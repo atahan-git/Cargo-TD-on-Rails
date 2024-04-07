@@ -51,11 +51,6 @@ public class CheatsController : MonoBehaviour
         forceDisableFastForward = false;
     }
 
-    [Button]
-    void EnterMissionRewardsArea() {
-        DataSaver.s.GetCurrentSave().isInEndRunArea = true;
-        DataSaver.s.GetCurrentSave().endRunAreaInfo = new DataSaver.EndRunAreaInfo();
-    }
     
     private void Start() {
         if (Application.isEditor) {

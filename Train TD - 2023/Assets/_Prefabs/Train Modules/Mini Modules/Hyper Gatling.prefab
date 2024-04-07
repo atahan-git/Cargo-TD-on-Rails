@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4431989978490529844}
   - component: {fileID: 3652000033229051936}
   - component: {fileID: 7880884153785288373}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,6 +83,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &248282811045826446
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1249385566461271956}
+  m_Layer: 11
+  m_Name: barrel_end (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1249385566461271956
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 248282811045826446}
+  m_LocalRotation: {x: -0.00000002235174, y: -0.000000119209275, z: -0.000000029802322, w: -1}
+  m_LocalPosition: {x: -0.0703, y: -0.0017, z: 0.278}
+  m_LocalScale: {x: 1.2499996, y: 1.25, z: 1.2499998}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &508898800210943619
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,7 +124,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3794319236452520140}
   - component: {fileID: 8439244643568051820}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: RangeVisualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,6 +165,81 @@ MonoBehaviour:
   targetingRenderer: {fileID: 7770845969763413758}
   startDistance: 0.1
   endDistance: 0.3
+--- !u!1 &1120459206489372577
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6923623944372357176}
+  - component: {fileID: 580910217617215516}
+  - component: {fileID: 1304596141411529972}
+  m_Layer: 11
+  m_Name: Gatling Animator mini (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6923623944372357176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120459206489372577}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.0319, z: 0.0879}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &580910217617215516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120459206489372577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1cb1c3566b1dab48b5e7f61a065b6e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotatingBit: {fileID: 3437792323652572398}
+  rotationSpeed: 1800
+  slowDownDelta: 900
+  revSpeaker: {fileID: 1304596141411529972}
+  playSound: 0
+  isRotating: 0
+  curSpeed: 0
+--- !u!114 &1304596141411529972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120459206489372577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -2019368889
+      Data2: 1108506655
+      Data3: -1358686531
+      Data4: 1711656359
+    Path: event:/SFX/Gun SFX/Enemy Gatling Rev
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!1 &1262217866869952755
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,7 +249,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3437792323652572398}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: barrel centered
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -167,6 +273,81 @@ Transform:
   m_Father: {fileID: 4434256064771180623}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 6, y: 0, z: 0}
+--- !u!1 &1553701846824923435
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1233465117954982966}
+  - component: {fileID: 4445772384294582169}
+  - component: {fileID: 2760516814133041377}
+  m_Layer: 11
+  m_Name: Gatling Animator mini (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1233465117954982966
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553701846824923435}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.0319, z: 0.0879}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4445772384294582169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553701846824923435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1cb1c3566b1dab48b5e7f61a065b6e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotatingBit: {fileID: 3823178592078179558}
+  rotationSpeed: 1800
+  slowDownDelta: 900
+  revSpeaker: {fileID: 2760516814133041377}
+  playSound: 0
+  isRotating: 0
+  curSpeed: 0
+--- !u!114 &2760516814133041377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553701846824923435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -2019368889
+      Data2: 1108506655
+      Data3: -1358686531
+      Data4: 1711656359
+    Path: event:/SFX/Gun SFX/Enemy Gatling Rev
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!1 &1577660101450558748
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +359,7 @@ GameObject:
   - component: {fileID: 594717587287764367}
   - component: {fileID: 1255422964225051444}
   - component: {fileID: 6858171165687614121}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +442,7 @@ GameObject:
   - component: {fileID: 2775307946320475505}
   - component: {fileID: 7604171903514991123}
   - component: {fileID: 8665234557837103407}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -342,7 +523,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9060155755661591850}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: barrel_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,12 +538,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2374292592216479585}
   m_LocalRotation: {x: -0.000000022351742, y: -0.000000119209275, z: -0, w: -1}
-  m_LocalPosition: {x: -0.003, y: 0.07150002, z: 0.278}
+  m_LocalPosition: {x: 0.0643, y: 0.0031, z: 0.278}
   m_LocalScale: {x: 1.2499995, y: 1.25, z: 1.2499995}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 483469733385342657}
-  m_RootOrder: 1
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2677843582063563157
 GameObject:
@@ -374,7 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Range Edge Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -495,6 +676,40 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!1 &2747848763313053132
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9025628513854859352}
+  m_Layer: 11
+  m_Name: Combo Barrel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9025628513854859352
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2747848763313053132}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.048, z: 0.076}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8533535502213375532}
+  - {fileID: 5623294366100276741}
+  - {fileID: 4434256064771180623}
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3146471024428373951
 GameObject:
   m_ObjectHideFlags: 0
@@ -507,7 +722,7 @@ GameObject:
   - component: {fileID: 3491152898792926885}
   - component: {fileID: 2934280374143819819}
   - component: {fileID: 7371494607064308679}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Hyper Gatling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -571,9 +786,11 @@ MonoBehaviour:
     anchor: {fileID: 483469733385342657}
     xAxis: {fileID: 483469733385342657}
     yAxis: {fileID: 483469733385342657}
-    centerBarrelEnd: {fileID: 9060155755661591850}
+    centerBarrelEnd: {fileID: 8271631917501135965}
   barrelEndTransforms:
   - transform: {fileID: 9060155755661591850}
+  - transform: {fileID: 3473048423363182508}
+  - transform: {fileID: 1249385566461271956}
   projectileSpawnOffset: 0.2
   useProviderBullet: 1
   myType: 0
@@ -582,8 +799,8 @@ MonoBehaviour:
   target: {fileID: 0}
   mortarRotation: 0
   fireDelay: 2
-  fireBarrageCount: 1
-  fireBarrageDelay: 0.1
+  fireBarrageCount: 3
+  fireBarrageDelay: 0
   fireRateMultiplier: 1
   fireRateDivider: 1
   projectileDamage: 1.5
@@ -591,16 +808,19 @@ MonoBehaviour:
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
+  directControlShakeMultiplier: 0.5
   isHeal: 0
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 0.2
+  ammoPerBarrage: 0.4
   ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
@@ -626,6 +846,7 @@ MonoBehaviour:
   waitTimer: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 2
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 0.1
@@ -641,7 +862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 60
+  rotationSpan: 180
   range: 5
   myPossibleTargets: 00000000
   canHitFlying: 0
@@ -654,7 +875,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5623294366100276741}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -668,15 +889,46 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3233155868171273386}
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: 0, y: 0.0392, z: 0.07627043}
+  m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
+  m_LocalPosition: {x: 0, y: -0.0088, z: 0.00027043372}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3823178592078179558}
-  m_Father: {fileID: 483469733385342657}
-  m_RootOrder: 3
+  m_Father: {fileID: 9025628513854859352}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+--- !u!1 &3751896477039661947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8271631917501135965}
+  m_Layer: 11
+  m_Name: CentralBarrelEnd
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8271631917501135965
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3751896477039661947}
+  m_LocalRotation: {x: -0.000000022351742, y: -0.000000119209275, z: -0, w: -1}
+  m_LocalPosition: {x: -0.0003, y: 0.043, z: 0.278}
+  m_LocalScale: {x: 1.2499995, y: 1.25, z: 1.2499995}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4360045192573538697
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,7 +938,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8533535502213375532}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -700,14 +952,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4360045192573538697}
-  m_LocalRotation: {x: 0, y: 0, z: 0.5, w: 0.8660254}
-  m_LocalPosition: {x: 0, y: 0.0392, z: 0.07627043}
+  m_LocalRotation: {x: -0, y: -0, z: 0.50000006, w: 0.86602545}
+  m_LocalPosition: {x: 0, y: -0.0088, z: 0.00027043372}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7351534438779255672}
-  m_Father: {fileID: 483469733385342657}
-  m_RootOrder: 2
+  m_Father: {fileID: 9025628513854859352}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 60}
 --- !u!1 &4868666074182737494
 GameObject:
@@ -719,7 +971,7 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Targeting Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -851,7 +1103,7 @@ GameObject:
   - component: {fileID: 7253041189351622102}
   - component: {fileID: 8595876343581102192}
   - component: {fileID: 287388460412800468}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -934,7 +1186,7 @@ GameObject:
   - component: {fileID: 6907664562015558031}
   - component: {fileID: 7406160953269289486}
   - component: {fileID: 8699265797873930014}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1015,7 +1267,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4434256064771180623}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1029,14 +1281,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5772995856768523038}
-  m_LocalRotation: {x: 0, y: -0, z: 0.5, w: -0.8660254}
-  m_LocalPosition: {x: 0, y: 0.0392, z: 0.07627043}
+  m_LocalRotation: {x: -0, y: -0, z: 0.50000006, w: -0.86602545}
+  m_LocalPosition: {x: 0, y: -0.0088, z: 0.00027043372}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3437792323652572398}
-  m_Father: {fileID: 483469733385342657}
-  m_RootOrder: 4
+  m_Father: {fileID: 9025628513854859352}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 300}
 --- !u!1 &5878556826636830890
 GameObject:
@@ -1049,7 +1301,7 @@ GameObject:
   - component: {fileID: 4887558387702784393}
   - component: {fileID: 4161540031439350422}
   - component: {fileID: 9184544723874755981}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1132,7 +1384,7 @@ GameObject:
   - component: {fileID: 6483988906469013072}
   - component: {fileID: 9132381856761774638}
   - component: {fileID: 5400481851492300953}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1204,6 +1456,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6057831971582908711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3473048423363182508}
+  m_Layer: 11
+  m_Name: barrel_end (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3473048423363182508
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6057831971582908711}
+  m_LocalRotation: {x: -0.00000002235174, y: -0.000000119209275, z: -0.000000029802322, w: -1}
+  m_LocalPosition: {x: 0, y: 0.1216, z: 0.278}
+  m_LocalScale: {x: 1.2499996, y: 1.25, z: 1.2499998}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6310340648427547761
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,7 +1496,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7351534438779255672}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: barrel centered
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1246,7 +1529,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6428232684007577200}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_gun (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1268,7 +1551,7 @@ Transform:
   - {fileID: 6483988906469013072}
   - {fileID: 4887558387702784393}
   m_Father: {fileID: 483469733385342657}
-  m_RootOrder: 5
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7515037017782385448
 GameObject:
@@ -1281,8 +1564,8 @@ GameObject:
   - component: {fileID: 6637031524188555893}
   - component: {fileID: 3214340997545362078}
   - component: {fileID: 2323390346110032259}
-  m_Layer: 17
-  m_Name: Gatling Animator
+  m_Layer: 11
+  m_Name: Gatling Animator combo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1296,7 +1579,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7515037017782385448}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.0319, z: 0.0879}
+  m_LocalPosition: {x: 0, y: 0.0319, z: 0.0879}
   m_LocalScale: {x: 1.2499999, y: 1.25, z: 1.2499999}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1317,10 +1600,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1cb1c3566b1dab48b5e7f61a065b6e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotatingBit: {fileID: 7351534438779255672}
-  rotationSpeed: 1800
-  slowDownDelta: 900
+  rotatingBit: {fileID: 9025628513854859352}
+  rotationSpeed: 180
+  slowDownDelta: 90
   revSpeaker: {fileID: 2323390346110032259}
+  playSound: 1
   isRotating: 0
   curSpeed: 0
 --- !u!114 &2323390346110032259
@@ -1355,7 +1639,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3823178592078179558}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: barrel centered
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1390,7 +1674,7 @@ GameObject:
   - component: {fileID: 3597872774007978366}
   - component: {fileID: 6638536862006920268}
   - component: {fileID: 4638133135774016639}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: gatling_barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1462,6 +1746,81 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8230147205338416792
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1910946973476549915}
+  - component: {fileID: 1912025890477018789}
+  - component: {fileID: 8209313092498219080}
+  m_Layer: 11
+  m_Name: Gatling Animator mini
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1910946973476549915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8230147205338416792}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.0319, z: 0.0879}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 483469733385342657}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1912025890477018789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8230147205338416792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1cb1c3566b1dab48b5e7f61a065b6e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotatingBit: {fileID: 7351534438779255672}
+  rotationSpeed: 1800
+  slowDownDelta: 900
+  revSpeaker: {fileID: 8209313092498219080}
+  playSound: 0
+  isRotating: 0
+  curSpeed: 0
+--- !u!114 &8209313092498219080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8230147205338416792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a93639f628cd29458963d75fae69986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip:
+    Guid:
+      Data1: -2019368889
+      Data2: 1108506655
+      Data3: -1358686531
+      Data4: 1711656359
+    Path: event:/SFX/Gun SFX/Enemy Gatling Rev
+  pauseOnGamePause: 1
+  playOnStart: 1
+  instantiateInstanceOnStart: 1
+  volume: 1
 --- !u!1 &8688943409664434149
 GameObject:
   m_ObjectHideFlags: 0
@@ -1471,7 +1830,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 483469733385342657}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: gatling gfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1485,21 +1844,25 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8688943409664434149}
-  m_LocalRotation: {x: -0, y: -0.045951065, z: 6.617444e-24, w: 0.99894375}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6637031524188555893}
+  - {fileID: 1910946973476549915}
+  - {fileID: 1233465117954982966}
+  - {fileID: 6923623944372357176}
+  - {fileID: 8271631917501135965}
   - {fileID: 9060155755661591850}
-  - {fileID: 8533535502213375532}
-  - {fileID: 5623294366100276741}
-  - {fileID: 4434256064771180623}
+  - {fileID: 3473048423363182508}
+  - {fileID: 1249385566461271956}
+  - {fileID: 9025628513854859352}
   - {fileID: 6428232684007577200}
   - {fileID: 8599756972266018480}
   m_Father: {fileID: 3248300930352555991}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -5.267, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8918089211520961272
 GameObject:
   m_ObjectHideFlags: 0
@@ -1530,7 +1893,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 483469733385342657}
-  m_RootOrder: 6
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9110276213428392525
 MonoBehaviour:
@@ -1601,7 +1964,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: Loop
@@ -1683,7 +2046,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Volume

@@ -6,7 +6,7 @@ public class Tier2GunModuleSpawner : MonoBehaviour {
     public Transform spawnLocation;
 
     public void SpawnGun(string gunName) {
-        GunModule gunToSpawn = DataHolder.s.GetTier1Gun(gunName);
+        GunModule gunToSpawn = DataHolder.s.GetTier2Gun(gunName);
 
         if (gunToSpawn != null) {
             var gun = Instantiate(gunToSpawn.gameObject, spawnLocation);

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3794319236452520140}
   - component: {fileID: 8439244643568051820}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: RangeVisualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 8678880554783628499}
   - component: {fileID: 5029726230860607599}
   - component: {fileID: 5725010159807792529}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: flame_thrower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +147,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Range Edge Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: -6177455946807745712}
   - component: {fileID: 2934280374143819819}
   - component: {fileID: 7371494607064308679}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Flame Thrower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -402,6 +402,7 @@ MonoBehaviour:
   waitTimer: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 0.5
@@ -430,7 +431,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2927632870427338314}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: flamethrower gfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -462,7 +463,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7349334640653558217}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: barrel end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -494,7 +495,7 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Targeting Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -668,7 +669,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2131991619649952554}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: flame_point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -700,11 +701,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 859572046709869449, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 1035279010450338656, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 1606677900250780905, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}
       propertyPath: m_Name
@@ -712,7 +713,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1606677900250780905, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 1606677900250780906, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}
       propertyPath: m_RootOrder
@@ -760,11 +761,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2616652222087196708, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3834651467517472855, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 28294cc5c07fa9c489eff76802df812e, type: 3}

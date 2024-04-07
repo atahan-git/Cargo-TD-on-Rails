@@ -5,16 +5,23 @@ using UnityEngine;
 
 public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 
-	public int baseShieldAmount = 1000;
-	public float currentShieldAmount = 1000;
-	public float currentMaxShieldAmount = 1000;
-	
-	
+	public int baseShieldAmount = 500;
+	public float currentShieldAmount = 500;
+	public float currentMaxShieldAmount = 500;
+
+	public float curRegenTimer = 0.5f;
+	public float regenSpeed = 50f;
+
 	public List<GameObject> prefabToSpawnWhenShieldIsHit = new List<GameObject>();
 	public List<GameObject> prefabToSpawnWhenShieldIsDestroyed = new List<GameObject>();
 
 	private ModuleHealth myHealth;
-	
+	public PhysicalShieldBar myPhysicalShieldBar;
+
+	private void Start() {
+		myHealth = GetComponentInParent<ModuleHealth>();
+	}
+
 	public void SpawnGemEffect(ModuleHealth target) {
 		StartCoroutine(_SpawnGemEffect(target));
 	}
@@ -30,22 +37,43 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 			yield return new WaitForSeconds(0.1f);
 		}
 	}
-	
-	public void ProtectFromDamage(float damage) {
-		GetComponentInParent<ModuleHealth>().DealDamage(damage, null);
+
+	private void Update() {
+		if (currentShieldAmount > 0) {
+			if (curRegenTimer > 0) {
+				curRegenTimer -= Time.deltaTime;
+			} else {
+				currentShieldAmount += regenSpeed * Time.deltaTime;
+			}
+		} else {
+			if (curRegenTimer > 0) {
+				curRegenTimer -= Time.deltaTime;
+			} else {
+				myHealth.myProtector = this;
+				currentShieldAmount = currentMaxShieldAmount;
+			}
+		}
+		
+		myPhysicalShieldBar.UpdateShieldPercent(currentShieldAmount/currentMaxShieldAmount);
 	}
-    
-	public void ProtectFromBurn(float damage) {
-		GetComponentInParent<ModuleHealth>().BurnDamage(damage);
+
+	public void ProtectFromDamage(float damage) {
+		if (currentShieldAmount > 0) {
+			currentShieldAmount -= damage;
+		}
+
+		curRegenTimer = 0.5f;
+
+		if (currentShieldAmount <= 0) {
+			myHealth.myProtector = null;
+			currentShieldAmount = 0;
+			curRegenTimer = 10;
+		}
 	}
 
 	public string GetInfoText() {
-		return $"Protects {GetRange()} nearby carts from damage as long as has shield";
+		return $"Protects nearby carts from damage as long as has shield";
 	}
-
-	public int baseRange = 1;
-	public int rangeBoost = 0;
-	public float boostMultiplier = 1;
 
 	public void ResetState() {
 		currentMaxShieldAmount = baseShieldAmount;
@@ -55,22 +83,10 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 		} else {
 			currentShieldAmount = currentMaxShieldAmount;
 		}
-		
-		rangeBoost = 0;
-		boostMultiplier = 1;
-		
+
 		prefabToSpawnWhenShieldIsHit.Clear();
 		prefabToSpawnWhenShieldIsDestroyed.Clear();
 
 		//GetComponentInParent<Cart>().GetComponentInChildren<PhysicalShieldBar>().SetSize(GetRange());
-	}
-
-	public void ModifyStats(int range, float value) {
-		rangeBoost += range;
-		boostMultiplier += value;
-	}
-	
-	public int GetRange() {
-		return Mathf.Min(Train.s.carts.Count, baseRange + rangeBoost);
 	}
 }

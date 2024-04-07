@@ -1132,7 +1132,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyIcon: {fileID: 21300000, guid: d43c2da442e28124a8c35efb4bc70364, type: 3}
-  speed: 5
+  speed: 10
+  primeEnemy: 0
   enemyEnterSounds:
   - {fileID: 8300000, guid: cdc2e1a88462c0a4cb2dcc37eaf71bd0, type: 3}
   - {fileID: 8300000, guid: 8fb52eda3ae6b9647b387792fbadb520, type: 3}
@@ -1145,6 +1146,11 @@ MonoBehaviour:
   isNuker: 0
   nukingTime: 20
   myType: 0
+  mainCollider: {fileID: 0}
+  boilRealDelta: {x: 0, y: 0, z: 0}
+  boidTargetDelta: {x: 0, y: 0, z: 0}
+  mySwarm: {fileID: 0}
+  myWave: {fileID: 0}
 --- !u!114 &2942942888468131773
 MonoBehaviour:
   m_ObjectHideFlags: 0

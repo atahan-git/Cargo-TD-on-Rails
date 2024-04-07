@@ -80,8 +80,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public Color directControlColor = Color.magenta;
     public Color engineBoostColor = Color.red;
     public Color repairColor = Color.green;
+    public Color shieldColor = Color.cyan;
     public Color enemyColor = Color.white;
     public Color meepleColor = Color.white;
+    public Color mergeItemColor = Color.yellow;
 
     private void Update() {
         if (!canSelect || Pauser.s.isPaused || PlayStateMaster.s.isLoading || DirectControlMaster.s.directControlLock > 0) {
@@ -244,13 +246,17 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             return CanDragArtifact(artifact);
         }else if ( thing is Cart cart) {
             return CanDragCart(cart);
-        }else if (thing is EnemyHealth enemyHealth) {
+        }else if (thing is EnemyHealth) {
             return false;
         }else if (thing is Meeple meeple) {
             return CanDragMeeple(meeple);
-        } else {
-            return false;
+        } else if(thing is MergeItem){
+            return true;
+        } else if (thing is ScrapsItem scrapsItem) {
+            return scrapsItem.CanDrag();
         }
+        
+        return false;
     }
 
     public bool isToggleDragStarted = false;
@@ -313,15 +319,19 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             
             MakeOnTrainCartSnapLocations();
         }
-        
-        
+
+        if (currentSelectedThing is MergeItem) {
+            MakeOnTrainMergeSnapLocations();
+        }
+
         var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
         if (rubbleFollowFloor) {
             rubbleFollowFloor.UnAttachFromFloor();
             rubbleFollowFloor.canAttachToFloor = false;
         }
         
-        currentSelectedThingMonoBehaviour.transform.SetParent(null);
+        if(!(currentSelectedThing is Meeple))
+            currentSelectedThingMonoBehaviour.transform.SetParent(null);
 
         // SFX
         AudioManager.PlayOneShot(SfxTypes.OnCargoPickUp);
@@ -368,6 +378,62 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
         }
     }
+    
+    
+    public List<SnapLocation> onTrainMergeSnapLocations = new List<SnapLocation>();
+    public GameObject onTrainMergeSnapPrefab;
+    void MakeOnTrainMergeSnapLocations() { // we call this AFTER removing the previous cart from the train
+        var reqNumber = Train.s.carts.Count-1;
+        while (onTrainMergeSnapLocations.Count > reqNumber) {
+            Destroy(onTrainMergeSnapLocations[0].gameObject);
+            onTrainMergeSnapLocations.RemoveAt(0);
+        }
+
+        while (onTrainMergeSnapLocations.Count < reqNumber) {
+            var newLoc = Instantiate(onTrainMergeSnapPrefab, transform).GetComponent<SnapLocation>();
+            onTrainMergeSnapLocations.Add(newLoc);
+        }
+
+
+        for (int i = 0; i < onTrainMergeSnapLocations.Count; i++) {
+            var nextCart = i;
+            var prevCart = i+1;
+
+            var mergeResult = DataHolder.s.GetMergeResult(
+                Train.s.carts[prevCart].uniqueName,
+                Train.s.carts[nextCart].uniqueName
+            );
+
+            var legalMerge = mergeResult != null;
+            onTrainMergeSnapLocations[i].gameObject.SetActive(legalMerge);
+            if (legalMerge) {
+                onTrainMergeSnapLocations[i].allowSnap = true;
+            }else {
+                onTrainMergeSnapLocations[i].allowSnap = false;
+            }
+        }
+    }
+
+    void DisableOnTrainMergeSnapLocations() {
+        for (int i = 0; i < onTrainMergeSnapLocations.Count; i++) {
+            onTrainMergeSnapLocations[i].gameObject.SetActive(false);
+        }
+    }
+
+    void UpdateOnTrainMergeSnapLocationPositions() {
+        var trainLength = Train.s.GetTrainLength();
+
+        var currentDistance = (trainLength / 2f);
+        currentDistance -= Train.s.carts[0].length/2f + 0.1f;
+
+        for (int i = 0; i < onTrainMergeSnapLocations.Count; i++) {
+            var thisLoc = onTrainMergeSnapLocations[i];
+
+            thisLoc.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(currentDistance);
+            thisLoc.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(currentDistance);
+            currentDistance -= Train.s.carts[i+1].length;
+        }
+    }
 
     public bool isSnapping = false;
     public SnapLocation sourceSnapLocation;
@@ -376,17 +442,45 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     private void DoDrag() {
         if(currentSelectedThing is Cart)
             UpdateOnTrainCartSnapLocationPositions();
+        if(currentSelectedThing is MergeItem)
+            UpdateOnTrainMergeSnapLocationPositions();
         
         var newSnapLoc = GetSnapLoc();
 
         var shouldSnap = newSnapLoc != null;
-        if (isSnapping != shouldSnap) {
+        if (isSnapping != shouldSnap || newSnapLoc != currentSnapLoc) {
             isSnapping = shouldSnap;
+
+            var myMergeItem = currentSelectedThing as MergeItem ;
+            if (myMergeItem !=null) {
+                if (myMergeItem.myPrevCart != null) {
+                    myMergeItem.myPrevCart.SetHighlightState(false);
+                    myMergeItem.myPrevCart = null;
+                }
+                if (myMergeItem.myNextCart != null) {
+                    myMergeItem.myNextCart.SetHighlightState(false);
+                    myMergeItem.myNextCart = null;
+                }
+            }
+
             if (isSnapping) {
                 AudioManager.PlayOneShot(SfxTypes.OnCargoDrop);
+
+                if(myMergeItem != null) {
+                    var snapIndex = onTrainMergeSnapLocations.IndexOf(newSnapLoc);
+                    var prevCart = Train.s.carts[snapIndex];
+                    var nextCart = Train.s.carts[snapIndex+1];
+
+                    myMergeItem.myPrevCart = prevCart;
+                    myMergeItem.myNextCart = nextCart;
+                    prevCart.SetHighlightState(true, mergeItemColor);
+                    nextCart.SetHighlightState(true, mergeItemColor);
+                }
+                
             } else {
                 AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
-                currentSelectedThingMonoBehaviour.transform.SetParent(null);
+                if(!(currentSelectedThing is Meeple))
+                    currentSelectedThingMonoBehaviour.transform.SetParent(null);
 
                 if (currentSelectedThing is Cart selectedCart) {
                     Train.s.RemoveCart(selectedCart);
@@ -405,7 +499,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (isSnapping) {
             if (newSnapLoc != currentSnapLoc) {
                 if (currentSelectedThing is Cart selectedCart) {
-                    
                     Assert.IsTrue(newSnapLoc.IsEmpty()); // you should not be able to snap carts to full locations in the current implementation
                     
                     newSnapLoc.SnapObject(selectedCart.gameObject);
@@ -414,8 +507,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                         Train.s.AddCartAtIndex(onTrainIndex+1, selectedCart);
                         ShopStateController.s.RemoveCartFromShop(selectedCart);
                     } else {
-                        Train.s.RemoveCart(selectedCart);
-                        ShopStateController.s.AddCartToShop(selectedCart);
+                        if (Train.s.carts.Contains(selectedCart)) {
+                            Train.s.RemoveCart(selectedCart);
+                            ShopStateController.s.AddCartToShop(selectedCart);
+                        }
                     }
                 }else if (currentSelectedThing is Artifact selectedArtifact) {
                     if (displacedArtifact != null) {
@@ -435,6 +530,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                         
                         selectedArtifact.AttachToSnapLoc(newSnapLoc);
                     }
+                } else {
+                    newSnapLoc.SnapObject(currentSelectedThingMonoBehaviour.gameObject);
                 }
 
                 currentSnapLoc = newSnapLoc;
@@ -484,55 +581,65 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     void EndDrag() {
         isHoldDragStarted = false;
         isToggleDragStarted = false;
-        
-        if (!isSnapping) {
+
+        if (isSnapping) {
+            if (currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>() != null) {
+                Destroy(currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>());
+            }
+
+            currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
+        }else{
             currentSelectedThing.SetHoldingState(false);
+            
+            if (currentSelectedThing.GetHoldingDrone() != null) {
+                currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
+                currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
+            }   
+            
+            var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
+            if (rubbleFollowFloor) {
+                rubbleFollowFloor.canAttachToFloor = true;
+            }
         }
         
         if (PlayStateMaster.s.isShop()) {
-            if (currentSelectedThing is Cart || currentSelectedThing is Artifact) {
+            if (currentSelectedThing is Cart || currentSelectedThing is Artifact || currentSelectedThing is MergeItem) {
                 ShopStateController.s.SaveCartStateWithDelay();
                 Train.s.SaveTrainState();
+            }else if (currentSelectedThing is ScrapsItem) {
+                ShopStateController.s.SaveCartStateWithDelay();
             }
         }
 
-
-        if (currentSelectedThing is Cart myCart) {
-            if (myCart.IsAttachedToTrain()) {
-                if (currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>() != null) {
-                    Destroy(currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>());
-                }
-
-                currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
-            } else {
-                if (currentSelectedThing.GetHoldingDrone() != null) {
-                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
-                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
-                }   
-            }
-        }
-
-        if (currentSelectedThing is Artifact myArtifact) {
-            if (myArtifact.isAttached) {
-                if (currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>() != null) {
-                    Destroy(currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>());
-                }
+        if (currentSelectedThing is MergeItem myMergeItem) {
+            if (isSnapping) {
+                var snapIndex = onTrainMergeSnapLocations.IndexOf(myMergeItem.GetComponentInParent<SnapLocation>());
+                var mergeResultUniqueName = DataHolder.s.GetMergeResult(myMergeItem.myPrevCart.uniqueName, myMergeItem.myNextCart.uniqueName);
                 
-                currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
-            } else {
-                if (currentSelectedThing.GetHoldingDrone() != null) {
-                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
-                    currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
-                }   
-            }
+                Train.s.RemoveCart(myMergeItem.myNextCart);
+                Train.s.RemoveCart(myMergeItem.myPrevCart);
+                Destroy(myMergeItem.myNextCart.gameObject);
+                Destroy(myMergeItem.myPrevCart.gameObject);
+                var spawnPos = myMergeItem.transform.position;
+                var spawnRot = myMergeItem.transform.rotation;
+                spawnPos.y = 0;
+                var newMergedCart = Instantiate(
+                    DataHolder.s.GetCart(mergeResultUniqueName), 
+                    spawnPos, spawnRot)
+                    .GetComponent<Cart>();
+
+                VisualEffectsController.s.SmartInstantiate(LevelReferences.s.cartMergeEffect, myMergeItem.transform.position, spawnRot, VisualEffectsController.EffectPriority.Always);
+                Train.ApplyStateToCart(newMergedCart, new DataSaver.TrainState.CartState(){uniqueName = mergeResultUniqueName});
+                Train.s.AddCartAtIndex(snapIndex, newMergedCart);
+                
+                Deselect();
+                Destroy(myMergeItem.gameObject);
+            } 
         }
         
-            
-        var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
-        if (rubbleFollowFloor) {
-            rubbleFollowFloor.canAttachToFloor = true;
-        }
+        Train.s.CheckMerge();
         
+        DisableOnTrainMergeSnapLocations();
         
         AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
     }
@@ -592,6 +699,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public MiniGUI_BuildingInfoCard buildingInfoCard;
     public MiniGUI_BuildingInfoCard enemyInfoCard;
     public MiniGUI_BuildingInfoCard artifactInfoCard;
+    public MiniGUI_BuildingInfoCard mergeItemInfoCard;
+    public MiniGUI_BuildingInfoCard scrapsItemInfoCard;
 
     private float alternateClickTime = 0;
     private Vector3 alternateClickPos;
@@ -624,7 +733,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     private IPlayerHoldable GetFirstPriorityItem() {
-        // selection preference: artifact -> cart -> enemy -> meeple
+        // selection preference: artifact -> cart -> enemy -> meeple -> merge item
         RaycastHit hit;
         Ray ray = GetRay();
         
@@ -643,6 +752,14 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.meepleLayer)) {
             return hit.collider.GetComponentInParent<Meeple>();
         }
+        
+        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.mergeItemLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<MergeItem>();
+        }
+        
+        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.scrapsItemLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<ScrapsItem>();
+        }
 
         return null;
     }
@@ -659,7 +776,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 enemyInfoCard.SetUp(enemyHealth);
             }else if (currentSelectedThing is Meeple meeple) {
                 meeple.ShowChat();
-            } else {
+            } else if (currentSelectedThing is MergeItem) {
+                mergeItemInfoCard.Show();
+            }else if (currentSelectedThing is ScrapsItem scrapsItem) {
+                scrapsItemInfoCard.Show();
+            }else {
                 infoCardActive = false;
             }
 
@@ -739,10 +860,17 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     Color SelectMeeple(Meeple meeple) {
         return meepleColor;
     }
+    void DeselectMeeple(Meeple meeple) { }
 
-    void DeselectMeeple(Meeple meeple) {
-        
+    Color SelectMergeItem(MergeItem mergeItem) {
+        return mergeItemColor;
     }
+    void DeselectMergeItem(MergeItem mergeItem) { }
+    
+    Color SelectScrapsItem(ScrapsItem scrapsItem) {
+        return scrapsItem.GetSelectColor();
+    }
+    void DeselectScrapsItem(ScrapsItem scrapsItem) { }
 
     [HideInInspector]
     public UnityEvent<IPlayerHoldable, bool> OnSelectSomething = new UnityEvent<IPlayerHoldable, bool>();
@@ -769,6 +897,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 myColor = SelectEnemy(enemyHealth);
             }else if (newSelectableThing is Meeple meeple) {
                 myColor = SelectMeeple(meeple);
+            }else if (newSelectableThing is MergeItem mergeItem) {
+                myColor = SelectMergeItem(mergeItem);
+            }else if (newSelectableThing is ScrapsItem scrapsItem) {
+                myColor = SelectScrapsItem(scrapsItem);
             }
 
             if (outline != null) {

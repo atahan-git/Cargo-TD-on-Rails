@@ -19,7 +19,8 @@ public class LightShellController : MonoBehaviour {
     public ParticleSystem shellParticles;
 
     public bool lightsActive = true;
-    public GameObject engineParticles;
+    public bool engineParticlesActive = true;
+    public WarpGlow[] engineParticles;
 
     private Vector3 boneScale;
 
@@ -27,6 +28,13 @@ public class LightShellController : MonoBehaviour {
         boneScale = innerBones[0].transform.localScale;
         curLightAmount = 0;
         Train.s.onTrainCartsChanged.AddListener(UpdateLightCount);
+        Train.s.onTrainCartsChanged.AddListener(UpdateEngineParticles);
+        lightsActive = true;
+        engineParticlesActive = true;
+    }
+
+    void UpdateEngineParticles() {
+        engineParticles = Train.s.GetComponentsInChildren<WarpGlow>();
     }
 
 
@@ -62,14 +70,18 @@ public class LightShellController : MonoBehaviour {
             var trainEngine = Train.s.carts[0];
             transform.position = trainEngine.transform.position;
         }
-        
-        
-        var targetLightAmount = SpeedController.s.enginePower/10f;
+
+        var targetLightAmount = 0f;
+        if (CrystalsAndWarpController.s.warpProgress >= 2) {
+            targetLightAmount = 1;
+        }
         if (!PlayStateMaster.s.isCombatInProgress()) {
             targetLightAmount = 0;
         }
+
+        targetLightAmount = Mathf.Clamp01(targetLightAmount);
         
-        curLightAmount =  targetLightAmount;
+        curLightAmount =  Mathf.Lerp(curLightAmount, targetLightAmount, Time.deltaTime);
 
         var minDistance = float.MinValue;
         var maxDistance = float.MaxValue;
@@ -152,11 +164,6 @@ public class LightShellController : MonoBehaviour {
                 for (int i = 0; i < lights.Count; i++) {
                     lights[i].enabled = false;
                 }
-
-                var particles = engineParticles.GetComponentsInChildren<ParticleSystem>();
-                for (int i = 0; i < particles.Length; i++) {
-                    particles[i].Stop();
-                }
                 shellParticles.Stop();
                 
                 innerShell.SetActive(false);
@@ -168,14 +175,6 @@ public class LightShellController : MonoBehaviour {
 
         } else {
             if (!lightsActive) {
-                /*for (int i = 0; i < lights.Length; i++) {
-                    lights[i].enabled = true;
-                }*/
-                
-                var particles = engineParticles.GetComponentsInChildren<ParticleSystem>();
-                for (int i = 0; i < particles.Length; i++) {
-                    particles[i].Play();
-                }
                 shellParticles.Play();
                 
                 innerShell.SetActive(true);
@@ -183,11 +182,38 @@ public class LightShellController : MonoBehaviour {
 
                 lightsActive = true;
             }
-            
-            engineParticles.transform.localScale = Vector3.one*curLightAmount;
 
             var forceOverLifetime = shellParticles.forceOverLifetime;
-            forceOverLifetime.z = SpeedController.s.internalRealSpeed*insideStationScaling;
+            forceOverLifetime.z = LevelReferences.s.speed*insideStationScaling;
+        }
+
+
+        var engineParticleAmount = CrystalsAndWarpController.s.warpProgress;
+        engineParticleAmount = Mathf.Clamp01(engineParticleAmount);
+        
+        if (engineParticleAmount < 0.05f) {
+            if (engineParticlesActive) {
+                engineParticlesActive = false;
+                for (int i = 0; i < engineParticles.Length; i++) {
+                    if(engineParticles[i] != null)
+                        engineParticles[i].SetGlowState(engineParticlesActive);
+                }
+                
+                
+            }
+
+
+        } else {
+            if (!engineParticlesActive) {
+                engineParticlesActive = true;
+                for (int i = 0; i < engineParticles.Length; i++) {
+                    engineParticles[i].SetGlowState(engineParticlesActive);
+                }
+            }
+            
+            for (int i = 0; i < engineParticles.Length; i++) {
+                engineParticles[i].SetScale(engineParticleAmount);
+            }
         }
     }
 }

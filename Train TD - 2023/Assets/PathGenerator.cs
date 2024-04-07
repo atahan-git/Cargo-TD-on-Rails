@@ -24,6 +24,7 @@ public class PathGenerator : MonoBehaviour {
         public bool debugDrawGizmo = true;
         public int trackObjectsId = -1;
         public string pathRewardUniqueName = "";
+        public bool pathRewardMerge = false;
     }
 
 
@@ -57,8 +58,8 @@ public class PathGenerator : MonoBehaviour {
         var path = new Vector3[trackPieceCount];
         length = (path.Length - 1) * stepLength;
 
-        var minEdge = new Vector3();
-        var maxEdge = new Vector3(0,10,0);// give volume to the bounds
+        var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        var maxEdge = new Vector3(float.MinValue,10,float.MinValue);// give volume to the bounds
 
         var interval = Mathf.CeilToInt(30/stepLength);
         path[0] = startPoint;
@@ -194,8 +195,8 @@ public class PathGenerator : MonoBehaviour {
         var path = new Vector3[trackPieceCount];
         length = (path.Length - 1) * stepLength;
 
-        var minEdge = new Vector3();
-        var maxEdge = new Vector3(0,10,0);// give volume to the bounds
+        var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        var maxEdge = new Vector3(float.MinValue,10,float.MinValue);// give volume to the bounds
 
         path[0] = startPoint;
         for (int i = 1; i < path.Length; i++) {
@@ -233,8 +234,8 @@ public class PathGenerator : MonoBehaviour {
         var smallestDimension = Mathf.Min(effectiveDimensions.x, effectiveDimensions.z);
         var rectCount = Mathf.CeilToInt(smallestDimension / safeDist);
         
-        var minEdge = new Vector3();
-        var maxEdge = new Vector3(0,10,0);// give volume to the bounds
+        var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        var maxEdge = new Vector3(float.MinValue,10,float.MinValue);// give volume to the bounds
 
         var pathLength = 0f;
         
@@ -345,8 +346,8 @@ public class PathGenerator : MonoBehaviour {
 
         var path = new List<Vector3>();
 
-        var minEdge = new Vector3();
-        var maxEdge = new Vector3(0,10,0);// give volume to the bounds
+        var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        var maxEdge = new Vector3(float.MinValue,10,float.MinValue);// give volume to the bounds
 
         var interval = Mathf.CeilToInt(30/stepLength);
         path.Add( Vector3.zero);

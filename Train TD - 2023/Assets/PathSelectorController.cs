@@ -91,6 +91,8 @@ public class PathSelectorController : MonoBehaviour {
 	public GameObject bottomCastleCity;
 	public Image topTrackType;
 	public Image bottomTrackType;
+	public Image topMergeStar;
+	public Image bottomMergeStar;
 
 	public Color[] pathTypeColors;
 	
@@ -115,8 +117,10 @@ public class PathSelectorController : MonoBehaviour {
 		} else {
 			topTrack.SetUpTrack(currentPathTree.leftPathTree.myPath.length);
 			SetImageBasedOnPathType(topTrackType, currentPathTree.leftPathTree.myPath.pathRewardUniqueName);
+			topMergeStar.enabled = currentPathTree.leftPathTree.myPath.pathRewardMerge;
 			bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
 			SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.myPath.pathRewardUniqueName);
+			bottomMergeStar.enabled = currentPathTree.rightPathTree.myPath.pathRewardMerge;
 			topTrack.SetActiveState(mainLever.topSelected);
 			bottomTrack.SetActiveState(!mainLever.topSelected);
 
@@ -146,7 +150,7 @@ public class PathSelectorController : MonoBehaviour {
 				target.color = pathTypeColors[1];
 			}
 			
-		}else if(DataHolder.s.GetArtifact(uniqueName) is var artifact && artifact != null) {
+		}else if(DataHolder.s.GetArtifact(uniqueName, true) is var artifact && artifact != null) {
 			target.sprite = artifact.mySprite;
 			target.color = pathTypeColors[2];
 		} else {
@@ -200,7 +204,8 @@ public class PathSelectorController : MonoBehaviour {
 					EncounterController.s.EngageEncounter(upcomingSegment.levelName);
 				} else {*/
 				//}
-				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length, upcomingPath.myPath.pathRewardUniqueName);
+				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, 
+					upcomingPath.myPath.length, upcomingPath.myPath.pathRewardUniqueName, upcomingPath.myPath.pathRewardMerge);
 
 				nextSegmentChangeDistance += upcomingPath.myPath.length;
 				/*if (!upcomingPath.endPath) {

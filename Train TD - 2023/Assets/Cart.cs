@@ -33,6 +33,8 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
     public Transform shootingTargetTransform;
     public Transform modulesParent;
 
+    public bool canWarp = false;
+
     [NonSerialized] public GameObject currentlyRepairingUIThing;
 
     private bool avoidByDefault;
@@ -109,6 +111,13 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                     duringCombat[i].Disable();
                 } 
             }
+
+            var warper = GetComponentInChildren<WarpStabilizerModule>();
+            if (!isMainEngine) { // main engine always warps
+                if(warper != null)
+                    warper.enabled = false;
+            }
+            
         } else {
             GetComponent<PossibleTarget>().avoid = avoidByDefault;
         
@@ -140,6 +149,10 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                     duringCombat[i].ActivateForCombat();
                 }
             }
+            
+            var warper = GetComponentInChildren<WarpStabilizerModule>();
+            if(warper != null)
+                warper.enabled= true;
         }
         
         Train.s.TrainChanged();
@@ -148,7 +161,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
 
     private void Update() {
         var pos = transform.position;
-        if (pos.y < -1) {
+        if (pos.y < -10) {
             pos.y = 1;
             transform.position = pos;
         }
@@ -255,17 +268,30 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
             }
         }
     }
+    
+    public void SetHighlightState(bool isHighlighted, Color color) {
+        foreach (var outline in _outlines) {
+            if (outline != null) {
+                outline.highlighted = isHighlighted;
+                outline.outlineColor = color;
+            }
+        }
+    }
 
     public ModuleHealth GetHealthModule() {
         return GetComponent<ModuleHealth>();
     }
 
-    public int GetCurrentHealth() {
-        return (int)GetComponent<ModuleHealth>().currentHealth;
+    public float GetCurrentHealth() {
+        return GetComponent<ModuleHealth>().currentHealth;
+    }
+    
+    public float GetCurrentHealthReduction() {
+        return GetComponent<ModuleHealth>().maxHealthReduction;
     }
 
-    public void SetCurrentHealth(float health) {
-        GetComponent<ModuleHealth>().SetHealth(health);
+    public void SetCurrentHealth(float health, float maxHealthReduction) {
+        GetComponent<ModuleHealth>().SetHealth(health, maxHealthReduction);
     }
 
     public bool IsAttachedToTrain() {

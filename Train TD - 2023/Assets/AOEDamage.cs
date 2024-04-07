@@ -109,7 +109,9 @@ public class AOEDamage : MonoBehaviour {
                     target.GetGameObject().GetComponentInParent<EnemyWave>().AddSlow(projectileDamage);
                 }
             } else if (isHeal) {
-                target.Repair(dmg);
+                for (int i = 0; i < dmg/ModuleHealth.repairChunkSize; i++) {
+                    target.RepairChunk();
+                }
             } else {
                 target.BurnDamage(burnDamage);
                 target.DealDamage(dmg, transform.position);

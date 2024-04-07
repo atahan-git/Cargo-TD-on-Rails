@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3794319236452520140}
   - component: {fileID: 8439244643568051820}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: RangeVisualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7161388625536572706}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: UI Target side
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6065785376262073798}
   - component: {fileID: 213940558643298814}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Range Edge Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 3248300930352555991}
   - component: {fileID: 2934280374143819819}
   - component: {fileID: 7371494607064308679}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Steam Vents
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,6 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunUniqueName: unset unique name
   gunSprite: {fileID: 0}
   isGigaGatling: 1
   gatlinificator: 0
@@ -292,6 +293,9 @@ MonoBehaviour:
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
@@ -301,14 +305,11 @@ MonoBehaviour:
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 1
+  ammoPerBarrageMultiplier: 1
   isPlayer: 1
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 1
-  steamUsePerShot: 0.25
   needWarmUp: 0
   startWarmUpEvent:
     m_PersistentCalls:
@@ -325,11 +326,12 @@ MonoBehaviour:
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
+  isLockOn: 0
   isHoming: 0
-  boostDamageOnUpgrade: 0.5
   waitTimer: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 1
@@ -359,7 +361,7 @@ GameObject:
   m_Component:
   - component: {fileID: 836623721980288043}
   - component: {fileID: 7770845969763413758}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Targeting Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -492,7 +494,7 @@ GameObject:
   - component: {fileID: 2048293766848397706}
   - component: {fileID: 8734524323452920916}
   - component: {fileID: 5327877165546720680}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +588,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2001210304354990905}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Direct Control Side
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -617,7 +619,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5891583664425259778}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: GfxsSides
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -713,11 +715,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9037882348c6618449a902c1f7cfce57, type: 2}
     - target: {fileID: -3632889114593882680, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: -1223811200428139871, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Name
@@ -725,7 +727,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4531912228224351498, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -761,7 +763,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7953606483559150473, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
@@ -845,11 +847,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3632889114593882680, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: -1223811200428139871, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Name
@@ -857,7 +859,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_IsActive
@@ -897,7 +899,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7953606483559150473, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}
       propertyPath: m_Layer
-      value: 17
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb581d765bbbc1141a4f74f5e8577ad0, type: 3}

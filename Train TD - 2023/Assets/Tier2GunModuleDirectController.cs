@@ -104,6 +104,8 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 		isFire.SetActive(myGun.GetBurnDamage() > 0);
 		isExplosive.SetActive(myGun.GetExplosionRange() > 0);
 		isSticky.SetActive(false);
+
+		DirectControlMaster.s.bulletSpeed = myGun.bulletPrefab.GetComponent<Projectile>().speed;
 	}
 
 	public void DisableDirectControl() {

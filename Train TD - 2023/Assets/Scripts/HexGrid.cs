@@ -485,9 +485,20 @@ public class RewardWithWeight {
 	public string uniqueName;
 	[HorizontalGroup(LabelWidth = 20, Width = 100)]
 	public float weight = 1f;
-	
-	
-	public static int WeightedRandomRoll(RewardWithWeight[] F) {
+
+	private static IEnumerable GetAllRewardNames() {
+		var buildingNames = GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
+		var artifactNames = GameObject.FindObjectOfType<DataHolder>().GetAllPossibleArtifactNames();
+		
+		buildingNames.Remove("");
+		buildingNames.AddRange(artifactNames);
+		
+		return buildingNames;
+	}
+}
+
+public static class RewardWithWeightRoll{
+	public static RewardWithWeight WeightedRandomRoll(this RewardWithWeight[] F) {
 		var totalFreq = 0f;
 		for (int i = 0; i < F.Length; i++) {
 			totalFreq += F[i].weight;
@@ -509,17 +520,7 @@ public class RewardWithWeight {
 		if(index==-1) 
 			index=F.Length-1;
 
-		return index;
-	}
-
-	private static IEnumerable GetAllRewardNames() {
-		var buildingNames = GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
-		var artifactNames = GameObject.FindObjectOfType<DataHolder>().GetAllPossibleArtifactNames();
-		
-		buildingNames.Remove("");
-		buildingNames.AddRange(artifactNames);
-		
-		return buildingNames;
+		return F[index];
 	}
 }
 

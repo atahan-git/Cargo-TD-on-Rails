@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Grasslands Sky dark
   m_EditorClassIdentifier: 
   SkyboxMaterial: {fileID: 2100000, guid: 4d0e0ffc7a6c1bf44b435e0b23260f8c, type: 2}
-  _topColor: {r: 0.106532566, g: 0.23998708, b: 0.3962264, a: 1}
-  _middleColor: {r: 0.46996263, g: 0.5132832, b: 0.5566038, a: 1}
-  _bottomColor: {r: 0.117190816, g: 0.49056602, b: 0, a: 1}
+  _topColor: {r: 0.15663938, g: 0.36207935, b: 0.6037736, a: 1}
+  _middleColor: {r: 0.6011926, g: 0.630785, b: 0.6603774, a: 1}
+  _bottomColor: {r: 0.25880742, g: 0.6226415, b: 0.14391243, a: 1}
   _topExponent: 0.4
   _bottomExponent: 1
   _starsEnabled: 0
@@ -43,4 +43,4 @@ MonoBehaviour:
   _cloudsHeight: 0
   _cloudsRotation: 0
   _exposure: 1
-  _adjustFogColor: 1
+  _adjustFogColor: 0

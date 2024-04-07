@@ -42,7 +42,7 @@ public class MiniGUI_InfoCard_Health : MonoBehaviour, IBuildingInfoCard {
             if (healthModule.invincible) {
                 health.text = $"Cannot be damaged";
             } else {
-                health.text = $"Health: {healthModule.currentHealth}/{healthModule.maxHealth}";
+                health.text = $"Health: {healthModule.currentHealth}/{healthModule.GetMaxHealth()}";
             }
         } else {
             health.text = $"Health: {enemyHealth.currentHealth}/{enemyHealth.maxHealth}";

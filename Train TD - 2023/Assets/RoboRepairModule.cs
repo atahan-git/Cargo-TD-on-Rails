@@ -151,14 +151,14 @@ public class RoboRepairModule : MonoBehaviour, IActiveDuringCombat, IResetState,
         var healths = target.GetComponentsInChildren<ModuleHealth>();
         if (healths.Length > 0) {
             for (int i = 0; i < healths.Length; i++) {
-                var canRepair = (healths[i].currentHealth < healths[i].maxHealth && doImperfect) ||
-                                healths[i].currentHealth <= healths[i].maxHealth - amount;
+                var canRepair = (healths[i].currentHealth < healths[i].GetMaxHealth() && doImperfect) ||
+                                healths[i].currentHealth <= healths[i].GetMaxHealth() - amount;
 
                 if (canRepair) {
-                    healths[i].Repair(amount);
+                    healths[i].RepairChunk();
                     if (explosiveRepair) {
-                        Train.s.GetNextBuilding(1, healths[i].myCart)?.GetHealthModule().Repair(amount*explosiveRepairAmount);
-                        Train.s.GetNextBuilding(-1, healths[i].myCart)?.GetHealthModule().Repair(amount*explosiveRepairAmount);
+                        Train.s.GetNextBuilding(1, healths[i].myCart)?.GetHealthModule().RepairChunk();
+                        Train.s.GetNextBuilding(-1, healths[i].myCart)?.GetHealthModule().RepairChunk();
                     }
                     SpawnGemEffect(healths[i]);
                     return true;

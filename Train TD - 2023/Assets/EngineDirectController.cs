@@ -62,12 +62,12 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
                 var crystalIn = CrystalsAndWarpController.s.TryUseCrystals(1);
 
                 if (crystalIn > 0) {
-                    crystalStored += crystalIn*5;
+                    crystalStored += crystalIn/**5*/;
                 }
             }
 
             if (crystalStored > 0) {
-                myEngineModule.currentPressure +=  0.015f;
+                myEngineModule.currentPressure +=  0.05f;
                 crystalStored -= 1;
             }
         }

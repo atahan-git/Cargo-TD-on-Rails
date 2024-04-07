@@ -39,6 +39,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		SetUp();
 	}
 
+	[Button]
 	public void DealDamage(float damage, Vector3? damageHitPoint) {
 		
 		curShieldDelay = shieldRegenDelay;
@@ -66,8 +67,8 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		SetBuildingShaderHealth(currentHealth / maxHealth);
 	}
 
-	public void Repair(float heal) {
-		currentHealth += heal;
+	public void RepairChunk() {
+		currentHealth += ModuleHealth.repairChunkSize;
 
 		if (currentHealth > maxHealth) {
 			currentHealth = maxHealth;
@@ -229,6 +230,11 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 			if (carryAwardGem) {
 				carryAwardGem.AwardTheCarriedThingOnDeath();
 			}
+			
+			var carryAwardMerge = GetComponent<MergeCarrierEnemy>();
+			if (carryAwardMerge) {
+				carryAwardMerge.AwardTheCarriedThingOnDeath();
+			}
 		}
 
 		var pos = aliveObject.position;
@@ -348,7 +354,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 public interface IHealth {
 	public bool IsAlive();
 	public void DealDamage(float damage, Vector3? damageHitPoint);
-	public void Repair(float heal);
+	public void RepairChunk();
 	public void BurnDamage(float damage);
 	public bool IsPlayer();
 	public GameObject GetGameObject();

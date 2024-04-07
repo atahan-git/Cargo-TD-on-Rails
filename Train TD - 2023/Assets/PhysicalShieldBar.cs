@@ -18,13 +18,9 @@ public class PhysicalShieldBar : MonoBehaviour {
     public GameObject[] bars;
 
     public GameObject shieldBreakEffect;
-    
-    private IHealth myHp;
-    private void Start() {
-        myHp = GetComponentInParent<IHealth>();
-        if (myHp == null)
-            enabled = false;
 
+    public float targetShieldPercent;
+    private void Start() {
         regularYSize = bars[0].transform.localScale.y;
     }
 
@@ -32,11 +28,8 @@ public class PhysicalShieldBar : MonoBehaviour {
     
     public float shieldPercent;
     private void Update() {
-        if (!myHp.IsShieldActive()) {
-            shieldPercent = 0;
-        } else {
-            shieldPercent = Mathf.Lerp(shieldPercent, myHp.GetShieldPercent(), 10 * Time.deltaTime);
-        }
+        shieldPercent = Mathf.Lerp(shieldPercent, targetShieldPercent, 10 * Time.deltaTime);
+        
         UpdateShield(shieldPercent);
     }
 
@@ -48,9 +41,9 @@ public class PhysicalShieldBar : MonoBehaviour {
 
     private float defaultSize = 0.19567f;
     
-    public void UpdateShield(float percentage) {
+    void UpdateShield(float percentage) {
         for (int i = 0; i < bars.Length; i++) {
-            if (!myHp.IsShieldActive()) {
+            if (percentage <= 0) {
                 if (bars[i].activeSelf) {
                     bars[i].SetActive(false);
                     VisualEffectsController.s.SmartInstantiate(shieldBreakEffect, bars[i].transform.position, bars[i].transform.rotation);
@@ -72,6 +65,10 @@ public class PhysicalShieldBar : MonoBehaviour {
             scale.y = Mathf.Lerp(regularYSize/3f, regularYSize, percentage);
             bars[i].transform.localScale = scale;
         }
+    }
+
+    public void UpdateShieldPercent(float percent) {
+        targetShieldPercent = percent;
     }
 
     public void SetSize(int size) { // 0 means covering 1 carts

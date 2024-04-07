@@ -17,6 +17,8 @@ public class GatlingAnimator : MonoBehaviour {
     public FMODAudioSource revSpeaker;
     
     private bool easterEggSidewaysRotate = false;
+
+    public bool playSound = true;
     void Start() {
         _gunModule = GetComponentInParent<GunModule>();
         
@@ -56,7 +58,9 @@ public class GatlingAnimator : MonoBehaviour {
         }
 
         //Debug.Log(curSpeed);
-        revSpeaker.SetParamByName("GatlingRevSpeed", curSpeed / rotationSpeed);
+        if (playSound) {
+            revSpeaker.SetParamByName("GatlingRevSpeed", curSpeed / rotationSpeed);
+        }
 
         if (curSpeed > 0.1f) {
             if (easterEggSidewaysRotate) { 

@@ -35,8 +35,8 @@ public class BulletHealth : MonoBehaviour, IHealth {
 		SetBuildingShaderHealth(currentHealth / maxHealth);
 	}
 
-	public void Repair(float heal) {
-		currentHealth += heal;
+	public void RepairChunk() {
+		currentHealth += ModuleHealth.repairChunkSize;
 
 		if (currentHealth > maxHealth) {
 			currentHealth = maxHealth;

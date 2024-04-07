@@ -21,7 +21,7 @@ public class BasicUpgrade : MonoBehaviour
     void Start() {
         _moneyUIDisplay = GetComponentInChildren<MoneyUIDisplay>();
         _starterShopButton = GetComponent<StarterShopButton>();
-        var saveData = DataSaver.s.GetCurrentSave();
+        var saveData = DataSaver.s.GetCurrentSave().cityUpgradesProgress;
         switch (myType) {
             case UpgradeType.ammo:
                 myLevel = saveData.ammoUpgradesBought;
@@ -62,7 +62,7 @@ public class BasicUpgrade : MonoBehaviour
             if (curCost <= DataSaver.s.GetCurrentSave().money) {
                 DataSaver.s.GetCurrentSave().money -= curCost;
                 myLevel += 1;
-                var saveData = DataSaver.s.GetCurrentSave();
+                var saveData = DataSaver.s.GetCurrentSave().cityUpgradesProgress;
                 switch (myType) {
                     case UpgradeType.ammo:
                         saveData.ammoUpgradesBought = myLevel;

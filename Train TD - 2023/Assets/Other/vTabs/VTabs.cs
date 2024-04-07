@@ -37,11 +37,19 @@ namespace VTabs
 
                 DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
 
+                if (DragAndDrop.objectReferences.Any()) // workaround for null objectReferences and mouseOverWindow on linux
+                {
+                    lastKnownDraggedObject = DragAndDrop.objectReferences.First();
+                    lastKnownHoveredWindow = EditorWindow.mouseOverWindow;
+                }
+
                 if (curEvent.type != EventType.DragPerform) return;
+                if (!lastKnownDraggedObject) return;
+                if (!lastKnownHoveredWindow) return;
 
                 DragAndDrop.AcceptDrag();
 
-                new TabDescription(DragAndDrop.objectReferences.First()).CreateWindow(GetDockArea(EditorWindow.mouseOverWindow), false);
+                new TabDescription(lastKnownDraggedObject).CreateWindow(GetDockArea(lastKnownHoveredWindow), false);
 
             }
             void scrolling()
@@ -142,7 +150,8 @@ namespace VTabs
 
         }
         static float sidesscrollPosition;
-
+        static Object lastKnownDraggedObject;
+        static EditorWindow lastKnownHoveredWindow;
 
 
         static void UpdateDelayedMousePosition()
@@ -679,7 +688,7 @@ namespace VTabs
         static System.Type hierarchyType => typeof(Editor).Assembly.GetType("UnityEditor.SceneHierarchyWindow");
 
 
-        const string version = "1.0.13";
+        const string version = "1.0.14";
 
     }
 }

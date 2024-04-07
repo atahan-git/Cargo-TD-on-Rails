@@ -23,7 +23,7 @@ public class CarrierEnemy : MonoBehaviour {
 
 
     public void AwardTheCarriedThingOnDeath() {
-        var award = carryAwards[Random.Range(0, carryAwards.Length)];
+        var award = carryAwards[currentCarry];
         
         var awardCart = Instantiate(DataHolder.s.GetCart(award.uniqueName).gameObject, awardSpawnPos.position, awardSpawnPos.rotation).GetComponent<Cart>();
 

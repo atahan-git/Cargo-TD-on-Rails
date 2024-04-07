@@ -56,6 +56,7 @@ public class WorldDifficultyController : MonoBehaviour {
         if (PlayStateMaster.s.isCombatInProgress()) {
             var curCombatTime = GetMissionTime();
             var newLevel = Mathf.FloorToInt(curCombatTime / damageIncreaseInterval);
+            newLevel += 20;
 
             if (newLevel > curLevel) {
                 curLevel = newLevel;
@@ -76,7 +77,7 @@ public class WorldDifficultyController : MonoBehaviour {
         currentHealthMultiplier = curLevel * enemyHealthIncreasePerLevel + baseHealthMultiplier;
         OnDifficultyChanged?.Invoke();
 
-        StartCoroutine(LerpLights());
+        //StartCoroutine(LerpLights());
     }
 
 
@@ -86,7 +87,7 @@ public class WorldDifficultyController : MonoBehaviour {
         SkyboxController.Instance.AdjustFogColor = false;
 
         var targetDarknessPercent = curLevel / (float)totalDarknessLevel;
-        targetDarknessPercent = Mathf.Clamp01(targetDarknessPercent);
+        targetDarknessPercent = Mathf.Clamp(targetDarknessPercent, 0,0.9f);
 
         var prevAmbientIntensity = RenderSettings.ambientIntensity;
         var targetAmbientIntensity = Mathf.Lerp(baseAmbientLightStrength, 0, targetDarknessPercent);

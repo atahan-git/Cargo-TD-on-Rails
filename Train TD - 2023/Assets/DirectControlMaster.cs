@@ -64,6 +64,7 @@ public class DirectControlMaster : MonoBehaviour {
 	}
 
 	public TMP_Text sniperAmount;
+	public float bulletSpeed = 0;
 	
 	[Header("Ammo")]
 	public GameObject ammo_perfect;

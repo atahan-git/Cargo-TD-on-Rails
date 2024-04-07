@@ -11,8 +11,6 @@ public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
     public float reloadBoostPerLevel = -0.5f;
     public float currentReloadDelay = 0;
 
-    public float repairAmount = 50f;
-
     private Artifact myArtifact;
     private void Start() {
         myArtifact = GetComponent<Artifact>();
@@ -49,7 +47,7 @@ public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
         }
 
         if (!hasAmmo) {
-            target.GetHealthModule().Repair(repairAmount);
+            target.GetHealthModule().RepairChunk();
         }
         VisualEffectsController.s.SmartInstantiate(LevelReferences.s.growthEffectPrefab, target.uiTargetTransform, VisualEffectsController.EffectPriority.High);
     }
@@ -69,20 +67,31 @@ public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
 
     private float activeDelay;
     private void Update() {
-        if (myArtifact.isAttached && PlayStateMaster.s.isCombatInProgress()) {
-            activeDelay -= Time.deltaTime;
-            if (activeDelay <= 0) {
-                activeDelay = currentReloadDelay;
+        if (PlayStateMaster.s.isCombatInProgress()) {
+            if (myArtifact != null) {
+                if (myArtifact.isAttached) {
+                    activeDelay -= Time.deltaTime;
+                    if (activeDelay <= 0) {
+                        activeDelay = currentReloadDelay;
 
-                if (enemyToApplyTo) {
-                    ApplyToEnemy();
-                } else {
-                    var range = GetComponent<Artifact>().range;
-                    ApplyReloadOrHealth(GetComponentInParent<Cart>());
-                    for (int i = 1; i < range + 1; i++) {
-                        ApplyReloadOrHealth(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-                        ApplyReloadOrHealth(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                        if (!enemyToApplyTo) {
+                            var range = GetComponent<Artifact>().range;
+                            ApplyReloadOrHealth(GetComponentInParent<Cart>());
+                            for (int i = 1; i < range + 1; i++) {
+                                ApplyReloadOrHealth(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
+                                ApplyReloadOrHealth(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                            }
+                        }
                     }
+                }
+            } else {
+                activeDelay -= Time.deltaTime;
+                if (activeDelay <= 0) {
+                    activeDelay = currentReloadDelay;
+
+                    if (enemyToApplyTo) {
+                        ApplyToEnemy();
+                    } 
                 }
             }
         }
@@ -94,7 +103,7 @@ public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
     }
     
     void ApplyToEnemy() {
-        enemyToApplyTo.GetComponent<EnemyHealth>().Repair(repairAmount);
+        enemyToApplyTo.GetComponent<EnemyHealth>().RepairChunk();
         VisualEffectsController.s.SmartInstantiate(LevelReferences.s.growthEffectPrefab, enemyToApplyTo.transform, VisualEffectsController.EffectPriority.High);
     }
 

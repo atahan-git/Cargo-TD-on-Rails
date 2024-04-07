@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5636224339530866253}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: center barrel end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4100900919993173913}
   - component: {fileID: 8745791312782356793}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: RangeVisualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5065581461628978176}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Barrel End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2849134651072795483}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Barrel End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 265239296001426397}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Barrel End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -184,7 +184,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6655693099286801952}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Barrel End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: -7450878069248949382}
   - component: {fileID: 2664401322561058686}
   - component: {fileID: 7641972898590985362}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: RocketLauncher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,13 +307,16 @@ MonoBehaviour:
   bonusBurnDamage: 0
   damageMultiplier: 1
   sniperDamageMultiplier: 1
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   burnDamageMultiplier: 1
   regularToBurnDamageConversionMultiplier: 0
   regularToRangeConversionMultiplier: 0
   dontGetAffectByMultipliers: 0
   directControlShakeMultiplier: 1
   isHeal: 0
-  rotateSpeed: 10
+  rotateSpeed: 20
   gunActive: 1
   IsBarrelPointingCorrectly: 0
   ammoPerBarrage: 3
@@ -342,6 +345,7 @@ MonoBehaviour:
   waitTimer: 0
   explosionRange: 0.5
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 1
@@ -357,7 +361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 80
+  rotationSpan: 180
   range: 7
   myPossibleTargets: 00000000
   canHitFlying: 0
@@ -371,7 +375,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6371622877325114003}
   - component: {fileID: 1060988430631081643}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Range Edge Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -501,7 +505,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6218788800557491715}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Barrel End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -532,7 +536,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 800980718394170119}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: rocket gfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -574,7 +578,7 @@ GameObject:
   - component: {fileID: 4275241540373961609}
   - component: {fileID: 1239089800769001454}
   - component: {fileID: 5026924899808347442}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: rocket_barrage (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -656,7 +660,7 @@ GameObject:
   m_Component:
   - component: {fileID: 566673180595833726}
   - component: {fileID: 7464405951499286955}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Targeting Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -786,6 +790,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2998208188321920362}
+  - component: {fileID: 1468697683979056534}
   m_Layer: 11
   m_Name: Direct Control Top
   m_TagString: Untagged
@@ -808,6 +813,18 @@ Transform:
   m_Father: {fileID: 800980718394170119}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1468697683979056534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5955004714165440288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2876ead7b0efdcd488c3149e01808326, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8219606432554914338
 GameObject:
   m_ObjectHideFlags: 0
@@ -817,7 +834,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4517672856103382745}
-  m_Layer: 17
+  m_Layer: 11
   m_Name: Barrel End
   m_TagString: Untagged
   m_Icon: {fileID: 0}

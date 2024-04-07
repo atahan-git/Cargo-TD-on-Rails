@@ -53,10 +53,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carriedThings:
   - {fileID: 8233970501044157068}
-  canCarry: 01
   carryAwards:
-  - uniqueName: cargo_cart
+  - uniqueName: crystal_cart
     health: -1
+    maxHealthReduction: -1
     ammo: -1
     cargoState:
       cargoReward: 

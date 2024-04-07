@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunUniqueName: unset unique name
+  gunUniqueName: Heal Gun
   gunSprite: {fileID: 21300000, guid: f66cdbf48d45ba8448681a24250118c3, type: 3}
   isGigaGatling: 0
   gatlinificator: 0
@@ -237,6 +237,7 @@ MonoBehaviour:
   waitTimer: 0
   explosionRange: 0
   explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
   shootCreditsUse: 1

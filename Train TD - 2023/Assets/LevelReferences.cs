@@ -19,6 +19,7 @@ public class LevelReferences : MonoBehaviour {
     public GameObject burningEffect;
     public GameObject cartRepairableDamageEffect;
     public GameObject repairDoneEffect;
+    public GameObject maxHealthReductionPlatePrefab;
     
     [Space]
 
@@ -35,7 +36,10 @@ public class LevelReferences : MonoBehaviour {
     public GameObject bulletHealthPrefab;
     public GameObject damageNumbersPrefab;
     public Transform uiDisplayParent;
-    
+
+    [Space]
+    public GameObject scrapsItemPrefab;
+
     [Space]
     
     public GameObject repairEffectPrefab;
@@ -84,6 +88,7 @@ public class LevelReferences : MonoBehaviour {
         public bool flying;
         public bool active;
         public int health;
+        public float healthPercent;
         
         public TargetValues(PossibleTarget target) {
             type = target.myType;
@@ -92,6 +97,7 @@ public class LevelReferences : MonoBehaviour {
             flying = target.flying;
             active = target.enabled;
             health = (int)target.GetHealth();
+            healthPercent = target.GetHealthPercent();
         }
     }
 
@@ -103,6 +109,8 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask gateMask;
     public LayerMask artifactLayer;
     public LayerMask meepleLayer;
+    public LayerMask mergeItemLayer;
+    public LayerMask scrapsItemLayer;
 
     [Space]
     public SingleUnityLayer playerBulletLayer;
@@ -116,9 +124,6 @@ public class LevelReferences : MonoBehaviour {
     public Sprite encounterIcon;
     public Color encounterColor = Color.cyan;
     public Color eliteColor = Color.red;
-
-    [Space]
-    public GameObject enemyHasArtifactStar;
 
     [Space]
     public GameObject emptyCart;
@@ -138,6 +143,9 @@ public class LevelReferences : MonoBehaviour {
     public float bigEffectFirstActivateTimeAfterCombatStarts = 15;
     public GameObject radiationDamagePrefab;
     public GameObject growthEffectPrefab;
+    public GameObject cartMergeEffect;
+
+    public GameObject mergeGemItem;
 
     [Space] public GameObject coinDrop;
     public GameObject crystalDrop;

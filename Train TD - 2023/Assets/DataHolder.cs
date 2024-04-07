@@ -12,6 +12,11 @@ public class DataHolder : MonoBehaviour {
     
     private void Awake() { 
         s = this;
+
+        mergeDatas = new MergeData[mergeDataScriptables.Length];
+        for (int i = 0; i < mergeDataScriptables.Length; i++) {
+            mergeDatas[i] = mergeDataScriptables[i].GetMergeData();
+        }
     }
 
 
@@ -24,11 +29,14 @@ public class DataHolder : MonoBehaviour {
     public GunModule[] swappableTier1Guns;
     public GunModule[] swappableTier2Guns;
 
+    public MergeDataScriptable[] mergeDataScriptables;
+    private MergeData[] mergeDatas;
+
     public Cart tier1GunCart;
     public Cart tier2GunCart;
     public Cart tier3GunCart;
-    
-    
+
+
     public PowerUpScriptable GetPowerUp(string powerUpUniqueName) {
         for (int i = 0; i < powerUps.Length; i++) {
             if (PreProcess(powerUps[i].name) == PreProcess(powerUpUniqueName)) {
@@ -52,19 +60,22 @@ public class DataHolder : MonoBehaviour {
     }
 
 
-    public Artifact GetArtifact(string artifactName) {
+    public Artifact GetArtifact(string artifactName, bool suppressWarning = false) {
         for (int i = 0; i < artifacts.Length; i++) {
             if (PreProcess(artifacts[i].uniqueName) == PreProcess(artifactName)) {
                 return artifacts[i];
             }
         }
 
-        for (int i = 0; i < artifacts.Length; i++) {
-            Debug.LogError(PreProcess(artifacts[i].uniqueName));
+        if (!suppressWarning) {
+            for (int i = 0; i < artifacts.Length; i++) {
+                Debug.LogError(PreProcess(artifacts[i].uniqueName));
+            }
+
+            Debug.LogError($"Can't find artifact <{artifactName}>");
+            PlayStateMaster.s.OpenMainMenu(); // bail
         }
-        Debug.LogError($"Can't find artifact <{artifactName}>");
-        PlayStateMaster.s.OpenMainMenu(); // bail
-        
+
         return null;
     }
     
@@ -131,7 +142,7 @@ public class DataHolder : MonoBehaviour {
         return null;
     }
 
-    string PreProcess(string input) {
+    public static string PreProcess(string input) {
         return input.Replace(" ", "").ToLower();
     }
 
@@ -160,5 +171,19 @@ public class DataHolder : MonoBehaviour {
             artifactNames.Add(artifacts[i].uniqueName);
         }
         return artifactNames;
+    }
+
+
+    public string GetMergeResult(string uniqueName1, string uniqueName2) {
+        var inputStrings = new List<string>() { PreProcess(uniqueName1), PreProcess(uniqueName2) };
+        inputStrings.Sort();
+
+        for (int i = 0; i < mergeDatas.Length; i++) {
+            if (mergeDatas[i].sources[0] == inputStrings[0] && mergeDatas[i].sources[1] == inputStrings[1]) {
+                return mergeDatas[i].result;
+            }
+        }
+
+        return null;
     }
 }

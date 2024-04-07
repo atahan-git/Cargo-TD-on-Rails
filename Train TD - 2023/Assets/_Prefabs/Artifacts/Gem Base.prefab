@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 3606250654571921063}
   - component: {fileID: 2887714300150370317}
   - component: {fileID: 2966999489241683928}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Prop_Crystal_Purple_01 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +207,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1666075299203741506}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Crystal decor (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 4228584923583721129}
   - component: {fileID: 3000658176013270734}
   - component: {fileID: 4150176515199512765}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Prop_Crystal_Purple_01 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -504,7 +504,7 @@ GameObject:
   - component: {fileID: 9107765271094784149}
   - component: {fileID: 8337465227500983344}
   - component: {fileID: 586818211553822249}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Gem Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -578,7 +578,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4686409788300702077}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 10
   m_Drag: 1
   m_AngularDrag: 1
   m_UseGravity: 0
@@ -759,7 +759,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 5
+  rmsCount: 3
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25
@@ -774,7 +774,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6676683157711816034}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Crystal decor (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -806,7 +806,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2506726469651498845}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: center
   m_TagString: Untagged
   m_Icon: {fileID: 0}

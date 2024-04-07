@@ -95,22 +95,34 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
 
     
     private void Update() {
-        if ((myArtifact == null || myArtifact.isAttached) && PlayStateMaster.s.isCombatInProgress()) {
-            radiationDelay -= Time.deltaTime;
-            if (radiationDelay <= 0) {
-                radiationDelay = Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
+        if (PlayStateMaster.s.isCombatInProgress()) {
+            if (myArtifact != null) {
+                if (myArtifact.isAttached) {
+                    radiationDelay -= Time.deltaTime;
+                    if (radiationDelay <= 0) {
+                        radiationDelay = Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
 
-                if (enemyToApplyTo) {
-                    ApplyToEnemy();
-                } else {
-                    var range = GetComponent<Artifact>().range;
-                    ApplyDamage(Train.s.GetNextBuilding(0, GetComponentInParent<Cart>()));
-                    for (int i = 1; i < range + 1; i++) {
-                        ApplyDamage(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-                        ApplyDamage(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                        if (!enemyToApplyTo) {
+                            var range = GetComponent<Artifact>().range;
+                            ApplyDamage(GetComponentInParent<Cart>());
+                            for (int i = 1; i < range + 1; i++) {
+                                ApplyDamage(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
+                                ApplyDamage(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                            }
+                        }
                     }
                 }
+            } else {
+                radiationDelay -= Time.deltaTime;
+                if (radiationDelay <= 0) {
+                    radiationDelay = Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
+
+                    if (enemyToApplyTo) {
+                        ApplyToEnemy();
+                    } 
+                }
             }
+            
         }
     }
 

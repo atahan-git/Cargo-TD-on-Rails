@@ -30,8 +30,8 @@ public class LaserTurretAnimator : MonoBehaviour
         // introAudioSource.clip = warmUpClip;
         // introAudioSource.Play();
         // loopAudioSource.PlayDelayed(warmUpTime);
-        onesShotSource.LoadClip(warmUpRef, true);
-        loopAudioSource.PlayDelayed(warmUpTime);
+        //onesShotSource.LoadClip(warmUpRef, true);
+        //loopAudioSource.PlayDelayed(warmUpTime);
     }
     // Start is called before the first frame update
     void Start() {
@@ -58,8 +58,9 @@ public class LaserTurretAnimator : MonoBehaviour
         // introAudioSource.Stop();
         // loopAudioSource.Stop();
         // introAudioSource.PlayOneShot(stopClip);
-        loopAudioSource.Stop();
-        onesShotSource.LoadClip(stopRef, true);
+        
+        //loopAudioSource.Stop();
+        //onesShotSource.LoadClip(stopRef, true);
         
         myBeam.DisableBeam();
     }

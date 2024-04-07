@@ -16,6 +16,7 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat {
     private PossibleTarget mySelfTarget;
 
     public bool canHitFlying = false;
+    public bool checkForHealing;
     
     private void Start() {
         targeter = GetComponent<IComponentWithTarget>();
@@ -69,8 +70,9 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat {
                 //var targetHasEnoughHealth = !doHealthCheck || (allTargets[i].health >= myDamage);
                 var targetNotAvoided = !target.avoid || !doAvoidCheck;
                 var canHitBecauseFlying = canHitFlying || !target.flying;
+                var healCheck = !checkForHealing || target.healthPercent < 1f;
 
-                if (targetActive && canTarget && targetNotAvoided && canHitBecauseFlying) {
+                if (targetActive && canTarget && targetNotAvoided && canHitBecauseFlying && healCheck) {
                     if (IsPointInsideCone(allTargets[i].position, myPosition, myForward, rotationSpan, range, out float distance)) {
                         if (distance < closestTargetDistance) {
                             closestTarget = allTargetsReal[i].targetTransform;

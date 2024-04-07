@@ -120,6 +120,7 @@ public class Train : MonoBehaviour {
         if (cart != null) {
             buildingState.uniqueName = cart.uniqueName;
             buildingState.health = cart.GetCurrentHealth();
+            buildingState.maxHealthReduction = cart.GetCurrentHealthReduction();
 
             var cargo = cart.GetComponentInChildren<CargoModule>();
             if (cargo != null) {
@@ -176,7 +177,7 @@ public class Train : MonoBehaviour {
         cart.SetUpOverlays();
         
         if (cartState.health > 0) {
-            cart.SetCurrentHealth(cartState.health);
+            cart.SetCurrentHealth(cartState.health, cartState.maxHealthReduction);
         }
 
         /*if (cartState.ammo >= 0) {
@@ -234,7 +235,12 @@ public class Train : MonoBehaviour {
         showEntryMovement = true;
     }
 
+    public void ShowEntrySparkles() {
+        showEntrySparkles = true;
+    }
+
     public static bool showEntryMovement = false;
+    public static bool showEntrySparkles = false;
 
     public void OnEnterShopArea() {
         StopCoroutine(nameof(LerpTrain));
@@ -242,6 +248,10 @@ public class Train : MonoBehaviour {
             // only show this if the player just left the mission reward area
             StartCoroutine(LerpTrain(-GetTrainForward() * 3, Vector3.zero, 4f, true));
             showEntryMovement = false;
+        }
+
+        if (showEntrySparkles) {
+            showEntrySparkles = false;
         }
     }
 
@@ -295,9 +305,15 @@ public class Train : MonoBehaviour {
 
     float lerpSpeed => PlayerWorldInteractionController.lerpSpeed;
     float slerpSpeed => PlayerWorldInteractionController.slerpSpeed;
+    public bool newspaperMode = false;
     public void UpdateCartPositions(bool instant = false) {
         if(carts.Count == 0)
             return;
+
+        if (newspaperMode) {
+            UpdateCartPositionsNewspaper();
+            return;
+        }
 
         var totalLength = GetTrainLength();
 
@@ -351,6 +367,36 @@ public class Train : MonoBehaviour {
         
         
         DoShake();
+    }
+
+
+    public void UpdateCartPositionsNewspaper() {
+        var trainMaxLength = 10f;
+
+        var trainCurrentLength = GetTrainLength();
+
+        var distanceAddon = trainCurrentLength/trainMaxLength;
+        distanceAddon = Mathf.Clamp(distanceAddon, 1, 10);
+        distanceAddon -= 1;
+        distanceAddon *= 4;
+        
+        var totalLength = GetTrainLength();
+        var currentDistance = 1f - ((carts[0].length/2f)/totalLength);
+        for (int i = 0; i < carts.Count; i++) {
+            var cart = carts[i];
+            var currentSpot = NewspaperController.s.GetNewspaperTrainPosition(currentDistance, distanceAddon);
+            var currentRot = NewspaperController.s.GetNewspaperTrainRotation(currentDistance, distanceAddon);
+
+            var cartTransform = cart.transform;
+            cartTransform.rotation = Quaternion.Slerp(cartTransform.rotation, currentRot, slerpSpeed * Time.deltaTime * 0.2f);
+            cartTransform.position = Vector3.Lerp(cartTransform.position, currentSpot + (cartTransform.up*-0.6f), lerpSpeed * Time.deltaTime * 0.2f);
+
+            var index = i;
+            /*cart.name = $"Cart {index }";
+            cart.trainIndex = index;
+            cart.cartPosOffset = currentDistance;*/
+            currentDistance -= cart.length/totalLength;
+        }
     }
     
 
@@ -489,6 +535,58 @@ public class Train : MonoBehaviour {
         onTrainCartsChanged?.Invoke();
     }
 
+
+    public void CheckMerge() {
+        for (int i = 0; i < carts.Count-1; i++) {
+            var prevCart = carts[i];
+            var nextCart = carts[i + 1];
+            
+            var mergeResultUniqueName = DataHolder.s.GetMergeResult(prevCart.uniqueName, nextCart.uniqueName);
+            var legalMerge = mergeResultUniqueName != null;
+            if (legalMerge) {
+                var prevCartArtifacts = prevCart.GetComponentsInChildren<Artifact>();
+                var nextCartArtifacts = nextCart.GetComponentsInChildren<Artifact>();
+                
+                RemoveCart(prevCart);
+                RemoveCart(nextCart);
+                var spawnPos = Vector3.Lerp(prevCart.transform.position, nextCart.transform.position, 0.5f);
+                var spawnRot = prevCart.transform.rotation;
+                var newMergedCart = Instantiate(
+                        DataHolder.s.GetCart(mergeResultUniqueName), 
+                        spawnPos, spawnRot)
+                    .GetComponent<Cart>();
+
+                VisualEffectsController.s.SmartInstantiate(LevelReferences.s.cartMergeEffect, spawnPos, spawnRot, VisualEffectsController.EffectPriority.Always);
+                ApplyStateToCart(newMergedCart, new DataSaver.TrainState.CartState(){uniqueName = mergeResultUniqueName});
+                AddCartAtIndex(prevCart.trainIndex, newMergedCart);
+
+                var n = 0;
+                for (int j = 0; j < prevCartArtifacts.Length; j++) {
+                    if (n < newMergedCart.myArtifactLocations.Count) {
+                        prevCartArtifacts[j].AttachToSnapLoc(newMergedCart.myArtifactLocations[n]);
+                    } else {
+                        prevCartArtifacts[j].DetachFromCart();
+                    }
+                    n++;
+                }
+
+                for (int j = 0; j < nextCartArtifacts.Length; j++) {
+                    if (n < newMergedCart.myArtifactLocations.Count) {
+                        nextCartArtifacts[j].AttachToSnapLoc(newMergedCart.myArtifactLocations[n]);
+                    } else {
+                        nextCartArtifacts[j].DetachFromCart();
+                    }
+
+                    n++;
+                }
+                
+                
+                Destroy(prevCart.gameObject);
+                Destroy(nextCart.gameObject);
+            }
+        }
+    }
+
     public void TrainChanged() {
         if (isTrainDrawn) {
             ArtifactsController.s.ArtifactsChanged();
@@ -567,6 +665,7 @@ public class Train : MonoBehaviour {
 
     public void MaxHealthModified() {
         MiniGUI_TrainOverallHealthBar.s.MaxHealthChanged();
+        HealthModified();
     }
     
     public void HealthModified() {
@@ -595,5 +694,10 @@ public class Train : MonoBehaviour {
             saveData.myTrain = minimumTrain;
             saveData.myTrain.myCarts.Add(minimumTrainLastCarts[Random.Range(0, minimumTrainLastCarts.Count)]);
         }
+    }
+
+
+    public void SetNewspaperTrainState(bool isNewspaperTrain) {
+        newspaperMode = isNewspaperTrain;
     }
 }

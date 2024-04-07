@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SnapLocation : MonoBehaviour {
     public enum AllowedSnaps {
-        nothing, cart, cargoCart, regularArtifact, cartAndRegularArtifact, regularAndComponentArtifact
+        nothing, cart, cargoCart, regularArtifact, cartAndRegularArtifact, regularAndComponentArtifact, mergeItem, scrapable, red, blue, green, anyColor
     }
 
     public AllowedSnaps myAllowedSnaps = AllowedSnaps.nothing;
@@ -16,6 +16,7 @@ public class SnapLocation : MonoBehaviour {
     public float snapDistance = 1f;
     public bool lerpChild = true;
 
+    public bool allowSnap = true;
     private void Start() {
         LevelReferences.s.allSnapLocations.Add(this);
         if (snapTransform == null) {
@@ -38,13 +39,13 @@ public class SnapLocation : MonoBehaviour {
             if (snapTransform.childCount > 0) {
                 var child = GetSnappedObject();
 
-                var isArtifact = child.GetComponent<Artifact>() != null;
+                //var isArtifact = child.GetComponent<Artifact>() != null;
 
                 var offset = Vector3.zero;
 
-                if (isArtifact) {
+                /*if (isArtifact) {
                     offset = Vector3.up * (3 / 4f);
-                }
+                }*/
 
                 child.transform.localPosition = Vector3.Lerp(child.transform.localPosition, offset, snapLerpSpeed * Time.deltaTime);
                 child.transform.localRotation = Quaternion.Slerp(child.transform.localRotation, Quaternion.identity, snapSlerpSpeed * Time.deltaTime);
@@ -53,6 +54,9 @@ public class SnapLocation : MonoBehaviour {
     }
 
     public bool CanSnap(IPlayerHoldable thing) {
+        if (!allowSnap)
+            return false;
+        
         switch (myAllowedSnaps) {
             case AllowedSnaps.nothing:
                 return false;
@@ -87,6 +91,35 @@ public class SnapLocation : MonoBehaviour {
             }
             case AllowedSnaps.regularAndComponentArtifact:
                 return thing is Artifact;
+            case AllowedSnaps.mergeItem:
+                return thing is MergeItem;
+            case AllowedSnaps.scrapable:
+                var scrapable = ((MonoBehaviour)thing).GetComponent<Scrapable>();
+                return scrapable != null;
+            case AllowedSnaps.red: {
+                var scrapItem = ((MonoBehaviour)thing).GetComponent<ScrapsItem>();
+                if (!scrapItem)
+                    return false;
+                return scrapItem.myType == ScrapsItem.ScrapsType.red;
+            }
+            case AllowedSnaps.blue: {
+                var scrapItem = ((MonoBehaviour)thing).GetComponent<ScrapsItem>();
+                if (!scrapItem)
+                    return false;
+                return scrapItem.myType == ScrapsItem.ScrapsType.blue;
+            }
+            case AllowedSnaps.green: {
+                var scrapItem = ((MonoBehaviour)thing).GetComponent<ScrapsItem>();
+                if (!scrapItem)
+                    return false;
+                return scrapItem.myType == ScrapsItem.ScrapsType.green;
+            }
+            case AllowedSnaps.anyColor: {
+                var scrapItem = ((MonoBehaviour)thing).GetComponent<ScrapsItem>();
+                if (!scrapItem)
+                    return false;
+                return true;
+            }
             default:
                 return false;
         }

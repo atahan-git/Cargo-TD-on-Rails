@@ -61,7 +61,7 @@ public class PhysicalAmmoBar : MonoBehaviour {
         var delta = Vector3.zero;
         while ( allAmmoChunks.Count < curAmmo) {
             var newOne = Instantiate(ammoChunk, reloadSpawnPos);
-            newOne.transform.position += delta + new Vector3(Random.Range(-0.005f, 0.005f), 0, Random.Range(-0.005f, 0.005f));
+            newOne.transform.localPosition += delta + new Vector3(Random.Range(-0.005f, 0.005f), 0, Random.Range(-0.005f, 0.005f));
             newOne.transform.SetParent(transform);
             newOne.SetActive(true);
             allAmmoChunks.Add(newOne);
@@ -80,15 +80,15 @@ public class PhysicalAmmoBar : MonoBehaviour {
 
     private float acceleration = 2;
     private void Update() {
-        var targetY = noAmmoPos.transform.position.y;
+        var targetY = noAmmoPos.transform.localPosition.y;
         for (int i = 0; i < allAmmoChunks.Count; i++) {
-            var target = allAmmoChunks[i].transform.position;
+            var target = allAmmoChunks[i].transform.localPosition;
             target.y = targetY;
-            if (allAmmoChunks[i].transform.position.y > target.y) {
-                allAmmoChunks[i].transform.position = Vector3.MoveTowards(allAmmoChunks[i].transform.position, target, velocity[i] * Time.deltaTime);
+            if (allAmmoChunks[i].transform.localPosition.y > target.y) {
+                allAmmoChunks[i].transform.localPosition = Vector3.MoveTowards(allAmmoChunks[i].transform.localPosition, target, velocity[i] * Time.deltaTime);
                 velocity[i] += acceleration * Time.deltaTime;
             } else {
-                allAmmoChunks[i].transform.position = target;
+                allAmmoChunks[i].transform.localPosition = target;
                 velocity[i] = 0;
             }
 

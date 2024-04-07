@@ -59,6 +59,9 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
     
     public List<GameObject> newOnes = new List<GameObject>();
     public List<Rigidbody> oldOnes = new List<Rigidbody>();
+
+    public bool healOnReload = false;
+    public int curPerfectComboCount = 0;
     public void ActivateDirectControl() {
         var currentCameraForward = MainCameraReference.s.cam.transform.forward;
 
@@ -89,9 +92,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
         SetNewCurPos(true);
         SetDropPos(curPos);
 
-        curReloadCount = baseReloadCount;
-        needNewOnes = true;
-        
         //myModuleAmmo.UseAmmo(10000);
     }
 
@@ -154,6 +154,13 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
                 if (dist < perfectMatchDistance) {
                     dropWasPerfect = true;
                 }
+                
+                if (dropWasPerfect) {
+                    curPerfectComboCount += 1;
+                } else {
+                    curPerfectComboCount = 0;
+                }
+                curReloadCount = baseReloadCount*(curPerfectComboCount+1);
 
                 if (dropWasSuccess) {
                     var toReload = newOnes.Count;
@@ -169,11 +176,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
                     SetNewCurPos(false);
                 }
 
-                if (dropWasPerfect) {
-                    curReloadCount *= 2;
-                } else {
-                    curReloadCount = baseReloadCount;
-                }
+                
 
                 if (dropWasPerfect) {
                     AnimateEffect(ammo_perfect);
@@ -240,7 +243,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
                     break;
                 }
             }
-
         }
         
         for (int i = 0; i < droppingAmmoChunks.Count; i++) {
@@ -253,6 +255,10 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
             }
 
             targetY += myAmmoBar.ammoChunkHeight;
+        }
+
+        if (droppingAmmoChunks.Count == 0) {
+            dropping = false;
         }
 
         velocity += acceleration * Time.deltaTime;
@@ -295,8 +301,23 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
             myAmmoBar.allAmmoChunks.Add(newOne);
             myAmmoBar.velocity.Add(0f);
         }
+
+        var otherAmmoModules = Train.s.GetComponentsInChildren<ModuleAmmo>();
+        for (int i = 0; i < otherAmmoModules.Length; i++) {
+            if (otherAmmoModules[i] != myModuleAmmo) {
+                otherAmmoModules[i].Reload(droppingAmmoChunks.Count);
+            }
+        }
+        
         droppingAmmoChunks.Clear();
         newOnes.Clear();
+
+
+        if (healOnReload) {
+            for (int i = 0; i < Train.s.carts.Count; i++) {
+                Train.s.carts[i].GetHealthModule().RepairChunk(curPerfectComboCount+1);
+            }
+        }
     }
 
     void NewOnePlacementFailed() {

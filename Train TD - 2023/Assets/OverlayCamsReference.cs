@@ -13,7 +13,7 @@ public class OverlayCamsReference : MonoBehaviour {
 
     public Camera uiCam;
 
-    
+
     public const float planeDistance = 1.5f;
 
     private void Start() {
@@ -21,9 +21,11 @@ public class OverlayCamsReference : MonoBehaviour {
         camData.cameraStack.Clear();
         //camData.cameraStack.Add(AsteroidInTheDistanceCam.s.camera);
         camData.cameraStack.Add(uiCam);
+        //camData.cameraStack.Add(trainOverlayCam);
         /*var camData = AsteroidInTheDistanceCam.s.camera.GetUniversalAdditionalCameraData();
         camData.cameraStack.Clear();
         camData.cameraStack.Add(MainCameraReference.s.cam);
         camData.cameraStack.Add(uiCam);*/
     }
+
 }
