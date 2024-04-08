@@ -36,8 +36,9 @@ public class TrainTerrainData : MonoBehaviour {
       data.heightmap = new float[gridSize, gridSize];
       data.terrain = terrain;
       data.pathAndTerrainGenerator = PathAndTerrainGenerator.s;
-      data.detailmap0 = new int[detailGridSize, detailGridSize];
+      /*data.detailmap0 = new int[detailGridSize, detailGridSize];
       data.detailmap1 = new int[detailGridSize, detailGridSize];
+      */
 
       isInitialized = true;
    }
@@ -82,7 +83,7 @@ public class TrainTerrainData : MonoBehaviour {
    
    [Button]
    public void DebugDrawDetailMap(int mapIndex = 0, float height = 1) {
-      var map = data.detailmap0;
+      /*var map = data.detailmap0;
       if (mapIndex == 1) {
          map = data.detailmap1;
       }
@@ -100,7 +101,7 @@ public class TrainTerrainData : MonoBehaviour {
                Debug.DrawLine(pos, pos + Vector3.up*map[x,y]*height, color, 20f);
             }
          }
-      }
+      }*/
    }
    
    
@@ -143,7 +144,7 @@ public class TrainTerrainData : MonoBehaviour {
          Vector3 terrainSize = data.terrain.terrainData.size;
          var terrainCenter = transform.position + terrainSize / 2f;
 
-         if (drawGrass && data.grassPositions0.IsCreated && terrainCenter.magnitude < 40) {
+         /*if (drawGrass && data.grassPositions0.IsCreated && terrainCenter.magnitude < 40) {
             if (data.needReBatchingForGrass) {
                batches0 = ReBatchData(data.grassPositions0);
                batches1 = ReBatchData(data.grassPositions1);
@@ -157,7 +158,7 @@ public class TrainTerrainData : MonoBehaviour {
 
             DrawGrassInstanced(batches0, grassMesh0, grassMaterial0);
             DrawGrassInstanced(batches1, grassMesh1, grassMaterial1);
-         }
+         }*/
       }
    }
 

@@ -36,39 +36,38 @@ public class Artifact_IronGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
             didApply = true;
         }
 
-        foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {
-            roboRepair.amountMultiplier += curDamageMultiplier;
-            roboRepair.firerateDivider += baseFirerateReduction;
+        foreach (var droneRepair in target.GetComponentsInChildren<DroneRepairController>()) {
+            droneRepair.repairRateIncreaseReducer += 0.25f;
+            droneRepair.additionalRepairs += 1;
             didApply = true;
         }
-        /*foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
-            var hp = target.GetHealthModule();
-            hp.maxShields += curEngineHpIncrease;
-            hp.shieldRegenDelayDivider += baseFirerateReduction;
-            hp.shieldRegenRateDivider += baseFirerateReduction;
-            didApply = true;
-        }*/
         
+        foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
+            shieldGenerator.regenTimerReductionDivider += 0.25f;
+            shieldGenerator.currentMaxShieldAmount *= 1.5f;
+            didApply = true;
+        }
+        
+        foreach (var ammoDirect in target.GetComponentsInChildren<AmmoDirectController>()) {
+            ammoDirect.reloadAmountMultiplier += 1f;
+            ammoDirect.moveSpeedReducer += 0.5f;
+            didApply = true;
+        }
+
         foreach (var engine in target.GetComponentsInChildren<EngineModule>()) {
             engine.extraEnginePower += 1;
             engine.extraSpeedAdd += trainSlowAmount;
-            var engineHP = target.GetHealthModule();
-            if (!engineHP.glassCart) {
-                engineHP.maxHealth += curEngineHpIncrease;
-                engineHP.currentHealth += curEngineHpIncrease;
-            }
 
             didApply = true;
         }
 
-        if (target.isCargo) {
-            if (!target.GetHealthModule().glassCart) {
-                target.GetHealthModule().maxHealth += curEngineHpIncrease;
-                target.GetHealthModule().currentHealth += curEngineHpIncrease;
-            }
-
+        
+        if (!target.GetHealthModule().glassCart) {
+            target.GetHealthModule().maxHealth += curEngineHpIncrease;
+            target.GetHealthModule().currentHealth += curEngineHpIncrease;
             didApply = true;
         }
+
         
         if (didApply) {
             GetComponent<Artifact>()._ApplyToTarget(target);

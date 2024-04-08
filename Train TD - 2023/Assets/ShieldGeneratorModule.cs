@@ -12,6 +12,10 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 	public float curRegenTimer = 0.5f;
 	public float regenSpeed = 50f;
 
+	public float regenMultiplier = 1f;
+	public float regenTimerReductionMultiplier = 1f;
+	public float regenTimerReductionDivider = 1f;
+
 	public List<GameObject> prefabToSpawnWhenShieldIsHit = new List<GameObject>();
 	public List<GameObject> prefabToSpawnWhenShieldIsDestroyed = new List<GameObject>();
 
@@ -20,6 +24,7 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 
 	private void Start() {
 		myHealth = GetComponentInParent<ModuleHealth>();
+		myHealth.myProtector = this;
 	}
 
 	public void SpawnGemEffect(ModuleHealth target) {
@@ -41,13 +46,13 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 	private void Update() {
 		if (currentShieldAmount > 0) {
 			if (curRegenTimer > 0) {
-				curRegenTimer -= Time.deltaTime;
+				curRegenTimer -= Time.deltaTime * regenTimerReductionMultiplier * (1/regenTimerReductionDivider);
 			} else {
-				currentShieldAmount += regenSpeed * Time.deltaTime;
+				currentShieldAmount += regenSpeed * Time.deltaTime * regenMultiplier;
 			}
 		} else {
 			if (curRegenTimer > 0) {
-				curRegenTimer -= Time.deltaTime;
+				curRegenTimer -= Time.deltaTime * regenTimerReductionMultiplier * (1/regenTimerReductionDivider);
 			} else {
 				myHealth.myProtector = this;
 				currentShieldAmount = currentMaxShieldAmount;
@@ -69,6 +74,8 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 			currentShieldAmount = 0;
 			curRegenTimer = 10;
 		}
+
+		SpawnGemEffect(myHealth);
 	}
 
 	public string GetInfoText() {
@@ -87,6 +94,10 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 		prefabToSpawnWhenShieldIsHit.Clear();
 		prefabToSpawnWhenShieldIsDestroyed.Clear();
 
+
+		regenMultiplier = 1;
+		regenTimerReductionMultiplier = 1;
+		regenTimerReductionDivider = 1;
 		//GetComponentInParent<Cart>().GetComponentInChildren<PhysicalShieldBar>().SetSize(GetRange());
 	}
 }

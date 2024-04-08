@@ -88,6 +88,10 @@ public class Train : MonoBehaviour {
     }
 
 
+    public void OnCartDestroyedOrRevived() {
+        onTrainCartsChanged?.Invoke();
+    }
+
     public void SaveTrainState(bool isInstant = false) {
         if (isInstant) {
             OneFrameLater();
@@ -692,7 +696,7 @@ public class Train : MonoBehaviour {
 
         if (saveData.myTrain == null || saveData.myTrain.myCarts.Count <= 3) {
             saveData.myTrain = minimumTrain;
-            saveData.myTrain.myCarts.Add(minimumTrainLastCarts[Random.Range(0, minimumTrainLastCarts.Count)]);
+            saveData.myTrain.myCarts.Insert(1, minimumTrainLastCarts[Random.Range(0, minimumTrainLastCarts.Count)]);
         }
     }
 

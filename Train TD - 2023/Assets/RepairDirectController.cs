@@ -136,8 +136,8 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			if (doRepair) {
 				curRepairTime += Time.deltaTime;
 
-				if (curRepairTime > repairTime) {
-					repairTarget.GetComponentInParent<ModuleHealth>().RepairChunk(repairTarget);
+				if (curRepairTime > repairTime * (myRepairController.repairRateIncreaseMultiplier)) {
+					myRepairController.DoRepair(repairTarget.GetComponentInParent<ModuleHealth>(), repairTarget);
 					
 					repairingSlider.value = 1;
 					
@@ -195,6 +195,8 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		verticalSpeed = Mathf.Clamp(verticalSpeed, -1, 1);
 
 		previousVelocity.y = verticalSpeed;
+
+		previousVelocity *= myRepairController.repairRateIncreaseMultiplier;
 
 		return previousVelocity;
 	}

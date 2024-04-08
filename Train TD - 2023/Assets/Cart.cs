@@ -73,6 +73,8 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
 
     public void SetDisabledState() {
         var isDisabled = isDestroyed || isBeingDisabled;
+        
+        Train.s.OnCartDestroyedOrRevived();
 
         if (isDisabled) {
             GetComponent<PossibleTarget>().avoid = true;

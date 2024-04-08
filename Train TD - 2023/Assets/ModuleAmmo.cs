@@ -49,7 +49,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public void UseAmmo(float usedAmount) {
         curAmmo -= usedAmount;
         
-        curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
+        curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo*2);
         UpdateModuleState();
         myAmmoBar.OnUse(curAmmo);
     }
@@ -71,7 +71,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
                     Instantiate(LevelReferences.s.reloadEffect_regular, transform);
 
                 curAmmo += amount;
-                curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
+                curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo*2);
 
                 UpdateModuleState();
                 
@@ -83,7 +83,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
     public void SetAmmo(int amount) {
         curAmmo = amount;
-        curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
+        curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo*2);
 
         UpdateModuleState();
         if(myAmmoBar != null)
@@ -93,7 +93,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public void ChangeMaxAmmo(float multiplierChange) {
         maxAmmoMultiplier += multiplierChange;
         if (PlayStateMaster.s.isCombatInProgress()) {
-            curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo);
+            curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo*2);
         } else { 
             curAmmo = maxAmmo;
         }

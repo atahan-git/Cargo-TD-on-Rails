@@ -43,17 +43,27 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
             didApply = true;
         }
 
-        foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {
-            roboRepair.firerateMultiplier += activeFireRateBoost;
+        foreach (var droneRepair in target.GetComponentsInChildren<DroneRepairController>()) {
+            droneRepair.repairRateIncreaseMultiplier += activeFireRateBoost;
             didApply = true;
         }
         
-        /*foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
-            var hp = target.GetHealthModule();
-            hp.shieldRegenDelayMultiplier += activeFireRateBoost;
-            hp.shieldRegenRateMultiplier += activeFireRateBoost;
+        foreach (var ammoDirect in target.GetComponentsInChildren<AmmoDirectController>()) {
+            ammoDirect.moveSpeedMultiplier += activeFireRateBoost;
             didApply = true;
-        }*/
+        }
+        
+        foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
+            shieldGenerator.regenMultiplier += activeFireRateBoost;
+            shieldGenerator.regenTimerReductionMultiplier += activeFireRateBoost;
+            didApply = true;
+        }
+        
+        foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
+            trainGemBridge.uranium = currentRadiation;
+            trainGemBridge.uraniumDelayReduction += curRadiationDelayReduction;
+            didApply = true;
+        }
         
         foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
             trainGemBridge.uranium = currentRadiation;

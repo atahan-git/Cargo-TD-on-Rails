@@ -44,8 +44,8 @@ public class TerrainGenerator : MonoBehaviour
         
         public float[,] distanceMap;
         public float[,] heightmap;
-        public int[,] detailmap0;
-        public int[,] detailmap1;
+        //public int[,] detailmap0;
+        //public int[,] detailmap1;
         
         public Terrain terrain;
         public bool needReDraw = true;
@@ -63,13 +63,13 @@ public class TerrainGenerator : MonoBehaviour
 
         public TreeInstance[] treeInstances;
 
-        public bool jobsInit = false;
-        public AddVector3ToList grass0Job;
-        public AddVector3ToList grass1Job;
-        public NativeArray<Matrix4x4> grassPositions0;
-        public NativeArray<Matrix4x4> grassPositions1;
+        //public bool jobsInit = false;
+        //public AddVector3ToList grass0Job;
+        //public AddVector3ToList grass1Job;
+        //public NativeArray<Matrix4x4> grassPositions0;
+        //public NativeArray<Matrix4x4> grassPositions1;
         public bool needReBatchingForGrass = false;
-        public bool hasAnyGrass = true;
+        public bool hasAnyGrass = false;
         
         [BurstCompile]
         public struct AddVector3ToList : IJobParallelFor
@@ -90,11 +90,11 @@ public class TerrainGenerator : MonoBehaviour
         //private JobHandle prevJob;
 
         public void InitJobs() {
-            if (!jobsInit) {
+            /*if (!jobsInit) {
                 grass0Job = new AddVector3ToList();
                 grass1Job = new AddVector3ToList();
                 jobsInit = true;
-            }
+            }*/
         }
 
         private bool jobsInProgress = false;
@@ -103,7 +103,7 @@ public class TerrainGenerator : MonoBehaviour
         public void AddToGrassPositions(Vector3 delta) {
             if (hasAnyGrass) {
                 InitJobs();
-                if (grassPositions0.IsCreated && grassPositions1.IsCreated) {
+                /*if (grassPositions0.IsCreated && grassPositions1.IsCreated) {
                     grass0Job.positions = grassPositions0;
                     grass0Job.toAdd = delta;
                     grass1Job.positions = grassPositions1;
@@ -114,12 +114,12 @@ public class TerrainGenerator : MonoBehaviour
                     handle0.Complete();
                     handle1.Complete();
                     jobsInProgress = false;
-                }
+                }*/
             }
         }
 
         public void DisposeNativeArray() {
-            if (jobsInit && jobsInProgress) {
+            /*if (jobsInit && jobsInProgress) {
                 if (!handle0.IsCompleted) {
                     handle0.Complete();
                 }
@@ -134,7 +134,7 @@ public class TerrainGenerator : MonoBehaviour
             }
             if (grassPositions1.IsCreated) {
                 grassPositions1.Dispose();
-            }
+            }*/
         }
 
         public float GetPos_X(int x, int y) {
@@ -320,8 +320,9 @@ public class TerrainGenerator : MonoBehaviour
             }
         }
 
+        // detailmap0 grass stuff
         System.Random random = new System.Random();
-        var grassList0 = new List<Matrix4x4>();
+        /*var grassList0 = new List<Matrix4x4>();
         var grassList1 = new List<Matrix4x4>();
         for (var y = 0; y < detailGridSize; y++)
         {
@@ -356,17 +357,6 @@ public class TerrainGenerator : MonoBehaviour
                         grassList1.Add(Matrix4x4.TRS(pos, Quaternion.Euler(0, NextFloat(random) * 360, 0), Vector3.one));
                     }
                 }
-
-                //information.detailmap0[x, y] = density0;
-                //information.detailmap1[x, y] = density1;
-                
-                //information.detailmap0[x, y] = GetGrassDensity(posX, posY, grassFrequency0, grassThreshold0, grassMaxDensity0, distance, incline);
-                //information.detailmap1[x, y] = GetGrassDensity(posX+500, posY+500, grassFrequency1, grassThreshold1, grassMaxDensity1,distance,incline);
-
-                //var realPos = information.GetRealPos(distanceX, distanceY);
-                //Debug.DrawLine(realPos, realPos+Vector3.up*distance, Color.yellow,10f);
-                //Debug.DrawLine(realPos, realPos + Vector3.up * incline*20, incline < maxGrassIncline ? Color.green : Color.red, 10f);
-                //Debug.DrawLine(realPos, realPos + Vector3.up * -20, incline > maxGrassIncline ? Color.green : Color.red, 10f);
             }
         }
 
@@ -381,7 +371,8 @@ public class TerrainGenerator : MonoBehaviour
             information.grassPositions1 = new NativeArray<Matrix4x4>(grassList1.ToArray(), Allocator.Persistent);
 
             information.needReBatchingForGrass = true;
-        }
+        }*/
+        information.hasAnyGrass = false;
 
         List<TreeInstance> treeInstances = new List<TreeInstance>();
         var maxRandomOffset = (1f / treeGridSize) / 2f;

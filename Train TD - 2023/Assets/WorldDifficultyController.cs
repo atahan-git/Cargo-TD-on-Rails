@@ -56,7 +56,6 @@ public class WorldDifficultyController : MonoBehaviour {
         if (PlayStateMaster.s.isCombatInProgress()) {
             var curCombatTime = GetMissionTime();
             var newLevel = Mathf.FloorToInt(curCombatTime / damageIncreaseInterval);
-            newLevel += 20;
 
             if (newLevel > curLevel) {
                 curLevel = newLevel;

@@ -35,8 +35,13 @@ public class Artifact_FireGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
             didApply = true;
         }
 
-        foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {
-            roboRepair.extraPrefabToSpawnOnAffected.Add(currentFireBurst);
+        foreach (var droneRepair in target.GetComponentsInChildren<DroneRepairController>()) {
+            droneRepair.extraPrefabToSpawnOnAffected.Add(currentFireBurst);
+            didApply = true;
+        }
+        
+        foreach (var ammoDirect in target.GetComponentsInChildren<AmmoDirectController>()) {
+            ammoDirect.prefabsToSpawnWhenCorrect.Add(currentFireBurst);
             didApply = true;
         }
         

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
-public class AmmoDirectController : MonoBehaviour, IDirectControllable {
+public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetState {
 
     
     private void Start() {
@@ -62,6 +62,15 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
 
     public bool healOnReload = false;
     public int curPerfectComboCount = 0;
+
+    public float moveSpeedMultiplier = 1f;
+    public float moveSpeedReducer = 1f;
+    public float reloadAmountMultiplier = 1f;
+
+
+    public List<GameObject> prefabsToSpawnWhenCorrect = new List<GameObject>();
+
+
     public void ActivateDirectControl() {
         var currentCameraForward = MainCameraReference.s.cam.transform.forward;
 
@@ -92,6 +101,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
         SetNewCurPos(true);
         SetDropPos(curPos);
 
+        needNewOnes = true;
         //myModuleAmmo.UseAmmo(10000);
     }
 
@@ -118,7 +128,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
                 ammoFull = neededAmmoCount <= 0;
                 ammo_full.SetActive(neededAmmoCount <= 0);
                 if(neededAmmoCount > 0){
-                    MakeNewOnes(curReloadCount); // this means sometimes we can "over-reload"
+                    MakeNewOnes(Mathf.CeilToInt(curReloadCount*reloadAmountMultiplier)); // this means sometimes we can "over-reload"
                 }
             }
         }
@@ -167,12 +177,12 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
                     NewOnePlacementSuccess();
                     myModuleAmmo.Reload(toReload);
 
-                    curDelay = nextBlockDelay;
+                    curDelay = nextBlockDelay*(1/moveSpeedMultiplier)*moveSpeedReducer;
                     SetNewCurPos(true);
                 } else {
                     NewOnePlacementFailed();
                     
-                    curDelay = nextBlockBadDelay;
+                    curDelay = nextBlockBadDelay*(1/moveSpeedMultiplier)*moveSpeedReducer;
                     SetNewCurPos(false);
                 }
 
@@ -194,13 +204,13 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
 
         if (!dropping && !needNewOnes) {
             if (moveForward) {
-                curPos += moveSpeed * Time.deltaTime;
+                curPos += moveSpeed * Time.deltaTime * moveSpeedMultiplier*(1/moveSpeedReducer);
                 if (curPos >= 1f) {
                     curPos = 1f;
                     moveForward = false;
                 }
             } else {
-                curPos -= moveSpeed * Time.deltaTime;
+                curPos -= moveSpeed * Time.deltaTime * moveSpeedMultiplier*(1/moveSpeedReducer);
                 if (curPos <= 0f) {
                     curPos = 0f;
                     moveForward = true;
@@ -318,7 +328,13 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
                 Train.s.carts[i].GetHealthModule().RepairChunk(curPerfectComboCount+1);
             }
         }
+
+        for (int i = 0; i < prefabsToSpawnWhenCorrect.Count; i++) {
+            Instantiate(prefabsToSpawnWhenCorrect[i], myHealth.GetUITransform());
+        }
     }
+
+    public GameObject failedSpawnEffect;
 
     void NewOnePlacementFailed() {
         for (int i = 0; i < newOnes.Count; i++) {
@@ -326,11 +342,17 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
             newOne.transform.SetParent(null);
             newOne.AddComponent<Rigidbody>();
             newOne.AddComponent<RubbleFollowFloor>();
-            newOne.GetComponent<Rigidbody>().velocity = Vector3.down*velocity;
+            newOne.GetComponent<Rigidbody>().velocity = Vector3.down * velocity;
             oldOnes.Add(newOne.GetComponent<Rigidbody>());
         }
+
         droppingAmmoChunks.Clear();
         newOnes.Clear();
+
+        if (failedSpawnEffect != null) {
+            myHealth.DealDamage(50, null);
+            VisualEffectsController.s.SmartInstantiate(failedSpawnEffect, myHealth.GetUITransform().position, Quaternion.identity);
+        }
     }
 
 
@@ -412,5 +434,12 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable {
 
     public GamepadControlsHelper.PossibleActions GetActionKey() {
         return GamepadControlsHelper.PossibleActions.reloadControl;
+    }
+
+    public void ResetState() {
+        moveSpeedMultiplier = 1;
+        moveSpeedReducer = 1;
+        reloadAmountMultiplier = 1;
+        prefabsToSpawnWhenCorrect.Clear();
     }
 }

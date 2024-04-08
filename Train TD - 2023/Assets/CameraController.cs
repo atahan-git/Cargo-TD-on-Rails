@@ -238,6 +238,9 @@ public class CameraController : MonoBehaviour {
         var curTargetVelocityLocation = Vector3.zero;
         bool hasTarget = false;
 
+        if(allTargets.Length != allTargetsReal.Count)
+            return;
+        
         for (int i = 0; i < allTargets.Length; i++) {
             if(allTargets[i].type != PossibleTarget.Type.enemy)
                 continue;

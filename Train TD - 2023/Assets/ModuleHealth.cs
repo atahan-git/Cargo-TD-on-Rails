@@ -586,6 +586,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     public void RepairChunk(RepairableBurnEffect toRepair) {
         if (invincible)
             return;
+        
         maxHealthReduction += maxHealthReductionChunkSize;
         
         if (toRepair.canRepair) {
@@ -599,14 +600,21 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         
         Repair(repairChunkSize, false);
     }
-    
+
+    [Button]
     public void RepairChunk() {
         if (invincible)
             return;
+
+        if (currentHealth+repairChunkSize > maxHealth) {
+            return;
+        }
+        
+        
         maxHealthReduction += maxHealthReductionChunkSize;
         Repair(repairChunkSize, false);
     }
-    
+
     public void RepairChunk(int count) {
         for (int i = 0; i < count; i++) {
             RepairChunk();

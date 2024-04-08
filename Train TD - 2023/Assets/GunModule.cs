@@ -112,6 +112,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             burnBulletAddonDamage = projectileDamage * regularToBurnDamageConversionMultiplier;
         } else {
             burnBulletAddonDamage = burnDamage * regularToBurnDamageConversionMultiplier;
+            burnBulletAddonDamage += burnDamage * regularToRangeConversionMultiplier;
         }
 
         if (dontGetAffectByMultipliers) {

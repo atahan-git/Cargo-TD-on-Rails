@@ -5,7 +5,7 @@ using HighlightPlus;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
+public class PossibleTarget : MonoBehaviour {
     [HideInInspector]
     public int myId;
     
@@ -54,14 +54,6 @@ public class PossibleTarget : MonoBehaviour, IActiveDuringCombat {
         return GetComponent<IHealth>().GetHealthPercent();
     }
 
-    public void ActivateForCombat() {
-        this.enabled = true;
-    }
-
-    public void Disable() {
-        this.enabled = false;
-    }
-    
     Vector3 previous;
     public Vector3 velocity = Vector3.zero;
 

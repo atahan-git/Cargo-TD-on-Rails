@@ -562,18 +562,20 @@ public class Projectile : MonoBehaviour {
                     target.RepairChunk();
                 }
             } else {
-                if (dmg > 1) {
+                if (dmg > 0) {
                     target.DealDamage(dmg, transform.position);
-                    VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                        .GetComponent<MiniGUI_DamageNumber>()
-                        .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
+                    if(dmg > 1)
+                        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                            .GetComponent<MiniGUI_DamageNumber>()
+                            .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
                 }
 
-                if (burnDamage > 1) {
+                if (burnDamage > 0) {
                     target.BurnDamage(burnDamage);
-                    VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                        .GetComponent<MiniGUI_DamageNumber>()
-                        .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);
+                    /*if(burnDamage > 1)
+                        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                            .GetComponent<MiniGUI_DamageNumber>()
+                            .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);*/
                 }
             }
 

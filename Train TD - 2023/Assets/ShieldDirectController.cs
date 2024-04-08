@@ -16,9 +16,9 @@ public class ShieldDirectController : MonoBehaviour, IDirectControllable
 	public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
 
 	public void ActivateDirectControl() {
-		CameraController.s.ActivateDirectControl(GetComponentInChildren<DirectControlCameraPosition>().transform, true);
+		//CameraController.s.ActivateDirectControl(GetComponentInChildren<DirectControlCameraPosition>().transform, true);
 
-		DirectControlMaster.s.repairControlUI.SetActive(true);
+		DirectControlMaster.s.shieldMoveUI.SetActive(true);
 
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.repairDroneMove);
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
@@ -27,11 +27,11 @@ public class ShieldDirectController : MonoBehaviour, IDirectControllable
 	}
 
 	public void DisableDirectControl() {
-		CameraController.s.DisableDirectControl();
+		//CameraController.s.DisableDirectControl();
 
 		//CameraShakeController.s.rotationalShake = false;
 		
-		DirectControlMaster.s.repairControlUI.SetActive(false);
+		DirectControlMaster.s.shieldMoveUI.SetActive(false);
 		
 		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repairDroneMove);
 		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
@@ -49,12 +49,21 @@ public class ShieldDirectController : MonoBehaviour, IDirectControllable
 			return;
 		}
 
+		var mainCam = MainCameraReference.s.cam.transform;
+
 		var move = moveAction.action.ReadValue<Vector2>();
 
-		var rightAmount = move.x + move.y;
-		rightAmount = Mathf.Clamp(rightAmount, -1, 1);
+		var actualMove = -mainCam.forward * move.x + mainCam.right * move.y;
+		actualMove.y = 0;
+
+		var rightAmount = actualMove.x + actualMove.z;
+		if (rightAmount > 0) {
+			rightAmount = 1;
+		}else if (rightAmount < 0) {
+			rightAmount = -1;
+		}
 		
-		physicalShield.transform.position += Vector3.forward*rightAmount*Time.deltaTime;
+		physicalShield.transform.localPosition += Vector3.forward*rightAmount*Time.deltaTime;
 	}
 	
 	public Color GetHighlightColor() {

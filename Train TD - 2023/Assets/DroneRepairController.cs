@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public class DroneRepairController : MonoBehaviour {
+public class DroneRepairController : MonoBehaviour, IResetState {
 
     public Transform droneDockedPosition;
     public GameObject drone;
@@ -58,7 +58,12 @@ public class DroneRepairController : MonoBehaviour {
     public IPlayerHoldable myCarry;
 
     public float autoRepairTime = 2f;
+    public float repairRateIncreaseMultiplier = 1;
+    public float repairRateIncreaseReducer = 1;
+    public int additionalRepairs = 0;
 
+    
+    public List<GameObject> extraPrefabToSpawnOnAffected = new List<GameObject>();
     private void LateUpdate() {
         var moveSpeed = 1f;
         var rotateSpeed = 120;
@@ -180,7 +185,7 @@ public class DroneRepairController : MonoBehaviour {
 
 
                         if (repairTimer >= autoRepairTime) {
-                            health.RepairChunk(target);
+                            DoRepair(health, target);
                             TryGetNewTarget();
 
                             repairTimer = 0;
@@ -192,6 +197,37 @@ public class DroneRepairController : MonoBehaviour {
                 }
             }
         }
+    }
+
+
+
+    public void DoRepair(ModuleHealth targetHealth, RepairableBurnEffect chunk) {
+        targetHealth.RepairChunk(chunk);
+        for (int i = 0; i < additionalRepairs; i++) {
+            targetHealth.RepairChunk();
+        }
+        
+        SpawnGemEffect(targetHealth);
+    }
+    
+    void SpawnGemEffect(ModuleHealth targetHealth) {
+        StartCoroutine(_SpawnGemEffect(targetHealth));
+    }
+
+    IEnumerator _SpawnGemEffect(ModuleHealth targetHealth) {
+        foreach (var prefab in extraPrefabToSpawnOnAffected) {
+            if (targetHealth == null) {
+                yield break;
+            }
+            
+            Instantiate(prefab, targetHealth.GetUITransform());
+
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    float GetRepairTime() {
+        return autoRepairTime * (1 / repairRateIncreaseMultiplier)*repairRateIncreaseReducer;
     }
 
 
@@ -297,5 +333,11 @@ public class DroneRepairController : MonoBehaviour {
         // Check the sign of the y-component of the resulting vector
         // Assuming y-axis is the "up" direction
         return crossProduct.y > 0f;
+    }
+
+    public void ResetState() {
+        repairRateIncreaseMultiplier = 1;
+        repairRateIncreaseReducer = 1;
+        additionalRepairs = 0;
     }
 }

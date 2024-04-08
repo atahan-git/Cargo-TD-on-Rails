@@ -109,7 +109,6 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask gateMask;
     public LayerMask artifactLayer;
     public LayerMask meepleLayer;
-    public LayerMask mergeItemLayer;
     public LayerMask scrapsItemLayer;
 
     [Space]

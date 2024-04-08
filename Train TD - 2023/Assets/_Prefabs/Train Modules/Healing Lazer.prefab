@@ -568,7 +568,7 @@ MonoBehaviour:
   myHealth: {fileID: 0}
   myAmmo: {fileID: 0}
   curCooldown: 0
-  needAmmo: 1
+  needAmmo: 0
   isSniper: 0
   sniperMultiplier: 0
   sniperMultiplierGain: 0.2
@@ -1499,6 +1499,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 382378970085671411}
     m_Modifications:
+    - target: {fileID: 2934280374143819819, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
+      propertyPath: fireDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2934280374143819819, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
+      propertyPath: bulletPrefab
+      value: 
+      objectReference: {fileID: 4908573584345181807, guid: 6edc249ca454f5d4ba1eeb0234f5b199, type: 3}
+    - target: {fileID: 2934280374143819819, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
+      propertyPath: projectileDamage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2934280374143819819, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
+      propertyPath: useProviderBullet
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3146471024428373951, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
       propertyPath: m_Name
       value: Heal Lazer
@@ -1554,6 +1570,10 @@ PrefabInstance:
     - target: {fileID: 7371494607064308679, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
       propertyPath: checkForHealing
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8632958588802063433, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
+      propertyPath: laserLayerMask.m_Bits
+      value: 59392
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56f41eb9474ab0344a12cc52dcca99b7, type: 3}
