@@ -41,7 +41,7 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i].GetHealthModule();
             if (!cart.invincible) {
-                maxHealth += cart.maxHealth;
+                maxHealth += cart.GetMaxHealth(false);
                 maxHealthReduction += cart.maxHealthReduction;
                 health += cart.currentHealth;
             }
@@ -51,12 +51,11 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
 
         var maxSize = GetComponent<RectTransform>().rect.width;
         var idealSize = maxHealth / 7000 * maxSize;
-        if (idealSize > maxSize * 0.8f) {
+        if (idealSize > maxSize) {
             var excess = idealSize - maxSize;
             excess = Mathf.Log(excess + 1);
             idealSize = maxSize + excess;
         }
-
 
         idealSize = Mathf.Clamp(idealSize, 0, 1000);
 
@@ -155,21 +154,5 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
         }
 
         return color;
-    }
-
-    [Button]
-    public void DebugSetHP(float hp) {
-        var percent = hp;
-        var totalLength = -mainRect.rect.x*2;
-        print(totalLength);
-        
-        healthBar.SetRight(totalLength*(1-percent));
-    }
-    
-    [Button]
-    public void DebugSetMaxHP(float maxHp) {
-        var totalLength = mainRect.sizeDelta.x;
-
-        healthFill.material.SetFloat(Tiling, lerpHealth/100f);
     }
 }

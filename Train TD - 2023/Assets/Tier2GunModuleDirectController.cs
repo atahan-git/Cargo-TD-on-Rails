@@ -21,7 +21,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 	public AmmoTracker myAmmo;
 	private GunModule myGun;
 
-	public InputActionReference directControlShootAction => DirectControlMaster.s.directControlShootAction;
+	public InputActionReference ShootAction => DirectControlMaster.s.shootAction;
 	public GameObject exitToReload => DirectControlMaster.s.exitToReload;
 	public float curCooldown;
 	
@@ -48,7 +48,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 	public GameObject isSticky => DirectControlMaster.s.isSticky;
 	public void ActivateDirectControl() {
 		CameraController.s.ActivateDirectControl(myGun.GetComponentInChildren<DirectControlCameraPosition>().transform, true);
-		gatlinificationSlider.gameObject.SetActive(myGun.isGigaGatling || myGun.gatlinificator);
+		gatlinificationSlider.gameObject.SetActive(myGun.isGigaGatling || myGun.currentAffectors.gatlinificator);
 		gatlinificationSlider.value = myGun.gatlingAmount;
 
 		needAmmo = myGun.ammoPerBarrage > 0;
@@ -85,7 +85,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shoot);
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
 		
-		isSniper = myGun.isHoming;
+		isSniper = myGun.currentAffectors.isHoming;
 		
 		SetGunDirectControlStatus(myGun, true);
 		if (isSniper) {
@@ -132,7 +132,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 			gunModule.DeactivateGun();
 			gunModule.beingDirectControlled = true;
 			if (isSniper) {
-				gunModule.sniperDamageMultiplier = sniperMultiplier;
+				gunModule.currentAffectors.sniperDamageMultiplier = sniperMultiplier;
 			}
 
 			gunModule.directControlDamageMultiplier = DirectControlMaster.s.directControlDamageMultiplier;
@@ -141,7 +141,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 		} else {
 			gunModule.beingDirectControlled = false;
 			gunModule.gatlingAmount = 0;
-			gunModule.sniperDamageMultiplier = 1;
+			gunModule.currentAffectors.sniperDamageMultiplier = 1;
 			
 			gunModule.directControlDamageMultiplier = 1;
 			gunModule.directControlFirerateMultiplier = 1;
@@ -266,13 +266,13 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 		//if (hasAmmo) {
 		switch (currentMode) {
 			case DirectControlMaster.GunMode.Gun:
-				if (curCooldown >= myGun.GetFireDelay() && directControlShootAction.action.IsPressed() && !enterDirectControlShootLock) {
+				if (curCooldown >= myGun.GetFireDelay() && ShootAction.action.IsPressed() && !enterDirectControlShootLock) {
 					ApplyBulletTypes();
 					myGun.ShootBarrage(false, OnShoot, OnHit, OnMiss);
 					curCooldown = 0;
 				}
 
-				if (directControlShootAction.action.IsPressed() && !enterDirectControlShootLock) {
+				if (ShootAction.action.IsPressed() && !enterDirectControlShootLock) {
 					myGun.gatlingAmount += Time.deltaTime;
 					myGun.gatlingAmount = Mathf.Clamp(myGun.gatlingAmount, 0, myGun.maxGatlingAmount);
 				} else {
@@ -283,7 +283,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 				break;
 			case DirectControlMaster.GunMode.LockOn:
 				if ((curRocketLockInTime >= rocketLockOnTime && hasTarget)) {
-					if (curCooldown >= myGun.GetFireDelay() && directControlShootAction.action.IsPressed() && !enterDirectControlShootLock) {
+					if (curCooldown >= myGun.GetFireDelay() && ShootAction.action.IsPressed() && !enterDirectControlShootLock) {
 						ApplyBulletTypes();
 						myGun.ShootBarrage(false, OnShoot, OnHit, OnMiss);
 						curCooldown = 0;
@@ -405,7 +405,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 		if (isSniper) {
 			sniperMultiplier += sniperMultiplierGain;
 			sniperMultiplier = Mathf.Clamp(sniperMultiplier, 0, sniperMaxMultiplier);
-			myGun.sniperDamageMultiplier = 1+sniperMultiplier;
+			myGun.currentAffectors.sniperDamageMultiplier = 1+sniperMultiplier;
 			sniperAmount.text = $"Smart Bullets:\n+{sniperMultiplier*100:F0}%";
 		}
 	}
@@ -414,7 +414,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 		if (isSniper) {
 			sniperMultiplier *= sniperMultiplierLoss;
 			sniperMultiplier = Mathf.Clamp(sniperMultiplier, 0, sniperMaxMultiplier);
-			myGun.sniperDamageMultiplier = 1+sniperMultiplier;
+			myGun.currentAffectors.sniperDamageMultiplier = 1+sniperMultiplier;
 			sniperAmount.text = $"Smart Bullets:\n+{sniperMultiplier*100:F0}%";
 		}
 	}

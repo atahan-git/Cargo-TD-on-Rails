@@ -83,21 +83,4 @@ public class MiniGUI_EnemyUIBar : MonoBehaviour{
 
         return color;
     }
-
-    [Button]
-    public void DebugSetHP(float hp) {
-        var percent = hp;
-        var totalLength = mainRect.sizeDelta.x;
-        print(totalLength);
-        
-        healthBar.SetRight(totalLength*(1-percent));
-        healthBar.GetComponent<Image>().color = GetHealthColor(percent);
-    }
-    
-    [Button]
-    public void DebugSetMaxHP(float maxHp) {
-        var totalLength = mainRect.sizeDelta.x;
-
-        healthFill.pixelsPerUnitMultiplier = maxHp.Remap(0, 100, 0, 4.61f) * (1/(totalLength / 55.53f));
-    }
 }

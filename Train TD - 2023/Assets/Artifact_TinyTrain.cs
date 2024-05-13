@@ -1,23 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_TinyTrain : ActivateWhenOnArtifactRow
+public class Artifact_TinyTrain : MonoBehaviour, IChangeStateToEntireTrain
 {
 
-    protected override void _Arm() {
-        for (int i = 0; i <Train.s.carts.Count; i++) {
-            ApplyBoost(Train.s.carts[i]);
+    public void ChangeStateToEntireTrain(List<Cart> carts) {
+        for (int i = 0; i < carts.Count; i++) {
+            ApplyBoost(carts[i]);
         }
     }
-
+    
     void ApplyBoost(Cart target) {
         if(target == null)
             return;
-        
-        
-        
-        foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
+
+        /*foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
             gunModule.damageMultiplier += 0.1f;
         }
 
@@ -35,10 +34,9 @@ public class Artifact_TinyTrain : ActivateWhenOnArtifactRow
         if (!target.GetHealthModule().glassCart) {
             target.GetHealthModule().maxHealth *= 1.3f;
             target.GetHealthModule().currentHealth *= 1.3f;
-        }
+        }*/
     }
 
-    protected override void _Disarm() {
-        // do nothing
-    }
+
+   
 }

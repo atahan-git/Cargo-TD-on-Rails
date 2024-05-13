@@ -10,20 +10,22 @@ public class PulseAlpha : MonoBehaviour {
     public float speed = 1f;
 
     private float curTime = 0;
-    private Image _image;
     private Color _color;
+    private Image _image;
     private TMP_Text _text;
+    private SpriteRenderer _sprite;
 
-    private bool isImage;
     private void Start() {
         _image = GetComponent<Image>();
-        isImage = _image != null;
-        if (isImage) {
+        _text = GetComponent<TMP_Text>();
+        _sprite = GetComponent<SpriteRenderer>();
+
+        if (_image)
             _color = _image.color;
-        } else {
-            _text = GetComponent<TMP_Text>();
+        if (_text)
             _color = _text.color;
-        }
+        if (_sprite)
+            _color = _sprite.color;
     }
 
 
@@ -31,10 +33,12 @@ public class PulseAlpha : MonoBehaviour {
     void Update() {
         _color.a = LevelReferences.s.alphaPulseCurve.Evaluate(curTime);
         curTime += Time.deltaTime * speed;
-        if (isImage) {
+        
+        if (_image)
             _image.color = _color;
-        } else {
+        if (_text)
             _text.color = _color;
-        }
+        if (_sprite)
+            _sprite.color = _color;
     }
 }

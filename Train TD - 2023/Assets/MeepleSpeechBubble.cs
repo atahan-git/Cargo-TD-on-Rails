@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -39,15 +40,15 @@ public class MeepleSpeechBubble : MonoBehaviour {
 
 	public bool isDone = false;
 	IEnumerator ShowSpeech() {
-		while (curIndex < textTarget.Length-1) {
-			curIndex += 1;
-			if (textTarget[curIndex] == '<') {
-				while (textTarget[curIndex] != '>') {
-					curIndex += 1;
-				}
-			}
+		visualText.maxVisibleCharacters = textTarget.Length;
+		visualText.text = textTarget;
+		visualText.ForceMeshUpdate();
+		var parsedText = visualText.GetParsedText();
+		var pauseChars =new []{'.','?','!',','};
+		visualText.maxVisibleCharacters = 0;
+		while (curIndex < parsedText.Length) {
 
-			visualText.text = textTarget.Substring(0, curIndex + 1);
+			visualText.maxVisibleCharacters = curIndex+1;
 
 			soundCounter += 1;
 			if (soundCounter >= soundPerChar) {
@@ -55,20 +56,31 @@ public class MeepleSpeechBubble : MonoBehaviour {
 				soundCounter = 0;
 			}
 
-			if (textTarget[curIndex] == '.' || textTarget[curIndex] == '?' || textTarget[curIndex] == '!' || textTarget[curIndex] == ',') {
+
+			var curChar = parsedText[curIndex];
+			if (pauseChars.Contains(curChar)) {
 				yield return new WaitForSeconds(speakSpeed*16);
 			} else {
 				yield return new WaitForSeconds(speakSpeed);
 			}
+			
+			curIndex += 1;
 		}
-
 		isDone = true;
+		
+		yield return new WaitForSeconds(visualText.GetParsedText().Length/15f);
+		Destroy(gameObject);
 	}
 
 	public void InstantComplete() {
 		StopAllCoroutines();
-
 		visualText.text = textTarget;
+		visualText.maxVisibleCharacters = textTarget.Length;
 		isDone = true;
+		Invoke(nameof(DestroySelf), visualText.GetParsedText().Length/15f);
+	}
+
+	void DestroySelf() {
+		Destroy(gameObject);
 	}
 }

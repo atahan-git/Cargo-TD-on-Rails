@@ -2,94 +2,61 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_IronGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IApplyToEnemyWithGem
-{
-    
-    //[Space]
-    public float baseDamageMultiplier = 1.5f;
-    public float damageMultiplierIncreasePerLevel = 1f;
-    public float curDamageMultiplier = 1.5f;
-    public float baseFirerateReduction = -0.5f;
-    
-    public float baseEngineHpIncrease = 500f;
-    public float engineHpIncreasePerLevel = 500f;
-    public float curEngineHpIncrease = 500f;
-    public float trainSlowAmount = -0.1f;
-    protected override void _Arm() {
-        var range = GetComponent<Artifact>().range;
-        ApplyBoost(Train.s.GetNextBuilding(0, GetComponentInParent<Cart>()));
-        for (int i = 1; i < range+1; i++) {
-            ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-            ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
-        }
-    }
+public class Artifact_IronGem : MonoBehaviour, IChangeCartState, IArtifactDescription {
 
-    void ApplyBoost(Cart target) {
-        if(target == null)
-            return;
-        
-        bool didApply = false;
-        
+    public string currentDescription;
+    public void ChangeState(Cart target) {
+        var didApply = false;
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
-            gunModule.damageMultiplier += curDamageMultiplier;
-            gunModule.fireRateDivider += baseFirerateReduction;
+            gunModule.currentAffectors.damageMultiplier += 1.5f;
+            gunModule.currentAffectors.fireRateDivider += 1;
+            currentDescription = "Increases damage but reduces firerate";
             didApply = true;
         }
 
         foreach (var droneRepair in target.GetComponentsInChildren<DroneRepairController>()) {
-            droneRepair.repairRateIncreaseReducer += 0.25f;
-            droneRepair.additionalRepairs += 1;
+            if (droneRepair.currentAffectors.megaRepair == 0) {
+                currentDescription = "Repairing is a lot slower, but repairs the entire cart";
+                
+                droneRepair.currentAffectors.directControlRepairTime += 5f; 
+            } else {
+                currentDescription = "Repairing is even slower, but repairs nearby carts";
+                droneRepair.currentAffectors.directControlRepairTime += 2.5f; 
+            }
+
+            droneRepair.currentAffectors.repairRateIncreaseReducer += 3;
+            droneRepair.currentAffectors.megaRepair +=1;
+            droneRepair.currentAffectors.droneAccelerationReducer += 0.5f;
+            droneRepair.currentAffectors.droneSizeMultiplier += 0.5f;
+            foreach (var drone in droneRepair.GetComponentsInChildren<RepairDrone>()) {
+                drone.transform.localScale = Vector3.one * ((droneRepair.currentAffectors.megaRepair/2f)+1);
+            }
             didApply = true;
         }
         
         foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
-            shieldGenerator.regenTimerReductionDivider += 0.25f;
-            shieldGenerator.currentMaxShieldAmount *= 1.5f;
+            shieldGenerator.currentAffectors.regenTimerReductionDivider += 0.25f;
+            shieldGenerator.currentAffectors.currentMaxShieldAmount *= 1.5f;
+            shieldGenerator.currentAffectors.shieldCoverage += 1;
+            shieldGenerator.currentAffectors.shieldMoveSpeedReducer += 0.25f;
+            currentDescription = "Increases shields but increases pause before regen";
             didApply = true;
         }
         
         foreach (var ammoDirect in target.GetComponentsInChildren<AmmoDirectController>()) {
-            ammoDirect.reloadAmountMultiplier += 1f;
-            ammoDirect.moveSpeedReducer += 0.5f;
+            ammoDirect.currentAffectors.reloadAmountMultiplier += 3f;
+            ammoDirect.currentAffectors.moveSpeedReducer += 2;
+            currentDescription = "Increases reload amount, but reduces move speed";
             didApply = true;
         }
 
-        foreach (var engine in target.GetComponentsInChildren<EngineModule>()) {
-            engine.extraEnginePower += 1;
-            engine.extraSpeedAdd += trainSlowAmount;
-
-            didApply = true;
+        if (!didApply) {
+            currentDescription = "Cannot affect this cart yet";
         }
-
-        
-        if (!target.GetHealthModule().glassCart) {
-            target.GetHealthModule().maxHealth += curEngineHpIncrease;
-            target.GetHealthModule().currentHealth += curEngineHpIncrease;
-            didApply = true;
-        }
-
-        
-        if (didApply) {
-            GetComponent<Artifact>()._ApplyToTarget(target);
-        }
+        GetComponent<Artifact>().cantAffectOverlay.SetActive(!didApply);
     }
 
-    protected override void _Disarm() {
-        // do nothing
-    }
-
-    public void ResetState(int level) {
-        curDamageMultiplier = baseDamageMultiplier + (damageMultiplierIncreasePerLevel * level);
-        curEngineHpIncrease = baseEngineHpIncrease + (engineHpIncreasePerLevel * level);
-    }
-
-    /*public string GetInfoText() {
-        return "When leveled up slows down enemies more and shots more ice shards";
-    }*/
-    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
-        foreach (var gunModule in enemy.GetComponentsInChildren<GunModule>()) {
-            gunModule.damageMultiplier += curDamageMultiplier;
-            gunModule.fireRateDivider += baseFirerateReduction;
-        }
+    public string GetDescription() {
+        return currentDescription;
     }
 }

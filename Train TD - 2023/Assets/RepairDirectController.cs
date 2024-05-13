@@ -18,7 +18,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	public ModuleHealth myHealth;
 	private DroneRepairController myRepairController;
 
-	public InputActionReference directControlShootAction => DirectControlMaster.s.directControlShootAction;
+	public InputActionReference shootAction => DirectControlMaster.s.shootAction;
 	public InputActionReference moveAction => DirectControlMaster.s.moveAction;
 	public InputActionReference flyUpAction => DirectControlMaster.s.flyUpAction;
 	public InputActionReference flyDownAction => DirectControlMaster.s.flyDownAction;
@@ -83,6 +83,8 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		if (isDirectControl) {
 			repairController.DisableAutoDrone();
 			repairController.beingDirectControlled = true;
+			
+			repairController.StopHoldingThing();
 		} else {
 			repairController.beingDirectControlled = false;
 			repairController.ActivateAutoDrone();
@@ -104,7 +106,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		RepairableBurnEffect repairTarget = null;
 		var validTarget = false;
 
-		if (Physics.Raycast(ray,  out hit, 0.75f, repairLookMask)) {
+		if (Physics.SphereCast(ray, 0.1f, out hit, 0.5f, repairLookMask)) {
 			repairTarget = hit.collider.GetComponentInParent<RepairableBurnEffect>();
 			
 			//print(hit.collider.gameObject.name);
@@ -128,15 +130,21 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 		drone.transform.position += currentFlightVelocity * Time.unscaledDeltaTime;
 
-		var doRepair = directControlShootAction.action.IsPressed() && !enterDirectControlShootLock;
+		var doRepair = shootAction.action.IsPressed() && !enterDirectControlShootLock;
 		
 		drone.GetComponent<RepairDrone>().SetCurrentlyRepairingState(doRepair && validTarget);
+
+		repairTime = myRepairController.currentAffectors.directControlRepairTime * TweakablesMaster.s.myTweakables.directRepairTimeMultiplier;
+		if (repairTime < 0) {
+			repairTime = 0.1f;
+		}
 
 		if (validTarget) {
 			if (doRepair) {
 				curRepairTime += Time.deltaTime;
 
-				if (curRepairTime > repairTime * (myRepairController.repairRateIncreaseMultiplier)) {
+				
+				if (curRepairTime > repairTime) {
 					myRepairController.DoRepair(repairTarget.GetComponentInParent<ModuleHealth>(), repairTarget);
 					
 					repairingSlider.value = 1;
@@ -151,7 +159,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			curRepairTime -= Time.deltaTime;
 		}
 
-		repairTime = 0.7f;
 		curRepairTime = Mathf.Clamp(curRepairTime, 0, repairTime);
 
 		//print($"{validTarget} - {doRepair} - {curRepairTime}");
@@ -174,7 +181,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		Vector3 moveDirection = (forward * wasdInput.y + right * wasdInput.x).normalized;
 
 		// Calculate the horizontal velocity change
-		Vector3 horizontalVelocityChange = moveDirection  * 10;
+		Vector3 horizontalVelocityChange = moveDirection  * 10 * myRepairController.currentAffectors.droneAccelerationIncreaser/myRepairController.currentAffectors.droneAccelerationReducer;
 
 		// Calculate the vertical velocity change
 		float verticalVelocityChange = ((upInput ? 1:0) - (downInput ? 1:0)) * 10;
@@ -195,8 +202,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		verticalSpeed = Mathf.Clamp(verticalSpeed, -1, 1);
 
 		previousVelocity.y = verticalSpeed;
-
-		previousVelocity *= myRepairController.repairRateIncreaseMultiplier;
 
 		return previousVelocity;
 	}
@@ -270,6 +275,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	}
 
 	public GamepadControlsHelper.PossibleActions GetActionKey() {
-		return GamepadControlsHelper.PossibleActions.gunControl;
+		return GamepadControlsHelper.PossibleActions.repairControl;
 	}
 }

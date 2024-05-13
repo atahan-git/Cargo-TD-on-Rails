@@ -253,8 +253,8 @@ MonoBehaviour:
   isMainEngine: 0
   isCargo: 0
   myArtifactLocations:
-  - {fileID: 2680829266848064564}
   - {fileID: 8262999941092494932}
+  - {fileID: 2680829266848064564}
   isBeingDisabled: 0
   trainIndex: 0
   cartPosOffset: 0
@@ -306,6 +306,8 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   invincible: 0
   mainCollider: {fileID: 2305579421082905276}
+  cartUIBar: {fileID: 0}
+  myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0
@@ -614,6 +616,15 @@ MonoBehaviour:
   carryDraggableMode: 0
   caughtCarry: 0
   catchPosition: {x: 0, y: 0, z: 0}
+  autoRepairTime: 2
+  currentAffectors:
+    directControlRepairTime: 0.7
+    repairRateIncreaseMultiplier: 1
+    repairRateIncreaseReducer: 1
+    droneAccelerationReducer: 1
+    droneAccelerationIncreaser: 1
+    megaRepair: 0
+    droneSizeMultiplier: 1
   curVelocity: 0
 --- !u!114 &4864364574015463401
 MonoBehaviour:
@@ -673,7 +684,7 @@ GameObject:
   - component: {fileID: 4365499526036679769}
   - component: {fileID: 4365499526036679768}
   - component: {fileID: 4365499526036679771}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: vfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5509,7 +5520,7 @@ GameObject:
   - component: {fileID: 4365499526222109357}
   - component: {fileID: 4365499526222109363}
   - component: {fileID: 4365499526222109362}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: Glow(Explosion)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10333,7 +10344,7 @@ GameObject:
   - component: {fileID: 4365499526278522763}
   - component: {fileID: 4365499526278522761}
   - component: {fileID: 4365499526278522760}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15216,7 +15227,7 @@ GameObject:
   - component: {fileID: 4365499526614238861}
   - component: {fileID: 4365499526614238860}
   - component: {fileID: 5362860462089370601}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15331,7 +15342,7 @@ GameObject:
   - component: {fileID: 1312482128652931207}
   - component: {fileID: 1570034572473721395}
   - component: {fileID: 3823174665735403284}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: repair_module_emissive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15414,7 +15425,7 @@ GameObject:
   - component: {fileID: 3292284962242482452}
   - component: {fileID: 4389926104431120941}
   - component: {fileID: 6165545909573999233}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15532,7 +15543,7 @@ GameObject:
   - component: {fileID: 9136591880409181771}
   - component: {fileID: 914531934632981860}
   - component: {fileID: 2778785874617785782}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: repair_module_head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15628,7 +15639,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1713793516074015502}
   - component: {fileID: 491213528433604163}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: Direct Control Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15702,7 +15713,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 776829960464398683}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: Train Hit Dust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15735,7 +15746,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5429719343533948166}
   - component: {fileID: 1668946737267550285}
-  m_Layer: 11
+  m_Layer: 26
   m_Name: Repair Drone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

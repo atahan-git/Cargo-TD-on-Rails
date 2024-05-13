@@ -18,7 +18,7 @@ public class GamepadControlsHelper : MonoBehaviour {
     
     public enum PossibleActions {
         move=0, reloadControl=1, repairControl=2, gunControl=3, openMap=4, pause=5, fastForward=6, showDetails=7, shoot=8, exitDirectControl=9, flipCamera=10, cutsceneSkip=11, clickGate=12, changeTrack=13, engineControl=14,
-        encounterButtons=15, shieldControl=19, moveHoldGamepad=20, repairDroneMove=21, repairDroneUp=22, repairDroneDown=23, engineControlSwitch=24
+        encounterButtons=15, shieldControl=19, repairDroneMove=21, repairDroneUp=22, repairDroneDown=23, engineControlSwitch=24, cycleSelectedItem=25, directControlActivate=26
     }
 
     public GameObject gamepadSelector;
@@ -124,6 +124,10 @@ public class GamepadControlsHelper : MonoBehaviour {
 
     public Ray GetRay() {
         return new Ray(gamepadSelector.transform.position + Vector3.up * 3, Vector3.down);
+    }
+    
+    public Vector3 GetRayOrigin() {
+        return gamepadSelector.transform.position + Vector3.up * 3;
     }
 
     public Vector3 GetTooltipPosition() {

@@ -197,9 +197,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunUniqueName: unset unique name
   gunSprite: {fileID: 21300000, guid: 8445c017ed6362a4381194ee86773dda, type: 3}
   isGigaGatling: 0
-  gatlinificator: 0
   maxFireRateReduction: 0.9
   gatlingAmount: 0
   maxGatlingAmount: 4
@@ -222,30 +222,34 @@ MonoBehaviour:
   fireDelay: 8
   fireBarrageCount: 1
   fireBarrageDelay: 0.2
-  fireRateMultiplier: 1
-  fireRateDivider: 1
-  projectileDamage: 125
+  projectileDamage: 100
   burnDamage: 0
-  bonusBurnDamage: 0
-  damageMultiplier: 1
-  sniperDamageMultiplier: 1
-  burnDamageMultiplier: 1
-  regularToBurnDamageConversionMultiplier: 0
-  regularToRangeConversionMultiplier: 0
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
   dontGetAffectByMultipliers: 0
   directControlShakeMultiplier: 1
   isHeal: 0
+  currentAffectors:
+    damageMultiplier: 1
+    sniperDamageMultiplier: 1
+    fireRateMultiplier: 1
+    fireRateDivider: 1
+    burnDamageMultiplier: 1
+    regularToBurnDamageConversionMultiplier: 0
+    bonusBurnDamage: 0
+    regularToRangeConversionMultiplier: 0
+    gatlinificator: 0
+    isHoming: 0
+    explosionRangeBoost: 0
   rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  hasAmmo: 1
+  ammoPerBarrage: 1
+  ammoPerBarrageMultiplier: 1
   isPlayer: 0
   rangeOrigin: {fileID: 0}
-  barrageShot:
-    m_PersistentCalls:
-      m_Calls: []
   canPenetrateArmor: 0
-  steamUsePerShot: 0
   needWarmUp: 0
   startWarmUpEvent:
     m_PersistentCalls:
@@ -262,17 +266,14 @@ MonoBehaviour:
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   beingDirectControlled: 0
-  isHoming: 0
-  boostDamageOnUpgrade: 0.5
+  isLockOn: 0
   waitTimer: 0
-  isFire: 0
-  isSticky: 0
-  isExplosive: 0
   explosionRange: 0
-  explosionRangeBoost: 0
+  inaccuracyMultiplier: 1
   gotShootCredits: 0
   needShootCredits: 0
-  shootCreditsUse: 2
+  neverNeedShootCredits: 0
+  shootCreditsUse: 4
 --- !u!114 &5659048418371139538
 MonoBehaviour:
   m_ObjectHideFlags: 0

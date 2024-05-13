@@ -99,20 +99,9 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
 
     public float cartCapacity;
-    public float cartCapacityModifier = 0;
     public float targetSpeed = 0;
-    public float speedMultiplier = 1;
-    public float speedAmount = 0;
     public float acceleration = 0;
-    public bool delicateMachinery = false;
 
-    public void ResetMultipliers() {
-        cartCapacityModifier = 0;
-        speedMultiplier = 1;
-        speedAmount = 0;
-        delicateMachinery = false;
-    }
-    
     public void AddEngine(EngineModule engineModule) {
         engines.Add(engineModule);
         CalculateSpeedBasedOnCartCapacity();
@@ -135,30 +124,23 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             cartCapacity += engines[i].GetEnginePower();
             newTargetSpeed += engines[i].GetSpeedAdd();
         }
-        
-        cartCapacity += cartCapacityModifier;
 
         var cartCount = Train.s.carts.Count - 1;// main engine itself doesn't count hence +1
 
         var excessCarts = cartCount - cartCapacity;
 
-        if (!delicateMachinery) {
-            if (excessCarts > 0) {
-                switch (excessCarts) {
-                    case 1:
-                        newTargetSpeed *= 0.95f;
-                        break;
-                    case 2:
-                        newTargetSpeed *= 0.85f;
-                        break;
-                    default: // more than 2
-                        newTargetSpeed *= 0.75f;
-                        break;
-                }
+        if (excessCarts > 0) {
+            switch (excessCarts) {
+                case 1:
+                    newTargetSpeed *= 0.95f;
+                    break;
+                case 2:
+                    newTargetSpeed *= 0.85f;
+                    break;
+                default: // more than 2
+                    newTargetSpeed *= 0.75f;
+                    break;
             }
-        } else {
-            if (excessCarts != 0)
-                newTargetSpeed *= 0.25f;
         }
 
         if (excessCarts <= 0) {
@@ -166,9 +148,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         } else {
             acceleration = ((float)Mathf.Clamp(excessCarts, 0, 5)).Remap(0, 5, 0.2f, 0.01f);
         }
-        
-        newTargetSpeed += speedAmount;
-        newTargetSpeed *= speedMultiplier;
 
         if (currentBreakPower <= 0) {
             targetSpeed = newTargetSpeed;
@@ -220,10 +199,13 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
                 if (targetSpeed < internalRealSpeed) {
                     realAcc += 0.2f; // we slow down faster than we speed up so that speed boost isn't cheaty
                 }
-                if (currentBreakPower > 0) {
-                    realAcc = currentBreakPower;
-                }
+
+                realAcc /= 3f;
                 
+                if (currentBreakPower > 0) {
+                    realAcc = Mathf.Max(realAcc, currentBreakPower);
+                }
+
                 internalRealSpeed = Mathf.MoveTowards(internalRealSpeed, targetSpeed, realAcc * Time.deltaTime);
                 slowAmount = Mathf.Clamp(slowAmount, 0, 1.5f*(internalRealSpeed - 0.1f));
                 if (slowAmount < 0) {
@@ -242,7 +224,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
                     ToggleSlowedEffect(false);
                 }
 
-                currentDistance += LevelReferences.s.speed * Time.deltaTime;
+                if(!CheatsController.s.stopMoving)
+                    currentDistance += LevelReferences.s.speed * Time.deltaTime;
 
                 distanceText.text = ((int)currentDistance).ToString();
 

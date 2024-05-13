@@ -186,4 +186,8 @@ public class DataHolder : MonoBehaviour {
 
         return null;
     }
+
+    public bool IsLegalMergeResult(string result) {
+        return result != null;
+    }
 }

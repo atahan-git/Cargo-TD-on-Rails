@@ -5,30 +5,44 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-/*
 public class PostBuildProcessor : IPostprocessBuildWithReport
 {
     public void OnPostprocessBuild(BuildReport report)
     {
-        //Debug.Log(report.summary.outputPath);
-        // report.summary.outputPath will lead you to generated .exe file
-        // so you can use this path to do whatever you want
-
-        /*var directoryName = Path.GetDirectoryName(report.summary.outputPath);
-        directoryName = Path.Combine(directoryName, "Iron Tracks TD_Data", "Levels");
-        Debug.Log(directoryName);
         
+        Debug.Log(report.summary.outputPath);
         
-        Directory.CreateDirectory(directoryName);
+        // Define the source and destination directories
+        string sourceDirectory = Path.GetDirectoryName(report.summary.outputPath);
+        string destinationDirectory = "D:\\_Unity\\2023\\_Cargo TD on Rails\\SteamContentBuilder\\content";
 
-        var allSavePaths = LevelDataLoader.GetAllLevelDataPaths();
+        CopyFilesRecursively(sourceDirectory, destinationDirectory);
+        
+        // Log a message to indicate the process is complete
+        Debug.Log("Build copied to: " + destinationDirectory);
+        
+        // open folder to steam upload thing
+        System.Diagnostics.Process.Start(@"D:\\_Unity\\2023\\_Cargo TD on Rails\\SteamContentBuilder\\");
+    }
+    
+    private static void CopyFilesRecursively(string sourcePath, string targetPath)
+    {
+        //Delete old stuff
+        var dir = new DirectoryInfo(targetPath);
+        dir.Delete(true);
+        
+        //Now Create all of the directories
+        foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+        {
+            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+        }
 
-        for (int i = 0; i < allSavePaths.Length; i++) {
-            var dest = Path.Combine(directoryName, Path.GetFileName(allSavePaths[i]));
-            File.Copy(allSavePaths[i], dest);
-        }#1#
+        //Copy all the files & Replaces any files with the same name
+        foreach (string newPath in Directory.GetFiles(sourcePath, "*.*",SearchOption.AllDirectories))
+        {
+            File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
+        }
     }
 
     public int callbackOrder { get; }
 }
-*/

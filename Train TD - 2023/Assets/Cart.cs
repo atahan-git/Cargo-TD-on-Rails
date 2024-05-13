@@ -39,13 +39,14 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
 
     private bool avoidByDefault;
     private void Start() {
-        SetComponentCombatShopMode();
-        PlayStateMaster.s.OnCombatEntered.AddListener(SetComponentCombatShopMode);
-        PlayStateMaster.s.OnShopEntered.AddListener(SetComponentCombatShopMode);
         SetUpOverlays();
         SetUpOutlines();
         ResetState();
         avoidByDefault = GetComponent<PossibleTarget>().avoid;
+        
+        SetComponentCombatShopMode();
+        PlayStateMaster.s.OnCombatEntered.AddListener(SetComponentCombatShopMode);
+        PlayStateMaster.s.OnShopEntered.AddListener(SetComponentCombatShopMode);
     }
 
 
@@ -59,15 +60,16 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
         //genericParticlesParent.DeleteAllChildren();
         GetHealthModule().ResetState();
 
-        for (int i = 0; i < myArtifactLocations.Count; i++) {
-            if (!myArtifactLocations[i].IsEmpty()) { 
-                myArtifactLocations[i].GetSnappedObject().GetComponent<Artifact>().ResetState();
-            }
-        }
+        
         
         var modulesWithResetStates = GetComponentsInChildren<IResetState>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
-            modulesWithResetStates[i].ResetState(); // level goes 0, 1, 2
+            modulesWithResetStates[i].ResetState(); 
+        }
+
+        var modulesWithApplyStates = GetComponentsInChildren<IChangeCartState>();
+        for (int i = 0; i < modulesWithApplyStates.Length; i++) {
+            modulesWithApplyStates[i].ChangeState(this);
         }
     }
 
@@ -83,6 +85,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
             if (engineModule) {
                 engineModule.OnEngineLowPower?.Invoke(true);
                 engineModule.isDestroyed = true;
+                GetComponentInChildren<EngineFireController>().StopEngineFire();
             }
 
             var gunModules = GetComponentsInChildren<GunModule>();
@@ -106,12 +109,10 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                 attachedToTrain[i].DetachedFromTrain();
             }*/
         
-            var duringCombat = GetComponentsInChildren<IActiveDuringCombat>();
+            var disabledState = GetComponentsInChildren<IDisabledState>();
 
-            for (int i = 0; i < duringCombat.Length; i++) {
-                if (!(duringCombat is EngineModule)) {//dont disable engine mod if sturdy
-                    duringCombat[i].Disable();
-                } 
+            foreach (var disabledModule in disabledState) {
+                disabledModule.CartDisabled();
             }
 
             var warper = GetComponentInChildren<WarpStabilizerModule>();
@@ -119,13 +120,14 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                 if(warper != null)
                     warper.enabled = false;
             }
-            
         } else {
             GetComponent<PossibleTarget>().avoid = avoidByDefault;
         
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
                 engineModule.enabled = true;
+                engineModule.OnEngineLowPower?.Invoke(false);
+                engineModule.isDestroyed = false;
                 GetComponentInChildren<EngineFireController>().ActivateEngineFire();
             }
 
@@ -144,12 +146,18 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                 attachedToTrain[i].AttachedToTrain();
             }*/
         
-            var duringCombat = GetComponentsInChildren<IActiveDuringCombat>();
+            /*var duringCombat = GetComponentsInChildren<IActiveDuringCombat>();
 
             if (PlayStateMaster.s.isCombatStarted()) {
                 for (int i = 0; i < duringCombat.Length; i++) {
                     duringCombat[i].ActivateForCombat();
                 }
+            }*/
+
+            var disabledState = GetComponentsInChildren<IDisabledState>();
+
+            foreach (var disabledModule in disabledState) {
+                disabledModule.CartEnabled();
             }
             
             var warper = GetComponentInChildren<WarpStabilizerModule>();
@@ -203,6 +211,8 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                 duringShopping[i].ActivateForShopping();
             }
         }
+        
+        SetDisabledState();
     }
 
     
@@ -320,7 +330,17 @@ public interface IActiveDuringShopping {
     public void Disable();
 }
 
+public interface IDisabledState {
+    public void CartDisabled();
+    public void CartEnabled();
+}
+
 
 public interface IResetState {
     public void ResetState();
 }
+
+public interface IChangeCartState {
+    public void ChangeState(Cart target);
+}
+

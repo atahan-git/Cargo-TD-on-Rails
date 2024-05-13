@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState, IAmmoProvider {
+public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState, IAmmoProvider, IDisabledState {
 
     [ShowInInspector]
     public float curAmmo { get; private set; }
@@ -22,8 +22,6 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public void ResetState() {
         maxAmmoMultiplier = 1;
         reloadEfficiency = 1;
-
-        maxAmmoMultiplier = 0.7f + (DataSaver.s.GetCurrentSave().cityUpgradesProgress.ammoUpgradesBought * 0.15f);
 
         myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
         myAmmoBar.OnAmmoTypeChange();
@@ -123,13 +121,14 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
     public void ActivateForCombat() {
         this.enabled = true;
-
+        
         Reload(-1,false);
-
+        
         UpdateModuleState();
     }
 
     public void ActivateForShopping() {
+        
         ActivateForCombat();
     }
 
@@ -147,6 +146,17 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         if (myUINoAmmoWarningThing != null) {
             Destroy(myUINoAmmoWarningThing);
         }
+    }
+
+    public void CartDisabled() {
+        curAmmo = 0;
+        UpdateModuleState();
+        if(myAmmoBar != null)
+            myAmmoBar.OnUse( curAmmo);
+    }
+
+    public void CartEnabled() {
+        // do nothing
     }
 }
 

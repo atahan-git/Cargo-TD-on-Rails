@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -165,7 +166,7 @@ public class MissionWinFinisher : MonoBehaviour {
 
 	public void CleanupWhenLeavingMissionRewardArea() {
 		//PathSelectorController.s.trainStationEnd.SetActive(false);
-		DataSaver.s.GetCurrentSave().shopInitialized = false;
+		DataSaver.s.GetCurrentSave().currentRun.shopInitialized = false;
 		Train.s.SaveTrainState(true);
 		DataSaver.s.SaveActiveGame();
 	}
@@ -181,5 +182,19 @@ public class MissionWinFinisher : MonoBehaviour {
 		} else {
 			gateScript.SetCanGoStatus(false, getAllTheCarts);
 		}
+	}
+	
+	[Button]
+	public void JustTeleportToNextCity (){
+		MakeNewAct();
+        
+		PlayStateMaster.s.FinishWarpToTeleportBackToShop();
+	}
+
+	void MakeNewAct() {
+		DataSaver.s.GetCurrentSave().currentRun.shopInitialized = false;
+		DataSaver.s.GetCurrentSave().currentRun.currentAct += 1;
+		Train.s.SaveTrainState(true);
+		DataSaver.s.SaveActiveGame();
 	}
 }

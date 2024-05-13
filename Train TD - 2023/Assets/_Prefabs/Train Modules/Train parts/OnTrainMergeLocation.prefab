@@ -46,11 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc5541a892ccc9240ab0f2dd7a1865ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myAllowedSnaps: 6
+  myAllowedSnaps: 0
   snapTransform: {fileID: 6507951113280827310}
   visualizeEffect: {fileID: 0}
   snapDistance: 0.3
   lerpChild: 1
+  allowSnap: 1
 --- !u!1 &7885713853825174957
 GameObject:
   m_ObjectHideFlags: 0

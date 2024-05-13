@@ -118,7 +118,7 @@ PrefabInstance:
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: mySprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6df7a95a9f2f3f8459a3d5d69a4d3406, type: 3}
+      objectReference: {fileID: 21300000, guid: 1a83a692f939e04439ba603cd43b3a12, type: 3}
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: uniqueName
       value: explosive_gem
@@ -131,7 +131,28 @@ PrefabInstance:
       propertyPath: needsToBeBought
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: gunCartDescription
+      value: Adds or increases gun's explosion radius
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: ammoCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: repairCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: shieldCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: notAttachedDescription
+      value: Makes things explosive.
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
 --- !u!1 &1509524458239976382 stripped
 GameObject:
@@ -150,24 +171,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c86186a446f1045b1e47596472a4f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boostExplosionRangeBase: 0.01
-  boostExplosionRangeLevelIncrease: 0.005
-  activeRangeBoost: 0
-  explosiveRepairBase: 0.25
-  explosiveRepairIncreasePerLevel: 0.25
-  activeExplosiveRepair: 0
-  shieldMiniExplosions:
-  - {fileID: 7155417527102529315, guid: c8a8e030c41a21a4187b5bf45ad65d9e, type: 3}
-  - {fileID: 7155417527102529315, guid: 857d74aabe6526f448842d8f3a97a092, type: 3}
-  - {fileID: 7155417527102529315, guid: af6fcd060cbc6d34c89dddbeff2e7044, type: 3}
-  currentShieldExplosion: {fileID: 0}
-  trainGigaExplosions:
-  - {fileID: 7155417527102529315, guid: ddb424d40e7cd2f4997a2827c1f9cdf7, type: 3}
-  - {fileID: 7155417527102529315, guid: 96e3df01bc337df4ab0f7fd20357d222, type: 3}
-  - {fileID: 7155417527102529315, guid: 87ca16f4c4a04284fb563a64d7332a23, type: 3}
-  currentGigaExplosion: {fileID: 0}
-  trainMiniExplosions:
-  - {fileID: 7155417527102529315, guid: 4352f70d613b9ad448bbe88ce09af992, type: 3}
-  - {fileID: 7155417527102529315, guid: ddb424d40e7cd2f4997a2827c1f9cdf7, type: 3}
-  - {fileID: 7155417527102529315, guid: 96e3df01bc337df4ab0f7fd20357d222, type: 3}
-  currentMiniExplosion: {fileID: 0}

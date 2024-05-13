@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class CheatsController : MonoBehaviour
-{
+public class CheatsController : MonoBehaviour {
+    public static CheatsController s;
     public InputActionReference cheatButton;
     
     public EncounterTitle debugEncounter;
@@ -29,17 +29,22 @@ public class CheatsController : MonoBehaviour
     public bool overrideTrainState = false;
 
     public bool forceDisableFastForward = false;
+    public bool trainDoesntLoseSteam = false;
+
+    public bool stopMoving = false;
     
     public DataSaver.TrainState trainState;
 
     private void Awake() {
+        s = this;
         if (!Application.isEditor) {
             ResetDebugOptions();
         }
     }
 
     public void ResetDebugOptions() {
-        Debug.LogError("Debug Options Reset!");
+        if(Application.isEditor)
+            Debug.LogError("Debug Options Reset!");
         debugNoRegularSpawns = false;
         instantEnterPlayMode = false;
         playerIsImmune= false;
@@ -49,6 +54,7 @@ public class CheatsController : MonoBehaviour
         setInstantEnterShopAnimation = false;
         overrideTrainState = false;
         forceDisableFastForward = false;
+        trainDoesntLoseSteam = false;
     }
 
     
@@ -71,7 +77,7 @@ public class CheatsController : MonoBehaviour
             //LevelArchetypeScriptable.everyPathEncounterCheat = everyPathIsEncounter;
 
             if (overrideTrainState) {
-                DataSaver.s.GetCurrentSave().myTrain = trainState;
+                DataSaver.s.GetCurrentSave().currentRun.myTrain = trainState.Copy();
                 DataSaver.s.SaveActiveGame();
             }
             
@@ -174,6 +180,15 @@ public class CheatsController : MonoBehaviour
     [Button]
     public void DebugSpawnEnemy(GameObject enemy) {
         EnemyWavesController.s.SpawnEnemy(enemy, SpeedController.s.currentDistance, false, false);
+    }
+
+
+    [Button]
+    public void KillAllEnemies() {
+        var enemies = EnemyWavesController.s.GetComponentsInChildren<EnemyHealth>();
+        for (int i = 0; i < enemies.Length; i++) {
+            enemies[i].DealDamage(10000, null);
+        }
     }
 
 }

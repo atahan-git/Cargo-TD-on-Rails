@@ -87,6 +87,26 @@ PrefabInstance:
       propertyPath: displayName
       value: Iron Gem
       objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: gunCartDescription
+      value: Increases damage but reduces firerate
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: ammoCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: repairCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: shieldCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: notAttachedDescription
+      value: Makes things bigger but slower
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
 --- !u!1 &1509524458239976382 stripped

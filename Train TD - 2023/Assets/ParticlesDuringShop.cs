@@ -23,7 +23,7 @@ public class ParticlesDuringShop : MonoBehaviour {
 
     private bool isActive = false;
     private void Update() {
-        if (!Train.s.IsTrainMoving()) {
+        if (!Train.s.IsTrainMoving() && !MissionLoseFinisher.s.isMissionLost) {
             Activate();
         } else {
             Disable();

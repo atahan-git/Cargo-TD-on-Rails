@@ -14,6 +14,7 @@ public class SettingsController : MonoBehaviour {
     private void Awake() {
         s = this;
         settingsParent.SetActive(false);
+        autoSelectDelay = 2;
     }
 
     public GameObject settingsParent;
@@ -21,6 +22,7 @@ public class SettingsController : MonoBehaviour {
     public bool forceDisableGamepadMode = false;
     public bool forceEnableGamepadMode = false;
     
+    public static int autoSelectDelay = 1;
     public List<GameObject> gamepadModeButtons = new List<GameObject>();
 
     void Start()
@@ -44,47 +46,51 @@ public class SettingsController : MonoBehaviour {
     
     //public GameObject mainUI;
     private void Update() {
+        if (autoSelectDelay > 0) {
+            autoSelectDelay -= 1;
+            return;
+        }
+
+        CheckSetSelectedGameObjectIfGamepadMode();
+    }
+
+    private void CheckSetSelectedGameObjectIfGamepadMode() {
         var currentGamepadMode = GamepadMode();
         if (currentGamepadMode != gamepadMode) {
             if (currentGamepadMode) {
-                EventSystem.current.SetSelectedGameObject(gamepadModeButtons[^1]);
-            }   
-        }
-        gamepadMode = currentGamepadMode;
-
-        /*if (currentGamepadMode) {
-            var currentSelected = EventSystem.current.currentSelectedGameObject;
-            if (currentSelected == null) {
-                var randomButton = mainUI.GetComponentInChildren<Button>();
-                EventSystem.current.SetSelectedGameObject(randomButton.gameObject);
+                if (gamepadModeButtons.Count > 0) {
+                    EventSystem.current.SetSelectedGameObject(gamepadModeButtons[^1]);
+                } else {
+                    var button = FindObjectOfType<Button>();
+                    if (button != null) {
+                        EventSystem.current.SetSelectedGameObject(button.gameObject);
+                    }
+                }
             }
-        }*/
+        }
+
+        gamepadMode = currentGamepadMode;
     }
 
     public void ResetRun() {
-        /*if (DataSaver.s.GetCurrentSave().isInARun == true) {
+        if (DataSaver.s.GetCurrentSave().isInARun) {
             areYouSureScreen.SetActive(true);
             areYouSureText.text = "Really Abandon?";
             areYouSureClick = () => _ResetRun();
 
             //SFX
             AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
-        }*/
-        
-        
-        AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
+        }
     }
 
     public void ResetTrainAndBail() {
-        DataSaver.s.GetCurrentSave().myTrain = new DataSaver.TrainState();
-        Train.s.CheckSetMinimumTrain();
+        DataSaver.s.GetCurrentSave().isInARun = false;
         DataSaver.s.SaveActiveGame();
         SceneLoader.s.ForceReloadScene();
     }
 
     void _ResetRun() {
-        /*DataSaver.s.GetCurrentSave().currentRun = null;
-        DataSaver.s.GetCurrentSave().isInARun = false;*/
+        DataSaver.s.GetCurrentSave().isInARun = false;
 
         DataSaver.s.SaveActiveGame();
 

@@ -34,6 +34,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 	private float shieldRegenDelay = 1;
 	public float curShieldDelay = 0;
 
+	public EnemyInSwarm mySwarm;
 
 	private void Start() {
 		SetUp();
@@ -60,7 +61,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		
 		currentHealth -= damage;
 
-		if (currentHealth <= 0 && isAlive) {
+		if ((currentHealth <= 0 || currentHealth < maxHealth*0.05f) && isAlive) {
 			Die();
 		}
 		
@@ -174,6 +175,7 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		currentShields = Mathf.Clamp(currentShields, 0, maxShields);
 	}
 
+	private bool didRegisterAsEnemy = false;
 	void SetUp() {
 		maxHealth = baseHealth;
 		maxHealth *= WorldDifficultyController.s.currentHealthMultiplier;
@@ -185,6 +187,8 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		enemyUIBar.SetUp(this);
 
 		if (!isComponentEnemy) {
+			didRegisterAsEnemy = true;
+			mySwarm = GetComponent<EnemyInSwarm>();
 			GetComponentInParent<EnemySwarmMaker>().EnemySpawn(this);
 		}
 	}
@@ -220,21 +224,6 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 			if (rewardMoney > 0) {
 				Instantiate(LevelReferences.s.crystalDrop, LevelReferences.s.uiDisplayParent).GetComponent<CrystalDrop>().SetUp(uiTransform.position, rewardMoney);
 			}
-
-			var carryAward = GetComponent<CarrierEnemy>();
-			if (carryAward) {
-				carryAward.AwardTheCarriedThingOnDeath();
-			}
-			
-			var carryAwardGem = GetComponent<GemCarrierEnemy>();
-			if (carryAwardGem) {
-				carryAwardGem.AwardTheCarriedThingOnDeath();
-			}
-			
-			var carryAwardMerge = GetComponent<MergeCarrierEnemy>();
-			if (carryAwardMerge) {
-				carryAwardMerge.AwardTheCarriedThingOnDeath();
-			}
 		}
 
 		var pos = aliveObject.position;
@@ -245,9 +234,6 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		
 		if(deathPrefab != null)
 			VisualEffectsController.s.SmartInstantiate(deathPrefab, pos, rot);
-		
-		if(!isComponentEnemy)
-			GetComponent<EnemyInSwarm>().mySwarm.EnemyDeath(this);
 
 		Destroy(gameObject);
 	}
@@ -256,6 +242,9 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 		if(enemyUIBar != null)
 			if(enemyUIBar.gameObject != null)
 				Destroy(enemyUIBar.gameObject);
+		
+		if(didRegisterAsEnemy)
+			mySwarm.mySwarm.EnemyDeath(this);
 	}
 
 	public bool IsPlayer() {

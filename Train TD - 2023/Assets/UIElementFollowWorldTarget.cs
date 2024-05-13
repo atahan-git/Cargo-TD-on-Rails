@@ -125,6 +125,7 @@ public class UIElementFollowWorldTarget : MonoBehaviour {
         if(avoidOverlaps)
             UIWorldFollowerSorter.avoidanceElements.Remove(this);
         
-        CameraController.s.AfterCameraPosUpdate.RemoveListener(_LateUpdate);
+        if(CameraController.s != null)
+            CameraController.s.AfterCameraPosUpdate.RemoveListener(_LateUpdate);
     }
 }

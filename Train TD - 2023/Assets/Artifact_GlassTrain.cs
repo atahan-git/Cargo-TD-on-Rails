@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_GlassTrain: ActivateWhenOnArtifactRow
+public class Artifact_GlassTrain: MonoBehaviour, IChangeStateToEntireTrain
 {
 
-    protected override void _Arm() {
-        for (int i = 0; i <Train.s.carts.Count; i++) {
-            ApplyBoost(Train.s.carts[i]);
+    public void ChangeStateToEntireTrain(List<Cart> carts) {
+        for (int i = 0; i < carts.Count; i++) {
+            ApplyBoost(carts[i]);
         }
     }
 
     void ApplyBoost(Cart target) {
-        if(target == null)
+        /*if(target == null)
             return;
         
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
@@ -25,7 +25,7 @@ public class Artifact_GlassTrain: ActivateWhenOnArtifactRow
 
         /*foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
             target.GetHealthModule().maxShields *= 2;
-        }*/
+        }#1#
 
         foreach (var engineModule in target.GetComponentsInChildren<EngineModule>()) {
             engineModule.extraSpeedAdd += 0.1f;
@@ -35,10 +35,6 @@ public class Artifact_GlassTrain: ActivateWhenOnArtifactRow
         
         target.GetHealthModule().maxHealth = 100;
         target.GetHealthModule().currentHealth = 100;
-        target.GetHealthModule().glassCart = true;
-    }
-
-    protected override void _Disarm() {
-        // do nothing
+        target.GetHealthModule().glassCart = true;*/
     }
 }

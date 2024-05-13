@@ -10,7 +10,7 @@ public class MoveWithGlobalMovement : MonoBehaviour {
 	public float currentSpeedPercent = 0f;
 
 	private void Update() {
-		transform.position += LevelReferences.s.speed * Vector3.back * currentSpeedPercent * Time.deltaTime;
+		transform.position -= LevelReferences.s.speed * Train.s.GetTrainForward() * currentSpeedPercent * Time.deltaTime;
 
 		if (currentSpeedPercent < 1f) {
 			currentSpeedPercent += slowBuildupSpeedPercentPerSecond *Time.deltaTime;

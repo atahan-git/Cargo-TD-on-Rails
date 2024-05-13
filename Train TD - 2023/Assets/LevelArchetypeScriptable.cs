@@ -9,14 +9,18 @@ using Random = UnityEngine.Random;
 
 [CreateAssetMenu()]
 public class LevelArchetypeScriptable : ScriptableObject {
-    public GameObject[] possibleGunCartBattalions;
-    public GameObject[] possibleUtilityCartBattalions;
-    public GameObject[] possibleGemBattalions;
-    public GameObject[] possibleCargoBattalions;
-    //public EncounterTitle[] possibleEncounters;
-    public GameObject[] possibleDynamicBattalions;
+    public GameObject[] formations;
+    [Space]
+    public GameObject[] bigEnemies;
+    public GameObject[] mediumEnemies;
+    public GameObject[] smallEnemies;
+    public GameObject[] megaEnemies;
+    [Space]
+    public GameObject[] enemyGuns;
+    public GameObject[] uniqueEquipment;
+    public GameObject[] eliteEquipment;
 
-    public GameObject[] possibleBossBattalions;
+    public BossData[] possibleBossDatas;
 
     public Vector2 segmentLengthsMin = new Vector2(100, 300);
     public Vector2 segmentLengthsRange = new Vector2(50, 200);
@@ -24,20 +28,31 @@ public class LevelArchetypeScriptable : ScriptableObject {
         var level = new ConstructedLevel();
 
         var battalions = new List<GameObject>();
-        battalions.AddRange(MakeRandomCollection(possibleGunCartBattalions));
+        /*battalions.AddRange(MakeRandomCollection(possibleGunCartBattalions));
         battalions.AddRange(MakeRandomCollection(possibleUtilityCartBattalions));
         battalions.AddRange(MakeRandomCollection(possibleGemBattalions));
         battalions.AddRange(MakeRandomCollection(possibleCargoBattalions));
 
         level.rewardBattalions = battalions.ToArray();
         //level.encounters = MakeRandomCollection(possibleEncounters);
-        level.dynamicBattalions = MakeRandomCollection(possibleDynamicBattalions);
+        level.dynamicBattalions = MakeRandomCollection(possibleDynamicBattalions);*/
+
+        level.formations = formations;
+        
+        level.bigEnemies = bigEnemies;
+        level.mediumEnemies = mediumEnemies;
+        level.smallEnemies = smallEnemies;
+        level.megaEnemies = megaEnemies;
+        
+        level.enemyGuns = enemyGuns;
+        level.uniqueEquipment = uniqueEquipment;
+        level.eliteEquipment = eliteEquipment;
 
         var minSegmentLength = Random.Range(segmentLengthsMin.x, segmentLengthsMin.y);
         var segmentLengthRange = Random.Range(segmentLengthsRange.x, segmentLengthsRange.y);
         level.segmentLengths = new Vector2(minSegmentLength, minSegmentLength + segmentLengthRange);
 
-        level.bossBattalion = possibleBossBattalions[Random.Range(0, possibleBossBattalions.Length)];
+        level.bossData = possibleBossDatas[Random.Range(0, possibleBossDatas.Length)];
 
         level.levelName = name;
         return level;
@@ -66,18 +81,41 @@ public class LevelArchetypeScriptable : ScriptableObject {
     }
 }
 
+[Serializable]
+public class BossData {
+    public string bossName = "unset";
+    public GameObject bossMainPrefab;
+    public int bossesToSpawn = 1;
+    public int bossNeededKillCount = 1;
+
+    public BossData Copy() {
+        return new BossData() {
+            bossName = bossName,
+            bossMainPrefab = bossMainPrefab,
+            bossesToSpawn = bossesToSpawn,
+            bossNeededKillCount = bossNeededKillCount,
+        };
+    }
+}
+
 
 
 [Serializable]
 public class ConstructedLevel {
     public string levelName = "unset";
     
-    public GameObject[] rewardBattalions;
-    //public EncounterTitle[] encounters;
-    public GameObject[] dynamicBattalions;
+    public GameObject[] formations;
+    [Space]
+    public GameObject[] bigEnemies;
+    public GameObject[] mediumEnemies;
+    public GameObject[] smallEnemies;
+    public GameObject[] megaEnemies;
+    [Space]
+    public GameObject[] enemyGuns;
+    public GameObject[] uniqueEquipment;
+    public GameObject[] eliteEquipment;
 
-    public GameObject bossBattalion;
-
+    public BossData bossData;
     public Vector2 segmentLengths = new Vector2();
 
     public float GetRandomSegmentLength() {
@@ -93,12 +131,20 @@ public class ConstructedLevel {
         var copy = new ConstructedLevel();
 
         copy.levelName = levelName;
-        copy.rewardBattalions = rewardBattalions;
-        //copy.encounters = encounters;
-        copy.dynamicBattalions = dynamicBattalions;
-        copy.bossBattalion = bossBattalion;
+        
+        copy.formations = formations;
+        
+        copy.bigEnemies = bigEnemies;
+        copy.mediumEnemies = mediumEnemies;
+        copy.smallEnemies = smallEnemies;
+        copy.megaEnemies = megaEnemies;
+        
+        copy.enemyGuns = enemyGuns;
+        copy.uniqueEquipment = uniqueEquipment;
+        copy.eliteEquipment = eliteEquipment;
+        
+        copy.bossData = bossData.Copy();
         copy.segmentLengths = segmentLengths;
-
 
         return copy;
     }

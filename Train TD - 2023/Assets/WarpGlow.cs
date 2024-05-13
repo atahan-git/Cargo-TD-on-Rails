@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WarpGlow : MonoBehaviour,IActiveDuringCombat {
+public class WarpGlow : MonoBehaviour,IActiveDuringCombat,IDisabledState {
 
 
 	public bool isCartAlive = false;
@@ -27,6 +27,16 @@ public class WarpGlow : MonoBehaviour,IActiveDuringCombat {
 
 	public void Disable() {
 		isCartAlive = false;
+		UpdateGlowState();
+	}
+	
+	public void CartDisabled() {
+		isCartAlive = false;
+		UpdateGlowState();
+	}
+
+	public void CartEnabled() {
+		isCartAlive = true;
 		UpdateGlowState();
 	}
 

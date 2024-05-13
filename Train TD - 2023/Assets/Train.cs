@@ -37,7 +37,7 @@ public class Train : MonoBehaviour {
     }
 
     public void DrawTrainBasedOnSaveData() {
-        DrawTrain(DataSaver.s.GetCurrentSave().myTrain);
+        DrawTrain(DataSaver.s.GetCurrentSave().currentRun.myTrain);
     }
 
     public void DrawTrain(DataSaver.TrainState trainState) {
@@ -105,7 +105,7 @@ public class Train : MonoBehaviour {
 
     void OneFrameLater() {
         // because sometimes train doesnt get updated fast enough
-        DataSaver.s.GetCurrentSave().myTrain = GetTrainState();
+        DataSaver.s.GetCurrentSave().currentRun.myTrain = GetTrainState();
         DataSaver.s.SaveActiveGame();
     }
 
@@ -126,23 +126,16 @@ public class Train : MonoBehaviour {
             buildingState.health = cart.GetCurrentHealth();
             buildingState.maxHealthReduction = cart.GetCurrentHealthReduction();
 
-            var cargo = cart.GetComponentInChildren<CargoModule>();
-            if (cargo != null) {
-                buildingState.cargoState = DataSaver.TrainState.CartState.CargoState.GetStateFromModule(cargo);
-            } else {
-                buildingState.cargoState = null;
-            }
-
-            var ammo = cart.GetComponentInChildren<ModuleAmmo>();
+            /*var ammo = cart.GetComponentInChildren<ModuleAmmo>();
             
             if (ammo != null) {
                 buildingState.ammo = (int)ammo.curAmmo;
                 /*buildingState.isFire = ammo.isFire;
                 buildingState.isSticky = ammo.isSticky;
-                buildingState.isExplosive = ammo.isExplosive;*/
+                buildingState.isExplosive = ammo.isExplosive;#1#
             } else {
                 buildingState.ammo = -1;
-            }
+            }*/
 
             buildingState.attachedArtifacts = new List<DataSaver.TrainState.ArtifactState>();
             for (int i = 0; i < cart.myArtifactLocations.Count; i++) {
@@ -197,12 +190,6 @@ public class Train : MonoBehaviour {
                 cartState.ammo = -1;
             }
         }#1#*/
-
-
-        var cargoModule = cart.GetComponentInChildren<CargoModule>();
-        if (cargoModule != null) {
-            cargoModule.SetCargo(cartState.cargoState);
-        }
 
         for (int i = 0; i < cartState.attachedArtifacts.Count; i++) {
             var attachedArtifact = cartState.attachedArtifacts[i];
@@ -374,15 +361,25 @@ public class Train : MonoBehaviour {
     }
 
 
+    public float prevTotalLength;
+    public float prevDistanceAddon;
     public void UpdateCartPositionsNewspaper() {
         var trainMaxLength = 10f;
 
         var trainCurrentLength = GetTrainLength();
 
-        var distanceAddon = trainCurrentLength/trainMaxLength;
-        distanceAddon = Mathf.Clamp(distanceAddon, 1, 10);
-        distanceAddon -= 1;
-        distanceAddon *= 4;
+        var distanceAddon = prevDistanceAddon;
+
+        if (prevTotalLength > trainCurrentLength+0.5f) {
+            distanceAddon -= 0.5f * Time.deltaTime;
+        }else if (prevTotalLength < trainCurrentLength-0.5f) {
+            distanceAddon += 0.5f * Time.deltaTime;
+        }
+
+        if (distanceAddon < -1) {
+            distanceAddon = -1;
+        }
+        
         
         var totalLength = GetTrainLength();
         var currentDistance = 1f - ((carts[0].length/2f)/totalLength);
@@ -401,6 +398,9 @@ public class Train : MonoBehaviour {
             cart.cartPosOffset = currentDistance;*/
             currentDistance -= cart.length/totalLength;
         }
+
+        prevTotalLength = Vector3.Distance(carts[0].transform.position, carts[^1].transform.position) + carts[0].length/2f + carts[^1].length/2f;
+        prevDistanceAddon = distanceAddon;
     }
     
 
@@ -441,72 +441,32 @@ public class Train : MonoBehaviour {
         UpdateCartPositions();
     }
 
-    public void UpdateThingsAffectingOtherThings(bool isActivating) {
-        if (isActivating) {
-            SetArtifactStatus(true);
-
-            SpeedController.s.CalculateSpeedBasedOnCartCapacity();
-
-            for (int i = 0; i < carts.Count; i++) {
-                carts[i].GetHealthModule().UpdateHpState();
-            }
-            
-            GetComponent<AmmoTracker>().RegisterAmmoProviders();
-
-            MaxHealthModified();
-        } else {
-            SetArtifactStatus(false);
-            
-            for (int i = 0; i < carts.Count; i++) {
-                carts[i].ResetState();
-            }
-            
-            for (int i = 0; i < ShopStateController.s.shopCarts.Count; i++) {
-                if(ShopStateController.s.shopCarts[i] != null && ShopStateController.s.shopCarts[i].gameObject != null)
-                    ShopStateController.s.shopCarts[i].ResetState();
-            }
-            for (int i = 0; i < ShopStateController.s.shopArtifacts.Count; i++) {
-                if(ShopStateController.s.shopArtifacts[i] != null && ShopStateController.s.shopArtifacts[i].gameObject != null)
-                    ShopStateController.s.shopArtifacts[i].ResetState();
-            }
-            
-            
-            PlayerWorldInteractionController.s.ResetValues();
-            SpeedController.s.ResetMultipliers();
-            SpeedController.s.CalculateSpeedBasedOnCartCapacity();
+    public void UpdateThingsAffectingOtherThings() {
+        for (int i = 0; i < carts.Count; i++) {
+            carts[i].ResetState();
         }
-    }
+            
+        for (int i = 0; i < ShopStateController.s.shopCarts.Count; i++) {
+            if(ShopStateController.s.shopCarts[i] != null && ShopStateController.s.shopCarts[i].gameObject != null)
+                ShopStateController.s.shopCarts[i].ResetState();
+        }
+        
+        for (int i = 0; i < carts.Count; i++) {
+            carts[i].GetHealthModule().UpdateHpState();
+        }
+            
+        GetComponent<AmmoTracker>().RegisterAmmoProviders();
+        SpeedController.s.CalculateSpeedBasedOnCartCapacity();
 
-    void SetArtifactStatus(bool isArm) {
-        if (this != Train.s) {
-            return;
+        var applyStateToEntireTrain = GetComponentsInChildren<IChangeStateToEntireTrain>();
+        for (int i = 0; i < applyStateToEntireTrain.Length; i++) {
+            applyStateToEntireTrain[i].ChangeStateToEntireTrain(carts);
         }
-        var artifacts = new List<Artifact>();
-
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            var artifact = Train.s.carts[i].GetComponentInChildren<Artifact>();
-            if(artifact != null)
-                artifacts.Add(artifact);
-        }
-        for (int i = 0; i < artifacts.Count; i++) {
-            var effects = artifacts[i].GetComponentsInChildren<ActivateWhenOnArtifactRow>();
-            if (effects != null) {
-                for (int j = 0; j < effects.Length; j++) {
-                    if (effects[j].GetComponentInParent<Cart>() != null) {
-                        if (isArm && !effects[j].GetComponentInParent<Cart>().isDestroyed) {
-                            effects[j].Arm();
-                        } else {
-                            effects[j].Disarm();
-                        }
-                    }
-                }
-            }
-        }
+        
+        MaxHealthModified();
     }
 
     public void RemoveCart(Cart cart) {
-        UpdateThingsAffectingOtherThings(false);
-        
         carts.Remove(cart);
         cart.transform.SetParent(null);
         
@@ -514,7 +474,7 @@ public class Train : MonoBehaviour {
             carts[i].trainIndex = i;
         }
 
-        UpdateThingsAffectingOtherThings(true);
+        UpdateThingsAffectingOtherThings();
         
         onTrainCartsChanged?.Invoke();
     }
@@ -524,9 +484,7 @@ public class Train : MonoBehaviour {
         if (existingIndex != -1) {
             RemoveCart(cart);
         }
-        
-        UpdateThingsAffectingOtherThings(false);
-        
+
         carts.Insert(index, cart);
         cart.transform.SetParent(transform);
 
@@ -534,7 +492,7 @@ public class Train : MonoBehaviour {
             carts[i].trainIndex = i;
         }
         
-        UpdateThingsAffectingOtherThings(true);
+        UpdateThingsAffectingOtherThings();
         
         onTrainCartsChanged?.Invoke();
     }
@@ -546,8 +504,7 @@ public class Train : MonoBehaviour {
             var nextCart = carts[i + 1];
             
             var mergeResultUniqueName = DataHolder.s.GetMergeResult(prevCart.uniqueName, nextCart.uniqueName);
-            var legalMerge = mergeResultUniqueName != null;
-            if (legalMerge) {
+            if ( DataHolder.s.IsLegalMergeResult(mergeResultUniqueName)) {
                 var prevCartArtifacts = prevCart.GetComponentsInChildren<Artifact>();
                 var nextCartArtifacts = nextCart.GetComponentsInChildren<Artifact>();
                 
@@ -593,9 +550,7 @@ public class Train : MonoBehaviour {
 
     public void TrainChanged() {
         if (isTrainDrawn) {
-            ArtifactsController.s.ArtifactsChanged();
-            UpdateThingsAffectingOtherThings(false);
-            UpdateThingsAffectingOtherThings(true);
+            UpdateThingsAffectingOtherThings();
             CheckHealth();
             onTrainCartsOrHealthOrArtifactsChanged?.Invoke();
         }
@@ -610,8 +565,6 @@ public class Train : MonoBehaviour {
             return;
         }
         
-        UpdateThingsAffectingOtherThings(false);
-        
         RemoveCart(cart1);
         RemoveCart(cart2);
 
@@ -620,7 +573,7 @@ public class Train : MonoBehaviour {
         AddCartAtIndex(cart1Index, cart2);
         AddCartAtIndex(cart2Index, cart1);
         
-        UpdateThingsAffectingOtherThings(true);
+        UpdateThingsAffectingOtherThings();
     }
     
 
@@ -685,23 +638,13 @@ public class Train : MonoBehaviour {
             return null;
         }
     }
-    
-    
-    
-
-    public DataSaver.TrainState minimumTrain;
-    public List<DataSaver.TrainState.CartState> minimumTrainLastCarts = new List<DataSaver.TrainState.CartState>();
-    public void CheckSetMinimumTrain() {
-        var saveData = DataSaver.s.GetCurrentSave();
-
-        if (saveData.myTrain == null || saveData.myTrain.myCarts.Count <= 3) {
-            saveData.myTrain = minimumTrain;
-            saveData.myTrain.myCarts.Insert(1, minimumTrainLastCarts[Random.Range(0, minimumTrainLastCarts.Count)]);
-        }
-    }
 
 
     public void SetNewspaperTrainState(bool isNewspaperTrain) {
         newspaperMode = isNewspaperTrain;
     }
+}
+
+public interface IChangeStateToEntireTrain {
+    public void ChangeStateToEntireTrain(List<Cart> carts);
 }

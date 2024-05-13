@@ -50,6 +50,10 @@ public class DataSaver {
 	public void SetActiveSave(int id) {
 		allSaves[activeSave].playtime += Time.realtimeSinceStartup - saveStartTime;
 		allSaves[activeSave].isActiveSave = false;
+		if (allSaves[activeSave].isInARun) {
+			allSaves[activeSave].currentRun.playtime += Time.realtimeSinceStartup - saveStartTime;
+		}
+		
 		SaveActiveGame();
 
 		saveStartTime = Time.realtimeSinceStartup;
@@ -91,6 +95,10 @@ public class DataSaver {
 
 	void DoSaveActiveGame() {
 		GetCurrentSave().playtime += Time.realtimeSinceStartup - saveStartTime;
+		allSaves[activeSave].isActiveSave = false;
+		if (allSaves[activeSave].isInARun) {
+			allSaves[activeSave].currentRun.playtime += Time.realtimeSinceStartup - saveStartTime;
+		}
 		GetCurrentSave().runGameVersion = VersionDisplay.s.GetVersionNumber();
 		saveStartTime = Time.realtimeSinceStartup;
 		Save(ActiveSave);
@@ -200,17 +208,13 @@ public class DataSaver {
 		public bool isRealSaveFile = false;
 		
 		public float playtime;
-		public TrainState myTrain = new TrainState();
-
-		public bool shopInitialized = false;
-		public ShopStateController.ShopState shopState;
 		
 		public string runGameVersion;
+		
+		public bool isInARun = false;
+		public RunState currentRun = new RunState("0.0.0.a"); // assumed to be never null
 
 		public bool showWakeUp = false;
-
-		public NewspaperUpgradesProgress newspaperUpgradesProgress = new NewspaperUpgradesProgress();
-		public CityUpgradesProgress cityUpgradesProgress = new CityUpgradesProgress();
 
 		public int castlesTraveled = 0;
 		public int money = 0;
@@ -219,31 +223,39 @@ public class DataSaver {
 	}
 	
 	[Serializable]
-	public class NewspaperUpgradesProgress {
-		public int totalEarnedInk = 0;
-		public int inkCount = 0;
+	public class  RunState {
+		public CharacterData character = new CharacterData();
 
-		public bool gunCartLimit = true;
-		public bool ammoCartLimit = true;
-		public bool repairCartLimit = true;
-		public int overallCartLimitIncrease = 0;
+		public TrainState myTrain = new TrainState();
 
-		public bool gatlingUnlock = false;
-		public bool shieldUnlock = false;
-		public bool growthUnlock = false;
-		public bool uraniumUnlock = false;
+		public int currentAct = 1; // 1,2,3
 
-		public bool bossUnlocked = false;
+		public float playtime;
+
+		public bool shopInitialized = false;
+		public ShopStateController.ShopState shopState;
+
+		public string runGameVersion;
+
+		public RunState(string version) {
+			runGameVersion = version;
+		}
+		
+		
+		public void SetCharacter(CharacterData characterData) {
+			character = characterData;
+			myTrain = characterData.starterTrain.Copy();
+
+			shopInitialized = false;
+
+			for (int i = 0; i < myTrain.myCarts.Count; i++) {
+				var build = myTrain.myCarts[i];
+				//build.ammo = -2;
+			}
+		}
 	}
 	
-	[Serializable]
-	public class CityUpgradesProgress {
-		public int armorUpgradesBought = 0;
-        public int damageUpgradesBought = 0;
-        public int ammoUpgradesBought = 0;
-
-        public int recoveryUpgradesBought = 0;
-	}
+	
 
 	[Serializable]
 	public class TutorialProgress {
@@ -254,9 +266,6 @@ public class DataSaver {
 
 		public bool directControlHint;
 		public bool reloadHint;
-		public bool repairCriticalHint;
-		public bool repairHint;
-		public bool deliverCargoHint;
 	}
 
 	[Serializable]
@@ -272,48 +281,13 @@ public class DataSaver {
 			public float health = -1;
 			[HideInInspector]
 			public float maxHealthReduction = -1;
-			[HideInInspector]
-			public float ammo = -1;
-
-			public CargoState cargoState;
 
 			public List<ArtifactState> attachedArtifacts = new List<ArtifactState>();
 			
-			[Serializable]
-			public class CargoState { // dont forget to update the copy function
-				[ValueDropdown("GetAllModuleNames")]
-				public string cargoReward;
-
-				public int cargoLevel = 0;
-
-				[ValueDropdown("GetAllArtifactNames")]
-				public string artifactReward;
-				public int artifactLevel;
-				public bool isLeftCargo;
-				
-				private static IEnumerable GetAllModuleNames() {
-					return GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
-				}
-
-				public static CargoState GetStateFromModule(CargoModule module) {
-					var state = module.GetState();
-					return new CargoState(state.cargoReward, state.artifactReward, state.isLeftCargo, state.cargoLevel, state.artifactLevel);
-				}
-				
-				public CargoState(string _cargoReward, string _artifactReward, bool _isLeftCargo, int _cargoLevel, int _artifactLevel) {
-					cargoReward =_cargoReward;
-					cargoLevel = _cargoLevel;
-					artifactReward = _artifactReward;
-					artifactLevel = _artifactLevel;
-					isLeftCargo = _isLeftCargo;
-				}
-			}
-
 			public void EmptyState() {
 				uniqueName = "";
 				health = -1;
 				maxHealthReduction = -1;
-				ammo = -1;
 				attachedArtifacts = new List<ArtifactState>();
 			}
 			
@@ -330,13 +304,25 @@ public class DataSaver {
 				}
 				return artifactNames;
 			}
+			
+			public CartState Copy() {
+				var copyState = new CartState();
+				copyState.uniqueName = uniqueName;
+				copyState.health = health;
+				copyState.maxHealthReduction = maxHealthReduction;
+
+				for (int i = 0; i < attachedArtifacts.Count; i++) {
+					copyState.attachedArtifacts.Add(attachedArtifacts[i].Copy());
+				}
+				
+				return copyState;
+			}
 		}
 
 		[Serializable]
 		public class ArtifactState {
 			[ValueDropdown("GetAllArtifactNames")]
 			public string uniqueName = "";
-			public int level;
 			private static IEnumerable GetAllArtifactNames() {
 				var artifacts = GameObject.FindObjectOfType<DataHolder>().artifacts;
 				var artifactNames = new List<string>();
@@ -349,8 +335,23 @@ public class DataSaver {
 			
 			public void EmptyState() {
 				uniqueName = "";
-				level = 0;
 			}
+			
+			public ArtifactState Copy() {
+				var copyState = new ArtifactState();
+				copyState.uniqueName = uniqueName;
+				return copyState;
+			}
+		}
+		
+		public TrainState Copy() {
+			var copyState = new TrainState();
+
+			for (int i = 0; i < myCarts.Count; i++) {
+				copyState.myCarts.Add(myCarts[i].Copy());
+			}
+
+			return copyState;
 		}
 	}
 }

@@ -14,9 +14,7 @@ public class MeepleSound : MonoBehaviour {
     public AudioClip[] clips;
 
     private void Start() {
-        if (playAutomatically) {
-            Invoke(nameof(PlayRepeating), Random.Range(playDelay.x, playDelay.y));
-        }
+        
     }
 
     void PlayRepeating() {
@@ -27,5 +25,15 @@ public class MeepleSound : MonoBehaviour {
     [Button]
     public void PlayClip() {
         GetComponent<AudioSource>().PlayOneShot(clips[Random.Range(0,clips.Length)]);
+    }
+
+    private void OnDisable() {
+        CancelInvoke();
+    }
+
+    private void OnEnable() {
+        if (playAutomatically) {
+            Invoke(nameof(PlayRepeating), Random.Range(playDelay.x, playDelay.y));
+        }
     }
 }

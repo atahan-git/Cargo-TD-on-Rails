@@ -25,6 +25,8 @@ public class EnemyInSwarm : MonoBehaviour
 
     public float nukingTime = 20;
 
+    [Tooltip("This gets auto set")]
+    public bool isElite;
 
     public enum EnemyType {
         Deadly, Safe

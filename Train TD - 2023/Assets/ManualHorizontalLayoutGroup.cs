@@ -13,7 +13,10 @@ public class ManualHorizontalLayoutGroup : MonoBehaviour {
     public bool isDirty = false;
     public bool isLocationsDirty = false;
 
+    public bool fitToSize = false;
+
     private float uiSizeMultiplier => DistanceAndEnemyRadarController.s.UISizeMultiplier;
+    public float actualUISizeMultiplier;
     
     void ChildrenDirty() {
         _rectTransform = GetComponent<RectTransform>();
@@ -72,7 +75,7 @@ public class ManualHorizontalLayoutGroup : MonoBehaviour {
                 percentage += children[i].minWidth;
             }else
             {
-                percentage += children[i].preferredWidth*uiSizeMultiplier;
+                percentage += children[i].preferredWidth*actualUISizeMultiplier;
             }
         }
     }
@@ -80,14 +83,33 @@ public class ManualHorizontalLayoutGroup : MonoBehaviour {
 
     void UpdateWidths() {
         var percentage = 0f;
+        
         for (int i = 0; i < children.Length; i++) {
-            /*var distance = percentage /* * totalLength#1#;
-            distance -= SpeedController.s.currentDistance - DistanceAndEnemyRadarController.s.playerTrainCurrentLocation;*/
-            
             if (children[i] == null) {
                 isDirty = true;
                 return;
             }
+        }
+        
+
+        actualUISizeMultiplier = uiSizeMultiplier;
+        if (fitToSize) {
+            var totalMinWidth = 0f;
+            var totalPreferredWidth = 0f;
+            for (int i = 0; i < children.Length; i++) {
+                if (children[i].isMinWidthMode) {
+                    totalMinWidth += children[i].minWidth;
+                } else {
+                    totalPreferredWidth += children[i].preferredWidth;
+                }
+            }
+
+            var totalAvailableWidth = _rectTransform.rect.width;
+            var availableForPreferredWidth = totalAvailableWidth - totalMinWidth;
+            actualUISizeMultiplier = availableForPreferredWidth / totalPreferredWidth;
+        }
+        
+        for (int i = 0; i < children.Length; i++) {
             
             var rect = children[i].GetComponent<RectTransform>();
             if (rect == null) {
@@ -100,8 +122,8 @@ public class ManualHorizontalLayoutGroup : MonoBehaviour {
                 children[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, children[i].minWidth);
             }else
             {
-                percentage += children[i].preferredWidth*uiSizeMultiplier;
-                children[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, children[i].preferredWidth*uiSizeMultiplier);
+                percentage += children[i].preferredWidth*actualUISizeMultiplier;
+                children[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, children[i].preferredWidth*actualUISizeMultiplier);
             }
         }
 

@@ -16,7 +16,7 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
     public EngineModule myEngineModule;
     public Transform[] directControlCamPositions;
 
-    public InputActionReference directControlShootAction => DirectControlMaster.s.directControlShootAction;
+    public InputActionReference activateAction => DirectControlMaster.s.activateAction;
     public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
     
     
@@ -42,7 +42,7 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
         
         DirectControlMaster.s.trainEngineControlUI.SetActive(true);
         
-        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shoot);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControlActivate);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.engineControlSwitch);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
     }
@@ -55,11 +55,12 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
             return;
         }
 
-        var click = directControlShootAction.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
+        var click = activateAction.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
 
         if (click) {
             if (crystalStored <= 0) {
-                var crystalIn = CrystalsAndWarpController.s.TryUseCrystals(1);
+                //var crystalIn = CrystalsAndWarpController.s.TryUseCrystals(1);
+                var crystalIn = 1;
 
                 if (crystalIn > 0) {
                     crystalStored += crystalIn/**5*/;
@@ -85,7 +86,7 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
         CameraController.s.DisableDirectControl();
         DirectControlMaster.s.trainEngineControlUI.SetActive(false);
 
-        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.shoot);
+        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControlActivate);
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.engineControlSwitch);
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
     }

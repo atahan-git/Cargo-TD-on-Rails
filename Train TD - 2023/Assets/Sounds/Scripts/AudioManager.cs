@@ -64,10 +64,10 @@ public class AudioManager : MonoBehaviour
         }
     }
     private static SfxDictionary _sfxDict;
-    public static void PlayOneShot(SfxTypes sfxType)
+    public static void PlayOneShot(SfxTypes sfxType, Vector3 worldPos=default)
     {
         if (sfxDict != null)
-            PlayOneShot(sfxDict.sfxDict[sfxType]);
+            PlayOneShot(sfxDict.sfxDict[sfxType],worldPos);
     }
     /// <summary>
     /// Play one shot sound, mostly for sound effects that are played instantly and once. E.g., gun fire sound.

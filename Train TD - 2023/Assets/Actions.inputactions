@@ -96,7 +96,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Shoot",
+                    "name": "DirectControlShoot",
                     "type": "Button",
                     "id": "41720091-e95d-4e9a-bbb3-f9f2a0e07634",
                     "expectedControlType": "Button",
@@ -222,15 +222,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Drag Click",
-                    "type": "Button",
-                    "id": "d86177a3-8cf7-4199-9693-8fa988b72b09",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Gamepad Snapped to Train Move Forward",
                     "type": "Button",
                     "id": "c9c570de-1c6d-48eb-a6df-844873754388",
@@ -276,9 +267,27 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "DirectControlActivate",
+                    "type": "Button",
+                    "id": "d09894b6-08be-4353-92d5-bd3d4d6133f2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "RepairDroneFlyDown",
                     "type": "Button",
                     "id": "3e2975d9-b5f2-43f9-b2f8-e9c3690cc87f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CycleSelectedThing",
+                    "type": "Button",
+                    "id": "8f558545-36fe-452f-b161-0b206d36306b",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -469,7 +478,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "DirectControlShoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -480,7 +489,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "DirectControlShoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -653,7 +662,7 @@
                     "name": "",
                     "id": "075e244e-d990-48ed-b1dd-f9992a03ea80",
                     "path": "<Mouse>/leftButton",
-                    "interactions": "",
+                    "interactions": "Tap,Hold",
                     "processors": "",
                     "groups": "",
                     "action": "ClickCart",
@@ -664,7 +673,7 @@
                     "name": "",
                     "id": "83cd7610-a156-4600-9298-aaf92fb9f9f5",
                     "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
+                    "interactions": "Tap,Hold",
                     "processors": "",
                     "groups": "",
                     "action": "ClickCart",
@@ -701,17 +710,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Alternate Click",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "930f693f-4f11-4fca-afb3-8290c6c7bf13",
-                    "path": "<Gamepad>/buttonNorth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Drag Click",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -910,6 +908,50 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "RepairDroneFlyDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0314b0c3-f69b-44c2-af46-ef6fe83c947f",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleSelectedThing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "166eb4e9-f19a-459e-9631-c50576d31ee1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "DirectControlActivate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "82a553c2-f1f0-4804-9364-e1887b69d474",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "DirectControlActivate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5bd4bdec-cefd-4621-b39d-b65f63aa67b1",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DirectControlActivate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

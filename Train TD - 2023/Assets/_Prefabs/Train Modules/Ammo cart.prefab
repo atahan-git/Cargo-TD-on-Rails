@@ -759,8 +759,8 @@ MonoBehaviour:
   isMainEngine: 0
   isCargo: 0
   myArtifactLocations:
-  - {fileID: 6194929492254337418}
   - {fileID: 4185142518804117465}
+  - {fileID: 6194929492254337418}
   isBeingDisabled: 0
   trainIndex: 0
   cartPosOffset: 0
@@ -812,6 +812,8 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   invincible: 0
   mainCollider: {fileID: 2305579421082905276}
+  cartUIBar: {fileID: 0}
+  myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0
@@ -1094,7 +1096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: 'Click on this to start reloading your ammo. Holds 32 pieces of ammo. '
+    text: Click on this to start reloading your ammo. Most guns need ammo to shoot.
   info: Ammo Cart
 --- !u!1 &3591906271589902553
 GameObject:
@@ -1142,7 +1144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffd4c45972e0fc54a84560b4d5de93b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxAmmo: 32
+  _maxAmmo: 20
   maxAmmoMultiplier: 1
   myAmmoBar: {fileID: 2891397435195573975}
   reloadEfficiency: 1
@@ -1186,8 +1188,15 @@ MonoBehaviour:
   curReloadCount: 4
   newOnes: []
   oldOnes: []
+  healOnReload: 0
+  curPerfectComboCount: 0
+  currentAffectors:
+    moveSpeedMultiplier: 1
+    moveSpeedReducer: 1
+    reloadAmountMultiplier: 1
   droppingAmmoChunks: []
   velocity: 0
+  failedSpawnEffect: {fileID: 0}
 --- !u!1 &3594827500495483965
 GameObject:
   m_ObjectHideFlags: 0

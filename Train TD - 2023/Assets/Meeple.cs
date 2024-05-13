@@ -39,6 +39,8 @@ public class Meeple : MonoBehaviour, IPlayerHoldable {
             target = targetActualPos;
             lookRotation = targetActualRot;
         }
+
+        lastSpeech = Random.Range(0, speech.Length);
     }
 
     public void SetUp(MeepleZone zone) {
@@ -159,19 +161,6 @@ public class Meeple : MonoBehaviour, IPlayerHoldable {
             Invoke(nameof(PickNewTarget), fallDelta);
         }
     }
-    
-    public bool chatIsShowing = false;
-
-    public void ShowChat() {
-        if (!chatIsShowing && !isSpecialMeeple) {
-            heroSound.PlayClip();
-            chatIsShowing = true;
-        }
-    }
-
-    public void HideChat() {
-        chatIsShowing = false;
-    }
 
 
     //in local pos, out local pos
@@ -207,12 +196,17 @@ public class Meeple : MonoBehaviour, IPlayerHoldable {
     }
 
     private string[] speech = new[] {
-        "Stop pushing me.",
-        "What are you doing?",
         "How's your day going?",
         "It's a long way to the meteor.",
+        "Life after the meteor arrived is tough but worth living.",
+        "I wish I had a train like yours.",
+        "At least we have the city walls protecting us.",
+        "Get out of the city already.",
     };
+
+    private int lastSpeech = 0;
     public void GetClicked() {
+        heroSound.PlayClip();
         if (isSpecialMeeple) {
             if (MeepleSpeechMaster.s.RemoveBubble(this)) {
                 ShowClickPrompt(false);
@@ -223,7 +217,9 @@ public class Meeple : MonoBehaviour, IPlayerHoldable {
             if (myPrevBubble != null) {
                 MeepleSpeechMaster.s.RemoveBubble(this);
             } else {
-                MeepleSpeechMaster.s.Speak(this, speech[Random.Range(0, speech.Length)]);
+                lastSpeech += 1;
+                lastSpeech %= speech.Length;
+                MeepleSpeechMaster.s.Speak(this, speech[lastSpeech]);
             }
         }
     }

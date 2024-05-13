@@ -974,8 +974,8 @@ MonoBehaviour:
   isMainEngine: 0
   isCargo: 0
   myArtifactLocations:
-  - {fileID: 1871705305602309735}
   - {fileID: 2088003661946275105}
+  - {fileID: 1871705305602309735}
   isBeingDisabled: 0
   trainIndex: 0
   cartPosOffset: 0
@@ -983,7 +983,7 @@ MonoBehaviour:
   canPlayerDrag: 1
   displayName: Shield Cart
   uniqueName: shield_cart
-  Icon: {fileID: 21300000, guid: 42da7a0800ad67345b6581b8cf9500b7, type: 3}
+  Icon: {fileID: 21300000, guid: 8c669e97e094a1f4da032ade9a6d5858, type: 3}
   isDestroyed: 0
   uiTargetTransform: {fileID: 317267816422079952}
   shootingTargetTransform: {fileID: 317267816422079952}
@@ -1027,6 +1027,7 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   invincible: 0
   mainCollider: {fileID: 2305579421082905276}
+  cartUIBar: {fileID: 0}
   myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
@@ -1328,6 +1329,9 @@ MonoBehaviour:
   currentMaxShieldAmount: 500
   curRegenTimer: 0.5
   regenSpeed: 50
+  regenMultiplier: 1
+  regenTimerReductionMultiplier: 1
+  regenTimerReductionDivider: 1
   prefabToSpawnWhenShieldIsHit: []
   prefabToSpawnWhenShieldIsDestroyed: []
   myPhysicalShieldBar: {fileID: 5259756413705080856}

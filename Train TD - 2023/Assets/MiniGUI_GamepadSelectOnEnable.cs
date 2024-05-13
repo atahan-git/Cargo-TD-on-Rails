@@ -12,9 +12,16 @@ public class MiniGUI_GamepadSelectOnEnable : MonoBehaviour {
 		}
 
 		if (SettingsController.s != null) {
-			added = true;
-			SettingsController.s.gamepadModeButtons.Add(gameObject);
+			AddToGamepadButtons();
+		} else {
+			SettingsController.autoSelectDelay = 2;
+			Invoke(nameof(AddToGamepadButtons),0.05f);
 		}
+	}
+
+	void AddToGamepadButtons() {
+		added = true;
+		SettingsController.s.gamepadModeButtons.Add(gameObject);
 	}
 
 	private void OnDisable() {

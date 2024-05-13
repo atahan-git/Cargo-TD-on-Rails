@@ -6,7 +6,7 @@ using UnityEngine;
 public class RubbleFollowFloor : MonoBehaviour {
     public float constantForce = 10f;
 
-    public float deathTime = 20f;
+    public float deathTime = 30f;
 
 
     public bool isAttachedToFloor = false;
@@ -15,7 +15,16 @@ public class RubbleFollowFloor : MonoBehaviour {
     public List<TrainTerrainData> addedChunks = new List<TrainTerrainData>();
 
     private void Start() {
-        Invoke("DestroyNow", deathTime);
+        InitiateDeathTimer();
+    }
+
+    void InitiateDeathTimer() {
+        deathTime = 30;
+        Invoke(nameof(DestroyNow), deathTime);
+    }
+
+    void StopDeathTimer() {
+        CancelInvoke();
     }
 
 
@@ -24,7 +33,7 @@ public class RubbleFollowFloor : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        deathTime -= Time.fixedDeltaTime;
+        deathTime -= Time.deltaTime;
         GetComponent<Rigidbody>().AddForce(Vector3.back * constantForce);
     }
     
@@ -60,7 +69,7 @@ public class RubbleFollowFloor : MonoBehaviour {
                 addedChunks.Add(hexChunk);
             } else {
                 transform.SetParent(target.transform);
-                Invoke(nameof(_DestroySelf), 30);
+                InitiateDeathTimer();
             }
         }
     }
@@ -74,17 +83,18 @@ public class RubbleFollowFloor : MonoBehaviour {
 
     public bool canAttachToFloor = true;
     public void UnAttachFromFloor() {
+        if (!isAttachedToFloor) {
+            return;
+        }
         for (int i = 0; i < addedChunks.Count; i++) {
             addedChunks[i].RemoveForeignObject(gameObject);
         }
         addedChunks.Clear();
         
         transform.SetParent(VisualEffectsController.s.transform);
-        
-        CancelInvoke();
-    }
 
-    void _DestroySelf() {
-        Destroy(gameObject);
+        isAttachedToFloor = false;
+        
+        StopDeathTimer();
     }
 }

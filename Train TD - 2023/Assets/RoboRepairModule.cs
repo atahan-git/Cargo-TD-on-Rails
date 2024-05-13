@@ -4,20 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class RoboRepairModule : MonoBehaviour, IActiveDuringCombat, IResetState, IExtraInfo {
+public class RoboRepairModule : MonoBehaviour, IActiveDuringCombat, IResetState, IDisabledState {
 
     private float curDelay = 0.5f;
     public float delay = 2;
     public float amount = 25;
-
-    public float amountMultiplier = 1f;
-    public float amountDivider = 1f;
-    public float firerateMultiplier = 1f;
-    public float firerateDivider = 1f;
-    //public float steamUsePerRepair = 0.5f;
-
-    public bool explosiveRepair = false;
-    public float explosiveRepairAmount = 0;
 
     private int countPerCycle = 1;
 
@@ -40,11 +31,11 @@ public class RoboRepairModule : MonoBehaviour, IActiveDuringCombat, IResetState,
     }
 
     float GetAmount() {
-        return amount * amountMultiplier * (1/amountDivider);
+        return amount;
     }
 
     float GetDelay() {
-        return delay * (1 / firerateMultiplier) * firerateDivider;
+        return delay;
     }
     
     void Update() {
@@ -156,33 +147,12 @@ public class RoboRepairModule : MonoBehaviour, IActiveDuringCombat, IResetState,
 
                 if (canRepair) {
                     healths[i].RepairChunk();
-                    if (explosiveRepair) {
-                        Train.s.GetNextBuilding(1, healths[i].myCart)?.GetHealthModule().RepairChunk();
-                        Train.s.GetNextBuilding(-1, healths[i].myCart)?.GetHealthModule().RepairChunk();
-                    }
-                    SpawnGemEffect(healths[i]);
                     return true;
                 }
             }
         }
 
         return false;
-    }
-
-    void SpawnGemEffect(ModuleHealth target) {
-        StartCoroutine(_SpawnGemEffect(target));
-    }
-
-    IEnumerator _SpawnGemEffect(ModuleHealth target) {
-        foreach (var prefab in extraPrefabToSpawnOnAffected) {
-            if (target == null) {
-                yield break;
-            }
-            
-            Instantiate(prefab, target.GetUITransform());
-
-            yield return new WaitForSeconds(0.2f);
-        }
     }
 
     public void ActivateForCombat() {
@@ -194,15 +164,17 @@ public class RoboRepairModule : MonoBehaviour, IActiveDuringCombat, IResetState,
     public void Disable() {
         this.enabled = false;
     }
+    
+    public void CartDisabled() {
+        this.enabled = false;
+    }
+
+    public void CartEnabled() {
+        this.enabled = true;
+    }
 
 
     public void ResetState() {
-        extraPrefabToSpawnOnAffected.Clear();
-        firerateMultiplier = 1;
-        amountMultiplier = 1;
-        firerateDivider = 1;
-        explosiveRepair = false;
-        explosiveRepairAmount = 0;
-        amountDivider = 1;
+        
     }
 }

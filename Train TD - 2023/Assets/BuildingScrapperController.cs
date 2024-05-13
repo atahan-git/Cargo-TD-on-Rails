@@ -16,7 +16,7 @@ public class BuildingScrapperController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging() && PlayerWorldInteractionController.s.canSmith) {
+        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging()) {
             if (!target.IsEmpty())
                 CheckAndDoUpgrade();
         }

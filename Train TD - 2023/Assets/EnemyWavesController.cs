@@ -22,6 +22,8 @@ public class EnemyWavesController : MonoBehaviour {
 	public bool enemiesInitialized = false;
 
 	[NonSerialized] public bool debugNoRegularSpawns = false;
+	public bool spawnDynamicEnemies = true;
+	public bool act2DemoEndNoSpawn = false;
 
 	public bool encounterMode = false;
 
@@ -33,74 +35,230 @@ public class EnemyWavesController : MonoBehaviour {
 	public void SetUpLevel() {
 		Cleanup();
 
+		curMiniWaveCount = 0;
 		enemiesInitialized = true;
-		curMiniWaveTime = 20;
+		curMiniWaveTime = 90;
+		spawnDynamicEnemies = true;
 	}
 
-	public void SpawnEnemiesOnSegment(float segmentStartDistance, float segmentLength, string rewardUniqueName, bool mergeReward) {
-		if (debugNoRegularSpawns)
+	public void SpawnEnemiesOnSegment(float segmentStartDistance, float segmentLength, UpgradesController.PathEnemyType enemyType) {
+		if (debugNoRegularSpawns || act2DemoEndNoSpawn)
 			return;
 		
-		var distance = Random.Range(segmentLength / 10f, segmentLength);
+		var distance = Random.Range(segmentLength / 10f, segmentLength/3f);
 
-		GameObject enemyPrefab = GetRandomEnemyWithReward(PlayStateMaster.s.currentLevel.rewardBattalions, rewardUniqueName, mergeReward);
+		if (enemyType.myType == UpgradesController.PathEnemyType.PathType.boss) {
+			BossController.s.NewPathEnteredWithBoss(segmentStartDistance, segmentLength);
+			return ;
+		}
+
+		if (enemyType.myType == UpgradesController.PathEnemyType.PathType.pitStop) {
+			PitStopController.s.MakePitStop(segmentStartDistance, segmentLength);
+			return;
+		}
+
+		if (enemyType.myType == UpgradesController.PathEnemyType.PathType.empty) {
+			return;
+		}
+
+		MakeSegmentEnemy(segmentStartDistance+distance, enemyType);
+		/*GameObject enemyPrefab = GetRandomEnemyWithReward(PlayStateMaster.s.currentLevel, enemyType.rewardUniqueName, enemyType.isElite);
 
 		if (enemyPrefab != null) {
-			var enemy = SpawnEnemy(enemyPrefab, segmentStartDistance + distance, false, Random.value > 0.5f);
-			enemy.GetComponentInChildren<CarrierEnemy>()?.SetWhatIsBeingCarried(rewardUniqueName);
-			enemy.GetComponentInChildren<GemCarrierEnemy>()?.SetWhatIsBeingCarried(rewardUniqueName);
+			var enemy = SpawnEnemy(enemyPrefab, segmentStartDistance + distance, false, Random.value < 0.5f);
+			enemy.GetComponentInChildren<CarrierEnemy>()?.SetWhatIsBeingCarried(enemyType.rewardUniqueName);
+			enemy.GetComponentInChildren<GemCarrierEnemy>()?.SetWhatIsBeingCarried(enemyType.rewardUniqueName);
 		} else {
-			Debug.LogError($"Cannot find enemy with {rewardUniqueName} and merge={mergeReward}");
-		}
+			Debug.LogError($"Cannot find enemy with {enemyType.rewardUniqueName} and elite={enemyType.isElite}");
+		}*/
 	}
 
 
-	GameObject GetRandomEnemyWithReward(GameObject[] possiblePrefabs, string uniqueName, bool mergeReward) {
-		var legalPrefabs = new List<GameObject>();
+	void MakeSegmentEnemy(float distance, UpgradesController.PathEnemyType enemyType) {
+		var enemyBudget = 1;
+		var uniqueGearBudget = 0;
+		var eliteGearBudget = 0;
+		var megaEnemyBudget = 0;
+		switch (enemyType.myType) {
+			case UpgradesController.PathEnemyType.PathType.easy:
+				var depth = PathAndTerrainGenerator.s.currentPathTree.myDepth;
+				var difficulty = Mathf.Clamp(depth+2, 3, 5);
+				enemyBudget = difficulty;
+				uniqueGearBudget = 0;
+				megaEnemyBudget = 0;
+				break;
+			case UpgradesController.PathEnemyType.PathType.regular:
+				if (PathAndTerrainGenerator.s.currentPathTree.myDepth >= MapController.s.currentMap.pitStopDepth) {
+					enemyBudget = Random.Range(4, 6);
+					uniqueGearBudget = Random.Range(1,2);
+				} else {
+					enemyBudget = Random.Range(3, 5);
+					uniqueGearBudget = 1;
+				}
+				megaEnemyBudget = 0;
+				break;
+			case UpgradesController.PathEnemyType.PathType.elite:
+				enemyBudget = Random.Range(3, 5);
+				eliteGearBudget = 1;
+				uniqueGearBudget = 1;
+				megaEnemyBudget = 1;
+				break;
+		}
+
+		if (enemyBudget == 6) {
+			var isLeft = Random.value < 0.5f;
+			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, 4, false,isLeft);
+			MakeEnemyBattalion(distance, 0, 0, 0, 3, false, !isLeft);
+		} else {
+			
+			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, enemyBudget, false,Random.value < 0.5f);
+		}
 		
-		for (int i = 0; i < possiblePrefabs.Length; i++) {
-			var mergeCarrier = possiblePrefabs[i].GetComponentInChildren<MergeCarrierEnemy>();
-			if (mergeReward) {
-				if (mergeCarrier == null) {
-					continue;
-				}
-			} else {
-				if (mergeCarrier != null) {
-					continue;
-				}
-			}
-			
-			
-			var carrier = possiblePrefabs[i].GetComponentInChildren<CarrierEnemy>();
-			if (carrier != null) {
-				for (int j = 0; j < carrier.carryAwards.Length; j++) {
-					if (carrier.carryAwards[j].uniqueName == uniqueName) {
-						legalPrefabs.Add(possiblePrefabs[i]);
-						break;
-					}
-				}
-				continue;
-			}
-			
-			var gemCarrier = possiblePrefabs[i].GetComponentInChildren<GemCarrierEnemy>();
-			if (gemCarrier != null) {
-				for (int j = 0; j < gemCarrier.carryAwards.Length; j++) {
-					if (gemCarrier.carryAwards[j].uniqueName == uniqueName) {
-						legalPrefabs.Add(possiblePrefabs[i]);
-						break;
-					}
-				}
-				continue;
-			}
-		}
-
-		if (legalPrefabs.Count <= 0) {
-			return null;
-		}
-
-		return legalPrefabs[Random.Range(0, legalPrefabs.Count)];
 	}
 
+	private void MakeEnemyBattalion(float distance, int megaEnemyBudget, int eliteGearBudget, int uniqueGearBudget, int enemyBudget, bool spawnMoving, bool isLeft) {
+		var curLevel = PlayStateMaster.s.currentLevel;
+		
+		var playerDistance = SpeedController.s.currentDistance;
+		var wave = Instantiate(curLevel.formations[Random.Range(0, curLevel.formations.Length)], Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
+		wave.transform.SetParent(transform);
+
+		var slots = wave.GetComponentsInChildren<EnemySwarmMaker>();
+		
+		// make mega enemy
+		for (int i = 0; i < megaEnemyBudget; i++) {
+			var slot = GetSlot(slots);
+			slot.currentFill += 2;
+			var megaEnemy = Instantiate(curLevel.megaEnemies[Random.Range(0, curLevel.megaEnemies.Length)], GetSlot(slots).transform);
+
+			var gunSlots = megaEnemy.GetComponentsInChildren<EnemyGunSlot>();
+
+			for (int j = 0; j < gunSlots.Length; j++) {
+				if (eliteGearBudget > 0) {
+					Instantiate(curLevel.eliteEquipment[Random.Range(0, curLevel.eliteEquipment.Length)], gunSlots[j].transform);
+					eliteGearBudget -= 1;
+				} else if (uniqueGearBudget > 0) {
+					Instantiate(curLevel.uniqueEquipment[Random.Range(0, curLevel.uniqueEquipment.Length)], gunSlots[j].transform);
+					uniqueGearBudget -= 1;
+				}
+
+				{
+					Instantiate(curLevel.enemyGuns[Random.Range(0, curLevel.enemyGuns.Length)], gunSlots[j].transform);
+				}
+			}
+
+			//megaEnemy.GetComponent<EnemyInSwarm>().isElite = true;
+		}
+
+		// budget enemies
+		var enemyDistribution = RandomIntsThatAddUpToInput(enemyBudget, 3);
+		// make all the other enemies
+		for (int i = 0; i < enemyBudget; i++) {
+			int spawnCount;
+			GameObject enemyPrefab;
+			var isSmall = false;
+			if (i < enemyDistribution[0]) {
+				spawnCount = 1;
+				enemyPrefab = curLevel.bigEnemies[Random.Range(0, curLevel.bigEnemies.Length)];
+			} else if (i < enemyDistribution[0] + enemyDistribution[1]) {
+				spawnCount = Random.Range(1, 3);
+				enemyPrefab = curLevel.mediumEnemies[Random.Range(0, curLevel.mediumEnemies.Length)];
+			} else {
+				spawnCount = Random.Range(2, 6);
+				enemyPrefab = curLevel.smallEnemies[Random.Range(0, curLevel.smallEnemies.Length)];
+				isSmall = true;
+			}
+
+			GameObject enemyGun = curLevel.enemyGuns[Random.Range(0, curLevel.enemyGuns.Length)];
+			//curLevel.uniqueEquipment[Random.Range(0, curLevel.uniqueEquipment.Length)];
+
+			var slot = GetSlot(slots);
+			slot.currentFill += 1;
+
+			for (int j = 0; j < spawnCount; j++) {
+				var enemy = Instantiate(enemyPrefab, slot.transform);
+				var gunSlots = enemy.GetComponentsInChildren<EnemyGunSlot>();
+				for (int k = 0; k < gunSlots.Length; k++) {
+					if (uniqueGearBudget > 0) {
+						Instantiate(curLevel.uniqueEquipment[Random.Range(0, curLevel.uniqueEquipment.Length)], gunSlots[k].transform);
+						uniqueGearBudget -= 1;
+						//enemy.GetComponent<EnemyInSwarm>().isElite = true;
+					} else {
+						Instantiate(enemyGun, gunSlots[k].transform);
+					}
+
+					if (isSmall) {
+						var guns = gunSlots[k].GetComponentsInChildren<GunModule>();
+						for (int l = 0; l < guns.Length; l++) {
+							guns[l].fireDelay *= 2;
+						}
+					}
+				}
+			}
+		}
+
+
+		wave.SetUp(distance, spawnMoving, isLeft);
+		waves.Add(wave);
+	}
+
+	int[] RandomIntsThatAddUpToInput(int total, int count) {
+		float[] randomFloats = new float[count];
+		var sum = 0f;
+		for (int i = 0; i < randomFloats.Length; i++) {
+			randomFloats[i] = Random.value;
+			sum += randomFloats[i];
+		}
+		//make sum approximately total
+		int[] result = new int[count];
+		var resultSum = 0;
+		for (int i = 0; i < result.Length; i++) {
+			result[i] = Mathf.FloorToInt(randomFloats[i] * total / sum);
+			resultSum += result[i];
+		}
+		//randomly add missing numbers
+		for (int i = 0; i < total-resultSum; i++) {
+			result[Random.Range(0, result.Length)] += 1;
+		}
+
+		return result;
+	}
+
+	EnemySwarmMaker GetSlot(EnemySwarmMaker[] slots) {
+		var legalSlots = new List<EnemySwarmMaker>();
+		for (int i = 0; i < slots.Length; i++) {
+			if (slots[i].currentFill < slots[i].enemyCapacity) {
+				legalSlots.Add(slots[i]);
+			}
+		}
+
+		if (legalSlots.Count > 0) {
+			return legalSlots[Random.Range(0, legalSlots.Count)];
+		} else {
+			return slots[Random.Range(0, slots.Length)];
+		}
+	}
+
+
+	void MakeDynamicWave() {
+		var distance = SpeedController.s.currentDistance-30;
+		var enemyBudget = Mathf.CeilToInt(Random.Range(Mathf.Log(curMiniWaveCount+1)+1,(curMiniWaveCount/4f)+2));
+		Debug.Log($"Rolled {enemyBudget} dynamic enemies, round {curMiniWaveCount}, range was {Mathf.Log(curMiniWaveCount+1)+1} - {curMiniWaveCount/2f+2}");
+		var uniqueGearBudget = 0;
+		if (curMiniWaveCount > 10) {
+			uniqueGearBudget = 1;
+		}
+
+		enemyBudget = Mathf.CeilToInt(enemyBudget/2f);
+
+		if (enemyBudget < 1) {
+			enemyBudget = 1;
+		}
+
+		MakeEnemyBattalion(distance, 0, 0, uniqueGearBudget, enemyBudget, true, Random.value < 0.5f);
+
+		curMiniWaveCount += 1;
+	}
 
 	public int maxConcurrentWaves = 6;
 
@@ -141,34 +299,15 @@ public class EnemyWavesController : MonoBehaviour {
 	}
 
 
-	public Vector2 newMiniWaveRandomTime = new Vector2(5,10);
+	public float miniWaveTime = 60;
 	public float curMiniWaveTime;
-	public float miniWaveChance = 0.2f;
-	public Vector2Int miniWaveSize = new Vector2Int(1, 5);
-
-	public float miniWaveChanceMultiplier = 1;
-	public float miniWaveCountdownSpeed = 1;
-	public float maxWaveCountMultiplier = 1;
+	public int curMiniWaveCount = 0;
 
 	public void SetWarpingMode(bool isWarping) {
-		if (isWarping) {
-			miniWaveChanceMultiplier = 3;
-			miniWaveCountdownSpeed = 2;
-			maxWaveCountMultiplier = 1.5f;
-		} else {
-			miniWaveChanceMultiplier = 1;
-			miniWaveCountdownSpeed = 1;
-			maxWaveCountMultiplier = 1;
-		}
+		
 	}
 	
 	void Update() {
-		if (PlayStateMaster.s.isCombatInProgress()) {
-			if (SpeedController.s.currentDistance < 30) {
-				curMiniWaveTime = 5;
-			}
-		}
-		
 		if (PlayStateMaster.s.isCombatInProgress() && enemiesInitialized) {
 			var playerDistance = SpeedController.s.currentDistance;
 
@@ -176,29 +315,18 @@ public class EnemyWavesController : MonoBehaviour {
 				waves[i].UpdateBasedOnDistance(playerDistance);
 			}
 
+			var isDynamicSpawnSuppressed = debugNoRegularSpawns || act2DemoEndNoSpawn || !spawnDynamicEnemies || encounterMode;
 
-			if (debugNoRegularSpawns)
+			if (isDynamicSpawnSuppressed)
 				return;
 
-			if (waves.Count < maxConcurrentWaves*maxWaveCountMultiplier) {
-				if (encounterMode) {
-					return;
-				}
-
-				curMiniWaveTime -= Time.deltaTime*miniWaveCountdownSpeed;
-				if (dynamicWaves.Count == 0) {
-					curMiniWaveTime -= Time.deltaTime*5f;
-				}
+			if (waves.Count < maxConcurrentWaves) {
+				curMiniWaveTime -= Time.deltaTime;
 				
 				if (curMiniWaveTime <= 0) {
-					curMiniWaveTime = Random.Range(newMiniWaveRandomTime.x, newMiniWaveRandomTime.y);
+					curMiniWaveTime = miniWaveTime;
 
-					if (Random.value < (miniWaveChance*miniWaveChanceMultiplier) || dynamicWaves.Count == 0) {
-						var enemyPrefab = PlayStateMaster.s.currentLevel.dynamicBattalions[Random.Range(0, PlayStateMaster.s.currentLevel.dynamicBattalions.Length)];
-						var dynamicWave = SpawnEnemy(enemyPrefab, SpeedController.s.currentDistance - 30, true,Random.value < 0.5f, true);
-						
-						dynamicWave.GetComponentInChildren<DynamicSpawnEnemies>().SpawnEnemies(Random.Range(miniWaveSize.x, miniWaveSize.y+1));
-					}
+					MakeDynamicWave();
 				}
 				
 			}
@@ -210,7 +338,13 @@ public class EnemyWavesController : MonoBehaviour {
 			}
 		}
 
-		UpdateEnemyFlocks();
+		/*if (PlayStateMaster.s.isCombatInProgress()) {
+			if (SpeedController.s.currentDistance < 30) {
+				curMiniWaveTime = 30;
+			}
+		}*/
+		
+		GetComponent<EnemyFlockingController>().UpdateEnemyFlocks();
 	}
 
 	public void RemoveWave(EnemyWave toRemove) {
@@ -224,203 +358,21 @@ public class EnemyWavesController : MonoBehaviour {
 	public void Cleanup() {
 		transform.DeleteAllChildren();
 		enemySwarmMakers.Clear();
+		enemyInSwarms.Clear();
 		waves.Clear();
 		dynamicWaves.Clear();
 		enemiesInitialized = false;
 	}
 	
 	
-	// Flocking behavior controller
-	
-	// inspired by https://github.com/beneater/boids/blob/master/boids.js
-
 	public List<EnemySwarmMaker> enemySwarmMakers = new List<EnemySwarmMaker>();
-	public void AddExistingSwarmsForTesting() {
-		var _enemySwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
+	public List<EnemyInSwarm> enemyInSwarms = new List<EnemyInSwarm>();
 
-		for (int i = 0; i < _enemySwarmMakers.Length; i++) {
-			AddEnemySwarmMaker(_enemySwarmMakers[i]);
-		}
+	public int GetActiveEnemyCount() {
+		return enemyInSwarms.Count;
 	}
 
-	public void AddEnemySwarmMaker(EnemySwarmMaker swarm) {
-		enemySwarmMakers.Add(swarm);
-		if (!swarm.unsquished) {
-			StartCoroutine(UnsquishFlock(swarm));
-		}
-	}
-
-	public void RemoveEnemySwarmMaker(EnemySwarmMaker swarm) {
-		enemySwarmMakers.Remove(swarm);
-	}
-
-
-	IEnumerator UnsquishFlock(EnemySwarmMaker flock) {
-		yield return null; // give time for the Start() function to run on the flock
-		var enemies = flock.activeEnemies;
-
-		for (int i = 0; i < enemies.Count; i++) {
-			// unsquish
-			if (enemies.Count > 1) {
-				var random = Random.onUnitSphere;
-				random.y = 0;
-				random = random.normalized * Random.Range(0.5f, 1.5f);
-				//Debug.DrawLine(enemies[i].transform.position, enemies[i].transform.position + random, Color.yellow, 1f);
-				enemies[i].transform.position += random;
-			}
-		}
-
-		flock.unsquished = true;
-	}
-
-	public void UpdateEnemyFlocks() {
-		var allEnemies = new List<EnemyInSwarm>();
-		
-		for (int i = 0; i < enemySwarmMakers.Count; i++) {
-			var swarm = enemySwarmMakers[i];
-			
-			CalculateSwarmCenterAndVelocity(swarm);
-			
-			allEnemies.AddRange(swarm.activeEnemies);
-		}
-		
-		for (int j = 0; j < allEnemies.Count; j++) {
-			var enemy = allEnemies[j];
-				
-			FlyTowardsCenter(enemy);
-			MatchVelocity(enemy);
-			AvoidOthers(enemy, allEnemies);
-			NormalizeSpeed(enemy);
-			KeepWithinBounds(enemy);
-			MoveWithVelocity(enemy);
-		}
-	}
-
-	void CalculateSwarmCenterAndVelocity(EnemySwarmMaker swarm) {
-		var position = Vector3.zero;
-		var velocity = Vector3.zero;
-		
-		for (int j = 0; j < swarm.activeEnemies.Count; j++) {
-			position += swarm.activeEnemies[j].transform.position;
-			velocity += swarm.activeEnemies[j].boilRealDelta;
-		}
-
-		var count = swarm.activeEnemies.Count;
-		var averagePosition = position / count;
-		var averageVelocity = velocity / count;
-
-		swarm.swarmCenter = averagePosition;
-
-		swarm.swarmAverageVelocity = Vector3.RotateTowards(swarm.swarmAverageVelocity, averageVelocity, 1f * Time.deltaTime, 0.05f*Time.deltaTime);
-
-		//Debug.DrawLine(swarm.swarmCenter, swarm.swarmCenter + swarm.swarmAverageVelocity, Color.red);
-		//Debug.DrawLine(swarm.swarmCenter, swarm.swarmCenter + averageVelocity, Color.magenta);
-	}
-
-	void FlyTowardsCenter(EnemyInSwarm boid) {
-		float centeringFactor = 3f * Time.deltaTime;
-
-		var centerDirection =  boid.mySwarm.swarmCenter - boid.transform.position;
-
-		boid.boidTargetDelta += centerDirection * centeringFactor;
-	}
-	
-	void AvoidOthers(EnemyInSwarm boid, List<EnemyInSwarm> allEnemies) {
-		float minDistance = 0.6f; // we willd add boid radius to this.
-		float avoidFactor = 60f * Time.deltaTime;
-
-		Vector3 pushForce = Vector3.zero;
-
-		for (int i = 0; i < allEnemies.Count; i++) {
-			var otherBoid = allEnemies[i];
-			if(boid == otherBoid)
-				continue;
-			
-			var closestPointOnMe = boid.mainCollider.ClosestPoint(otherBoid.transform.position);
-			var closestPointOnOtherBoid = otherBoid.mainCollider.ClosestPoint((boid.transform.position));
-			var otherBoidToOurBoidVector =  closestPointOnMe - closestPointOnOtherBoid;
-			otherBoidToOurBoidVector.y = 0;
-			var distance = otherBoidToOurBoidVector.magnitude;
-			
-			otherBoidToOurBoidVector =  boid.transform.position - otherBoid.transform.position ;
-
-			if (distance < minDistance) {
-				// make shorter distance more important
-				var multiplier = (minDistance - distance);
-				multiplier += 0.7f;
-				multiplier = multiplier * multiplier;
-				multiplier -= 0.7f;
-
-				if (distance <= 0f) {
-					otherBoidToOurBoidVector = Random.onUnitSphere;
-				}
-
-				if (multiplier < 0) {
-					multiplier = 0;
-				}
-
-				/*if (multiplier > 0) {
-					Debug.DrawLine(closestPointOnOtherBoid, closestPointOnMe, new Color(multiplier, 0, 0));
-				} else {
-					Debug.DrawLine(closestPointOnOtherBoid, closestPointOnMe, new Color(0, -multiplier, 0));
-				}*/
-
-				pushForce += otherBoidToOurBoidVector.normalized * multiplier ;
-			}
-		}
-
-		boid.boidTargetDelta += pushForce * avoidFactor;
-	}
-	
-	void MatchVelocity(EnemyInSwarm boid) {
-		float matchingFactor = 2f * Time.deltaTime;
-		
-		var velocityDifference =  boid.mySwarm.swarmAverageVelocity.normalized - boid.boidTargetDelta;
-
-		boid.boidTargetDelta += velocityDifference * matchingFactor;
-	}
-	
-	void NormalizeSpeed(EnemyInSwarm boid) {
-		float speedLimit = 1f;
-
-		boid.boidTargetDelta.y = 0;
-		var speed = boid.boidTargetDelta.magnitude;
-
-		if (speed > speedLimit) {
-			boid.boidTargetDelta = boid.boidTargetDelta.normalized * speedLimit;
-		}
-
-		if (speed < speedLimit) {
-			speed = Mathf.MoveTowards(speed, speedLimit, 0.2f * Time.deltaTime);
-			boid.boidTargetDelta = boid.boidTargetDelta.normalized * speed;
-		}
-	}
-	
-	void KeepWithinBounds(EnemyInSwarm boid) {
-		float turnFactor = 4f * Time.deltaTime;
-		float speedLimit = 2f;
-		
-		var currentPosition = boid.transform.position;
-		var pointInBounds = boid.mySwarm.GetComponent<Collider>().ClosestPoint(currentPosition);
-
-		var delta = pointInBounds - currentPosition;
-
-		delta.y = 0;
-
-		var magnitude = delta.magnitude;
-		magnitude = Mathf.Clamp(magnitude, 0f, 1f);
-
-		if (magnitude > 0.01f) {
-			//boid.boidMoveDelta = Vector3.MoveTowards(boid.boidMoveDelta, delta.normalized*speedLimit, turnFactor);
-			boid.boidTargetDelta += delta.normalized*magnitude;
-		}
-	}
-
-	void MoveWithVelocity(EnemyInSwarm boid) {
-		boid.boilRealDelta = Vector3.MoveTowards(boid.boilRealDelta,boid.boidTargetDelta, 1f*Time.deltaTime);
-		boid.transform.position += boid.boilRealDelta * Time.deltaTime * 0.2f;
-
-		//Debug.DrawLine(boid.transform.position, boid.transform.position + boid.boilRealDelta, Color.green);
-		//Debug.DrawLine(boid.transform.position, boid.transform.position + boid.boidTargetDelta, Color.blue);
+	public void StopSpawningNewDynamicEnemies() {
+		spawnDynamicEnemies = false;
 	}
 }

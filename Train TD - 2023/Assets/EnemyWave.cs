@@ -47,7 +47,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     
     private void Start() {
         Instantiate(LevelReferences.s.enemyWaveMovingArrow, transform);
-        lineRenderer = GetComponentInChildren<LineRenderer>();
+        //lineRenderer = GetComponentInChildren<LineRenderer>();
     }
 
     private DisablerHarpoonModule _disablerHarpoonModule;
@@ -63,11 +63,11 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
 
         _disablerHarpoonModule = GetComponentInChildren<DisablerHarpoonModule>();
 
-        var allEnemyHealths = GetComponentsInChildren<EnemyHealth>();
+        /*var allEnemyHealths = GetComponentsInChildren<EnemyHealth>();
 
         for (int i = 0; i < allEnemyHealths.Length; i++) {
             ArtifactsController.s.ModifyEnemy(allEnemyHealths[i]);
-        }
+        }*/
         
         var allEnemiesInSwarm = GetComponentsInChildren<EnemyInSwarm>();
         
@@ -108,7 +108,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         myXOffset = targetXOffset;
 
         for (int i = 0; i < allSwarmMakers.Length; i++) {
-            EnemyWavesController.s.AddEnemySwarmMaker(allSwarmMakers[i]);
+            EnemyFlockingController.s.AddEnemySwarmMaker(allSwarmMakers[i]);
         }
         
         
@@ -139,7 +139,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             EnemyWavesController.s.RemoveWave(this);
             var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
             for (int i = 0; i < allSwarmMakers.Length; i++) {
-                EnemyWavesController.s.RemoveEnemySwarmMaker(allSwarmMakers[i]);
+                EnemyFlockingController.s.RemoveEnemySwarmMaker(allSwarmMakers[i]);
             }
         }
     }
@@ -187,7 +187,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
                 wavePosition += currentSpeed * Time.deltaTime;
 
 
-                if (distance > 75 && wavePosition < playerPos) { // if we are sooo much behind the player (because they are speeding) then leave.
+                if (distance > 50 && wavePosition < playerPos) { // if we are sooo much behind the player (because they are speeding) then leave.
                     Leave(false);
                 }
             }
@@ -260,6 +260,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
 
             
             if (distance > 100 && isLeaving) {
+                Debug.Log("Destroying wave due to leaving");
                 Destroy(gameObject);
             }
 
@@ -482,14 +483,14 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             points.Add(far);
             points.Add(close);
 
-            lineRenderer = GetComponentInChildren<LineRenderer>();
+            /*lineRenderer = GetComponentInChildren<LineRenderer>();
             lineRenderer.positionCount = points.Count;
             lineRenderer.SetPositions(points.ToArray());
             //lineRenderer.material = isDeadly ? deadlyMaterial : safeMaterial;
             lineRenderer.material = LevelReferences.s.enemyWaveMovingArrowMaterial;
             targetAlpha = 0f;
             lineRenderer.material.SetFloat("alpha", targetAlpha);
-            lineRenderer.enabled = true;
+            lineRenderer.enabled = true;*/
         }
     }
 
@@ -545,6 +546,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
                 nukingDiveMoveSpeed += 2f * Time.deltaTime;
 
                 if (Vector3.Distance(transform.position, nukingTarget.transform.position) < 0.4f) {
+                    Debug.Log("Destroying due to nuking");
                     Destroy(gameObject);
                     var carRealPos = GetComponentInChildren<CarLikeMovementOffsetsController>();
                     Instantiate(LevelReferences.s.bigDamagePrefab, carRealPos.transform.position, carRealPos.transform.rotation);
@@ -569,7 +571,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         else
             currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, currentLerpSpeed * Time.deltaTime);
         
-        lineRenderer.material.SetFloat("alpha", currentAlpha);
+        //lineRenderer.material.SetFloat("alpha", currentAlpha);
     }
 
     public float GetDistance() {

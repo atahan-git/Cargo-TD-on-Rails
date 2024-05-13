@@ -66,12 +66,12 @@ public class MainMenu : MonoBehaviour {
         ProfileUI.SetActive(true);
 
 
-        var isInARun = DataSaver.s.GetCurrentSave().playtime > 0;
-        resetButton.gameObject.SetActive(/*isInARun*/false);
+        var isInARun = DataSaver.s.GetCurrentSave().isInARun;
+        resetButton.gameObject.SetActive(isInARun);
         if (isInARun) {
-            startGameText.text = "Start";
-        } else {
             startGameText.text = "Continue";
+        } else {
+            startGameText.text = "Start";
         }
 
         if (SceneLoader.s.autoOpenProfiles) {
@@ -92,10 +92,12 @@ public class MainMenu : MonoBehaviour {
     }
 
     public void StartGame() {
+        NewGameStarter.s.CheckStartNewGame();
         PlayStateMaster.s.EnterShopState();
     }
 
     public void QuickStartGame() {
+        NewGameStarter.s.CheckStartNewGame();
         PlayStateMaster.s.EnterShopState();
     }
 

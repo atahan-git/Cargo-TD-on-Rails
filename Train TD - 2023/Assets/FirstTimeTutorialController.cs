@@ -30,6 +30,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
     public void TutorialCheck() {
         tutorialUI.SetActive(false);
         ClearActiveHints();
+        return;
         
         if (!MiniGUI_DisableTutorial.IsTutorialActive())
             return;
@@ -70,7 +71,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
         //PlayStateMaster.s.OnCharacterSelected.AddListener(PlayObjectiveAnimation);
         //if (DataSaver.s.GetCurrentSave().isInARun) {
-            PlayObjectiveAnimation();
+            //PlayObjectiveAnimation();
         //}
     }
 
@@ -347,6 +348,7 @@ public class FirstTimeTutorialController : MonoBehaviour {
     public GameObject directControlHint;
     public void OnEnterCombat() {
         InitialCutsceneComplete();
+        return;
         _progress.firstCityTutorialDone = true;
         ClearActiveHints();
         
@@ -359,14 +361,14 @@ public class FirstTimeTutorialController : MonoBehaviour {
 
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i];
-            if (!_progress.directControlHint && cart.GetComponentInChildren<IDirectControllable>() != null) {
+            /*if (!_progress.directControlHint && cart.GetComponentInChildren<IDirectControllable>() != null) {
                 directControlHint.SetActive(true);
                 _progress.directControlHint = true;
             }
 
             if (!_progress.reloadHint && cart.GetComponentInChildren<ModuleAmmo>()) {
                 activeHints.Add(Instantiate(reloadHintPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_TutorialHint>().SetUp(cart));
-            }
+            }*/
 
             /*if (cart.isMainEngine || cart.isMysteriousCart) {
                 if(!_progress.repairHint)
@@ -386,21 +388,12 @@ public class FirstTimeTutorialController : MonoBehaviour {
         
         activeHints.Clear();
     }
-
-
-    public GameObject deliverCargoHintPrefab;
+    
     public void OnFinishCombat(bool realCombat) {
         ClearActiveHints();
         
         if (!MiniGUI_DisableTutorial.IsTutorialActive())
             return;
-        
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            var cart = Train.s.carts[i];
-            if (!_progress.deliverCargoHint && cart.GetComponentInChildren<CargoModule>()) {
-                activeHints.Add(Instantiate(deliverCargoHintPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_TutorialHint>().SetUp(cart));
-            }
-        }
     }
 
     public void OnEnterShop() {
@@ -412,18 +405,6 @@ public class FirstTimeTutorialController : MonoBehaviour {
         _progress.reloadHint = true;
     }
 
-    public void RepairCriticalHintShown() {
-        _progress.repairCriticalHint = true;
-    }
-
-    public void RepairHintShown() {
-        _progress.repairHint = true;
-    }
-
-    public void CargoHintShown() {
-        _progress.deliverCargoHint = true;
-    }
-    
     void DisableCameraMovesetHint() {
         _progress.cameraDone = true;
         cameraHint.SetActive(false);

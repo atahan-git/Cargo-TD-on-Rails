@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SmitheryController : MonoBehaviour
 {
@@ -16,24 +17,24 @@ public class SmitheryController : MonoBehaviour
 
     public ScrapPaymentSlot paymentSlot;
 
+    public bool upgradeUsed = false;
+
     private void Start() {
         smithery.OnStuffCollided.AddListener(UpgradeDone);
+        if (DataSaver.s.GetCurrentSave().currentRun.currentAct == 1) {
+            gameObject.SetActive(false);
+        }
     }
 
     void Update()
     {
-        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging() && PlayerWorldInteractionController.s.canSmith) {
-            if (!location1.IsEmpty() && !location2.IsEmpty() && paymentSlot.AllSlotsFull())
+        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging() && !upgradeUsed) {
+            if (!location1.IsEmpty() && !location2.IsEmpty() /*&& paymentSlot.AllSlotsFull()*/)
                 CheckAndDoUpgrade();
         }
 
-        if (PlayerWorldInteractionController.s.canSmith) {
-            location1.allowSnap = false;
-            location2.allowSnap = false;
-        } else {
-            location1.allowSnap = true;
-            location2.allowSnap = true;
-        }
+        location1.allowSnap = true;
+        location2.allowSnap = true;
     }
 
 
@@ -42,48 +43,16 @@ public class SmitheryController : MonoBehaviour
         var cart1 = location1.GetComponentInChildren<Cart>();
         var cart2 = location2.GetComponentInChildren<Cart>();
 
-        /*if (cart1 != null && cart1.uniqueName == scrapCart) {
-            if (cart2 != null) {
-                if (cart2.level < 2) {
-                    EngageUpgrade(true);
-                    return;
-                }
-            }else if (artifact2 != null) {
-                if (artifact2.level < 2) {
-                    EngageUpgrade(false);
-                    return;
-                }
-            }
-
-        }else if (cart2 != null && cart2.uniqueName == scrapCart) {
-            if (cart1 != null) {
-                if (cart1.level < 2) {
-                    EngageUpgrade(true);
-                    return;
-                }
-            }else if (artifact1 != null) {
-                if (artifact1.level < 2) {
-                    EngageUpgrade(false);
-                    return;
-                }
-            }
-        }
+        
 
         if (cart1 != null && cart2 != null) {
-            if (cart1.level < 2 && cart1.level == cart2.level && cart1.uniqueName == cart2.uniqueName) {
+            var upgradeResult = DataHolder.s.GetMergeResult(cart1.uniqueName, cart2.uniqueName);
+            if ( DataHolder.s.IsLegalMergeResult(upgradeResult)) {
                 EngageUpgrade(true);
                 return;
             }
         }
         
-        
-        
-        if (artifact1 != null && artifact2 != null) {
-            if (artifact1.level < 2 && artifact1.level == artifact2.level && artifact1.uniqueName == artifact2.uniqueName) {
-                EngageUpgrade(false);
-                return;
-            }
-        }*/
 
         // if cannot upgrade then unsnap the carts
         
@@ -91,12 +60,26 @@ public class SmitheryController : MonoBehaviour
             cart1.transform.SetParent(null);
             cart1.GetComponent<Rigidbody>().isKinematic = false;
             cart1.GetComponent<Rigidbody>().useGravity = true;
+            cart1.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
         }
         if (cart2 != null) {
             cart2.transform.SetParent(null);
             cart2.GetComponent<Rigidbody>().isKinematic = false;
             cart2.GetComponent<Rigidbody>().useGravity = true;
+            cart2.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
         }
+    }
+
+    Vector3 GetRandomYeetForce() {
+        var randomForceDirection = Random.onUnitSphere;
+        if (randomForceDirection.y < 0) {
+            randomForceDirection.y = -randomForceDirection.y;
+        }
+
+        randomForceDirection.y = randomForceDirection.y.Remap(0, 1, 0.7f, 1f);
+        randomForceDirection.Normalize();
+
+        return randomForceDirection * Random.Range(1, 1.5f)*1500;
     }
     
     
@@ -114,7 +97,7 @@ public class SmitheryController : MonoBehaviour
         SetColliderStatus(allParent, false);
         smithery.EngageAnim();
         
-        paymentSlot.DoPayment();
+        //paymentSlot.DoPayment();
     }
 
     void UpgradeDone() {
@@ -122,38 +105,31 @@ public class SmitheryController : MonoBehaviour
         isEngaged = false;
         var cart1 = location1.GetComponentInChildren<Cart>();
         var cart2 = location2.GetComponentInChildren<Cart>();
+        
+        var upgradeResult = DataHolder.s.GetMergeResult(cart1.uniqueName, cart2.uniqueName);
 
-        /*if (isCartUpgrade) {
-            if (cart1.uniqueName == scrapCart) {
-                UpgradesController.s.RemoveCartFromShop(cart1);
-                Destroy(cart1.gameObject);
-                cart2.level += 1;
-            } else {
-                UpgradesController.s.RemoveCartFromShop(cart2);
-                Destroy(cart2.gameObject);
-                cart1.level += 1;
-            }
-        } else {
-            var artifact1 = location1.GetComponentInChildren<Artifact>();
-            var artifact2 = location2.GetComponentInChildren<Artifact>();
-
-            if (cart1 != null) {
-                UpgradesController.s.RemoveCartFromShop(cart1);
-                Destroy(cart1.gameObject);
-                artifact2.level += 1;
-            } else if (cart2 != null) {
-                UpgradesController.s.RemoveCartFromShop(cart2);
-                Destroy(cart2.gameObject);
-                artifact1.level += 1;
-            } else {
-                UpgradesController.s.RemoveArtifactFromShop(artifact1);
-                Destroy(artifact1.gameObject);
-                artifact2.level += 1;
-            }
-        }*/
-
+        var newCart = Instantiate(DataHolder.s.GetCart(upgradeResult).gameObject, cart1.transform.position, cart1.transform.rotation).GetComponent<Cart>();
+        Train.ApplyStateToCart(newCart, new DataSaver.TrainState.CartState(){uniqueName = upgradeResult});
+        ShopStateController.s.AddCartToShop(newCart);
+        newCart.GetComponent<Rigidbody>().isKinematic = false;
+        newCart.GetComponent<Rigidbody>().useGravity = true;
+        newCart.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
+        
+        ShopStateController.s.RemoveCartFromShop(cart1);
+        ShopStateController.s.RemoveCartFromShop(cart2);
+        Destroy(cart1);
+        Destroy(cart2);
+        
+        MakeCannotMergeAnymore();
 
         Train.s.TrainChanged();
+    }
+
+
+    void MakeCannotMergeAnymore() {
+        Destroy(location1.gameObject);
+        Destroy(location2.gameObject);
+        this.enabled = false;
     }
 
     void SetColliderStatus(GameObject target, bool status) {

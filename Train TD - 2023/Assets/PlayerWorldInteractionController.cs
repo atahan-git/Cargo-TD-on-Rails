@@ -9,6 +9,7 @@ using UnityEngine.Analytics;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 
 
@@ -16,6 +17,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public static PlayerWorldInteractionController s;
     private void Awake() {
         s = this;
+        //HideInfo(); if things arent hidden by default ui follow world target dont work correctly
     }
 
     private void OnDestroy() {
@@ -37,7 +39,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     // in gamepad all those also holds but we also have these few alt actions.
     public InputActionReference clickCart;
     public InputActionReference alternateClick; 
-    public InputActionReference dragClick; // drag click is its own button on gamepad
+    public InputActionReference cycleAction; 
     public InputActionReference showDetailClick; // detail click is its own button on gamepad
     
 
@@ -48,29 +50,64 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         get { return _canSelect; }
         set { SetCannotSelect(value); }
     }
-
-    public bool canSmith = true;
-    
-    public void ResetValues() {
-        canSmith = true;
-    }
     
     protected void OnEnable()
     {
         clickCart.action.Enable();
         alternateClick.action.Enable();
-        dragClick.action.Enable();
         showDetailClick.action.Enable();
+        clickCart.action.started += DragStart;
+        clickCart.action.canceled += DragClickMaybeEnd;
+        cycleAction.action.Enable();
+        cycleAction.action.performed += CycleSelected;
     }
 
-    
+    public int selectOffset = 0;
+    public int placeOffset = 0;
+
+    private void CycleSelected(InputAction.CallbackContext obj) {
+        if (isDragging()) {
+            placeOffset += 1;
+        } else {
+            selectOffset += 1;
+        }
+    }
+
+    private void DragStart(InputAction.CallbackContext context) {
+        if (!CanInteract()) {
+            return;
+        }
+
+        if (context.interaction is HoldInteraction) {
+            BeginDrag();
+        } else {
+            if (isComboDragStarted) {
+                EndDrag();
+            } else {
+                BeginDrag();
+            }
+        }
+    }
+
+    private void DragClickMaybeEnd(InputAction.CallbackContext context) {
+        if (!CanInteract()) {
+            return;
+        }
+        if (context.interaction is HoldInteraction) {
+            EndDrag();
+        }
+    }
+
 
     protected void OnDisable()
     {
         clickCart.action.Disable();
         alternateClick.action.Disable();
-        dragClick.action.Disable();
         showDetailClick.action.Disable();
+        clickCart.action.started -= DragStart;
+        clickCart.action.performed -= DragClickMaybeEnd;
+        cycleAction.action.Disable();
+        cycleAction.action.performed -= CycleSelected;
     }
 
     public Color cantActColor = Color.white;
@@ -85,8 +122,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public Color meepleColor = Color.white;
     public Color mergeItemColor = Color.yellow;
 
+    bool CanInteract() {
+        return !(!canSelect || Pauser.s.isPaused || PlayStateMaster.s.isLoading || DirectControlMaster.s.directControlLock > 0);
+    }
     private void Update() {
-        if (!canSelect || Pauser.s.isPaused || PlayStateMaster.s.isLoading || DirectControlMaster.s.directControlLock > 0) {
+        if (!CanInteract()) {
             return;
         }
 
@@ -100,7 +140,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             CastRayToOutline();
         }
 
-        CheckAndDoDrag();
+        //CheckAndDoDrag();
+        if (isDragging()) {
+            DoDrag();
+        }
         
         if (PlayStateMaster.s.isCombatInProgress()) {
             CheckAndDoCombatClick();
@@ -114,6 +157,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (!_canSelect) {
             Deselect();
         }
+        isComboDragStarted = false;
     }
 
     public void OnEnterCombat() {
@@ -179,7 +223,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     public bool isDragging() {
-        return isToggleDragStarted || isHoldDragStarted;
+        return isComboDragStarted;
     }
 
     private float clickCartTime = 0;
@@ -257,48 +301,19 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         return false;
     }
 
-    public bool isToggleDragStarted = false;
-    public bool isHoldDragStarted = false;
+    public bool isComboDragStarted = false;
     public Vector3 offset;
-    void CheckAndDoDrag() {
-        if (!isToggleDragStarted) {
-            if (clickCart.action.WasPressedThisFrame()) {
-                HideInfo();
-                if (CanDragThing(currentSelectedThing)) {
-                    isHoldDragStarted = true;
-                    BeginDrag();
-                }
-            }
-
-            if (isHoldDragStarted) {
-                if (clickCart.action.IsPressed()) {
-                    DoDrag();
-                } else {
-                    EndDrag();
-                }
-            }
-        }
-        
-        if (!isHoldDragStarted) {
-            if (!isToggleDragStarted) {
-                if (dragClick.action.WasPerformedThisFrame()) {
-                    HideInfo();
-                    if (CanDragThing(currentSelectedThing)) {
-                        isToggleDragStarted = true;
-                        BeginDrag();
-                    }
-                }
-            }else{
-                DoDrag();
-                
-                if (dragClick.action.WasPerformedThisFrame()) {
-                    EndDrag();
-                }
-            }
-        }
-    }
 
     void BeginDrag() {
+        if (isDragging()) {
+            return;
+        }
+        CastRayToOutline();
+        if (!CanDragThing(currentSelectedThing)) {
+            return;
+        }
+        isComboDragStarted = true;
+        
         isSnapping = false;
 
         displacedArtifact = null;
@@ -326,7 +341,23 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         
         if(!(currentSelectedThing is Meeple))
             currentSelectedThingMonoBehaviour.transform.SetParent(null);
+        
+        
+        currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
 
+        if (currentSelectedThing is Artifact) {
+            for (int i = 0; i < Train.s.carts.Count; i++) {
+                var thisCart = Train.s.carts[i];
+                foreach (var artifactSlot in thisCart.myArtifactLocations) {
+                    artifactSlot.SetVisualizeState(artifactSlot.CanSnap(currentSelectedThing));
+                }
+            }
+        }
+
+        if (LevelReferences.s.combatHoldableThings.Contains(currentSelectedThing)) {
+            LevelReferences.s.combatHoldableThings.Remove(currentSelectedThing);
+        }
+        
         // SFX
         AudioManager.PlayOneShot(SfxTypes.OnCargoPickUp);
     }
@@ -508,31 +539,59 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     SnapLocation GetSnapLoc() {
         var checkPos = GetMousePositionOnPlane();
         checkPos.y = 0;
+        return GetSnapLoc(checkPos, currentSelectedThing);
+    }
 
-        SnapLocation closestValidSnapLocation = null;
-        var closestDistance = float.MaxValue;
+    private SnapLocation[] validSnapLocations = new SnapLocation[16];
+    public  SnapLocation GetSnapLoc(Vector3 checkPos, IPlayerHoldable holdable) {
+        var index = 0;
         for (int i = 0; i < LevelReferences.s.allSnapLocations.Count; i++) {
             var thisSnapLoc = LevelReferences.s.allSnapLocations[i];
 
-            if (thisSnapLoc.CanSnap(currentSelectedThing)) {
+            if (thisSnapLoc.CanSnap(holdable)) {
                 var snapPos = thisSnapLoc.transform.position;
                 snapPos.y = 0;
                 
                 var distance = Vector3.Distance(snapPos, checkPos);
-                if (distance < thisSnapLoc.snapDistance && distance < closestDistance) {
-                    closestDistance = distance;
-                    closestValidSnapLocation = thisSnapLoc;
+                thisSnapLoc.curDistance = distance;
+                if (distance < thisSnapLoc.snapDistance) {
+                    validSnapLocations[index] = thisSnapLoc;
+                    index += 1;
                 }
             }
         }
 
-        return closestValidSnapLocation;
+        if (index == 0) {
+            return null;
+        }
+
+        var size = index;
+        BubbleSort(validSnapLocations, size);
+        
+        placeOffset %= size;
+        if (size > 0) {
+            var item = validSnapLocations[placeOffset];
+            if (size > 1) {
+                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.cycleSelectedItem);
+            } else {
+                GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.cycleSelectedItem);
+            }
+            
+            return item;
+        } else {
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.cycleSelectedItem);
+        }
+
+        return null;
     }
 
 
     void EndDrag() {
-        isHoldDragStarted = false;
-        isToggleDragStarted = false;
+        if (currentSelectedThing == null || !isDragging()) {
+            return;
+        }
+
+        isComboDragStarted = false;
 
         if (isSnapping) {
             if (currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>() != null) {
@@ -540,6 +599,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
 
             currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
+            if (currentSelectedThing is Cart || currentSelectedThing is Artifact) {
+                var rigid = (currentSelectedThingMonoBehaviour).GetComponent<Rigidbody>();
+                rigid.isKinematic = true;
+                rigid.useGravity = false;
+            }
+
         }else{
             currentSelectedThing.SetHoldingState(false);
             
@@ -549,9 +614,20 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }   
             
             var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
-            if (rubbleFollowFloor) {
-                rubbleFollowFloor.canAttachToFloor = true;
+
+            if (PlayStateMaster.s.isCombatInProgress()) {
+                if (rubbleFollowFloor) {
+                    rubbleFollowFloor.canAttachToFloor = true;
+                } else {
+                    currentSelectedThingMonoBehaviour.gameObject.AddComponent<RubbleFollowFloor>();
+                }
+            } else {
+                if (rubbleFollowFloor) {
+                    rubbleFollowFloor.UnAttachFromFloor();
+                    Destroy(rubbleFollowFloor);
+                }
             }
+            
         }
         
         if (PlayStateMaster.s.isShop()) {
@@ -562,9 +638,21 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 ShopStateController.s.SaveCartStateWithDelay();
             }
         }
+        
+        if (currentSelectedThing is Artifact) {
+            for (int i = 0; i < Train.s.carts.Count; i++) {
+                var thisCart = Train.s.carts[i];
+                foreach (var artifactSlot in thisCart.myArtifactLocations) {
+                    artifactSlot.SetVisualizeState(false);
+                }
+            }
+        }
+
+        if (currentSelectedThing is Cart || currentSelectedThing is Artifact) {
+            Train.s.UpdateThingsAffectingOtherThings();
+        }
 
         Deselect();
-        Train.s.CheckMerge();
         
         AudioManager.PlayOneShot(SfxTypes.OnCargoDrop2);
     }
@@ -622,32 +710,24 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     public MiniGUI_BuildingInfoCard buildingInfoCard;
-    public MiniGUI_BuildingInfoCard enemyInfoCard;
-    public MiniGUI_BuildingInfoCard artifactInfoCard;
-    public MiniGUI_BuildingInfoCard scrapsItemInfoCard;
+    public MiniGUI_EnemyInfoCard enemyInfoCard;
+    public MiniGUI_ArtifactInfoCard artifactInfoCard;
 
     private float alternateClickTime = 0;
     private Vector3 alternateClickPos;
     private bool alternateClickFired;
     
-    private float meepleHoldTime = 0;
     void CastRayToOutline() {
         var newSelectable = GetFirstPriorityItem();
 
         if (newSelectable != null) {
-            if (currentSelectedThing is Meeple) {
-                meepleHoldTime += Time.deltaTime;
-            }
-            
             if (newSelectable != currentSelectedThing) {
                 SelectThing(newSelectable, true);
                 
                 // SFX
                 AudioManager.PlayOneShot(SfxTypes.OnCargoHover);
-                
-                meepleHoldTime = 0;
             }else {
-                if ((showDetailClick.action.WasPerformedThisFrame() || DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired) || meepleHoldTime > 1f)) {
+                if ((showDetailClick.action.WasPerformedThisFrame() || DragStarted(alternateClick, ref alternateClickTime, ref alternateClickPos, ref alternateClickFired))) {
                     ShowSelectedThingInfo();
                 }
             }
@@ -656,35 +736,85 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
+
+    private RaycastHit[] hitCastArray = new RaycastHit[32];
+    private IPlayerHoldable[] hitSeenObjects = new IPlayerHoldable[32];
     private IPlayerHoldable GetFirstPriorityItem() {
         // selection preference: artifact -> cart -> enemy -> meeple -> merge item
         RaycastHit hit;
         Ray ray = GetRay();
+
+        var size = Physics.SphereCastNonAlloc(ray, GetSphereCastRadius(true), hitCastArray, 100f, LevelReferences.s.allSelectablesLayer);
+        if (size == 0) {
+            return null;
+        }
         
-        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.artifactLayer)) {
-            return hit.collider.gameObject.GetComponentInParent<Artifact>();
-        }
-        
-        if (Physics.SphereCast(ray, GetSphereCastRadius(), out hit, 100f, LevelReferences.s.buildingLayer)) {
-            return hit.collider.gameObject.GetComponentInParent<Cart>();
-        }
+        RemoveDupes(hitCastArray, ref size);
+        BubbleSort(hitCastArray, size);
 
-        if (Physics.SphereCast(ray, GetSphereCastRadius(), out hit, 100f, LevelReferences.s.enemyLayer)) {
-            return hit.collider.GetComponentInParent<EnemyHealth>();
-        }
-
-        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.meepleLayer)) {
-            return hit.collider.GetComponentInParent<Meeple>();
-        }
-
-        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, 100f, LevelReferences.s.scrapsItemLayer)) {
-            return hit.collider.gameObject.GetComponentInParent<ScrapsItem>();
+        selectOffset %= size;
+        if (size > 0) {
+            var item = hitCastArray[selectOffset].collider.GetComponentInParent<IPlayerHoldable>();
+            if (size > 1) {
+                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.cycleSelectedItem);
+            } else {
+                GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.cycleSelectedItem);
+            }
+            
+            return item;
+        } else {
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.cycleSelectedItem);
         }
 
         return null;
     }
 
-    private bool infoCardActive = false;
+    void RemoveDupes(RaycastHit[] arr, ref int size) {
+        Array.Clear(hitSeenObjects, 0, hitSeenObjects.Length);
+        var lastLegalIndex = 0;
+        for (int i = 0; i < size; i++) {
+            var holdable = arr[i].collider.GetComponentInParent<IPlayerHoldable>();
+            if (holdable != null && !hitSeenObjects.Contains(holdable)) {
+                arr[lastLegalIndex] = arr[i];
+                hitSeenObjects[lastLegalIndex] = holdable;
+                lastLegalIndex += 1;
+            }
+        }
+
+        size = lastLegalIndex;
+    }
+    
+    void BubbleSort(RaycastHit[] arr, int size) {
+        var source = GetRay().origin;
+        for (int i = 0; i < size - 1; i++)
+        {
+            for (int j = 0; j < size - i - 1; j++) {
+                var distj = Vector3.Distance(arr[j].point, source);
+                var distj1 = Vector3.Distance(arr[j+1].point, source);
+                if (distj > distj1)
+                {
+                    // Swap array[j] and array[j + 1]
+                    (arr[j], arr[j + 1]) = (arr[j + 1], arr[j]);
+                }
+            }
+        }
+    }
+
+    void BubbleSort(SnapLocation[] arr, int size) {
+        for (int i = 0; i < size - 1; i++)
+        {
+            for (int j = 0; j < size - i - 1; j++)
+            {
+                if (arr[j].curDistance > arr[j + 1].curDistance)
+                {
+                    // Swap array[j] and array[j + 1]
+                    (arr[j], arr[j + 1]) = (arr[j + 1], arr[j]);
+                }
+            }
+        }
+    }
+    
+    public bool infoCardActive = false;
     void ShowSelectedThingInfo() {
         if (!infoCardActive) {
             infoCardActive = true;
@@ -695,13 +825,16 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }else if (currentSelectedThing is EnemyHealth enemyHealth) {
                 enemyInfoCard.SetUp(enemyHealth);
             }else if (currentSelectedThing is Meeple meeple) {
-                meeple.ShowChat();
-            } else if (currentSelectedThing is ScrapsItem scrapsItem) {
+                meeple.GetClicked();
+                infoCardActive = false;
+            } /*else if (currentSelectedThing is ScrapsItem scrapsItem) {
                 scrapsItemInfoCard.Show();
-            }else {
+            }*/else {
                 infoCardActive = false;
             }
 
+            if(PlayStateMaster.s.isCombatInProgress())
+                TimeController.s.SetTimeSlowForDetailScreen(true);
             //SFX
             AudioManager.PlayOneShot(SfxTypes.OnInfoSelected);
         } 
@@ -712,6 +845,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         buildingInfoCard.Hide();
         enemyInfoCard.Hide();
         artifactInfoCard.Hide();
+        
+        TimeController.s.SetTimeSlowForDetailScreen(false);
     }
 
     public void Deselect() {
@@ -720,7 +855,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             currentSelectedThing = null;
             SelectThing(temp, false);
         }
-
         HideInfo();
     }
 
@@ -758,19 +892,24 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     Color SelectArtifact(Artifact artifact) {
 
         Color myColor = moveColor;
-        if (PlayStateMaster.s.isShopOrEndGame()) {
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
+        if (!CanDragArtifact(artifact)) {
+            myColor = cantActColor;
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
+        }
+        
+        /*if (PlayStateMaster.s.isShopOrEndGame()) {
             GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
             GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
-            GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             if (!CanDragArtifact(artifact)) {
                 myColor = cantActColor;
                 GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
-                GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             }
         } else {
             myColor = cantActColor;
             GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
-        }
+        }*/
 
         return myColor;
     }
@@ -825,7 +964,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
 
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
             
             
@@ -849,14 +987,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         
 
         myColor = moveColor;
-        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
         
 
         if (!CanDragCart(selectedCart)) {
             myColor = cantActColor;
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
-            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.moveHoldGamepad);
         }
 
         if (PlayStateMaster.s.isCombatInProgress() && selectedCart.IsAttachedToTrain()) {
@@ -902,6 +1038,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         foreach (var artifactSlot in selectedCart.myArtifactLocations) {
             artifactSlot.SetVisualizeState(PlayStateMaster.s.isShopOrEndGame());
         }
+        
+        selectedCart.GetHealthModule().SetHealthBarState(true);
 
         return myColor;
     } 
@@ -915,6 +1053,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
          foreach (var artifactSlot in deselectedCart.myArtifactLocations) {
              artifactSlot.SetVisualizeState(false);
          }
+
+         deselectedCart.GetHealthModule().SetHealthBarState(false);
     }
     
 

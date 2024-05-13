@@ -37,6 +37,19 @@ public class EnemyTargetAssigner : MonoBehaviour {
     }
 
 
+    public void TryToGetShootCredits(GunModule requester) {
+
+        if (shootCredit > 0) {
+            requester.gotShootCredits = true;
+            shootCredit -= requester.shootCreditsUse;
+        } else {
+            if (!shootRequesters.Contains(requester)) {
+                shootRequesters.Enqueue(requester);
+            }
+        }
+    }
+
+
     void DispenseShootCredits() {
         while (shootRequesters.TryDequeue(out GunModule result)) {
             if (result != null) {

@@ -252,6 +252,8 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   invincible: 0
   mainCollider: {fileID: 2305579421082905276}
+  cartUIBar: {fileID: 0}
+  myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0

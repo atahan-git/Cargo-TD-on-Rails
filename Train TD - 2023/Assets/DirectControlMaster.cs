@@ -23,11 +23,13 @@ public class DirectControlMaster : MonoBehaviour {
 
 	[Header("Input")]
 	public InputActionReference cancelDirectControlAction;
-	public InputActionReference directControlShootAction;
+	public InputActionReference shootAction;
 	
 	public InputActionReference moveAction;
 	public InputActionReference flyUpAction;
 	public InputActionReference flyDownAction;
+	
+	public InputActionReference activateAction;
 	
 	public IDirectControllable currentDirectControllable;
 
@@ -89,6 +91,7 @@ public class DirectControlMaster : MonoBehaviour {
 	public GameObject shieldMoveUI;
 	public GameObject repairControlUI;
 	public GameObject trainEngineControlUI;
+	public GameObject notImplementedUI;
 	
 	[Header("Shared")]
 	public float directControlLock = 0;
@@ -99,23 +102,27 @@ public class DirectControlMaster : MonoBehaviour {
 	[Button]
 	private void OnEnable() {
 		cancelDirectControlAction.action.Enable();
-		directControlShootAction.action.Enable();
+		shootAction.action.Enable();
 		cancelDirectControlAction.action.performed += DisableDirectControl;
 		
 		moveAction.action.Enable();
 		flyUpAction.action.Enable();
 		flyDownAction.action.Enable();
+		
+		activateAction.action.Enable();
 	}
 
 	private void OnDisable() {
 		cancelDirectControlAction.action.Disable();
-		directControlShootAction.action.Disable();
+		shootAction.action.Disable();
 		cancelDirectControlAction.action.performed -= DisableDirectControl;
 		
 		
 		moveAction.action.Disable();
 		flyUpAction.action.Disable();
 		flyDownAction.action.Disable();
+		
+		activateAction.action.Disable();
 	}
 
 
@@ -137,6 +144,7 @@ public class DirectControlMaster : MonoBehaviour {
 			shieldMoveUI.SetActive(false);
 			repairControlUI.SetActive(false);
 			trainEngineControlUI.SetActive(false);
+			notImplementedUI.SetActive(false);
 			
 			currentDirectControllable.ActivateDirectControl();
 		}
@@ -169,7 +177,7 @@ public class DirectControlMaster : MonoBehaviour {
 		if (directControlInProgress && !Pauser.s.isPaused) {
 			currentDirectControllable.UpdateDirectControl();
 
-			if (directControlShootAction.action.WasReleasedThisFrame()) {
+			if (shootAction.action.WasReleasedThisFrame()) {
 				enterDirectControlShootLock = false;
 			}
 		}

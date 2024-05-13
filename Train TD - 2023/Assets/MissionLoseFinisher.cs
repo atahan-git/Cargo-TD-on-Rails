@@ -27,7 +27,7 @@ public class MissionLoseFinisher : MonoBehaviour {
     public bool isMissionLost = false;
 
     public enum MissionLoseReason {
-        noEngine, noMysteryCargo, abandon, everyCartExploded
+        noEngine, noMysteryCargo, abandon, everyCartExploded, endOfDemo
     }
     
     public void MissionLost(MissionLoseReason loseReason) {
@@ -35,6 +35,7 @@ public class MissionLoseFinisher : MonoBehaviour {
             return;
 
         DataSaver.s.GetCurrentSave().showWakeUp = true;
+        DataSaver.s.GetCurrentSave().isInARun = false;
 
         tipText.text = loseTips[Random.Range(0, loseTips.Length)];
 
@@ -50,6 +51,9 @@ public class MissionLoseFinisher : MonoBehaviour {
                 break;
             case MissionLoseReason.everyCartExploded:
                 loseReasonText.text = "Your entire train is broken.";
+                break;
+            case MissionLoseReason.endOfDemo:
+                loseReasonText.text = $"You have reached the end of current state of the game! Atahan needs to add more stuff before you can continue.";
                 break;
             default:
                 loseReasonText.text = "You cannot continue for unknown reasons (the programmer needs to fill this in!.";

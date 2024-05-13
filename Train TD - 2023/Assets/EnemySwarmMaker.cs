@@ -11,11 +11,15 @@ public class EnemySwarmMaker : MonoBehaviour {
         GetComponent<Collider>().isTrigger = true;
     }
 
+    public int enemyCapacity = 1;
+    public int currentFill = 0;
+    
     public List<EnemyInSwarm> activeEnemies = new List<EnemyInSwarm>();
 
     public void EnemySpawn(EnemyHealth enemyHealth) {
         var enemyInSwarm = enemyHealth.GetComponent<EnemyInSwarm>();
         activeEnemies.Add(enemyInSwarm);
+        EnemyWavesController.s.enemyInSwarms.Add(enemyInSwarm);
         enemyInSwarm.mySwarm = this;
         enemyInSwarm.myWave = GetComponentInParent<EnemyWave>();
         enemyHealth.transform.SetParent(transform.parent);
@@ -23,9 +27,9 @@ public class EnemySwarmMaker : MonoBehaviour {
     }
 
     public void EnemyDeath(EnemyHealth enemyHealth, bool playDeathSounds = true) {
-        activeEnemies.Remove(enemyHealth.GetComponent<EnemyInSwarm>());
-
         var enemyInSwarm = enemyHealth.GetComponent<EnemyInSwarm>();
+        activeEnemies.Remove(enemyInSwarm);
+        EnemyWavesController.s.enemyInSwarms.Remove(enemyInSwarm);
 
         if (playDeathSounds) {
             if(enemyInSwarm.enemyDieSounds.Length > 0)
@@ -34,7 +38,7 @@ public class EnemySwarmMaker : MonoBehaviour {
 
         if (activeEnemies.Count <= 0) {
             //Destroy(GetComponentInParent<EnemyWave>().gameObject);
-            GetComponentInParent<EnemyWave>().CheckDestroySelf();
+            GetComponentInParent<EnemyWave>()?.CheckDestroySelf();
             Destroy(gameObject);
         }
     }

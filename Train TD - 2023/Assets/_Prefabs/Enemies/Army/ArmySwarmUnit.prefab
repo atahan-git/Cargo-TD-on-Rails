@@ -95,12 +95,9 @@ MonoBehaviour:
   isStealing: 0
   isNuker: 0
   nukingTime: 20
+  isElite: 0
   myType: 0
-  myBounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
   mainCollider: {fileID: 0}
-  boidRadius: 0
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
@@ -129,6 +126,7 @@ MonoBehaviour:
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
+  mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0

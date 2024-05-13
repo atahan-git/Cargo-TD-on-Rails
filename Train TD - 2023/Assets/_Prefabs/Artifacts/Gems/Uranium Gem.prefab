@@ -123,6 +123,26 @@ PrefabInstance:
       propertyPath: displayName
       value: Uranium Gem
       objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: gunCartDescription
+      value: Increases firerate but lose health over time
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: ammoCartDescription
+      value: Increase move speed but lose health over time
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: repairCartDescription
+      value: Increase repair speed but lose health over time
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: shieldCartDescription
+      value: Shield recharges faster but lose health over time
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: notAttachedDescription
+      value: Makes things faster, at a cost.
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
 --- !u!1 &1509524458239976382 stripped
@@ -142,12 +162,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d675b09ed6cd1748b44198491d41f5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boostFirerateBase: 0.15
-  boostFireratePerLevel: 0.05
-  activeFireRateBoost: 0
-  currentRadiation: {fileID: 358344677240510948, guid: b0b3b34c166de5c40858fe0f5cb0652d, type: 3}
-  radiationDelayReduction: 1
-  radiationDelayReductionPerLevel: 0.5
-  curRadiationDelayReduction: 0
-  radiationDamageDelay: {x: 3, y: 6}
-  radiationDamageAmount: {x: 50, y: 300}
+  currentDescription: 
+  radiationDamageDelay: {x: 60, y: 60}
+  radiationDamageAmount: {x: 250, y: 250}

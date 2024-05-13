@@ -4,77 +4,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IActiveDuringCombat,IApplyToEnemyWithGem
+public class Artifact_UraniumGem : MonoBehaviour, IChangeCartState, IActiveDuringCombat,IArtifactDescription, IDisabledState
 {
     
-    //[Space]
-    public float boostFirerateBase = 0.15f;
-    public float boostFireratePerLevel = 0.05f;
-    public float activeFireRateBoost = 0;
-
-    public GameObject currentRadiation;
-
-    public float radiationDelayReduction = 1f;
-    public float radiationDelayReductionPerLevel = 0.5f;
-    public float curRadiationDelayReduction = 0;
-    
-    private Artifact myArtifact;
-    private void Start() {
-        myArtifact = GetComponent<Artifact>();
-    }
-    
-    protected override void _Arm() {
-        var range = GetComponent<Artifact>().range;
-        ApplyBoost(Train.s.GetNextBuilding(0, GetComponentInParent<Cart>()));
-        for (int i = 1; i < range+1; i++) {
-            ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-            ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
-        }
-    }
-
-    void ApplyBoost(Cart target) {
-        if(target == null)
-            return;
-        
-        bool didApply = false;
+    public string currentDescription;
+    public void ChangeState(Cart target) {
+        var didApply = false;
         
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
-            gunModule.fireRateMultiplier += activeFireRateBoost;
+            gunModule.currentAffectors.fireRateMultiplier += 0.50f;
+            currentDescription = "Shoot faster, but take damage over time";
             didApply = true;
         }
 
         foreach (var droneRepair in target.GetComponentsInChildren<DroneRepairController>()) {
-            droneRepair.repairRateIncreaseMultiplier += activeFireRateBoost;
+            droneRepair.currentAffectors.repairRateIncreaseMultiplier += 1f;
+            droneRepair.currentAffectors.droneAccelerationIncreaser += 0.3f;
+            droneRepair.currentAffectors.directControlRepairTime -= 0.5f;
+            currentDescription = "Repair faster, but take damage over time";
             didApply = true;
         }
         
         foreach (var ammoDirect in target.GetComponentsInChildren<AmmoDirectController>()) {
-            ammoDirect.moveSpeedMultiplier += activeFireRateBoost;
+            ammoDirect.currentAffectors.moveSpeedMultiplier += 1f;
+            currentDescription = "Reload faster, but take damage over time";
             didApply = true;
         }
         
         foreach (var shieldGenerator in target.GetComponentsInChildren<ShieldGeneratorModule>()) {
-            shieldGenerator.regenMultiplier += activeFireRateBoost;
-            shieldGenerator.regenTimerReductionMultiplier += activeFireRateBoost;
+            shieldGenerator.currentAffectors.regenMultiplier += 0.50f;
+            shieldGenerator.currentAffectors.regenTimerReductionMultiplier += 0.15f;
+            shieldGenerator.currentAffectors.shieldMoveSpeedIncreaser += 0.30f;
+            currentDescription = "Shield regens faster, but take damage over time";
             didApply = true;
         }
         
-        foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
-            trainGemBridge.uranium = currentRadiation;
-            trainGemBridge.uraniumDelayReduction += curRadiationDelayReduction;
-            didApply = true;
+        if (!didApply) {
+            currentDescription = "Cannot affect this cart yet";
         }
-        
-        foreach (var trainGemBridge in target.GetComponentsInChildren<TrainGemBridge>()) {
-            trainGemBridge.uranium = currentRadiation;
-            trainGemBridge.uraniumDelayReduction += curRadiationDelayReduction;
-            didApply = true;
-        }
-        
-        
-        if (didApply) {
-            GetComponent<Artifact>()._ApplyToTarget(target);
-        }
+        GetComponent<Artifact>().cantAffectOverlay.SetActive(!didApply);
+    }
+    
+    public string GetDescription() {
+        return currentDescription;
+    }
+
+    private Artifact myArtifact;
+    private void Start() {
+        myArtifact = GetComponent<Artifact>();
     }
 
     void ApplyDamage(Cart target) {
@@ -83,15 +60,6 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
         
         target.GetHealthModule().DealDamage(Random.Range(radiationDamageAmount.x, radiationDamageAmount.y), null);
         VisualEffectsController.s.SmartInstantiate(LevelReferences.s.radiationDamagePrefab, target.uiTargetTransform);
-    }
-
-    protected override void _Disarm() {
-        // do nothing
-    }
-
-    public void ResetState(int level) {
-        activeFireRateBoost = boostFirerateBase + (boostFireratePerLevel * level);
-        curRadiationDelayReduction = radiationDelayReduction + (radiationDelayReductionPerLevel * level);
     }
 
     public Vector2 radiationDamageDelay = new Vector2(1,3);
@@ -103,7 +71,10 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
         radiationDelay = LevelReferences.s.bigEffectFirstActivateTimeAfterCombatStarts + Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
     }
 
-    
+    public void Disable() {
+        this.enabled = false;
+    }
+
     private void Update() {
         if (PlayStateMaster.s.isCombatInProgress()) {
             if (myArtifact != null) {
@@ -111,45 +82,20 @@ public class Artifact_UraniumGem : ActivateWhenOnArtifactRow, IResetStateArtifac
                     radiationDelay -= Time.deltaTime;
                     if (radiationDelay <= 0) {
                         radiationDelay = Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
-
-                        if (!enemyToApplyTo) {
-                            var range = GetComponent<Artifact>().range;
-                            ApplyDamage(GetComponentInParent<Cart>());
-                            for (int i = 1; i < range + 1; i++) {
-                                ApplyDamage(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-                                ApplyDamage(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
-                            }
-                        }
+                        
+                        ApplyDamage(GetComponentInParent<Cart>());
                     }
                 }
-            } else {
-                radiationDelay -= Time.deltaTime;
-                if (radiationDelay <= 0) {
-                    radiationDelay = Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
-
-                    if (enemyToApplyTo) {
-                        ApplyToEnemy();
-                    } 
-                }
             }
-            
         }
     }
 
-    public void Disable() {
+    public void CartDisabled() {
         this.enabled = false;
     }
 
-    void ApplyToEnemy() {
-        enemyToApplyTo.GetComponent<EnemyHealth>().DealDamage(Random.Range(radiationDamageAmount.x, radiationDamageAmount.y), null);
-        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.radiationDamagePrefab, enemyToApplyTo.transform);
-    }
-
-    private EnemyInSwarm enemyToApplyTo;
-    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
-        enemyToApplyTo =enemy;
-        foreach (var gunModule in enemy.GetComponentsInChildren<GunModule>()) {
-            gunModule.fireRateMultiplier += activeFireRateBoost;
-        }
+    public void CartEnabled() {
+        this.enabled = true;
+        radiationDelay = Random.Range(radiationDamageDelay.x, radiationDamageDelay.y);
     }
 }

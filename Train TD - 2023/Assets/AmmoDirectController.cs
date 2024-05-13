@@ -46,7 +46,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     public float acceptableMatchDistance = 0.05f;
     public float perfectMatchDistance = 0.01f;
     
-    public InputActionReference directControlShootAction => DirectControlMaster.s.directControlShootAction;
+    public InputActionReference activateAction => DirectControlMaster.s.activateAction;
     public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
     
     public GameObject ammo_perfect=> DirectControlMaster.s.ammo_perfect;
@@ -63,13 +63,15 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     public bool healOnReload = false;
     public int curPerfectComboCount = 0;
 
-    public float moveSpeedMultiplier = 1f;
-    public float moveSpeedReducer = 1f;
-    public float reloadAmountMultiplier = 1f;
 
+    public Affectors currentAffectors;
 
-    public List<GameObject> prefabsToSpawnWhenCorrect = new List<GameObject>();
-
+    [Serializable]
+    public class Affectors {
+        public float moveSpeedMultiplier = 1f;
+        public float moveSpeedReducer = 1f;
+        public float reloadAmountMultiplier = 1f;
+    }
 
     public void ActivateDirectControl() {
         var currentCameraForward = MainCameraReference.s.cam.transform.forward;
@@ -95,7 +97,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         ammoFull = false;
         DirectControlMaster.s.ammoMinigameUI.SetActive(true);
         
-        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shoot);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControlActivate);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
 
         SetNewCurPos(true);
@@ -103,6 +105,18 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
 
         needNewOnes = true;
         //myModuleAmmo.UseAmmo(10000);
+    }
+
+    public void DisableDirectControl() {
+        CameraController.s.DisableDirectControl();
+        DirectControlMaster.s.ammoMinigameUI.SetActive(false);
+
+        SetDropPos(0.5f);
+
+        RemoveNewOnes();
+        
+        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControlActivate);
+        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
     }
 
     private bool ammoFull = false;
@@ -128,13 +142,13 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                 ammoFull = neededAmmoCount <= 0;
                 ammo_full.SetActive(neededAmmoCount <= 0);
                 if(neededAmmoCount > 0){
-                    MakeNewOnes(Mathf.CeilToInt(curReloadCount*reloadAmountMultiplier)); // this means sometimes we can "over-reload"
+                    MakeNewOnes(Mathf.CeilToInt(curReloadCount*currentAffectors.reloadAmountMultiplier)); // this means sometimes we can "over-reload"
                 }
             }
         }
         
         
-        if (!needNewOnes && !dropping && directControlShootAction.action.IsPressed() && !enterDirectControlShootLock) {
+        if (!needNewOnes && !dropping && activateAction.action.IsPressed() && !enterDirectControlShootLock) {
             SetNewOnesDropping();
             dropping = true;
         }
@@ -177,12 +191,12 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                     NewOnePlacementSuccess();
                     myModuleAmmo.Reload(toReload);
 
-                    curDelay = nextBlockDelay*(1/moveSpeedMultiplier)*moveSpeedReducer;
+                    curDelay = nextBlockDelay*(currentAffectors.moveSpeedReducer/currentAffectors.moveSpeedMultiplier);
                     SetNewCurPos(true);
                 } else {
                     NewOnePlacementFailed();
                     
-                    curDelay = nextBlockBadDelay*(1/moveSpeedMultiplier)*moveSpeedReducer;
+                    curDelay = nextBlockBadDelay*(currentAffectors.moveSpeedReducer/currentAffectors.moveSpeedMultiplier);
                     SetNewCurPos(false);
                 }
 
@@ -204,13 +218,13 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
 
         if (!dropping && !needNewOnes) {
             if (moveForward) {
-                curPos += moveSpeed * Time.deltaTime * moveSpeedMultiplier*(1/moveSpeedReducer);
+                curPos += moveSpeed * Time.deltaTime * (currentAffectors.moveSpeedMultiplier/currentAffectors.moveSpeedReducer);
                 if (curPos >= 1f) {
                     curPos = 1f;
                     moveForward = false;
                 }
             } else {
-                curPos -= moveSpeed * Time.deltaTime * moveSpeedMultiplier*(1/moveSpeedReducer);
+                curPos -= moveSpeed * Time.deltaTime * (currentAffectors.moveSpeedMultiplier/currentAffectors.moveSpeedReducer);
                 if (curPos <= 0f) {
                     curPos = 0f;
                     moveForward = true;
@@ -328,10 +342,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                 Train.s.carts[i].GetHealthModule().RepairChunk(curPerfectComboCount+1);
             }
         }
-
-        for (int i = 0; i < prefabsToSpawnWhenCorrect.Count; i++) {
-            Instantiate(prefabsToSpawnWhenCorrect[i], myHealth.GetUITransform());
-        }
     }
 
     public GameObject failedSpawnEffect;
@@ -416,18 +426,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         dropAmmoPos.transform.position = Vector3.Lerp(dropAmmoBackMostPos.transform.position, dropAmmoFrontMostPos.transform.position, pos);
     }
 
-    public void DisableDirectControl() {
-        CameraController.s.DisableDirectControl();
-        DirectControlMaster.s.ammoMinigameUI.SetActive(false);
-
-        SetDropPos(0.5f);
-
-        RemoveNewOnes();
-        
-        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.shoot);
-        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
-    }
-
     public Color GetHighlightColor() {
         return PlayerWorldInteractionController.s.reloadColor;
     }
@@ -437,9 +435,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     }
 
     public void ResetState() {
-        moveSpeedMultiplier = 1;
-        moveSpeedReducer = 1;
-        reloadAmountMultiplier = 1;
-        prefabsToSpawnWhenCorrect.Clear();
+        currentAffectors = new Affectors();
     }
 }

@@ -18,6 +18,6 @@ public class FMODOneShotSource : MonoBehaviour
     }
     public void Play()
     {
-        AudioManager.PlayOneShot(clip);
+        AudioManager.PlayOneShot(clip, transform.position);
     }
 }

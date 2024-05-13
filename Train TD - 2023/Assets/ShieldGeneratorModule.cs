@@ -3,21 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
+public class ShieldGeneratorModule : MonoBehaviour, IResetState {
 
 	public int baseShieldAmount = 500;
 	public float currentShieldAmount = 500;
-	public float currentMaxShieldAmount = 500;
 
 	public float curRegenTimer = 0.5f;
 	public float regenSpeed = 50f;
-
-	public float regenMultiplier = 1f;
-	public float regenTimerReductionMultiplier = 1f;
-	public float regenTimerReductionDivider = 1f;
-
-	public List<GameObject> prefabToSpawnWhenShieldIsHit = new List<GameObject>();
-	public List<GameObject> prefabToSpawnWhenShieldIsDestroyed = new List<GameObject>();
+	
+	public Affectors currentAffectors;
+	[Serializable]
+	public class Affectors {
+		public float regenMultiplier = 1f;
+		public float regenTimerReductionMultiplier = 1f;
+		public float regenTimerReductionDivider = 1f;
+		public float shieldMoveSpeedReducer = 1;
+		public float shieldMoveSpeedIncreaser= 1;
+		public float currentMaxShieldAmount = 500;
+		public int shieldCoverage = 2; // covering this+2 carts
+	}
 
 	private ModuleHealth myHealth;
 	public PhysicalShieldBar myPhysicalShieldBar;
@@ -27,39 +31,23 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 		myHealth.myProtector = this;
 	}
 
-	public void SpawnGemEffect(ModuleHealth target) {
-		StartCoroutine(_SpawnGemEffect(target));
-	}
-
-	IEnumerator _SpawnGemEffect(ModuleHealth target) {
-		foreach (var prefab in prefabToSpawnWhenShieldIsHit) {
-			if (target == null) {
-				yield break;
-			}
-            
-			Instantiate(prefab, target.GetUITransform());
-
-			yield return new WaitForSeconds(0.1f);
-		}
-	}
-
 	private void Update() {
 		if (currentShieldAmount > 0) {
 			if (curRegenTimer > 0) {
-				curRegenTimer -= Time.deltaTime * regenTimerReductionMultiplier * (1/regenTimerReductionDivider);
+				curRegenTimer -= Time.deltaTime * currentAffectors.regenTimerReductionMultiplier * (1/currentAffectors.regenTimerReductionDivider);
 			} else {
-				currentShieldAmount += regenSpeed * Time.deltaTime * regenMultiplier;
+				currentShieldAmount += regenSpeed * Time.deltaTime * currentAffectors.regenMultiplier;
 			}
 		} else {
 			if (curRegenTimer > 0) {
-				curRegenTimer -= Time.deltaTime * regenTimerReductionMultiplier * (1/regenTimerReductionDivider);
+				curRegenTimer -= Time.deltaTime * currentAffectors.regenTimerReductionMultiplier * (1/currentAffectors.regenTimerReductionDivider);
 			} else {
 				myHealth.myProtector = this;
-				currentShieldAmount = currentMaxShieldAmount;
+				currentShieldAmount = currentAffectors.currentMaxShieldAmount;
 			}
 		}
 		
-		myPhysicalShieldBar.UpdateShieldPercent(currentShieldAmount/currentMaxShieldAmount);
+		myPhysicalShieldBar.UpdateShieldPercent(currentShieldAmount/currentAffectors.currentMaxShieldAmount);
 	}
 
 	public void ProtectFromDamage(float damage) {
@@ -74,30 +62,24 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState, IExtraInfo {
 			currentShieldAmount = 0;
 			curRegenTimer = 10;
 		}
-
-		SpawnGemEffect(myHealth);
-	}
-
-	public string GetInfoText() {
-		return $"Protects nearby carts from damage as long as has shield";
 	}
 
 	public void ResetState() {
-		currentMaxShieldAmount = baseShieldAmount;
+		currentAffectors.currentMaxShieldAmount = baseShieldAmount;
 		
 		if (PlayStateMaster.s.isCombatInProgress()) {
-			currentShieldAmount = Mathf.Clamp(currentShieldAmount, 0, currentMaxShieldAmount);
+			currentShieldAmount = Mathf.Clamp(currentShieldAmount, 0, currentAffectors.currentMaxShieldAmount);
 		} else {
-			currentShieldAmount = currentMaxShieldAmount;
+			currentShieldAmount = currentAffectors.currentMaxShieldAmount;
 		}
 
-		prefabToSpawnWhenShieldIsHit.Clear();
-		prefabToSpawnWhenShieldIsDestroyed.Clear();
 
+		currentAffectors = new Affectors();
+		
+		SetShieldSize();
+	}
 
-		regenMultiplier = 1;
-		regenTimerReductionMultiplier = 1;
-		regenTimerReductionDivider = 1;
-		//GetComponentInParent<Cart>().GetComponentInChildren<PhysicalShieldBar>().SetSize(GetRange());
+	public void SetShieldSize() {
+		myPhysicalShieldBar.SetSize(currentAffectors.shieldCoverage);
 	}
 }

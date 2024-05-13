@@ -801,31 +801,24 @@ MonoBehaviour:
       isActiveSave: 0
       isRealSaveFile: 0
       playtime: 0
-      myTrain:
-        myCarts: []
-      shopInitialized: 0
-      shopState:
-        artifactStates: []
-        cartStates: []
       runGameVersion: 
+      isInARun: 0
+      currentRun:
+        character:
+          uniqueName: unset
+          description: 
+          starterTrain:
+            myCarts: []
+        myTrain:
+          myCarts: []
+        currentAct: 1
+        playtime: 0
+        shopInitialized: 0
+        shopState:
+          artifactStates: []
+          cartStates: []
+        runGameVersion: 0.0.0.a
       showWakeUp: 0
-      newspaperUpgradesProgress:
-        totalEarnedInk: 0
-        inkCount: 0
-        gunCartLimit: 1
-        ammoCartLimit: 1
-        repairCartLimit: 1
-        overallCartLimitIncrease: 0
-        gatlingUnlock: 0
-        shieldUnlock: 0
-        growthUnlock: 0
-        uraniumUnlock: 0
-        bossUnlocked: 0
-      cityUpgradesProgress:
-        armorUpgradesBought: 0
-        damageUpgradesBought: 0
-        ammoUpgradesBought: 0
-        recoveryUpgradesBought: 0
       castlesTraveled: 0
       money: 0
       tutorialProgress:
@@ -835,38 +828,28 @@ MonoBehaviour:
         cameraDone: 0
         directControlHint: 0
         reloadHint: 0
-        repairCriticalHint: 0
-        repairHint: 0
-        deliverCargoHint: 0
     - saveName: unnamed
       isActiveSave: 0
       isRealSaveFile: 0
       playtime: 0
-      myTrain:
-        myCarts: []
-      shopInitialized: 0
-      shopState:
-        artifactStates: []
-        cartStates: []
       runGameVersion: 
+      isInARun: 0
+      currentRun:
+        character:
+          uniqueName: unset
+          description: 
+          starterTrain:
+            myCarts: []
+        myTrain:
+          myCarts: []
+        currentAct: 1
+        playtime: 0
+        shopInitialized: 0
+        shopState:
+          artifactStates: []
+          cartStates: []
+        runGameVersion: 0.0.0.a
       showWakeUp: 0
-      newspaperUpgradesProgress:
-        totalEarnedInk: 0
-        inkCount: 0
-        gunCartLimit: 1
-        ammoCartLimit: 1
-        repairCartLimit: 1
-        overallCartLimitIncrease: 0
-        gatlingUnlock: 0
-        shieldUnlock: 0
-        growthUnlock: 0
-        uraniumUnlock: 0
-        bossUnlocked: 0
-      cityUpgradesProgress:
-        armorUpgradesBought: 0
-        damageUpgradesBought: 0
-        ammoUpgradesBought: 0
-        recoveryUpgradesBought: 0
       castlesTraveled: 0
       money: 0
       tutorialProgress:
@@ -876,38 +859,28 @@ MonoBehaviour:
         cameraDone: 0
         directControlHint: 0
         reloadHint: 0
-        repairCriticalHint: 0
-        repairHint: 0
-        deliverCargoHint: 0
     - saveName: unnamed
       isActiveSave: 0
       isRealSaveFile: 0
       playtime: 0
-      myTrain:
-        myCarts: []
-      shopInitialized: 0
-      shopState:
-        artifactStates: []
-        cartStates: []
       runGameVersion: 
+      isInARun: 0
+      currentRun:
+        character:
+          uniqueName: unset
+          description: 
+          starterTrain:
+            myCarts: []
+        myTrain:
+          myCarts: []
+        currentAct: 1
+        playtime: 0
+        shopInitialized: 0
+        shopState:
+          artifactStates: []
+          cartStates: []
+        runGameVersion: 0.0.0.a
       showWakeUp: 0
-      newspaperUpgradesProgress:
-        totalEarnedInk: 0
-        inkCount: 0
-        gunCartLimit: 1
-        ammoCartLimit: 1
-        repairCartLimit: 1
-        overallCartLimitIncrease: 0
-        gatlingUnlock: 0
-        shieldUnlock: 0
-        growthUnlock: 0
-        uraniumUnlock: 0
-        bossUnlocked: 0
-      cityUpgradesProgress:
-        armorUpgradesBought: 0
-        damageUpgradesBought: 0
-        ammoUpgradesBought: 0
-        recoveryUpgradesBought: 0
       castlesTraveled: 0
       money: 0
       tutorialProgress:
@@ -917,9 +890,6 @@ MonoBehaviour:
         cameraDone: 0
         directControlHint: 0
         reloadHint: 0
-        repairCriticalHint: 0
-        repairHint: 0
-        deliverCargoHint: 0
     loadingComplete: 0
     dontSave: 0
     saveLockTimer: 0
@@ -1286,7 +1256,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 67107639
+    m_Bits: 268434231
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

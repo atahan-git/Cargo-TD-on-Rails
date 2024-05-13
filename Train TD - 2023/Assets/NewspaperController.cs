@@ -37,6 +37,12 @@ public class NewspaperController : MonoBehaviour {
 
     public string targetText;
 
+    public void CheckShowNewspaper() {
+        if (DataSaver.s.GetCurrentSave().currentRun.currentAct > 1) {
+            OpenNewspaperScreen();
+        }
+    }
+
     public Vector3 GetNewspaperTrainPosition(float percent, float distanceAddon) {
         var mainCam = MainCameraReference.s.cam;
         var uiCam = OverlayCamsReference.s.uiCam;
@@ -109,8 +115,9 @@ public class NewspaperController : MonoBehaviour {
 
 
     public bool inkLerp = false;
-    void Update()
-    {
+    void Update() {
+        newspaperCamera.transform.position = MainCameraReference.s.transform.position;
+        newspaperCamera.transform.rotation = MainCameraReference.s.transform.rotation;
         Train.s.SetNewspaperTrainState(newspaperOpenState);
 
         if (newspaperOpenState) {
@@ -127,7 +134,7 @@ public class NewspaperController : MonoBehaviour {
         }
 
         if (inkLerp) {
-            lerpInk = Mathf.MoveTowards(lerpInk, DataSaver.s.GetCurrentSave().newspaperUpgradesProgress.inkCount, 5*Time.deltaTime);
+            //lerpInk = Mathf.MoveTowards(lerpInk, DataSaver.s.GetCurrentSave().newspaperUpgradesProgress.inkCount, 5*Time.deltaTime);
         }
 
         inkSlider.value = lerpInk;
@@ -162,8 +169,8 @@ public class NewspaperController : MonoBehaviour {
             Train.s.RemoveCart(curConvert);
             Destroy(curConvert.gameObject);
 
-            DataSaver.s.GetCurrentSave().newspaperUpgradesProgress.inkCount += 1;
-            DataSaver.s.GetCurrentSave().newspaperUpgradesProgress.totalEarnedInk += 1;
+            /*DataSaver.s.GetCurrentSave().newspaperUpgradesProgress.inkCount += 1;
+            DataSaver.s.GetCurrentSave().newspaperUpgradesProgress.totalEarnedInk += 1;*/
 
             yield return new WaitForSeconds(0.5f);
         }
@@ -223,7 +230,7 @@ public class NewspaperController : MonoBehaviour {
 
 
     public void ResetInkDistribution() {
-        var unlockedThings = DataSaver.s.GetCurrentSave().newspaperUpgradesProgress;
+        /*var unlockedThings = DataSaver.s.GetCurrentSave().newspaperUpgradesProgress;
         unlockedThings.inkCount = unlockedThings.totalEarnedInk;
 
         unlockedThings.bossUnlocked = false;
@@ -234,7 +241,7 @@ public class NewspaperController : MonoBehaviour {
         unlockedThings.ammoCartLimit = true;
         unlockedThings.gunCartLimit = true;
         unlockedThings.repairCartLimit = true;
-        unlockedThings.overallCartLimitIncrease = 0;
+        unlockedThings.overallCartLimitIncrease = 0;*/
         
         SetMainText(false);
     }
@@ -258,7 +265,7 @@ public class NewspaperController : MonoBehaviour {
         if(!interpolationComplete)
             return;
 
-        var unlockedThings = DataSaver.s.GetCurrentSave().newspaperUpgradesProgress;
+        /*var unlockedThings = DataSaver.s.GetCurrentSave().newspaperUpgradesProgress;
         if (unlockedThings.inkCount >= gunCartLimit.cost && linkID == gunCartLimit.uniqueName) {
             unlockedThings.gunCartLimit = false;
             unlockedThings.inkCount -= gunCartLimit.cost;
@@ -286,7 +293,7 @@ public class NewspaperController : MonoBehaviour {
         } else if (unlockedThings.inkCount >= bossUnlock.cost && linkID == bossUnlock.uniqueName) {
             unlockedThings.bossUnlocked = true;
             unlockedThings.inkCount -= bossUnlock.cost;
-        }
+        }*/
         
         SetMainText(false);
     }
@@ -310,7 +317,7 @@ public class NewspaperController : MonoBehaviour {
     public bool interpolationComplete = true;
     void SetMainText(bool isInstant) {
         isInstant = true;
-        var unlockedThings = DataSaver.s.GetCurrentSave().newspaperUpgradesProgress;
+        /*var unlockedThings = DataSaver.s.GetCurrentSave().newspaperUpgradesProgress;
 
         var fullText = textHolderScriptable.introText;
 
@@ -391,11 +398,12 @@ public class NewspaperController : MonoBehaviour {
         if (isInstant) {
             mainText.text = targetText;
             interpolationComplete = true;
-        }
+        }*/
     }
 
     private float charToReplace = 0;
     void InterpolateMainText() {
+        return;
         charToReplace += 10*Time.deltaTime;
 
 

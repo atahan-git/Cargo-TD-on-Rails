@@ -44,7 +44,8 @@ public class PathSelectorController : MonoBehaviour {
     }
 
     private void TrackSwitch(InputAction.CallbackContext obj) {
-		mainLever.LeverClicked();
+	    if(mainLever != null && PlayStateMaster.s.isCombatInProgress())
+			mainLever.LeverClicked();
 	}
 
 	private void OnDisable() {
@@ -92,9 +93,14 @@ public class PathSelectorController : MonoBehaviour {
 	public Image topTrackType;
 	public Image bottomTrackType;
 	public Image topMergeStar;
+	public Image topBoss;
+	public Image topGoodThing;
 	public Image bottomMergeStar;
+	public Image bottomBoss;
+	public Image bottomGoodThing;
 
 	public Color[] pathTypeColors;
+	public Sprite[] pathTypeImages;
 	
 	void ReAdjustTracks() {
 		var currentPathTree = PathAndTerrainGenerator.s.currentPathTree;
@@ -116,11 +122,15 @@ public class PathSelectorController : MonoBehaviour {
 			
 		} else {
 			topTrack.SetUpTrack(currentPathTree.leftPathTree.myPath.length);
-			SetImageBasedOnPathType(topTrackType, currentPathTree.leftPathTree.myPath.pathRewardUniqueName);
-			topMergeStar.enabled = currentPathTree.leftPathTree.myPath.pathRewardMerge;
+			SetImageBasedOnPathType(topTrackType, currentPathTree.leftPathTree.enemyType.myType);
+			topMergeStar.enabled = currentPathTree.leftPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.elite;
+			topBoss.enabled = currentPathTree.leftPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.boss;
+			topGoodThing.enabled = currentPathTree.leftPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.pitStop;
 			bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
-			SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.myPath.pathRewardUniqueName);
-			bottomMergeStar.enabled = currentPathTree.rightPathTree.myPath.pathRewardMerge;
+			SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.enemyType.myType);
+			bottomMergeStar.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.elite;
+			bottomBoss.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.boss;
+			bottomGoodThing.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.pitStop;
 			topTrack.SetActiveState(mainLever.topSelected);
 			bottomTrack.SetActiveState(!mainLever.topSelected);
 
@@ -135,12 +145,42 @@ public class PathSelectorController : MonoBehaviour {
 		}
 	}
 
-	void SetImageBasedOnPathType(Image target, string uniqueName) {
-		if (uniqueName.Length == 0) {
+	void SetImageBasedOnPathType(Image target, UpgradesController.PathEnemyType.PathType enemyType) {
+		switch (enemyType) {
+			case UpgradesController.PathEnemyType.PathType.pitStop:
+			case UpgradesController.PathEnemyType.PathType.empty:
+				target.enabled = false;
+				break;
+			case UpgradesController.PathEnemyType.PathType.easy:
+				target.enabled = true;
+				target.color = pathTypeColors[0];
+				target.sprite = pathTypeImages[0];
+				break;
+			case UpgradesController.PathEnemyType.PathType.regular:
+				target.enabled = true;
+				target.color = pathTypeColors[0];
+				target.sprite = pathTypeImages[1];
+				break;
+			case UpgradesController.PathEnemyType.PathType.elite:
+				target.enabled = true;
+				target.color = pathTypeColors[0];
+				target.sprite = pathTypeImages[2];
+				break;
+			case UpgradesController.PathEnemyType.PathType.boss:
+				target.enabled = true;
+				target.color = pathTypeColors[0];
+				target.sprite = pathTypeImages[3];
+				break;
+			default:
+				throw new ArgumentOutOfRangeException(nameof(enemyType), enemyType, null);
+		}
+		/*if (uniqueName.Length == 0) {
 			target.enabled = false;
 		} else if(DataHolder.s.GetTier1Gun(uniqueName) is var gunModule && gunModule != null){
 			target.sprite = gunModule.gunSprite;
 			target.color = pathTypeColors[0];
+			
+			target.enabled = true;
 		}else if (DataHolder.s.GetCart(uniqueName, true) is var utilityCart && utilityCart != null) {
 			target.sprite = utilityCart.Icon;
 
@@ -150,12 +190,15 @@ public class PathSelectorController : MonoBehaviour {
 				target.color = pathTypeColors[1];
 			}
 			
+			target.enabled = true;
 		}else if(DataHolder.s.GetArtifact(uniqueName, true) is var artifact && artifact != null) {
 			target.sprite = artifact.mySprite;
 			target.color = pathTypeColors[2];
+			
+			target.enabled = true;
 		} else {
 			target.enabled = false;
-		}
+		}*/
 	}
 
 	public void ActivateLever() {
@@ -204,8 +247,10 @@ public class PathSelectorController : MonoBehaviour {
 					EncounterController.s.EngageEncounter(upcomingSegment.levelName);
 				} else {*/
 				//}
-				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, 
-					upcomingPath.myPath.length, upcomingPath.myPath.pathRewardUniqueName, upcomingPath.myPath.pathRewardMerge);
+				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length, upcomingPath.enemyType);
+				MapController.s.UpdateTrainPosition();
+				
+				StopAndPick3RewardUIController.s.TryShowGemReward();
 
 				nextSegmentChangeDistance += upcomingPath.myPath.length;
 				/*if (!upcomingPath.endPath) {

@@ -136,7 +136,7 @@ public class CameraController : MonoBehaviour {
 
     private void Update() {
         if (mainCamera.fieldOfView != targetFOV) {
-            mainCamera.fieldOfView = Mathf.MoveTowards(mainCamera.fieldOfView, targetFOV, fovChangeSpeed * Time.deltaTime);
+            mainCamera.fieldOfView = Mathf.MoveTowards(mainCamera.fieldOfView, targetFOV, fovChangeSpeed * Time.unscaledDeltaTime);
         }
     }
 
@@ -191,8 +191,10 @@ public class CameraController : MonoBehaviour {
                         ProcessMovementGamepadJumpForwardAndBack();
                     } else {
                         //ProcessMovementSnapped(moveAction.action.ReadValue<Vector2>(), snappedwasdDelay);
-                        ProcessMovementSnapped(moveGamepadAction.action.ReadValue<Vector2>(), snappedwasdDelay);
-                        ProcessMovementSnappedGamepadForwardBackwards();
+                        if (isSnappedToTrain) {
+                            ProcessMovementSnapped(moveGamepadAction.action.ReadValue<Vector2>(), snappedwasdDelay);
+                            ProcessMovementSnappedGamepadForwardBackwards();
+                        }
                     }
 
                     if (canZoom)
@@ -201,9 +203,8 @@ public class CameraController : MonoBehaviour {
                     ProcessMiddleMouseRotation(rotateCameraAction.action.ReadValue<float>(), mousePos);
                     ProcessSmoothRotationInput(rotateSmoothAction.action.ReadValue<float>(), rotateSmoothSpeed);
                     ProcessSmoothRotationInput(rotateSmoothGamepadAction.action.ReadValue<float>(), rotateSmoothGamepadSpeed);
-
-                    LerpCameraTarget();
                 }
+                LerpCameraTarget();
             }
 
             SetMainCamPos();
@@ -365,13 +366,17 @@ public class CameraController : MonoBehaviour {
 
     private void LerpCameraTarget() {
         //transform.position = Train.s.trainMiddle.transform.position;
-        
+
         if (isSnappedToTransform) {
-            var snapPos = snapTarget.position;
-            snapPos.y = cameraCenter.position.y;
-            cameraCenter.position = Vector3.Lerp(cameraCenter.position, snapPos, snappedMovementLerp*Time.unscaledDeltaTime);
+            if (snapTarget == null) {
+                UnSnap();
+            } else {
+                var snapPos = snapTarget.position;
+                snapPos.y = cameraCenter.position.y;
+                cameraCenter.position = Vector3.Lerp(cameraCenter.position, snapPos, snappedMovementLerp * Time.unscaledDeltaTime);
+            }
         }
-        
+
         //var centerRotTarget = Quaternion.Euler(0, isRight ? -rotationAngleTarget : rotationAngleTarget, 0);
         var centerRotTarget = Quaternion.Euler(0, -rotationAngleTarget, 0);
 
@@ -547,7 +552,6 @@ public class CameraController : MonoBehaviour {
     public float snappedMovementLerp = 1f;
     private float snappedDetachTimer = 0;
     void ProcessMovementSnapped(Vector2 value, float delay) {
-        
         Cart snappedCart = GetSnappedCart();
         if (snappedCart == null) {
             snapTarget = null;
@@ -699,6 +703,12 @@ public class CameraController : MonoBehaviour {
         isSnappedToTransform = true;
         isSnappedToTrain = true;
     }
+    
+    public void SnapToTransform(Transform target) {
+        snapTarget = target;
+        isSnappedToTransform = true;
+        isSnappedToTrain = false;
+    }
 
     public void UnSnap() {
         isSnappedToTransform = false;
@@ -777,7 +787,7 @@ public class CameraController : MonoBehaviour {
         
         if (posLerping) {
             cameraLerpDummy.transform.position = Vector3.Lerp(cameraLerpDummy.transform.position, targetPos, posLerpSpeed * Time.unscaledDeltaTime);
-            if (Vector3.Distance(cameraLerpDummy.transform.position, targetPos) < 0.01f) {
+            if (Vector3.Distance(cameraLerpDummy.transform.position, targetPos) < 0.1f) {
                 posLerping = false;
             }
         } else {
@@ -786,7 +796,7 @@ public class CameraController : MonoBehaviour {
 
         if (rotLerping) {
             cameraLerpDummy.transform.rotation = Quaternion.Lerp(cameraLerpDummy.transform.rotation, targetRot, rotLerpSpeed * Time.unscaledDeltaTime);
-            if (Quaternion.Angle(cameraLerpDummy.transform.rotation, targetRot) < 5) {
+            if (Quaternion.Angle(cameraLerpDummy.transform.rotation, targetRot) < 10) {
                 rotLerping = false;
             }
         } else {

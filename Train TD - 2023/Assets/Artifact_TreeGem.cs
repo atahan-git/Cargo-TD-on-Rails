@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, IActiveDuringCombat, IApplyToEnemyWithGem
+public class Artifact_TreeGem : MonoBehaviour, IChangeCartState
 {
-    
-    //[Space]
+    public void ChangeState(Cart target) {
+        // do nothing
+    }
+    /*//[Space]
     public float reloadDelayBase = 2f;
     public float reloadBoostPerLevel = -0.5f;
     public float currentReloadDelay = 0;
@@ -111,5 +113,5 @@ public class Artifact_TreeGem : ActivateWhenOnArtifactRow, IResetStateArtifact, 
     public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
         enemyToApplyTo = enemy;
         //throw new NotImplementedException();
-    }
+    }*/
 }

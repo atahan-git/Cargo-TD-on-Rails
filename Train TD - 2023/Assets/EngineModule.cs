@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState {
+public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState, IDisabledState {
    public float speedAdd = 6;
    public float extraSpeedAdd = 1;
    public int enginePower = 10;
@@ -27,6 +27,10 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    }
 
    public float GetPressureUse() {
+      if (CheatsController.s.trainDoesntLoseSteam) {
+         return 0;
+      }
+      
       var pressureDropIndex = 0;
       for (int i = 0; i < pressureDropRanges.Length; i++) {
          if (currentPressure > pressureDropRanges[i]) {
@@ -102,11 +106,13 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
                damageAmount = damageAmounts[1];
             }
 
-            curDamageInterval += Time.deltaTime;
+            curDamageInterval -= Time.deltaTime;
 
-            if (curDamageInterval > damageInterval) {
-               GetComponentInParent<ModuleHealth>().SelfDamage(damage*damageAmount);
-               curDamageInterval = 0;
+            if (curDamageInterval <= 0) {
+               var health = GetComponentInParent<ModuleHealth>();
+               health.SelfDamage(damage*damageAmount);
+               VisualEffectsController.s.SmartInstantiate(LevelReferences.s.mediumDamagePrefab, health.GetUITransform());
+               curDamageInterval = damageInterval;
             }
 
 
@@ -118,6 +124,7 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 
    public void ActivateForCombat() {
       this.enabled = true;
+      currentPressure = 1.7f;
    }
 
    public void ActivateForShopping() {
@@ -131,5 +138,14 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public void ResetState() {
       extraSpeedAdd = 0;
       extraEnginePower = 0;
+   }
+
+   public void CartDisabled() {
+      currentPressure = 0;
+      this.enabled = false;
+   }
+
+   public void CartEnabled() {
+      this.enabled = true;
    }
 }

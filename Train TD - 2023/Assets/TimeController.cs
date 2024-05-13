@@ -50,6 +50,22 @@ public class TimeController : MonoBehaviour {
 
     public bool debugDisableAbilityToFastForward = false;
     private void Update() {
+        if (isPaused)
+            return;
+        
+        if (slowDownAndPause) {
+            slowDownAndPauseProgress = Mathf.MoveTowards(slowDownAndPauseProgress, 1, 0.5f*Time.unscaledDeltaTime);
+        } else {
+            slowDownAndPauseProgress = Mathf.MoveTowards(slowDownAndPauseProgress, 0, 0.5f*Time.unscaledDeltaTime);
+        }
+        
+
+        if (slowDownAndPauseProgress > 0) {
+            var actualTimeScale = Mathf.Pow(1f - slowDownAndPauseProgress, 3f);
+            Time.timeScale = actualTimeScale;
+            return;
+        }
+        
         if(!debugAlwaysFastForward)
             ProcessFastForward();
     }
@@ -68,6 +84,11 @@ public class TimeController : MonoBehaviour {
     public bool fastForwarding = false;
     public void ProcessFastForward() {
         //print(fastForwardKey.action.ReadValue<float>());
+        if (slowTimeForDetails) {
+            Time.timeScale = Mathf.Lerp(Time.timeScale, 0.05f, 4 * Time.unscaledDeltaTime);
+            return;
+        }
+        
         if (fastForwardKey.action.IsPressed() && canFastForward && !DirectControlMaster.s.directControlInProgress && !debugDisableAbilityToFastForward) {
             currentTimeScale = 8f;
             if (!isPaused) {
@@ -83,5 +104,17 @@ public class TimeController : MonoBehaviour {
             
             fastForwarding = false;
         }
+    }
+
+    private bool slowTimeForDetails = false;
+    public void SetTimeSlowForDetailScreen(bool isActive) {
+        slowTimeForDetails = isActive;
+    }
+
+    public bool slowDownAndPause = false;
+    public float slowDownAndPauseProgress = 0;
+
+    public void SetSlowDownAndPauseState(bool state) {
+        slowDownAndPause = state;
     }
 }

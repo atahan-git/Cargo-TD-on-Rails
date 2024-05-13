@@ -33,6 +33,7 @@ public class LevelReferences : MonoBehaviour {
     public GameObject mortarMiniHitPrefab;
     public GameObject waveDisplayPrefab;
     public GameObject enemyHealthPrefab;
+    public GameObject cartHealthPrefab;
     public GameObject bulletHealthPrefab;
     public GameObject damageNumbersPrefab;
     public Transform uiDisplayParent;
@@ -44,6 +45,7 @@ public class LevelReferences : MonoBehaviour {
     
     public GameObject repairEffectPrefab;
     public GameObject shieldUpEffectPrefab;
+    public GameObject goodItemSpawnEffectPrefab;
     
     [Space]
     
@@ -54,6 +56,7 @@ public class LevelReferences : MonoBehaviour {
     public GameObject smallDamagePrefab;
     public GameObject mediumDamagePrefab;
     public GameObject bigDamagePrefab;
+    public GameObject megaDamagePrefab;
     
     [Space]
 
@@ -110,6 +113,7 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask artifactLayer;
     public LayerMask meepleLayer;
     public LayerMask scrapsItemLayer;
+    public LayerMask allSelectablesLayer;
 
     [Space]
     public SingleUnityLayer playerBulletLayer;

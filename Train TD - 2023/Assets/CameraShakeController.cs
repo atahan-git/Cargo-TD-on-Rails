@@ -71,8 +71,8 @@ public class CameraShakeController : MonoBehaviour {
                 curMagnitude = Mathf.Max(curMagnitude, activeShakes[i].curMagnitude);
                 verticalPushMagnitude = Math.Max(verticalPushMagnitude,activeShakes[i].verticalMagnitude);
 
-                activeShakes[i].curMagnitude -= activeShakes[i].magnitudeDecay * Time.deltaTime;
-                activeShakes[i].verticalMagnitude -= activeShakes[i].verticalMagnitudeDecay * Time.deltaTime;
+                activeShakes[i].curMagnitude -= activeShakes[i].magnitudeDecay * Time.unscaledDeltaTime;
+                activeShakes[i].verticalMagnitude -= activeShakes[i].verticalMagnitudeDecay * Time.unscaledDeltaTime;
 
                 if (activeShakes[i].curMagnitude <= 0f) {
                     activeShakes.RemoveAt(i);

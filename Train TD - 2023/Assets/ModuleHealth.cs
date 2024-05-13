@@ -8,7 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActiveDuringShopping {
+public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActiveDuringShopping, IDisabledState {
 
     public static bool isImmune = false;
     
@@ -44,8 +44,23 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     private float repairEffectSpawnDistance = 2;
 
     public Collider mainCollider;
+
+    public MiniGUI_CartUIBar cartUIBar;
     private void Start() {
         repairEffectSpawnDistance = GetMainCollider().bounds.size.magnitude + 1;
+        cartUIBar = Instantiate(LevelReferences.s.cartHealthPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_CartUIBar>();
+        cartUIBar.SetUp(this);
+        SetHealthBarState(false);
+    }
+
+    public void SetHealthBarState(bool isVisible) {
+        cartUIBar.SetVisible(isVisible);
+    }
+    
+    private void OnDestroy() {
+        if(cartUIBar != null)
+            if(cartUIBar.gameObject != null)
+                Destroy(cartUIBar.gameObject);
     }
 
     [NonSerialized] public bool glassCart;
@@ -78,27 +93,21 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
 
 
         myCart = GetComponent<Cart>();
-        if (!isDead && (myCart == null || !myCart.isDestroyed)) {
-            if (myProtector != null) {
-                myProtector.ProtectFromDamage(damage);
-                return;
-            }
-            
-            damage *= damageReductionMultiplier;
-            
-            currentHealth -= damage;
-
-            if(currentHealth <= 0) {
-                GetDestroyed();
-            }
-
-            UpdateHpState(hitPoint);
-
-            if (currentHealth < 0) {
-                currentHealth = 0;
-            }
-            
+        if (myProtector != null) {
+            myProtector.ProtectFromDamage(damage);
+            return;
         }
+        
+        damage *= damageReductionMultiplier;
+        
+        currentHealth -= damage;
+
+        if(currentHealth <= 0) {
+            currentHealth = 0;
+            GetDestroyed();
+        }
+
+        UpdateHpState(hitPoint);
     }
 
     public void UpdateHpState(Vector3? hitPoint = null) {
@@ -405,6 +414,9 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
 
     [Button]
     public void GetDestroyed() {
+        if (myCart.isDestroyed) {
+            return;
+        }
         myCart.isDestroyed = true;
         myCart.SetDisabledState();
 
@@ -471,6 +483,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     void SetBuildingRepairableBurnChunks(Vector3? sourcePoint) {
         var missingHealth = GetMaxHealth() - currentHealth;
         var targetBurnEffectCount = Mathf.CeilToInt(missingHealth / repairChunkSize);
+        targetBurnEffectCount = Mathf.Clamp(targetBurnEffectCount, 0, Mathf.CeilToInt(GetMaxHealth(false) / repairChunkSize + 1));
 
         if (activeBurnEffects.Count > targetBurnEffectCount) {
 			
@@ -484,6 +497,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
                     }
                 }
                 activeBurnEffects.RemoveAt(index);
+                SetBuildingMaxHealthReductionChunks(decommissioned.transform.position, decommissioned.transform.rotation);
                 decommissioned.GetComponent<RepairableBurnEffect>().Repair();
             }
 			
@@ -532,6 +546,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     
     
     void SetBuildingMaxHealthReductionChunks() {
+        return;
         var targetMissingHealthPlatesCount = Mathf.CeilToInt(maxHealthReduction / maxHealthReductionChunkSize);
 
         if (activeMaxHealthReductionPlates.Count > targetMissingHealthPlatesCount) {
@@ -587,7 +602,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         if (invincible)
             return;
         
-        maxHealthReduction += maxHealthReductionChunkSize;
+        //maxHealthReduction += maxHealthReductionChunkSize;
         
         if (toRepair.canRepair) {
             var effect = Instantiate(LevelReferences.s.repairDoneEffect, toRepair.transform.position, toRepair.transform.rotation);
@@ -606,16 +621,26 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         if (invincible)
             return;
 
-        if (currentHealth+repairChunkSize > maxHealth) {
+        if (activeBurnEffects.Count == 0) {
             return;
         }
-        
-        
-        maxHealthReduction += maxHealthReductionChunkSize;
+
+        //maxHealthReduction += maxHealthReductionChunkSize;
         Repair(repairChunkSize, false);
     }
 
     public void RepairChunk(int count) {
+        for (int i = 0; i < activeBurnEffects.Count; i++) {
+            if (!activeBurnEffects[i].isTaken) {
+                RepairChunk(activeBurnEffects[i]);
+                count -= 1;
+            }
+
+            if (count <= 0) {
+                return;
+            }
+        }
+        
         for (int i = 0; i < count; i++) {
             RepairChunk();
         }
@@ -691,5 +716,13 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
 
     public void Disable() {
         this.enabled = false;
+    }
+    
+    public void CartDisabled() {
+        this.enabled = false;
+    }
+
+    public void CartEnabled() {
+        this.enabled = true;
     }
 }

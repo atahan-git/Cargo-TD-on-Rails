@@ -19,12 +19,10 @@ public class PathGenerator : MonoBehaviour {
         public int endPoint;
         public int rotateStopPoint;
         public int endRotateStartPoint;
-        public bool endPath = false;
         public bool addImprintNoise = true;
-        public bool debugDrawGizmo = true;
         public int trackObjectsId = -1;
-        public string pathRewardUniqueName = "";
-        public bool pathRewardMerge = false;
+
+        public bool debugDrawGizmo = false;
     }
 
 
@@ -157,8 +155,6 @@ public class PathGenerator : MonoBehaviour {
 
         combinedPath.length = curvyPath.length + straightPath.length;
         combinedPath.stepLength = stepLength;
-
-        combinedPath.endPath = true;
 
         return combinedPath;
     }

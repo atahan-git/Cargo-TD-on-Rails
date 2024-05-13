@@ -79,6 +79,7 @@ public class ShopStateController : MonoBehaviour {
 
 	public void StartLevel(bool legitStart) {
 		PlayStateMaster.s.SetCurrentLevel(DataHolder.s.levelArchetypeScriptables[Random.Range(0,DataHolder.s.levelArchetypeScriptables.Length)].GenerateLevel());
+		MapController.s.MakeNewMap();
 		if (PlayStateMaster.s.IsLevelSelected()) {
 			var currentLevel = PlayStateMaster.s.currentLevel;
 			starterUI.SetActive(false);
@@ -116,17 +117,23 @@ public class ShopStateController : MonoBehaviour {
 	public MiniGUI_DepartureChecklist endGameAreaChecklist;
 
 	public void RemoveCartFromShop(Cart cart) {
+		if(PlayStateMaster.s.isCombatInProgress())
+			return;
 		shopCarts.Remove(cart);
 		SaveShopState();
 	}
 
 	public void AddCartToShop(Cart cart, bool doSave = true) {
+		if(PlayStateMaster.s.isCombatInProgress())
+			return;
 		shopCarts.Add(cart);
 		if(doSave)
 			SaveShopState();
 	}
 
 	public void RemoveArtifactFromShop(Artifact artifact, bool doSave = true) {
+		if(PlayStateMaster.s.isCombatInProgress())
+			return;
 		if (shopArtifacts.Contains(artifact)) {
 			shopArtifacts.Remove(artifact);
 			if(doSave)
@@ -135,6 +142,8 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	public void AddArtifactToShop(Artifact artifact, bool doSave = true) {
+		if(PlayStateMaster.s.isCombatInProgress())
+			return;
 		if (!shopArtifacts.Contains(artifact)) {
 			shopArtifacts.Add(artifact);
 			if(doSave)
@@ -152,16 +161,12 @@ public class ShopStateController : MonoBehaviour {
 		var shopState = new ShopState();
 		for (int i = 0; i < shopCarts.Count; i++) {
 			var cart = shopCarts[i];
-			if (cart.isCargo && !PlayStateMaster.s.isEndGame()) { // in the end game area cargos are also regular carts
-				var cargo = cart.GetComponentInChildren<CargoModule>();
-			} else {
-				shopState.cartStates.Add(new WorldCartState() {
-					isSnapped =  cart.GetComponentInParent<SnapLocation>(),
-					pos = cart.transform.position,
-					rot = cart.transform.rotation,
-					state = Train.GetStateFromCart(cart)
-				});
-			}
+			shopState.cartStates.Add(new WorldCartState() {
+				isSnapped =  cart.GetComponentInParent<SnapLocation>(),
+				pos = cart.transform.position,
+				rot = cart.transform.rotation,
+				state = Train.GetStateFromCart(cart)
+			});
 		}
 
 		for (int i = 0; i < shopArtifacts.Count; i++) {
@@ -177,7 +182,7 @@ public class ShopStateController : MonoBehaviour {
 			}
 		}
 
-		DataSaver.s.GetCurrentSave().shopState = shopState;
+		DataSaver.s.GetCurrentSave().currentRun.shopState = shopState;
 		DataSaver.s.SaveActiveGame();
 	}
 	
@@ -205,14 +210,14 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	void InitializeShop(DataSaver.SaveFile state) {
-		state.shopState = new ShopState();
+		state.currentRun.shopState = new ShopState();
 		
-		state.shopInitialized = true;
+		state.currentRun.shopInitialized = true;
 		DataSaver.s.SaveActiveGame();
 	}
 
 	public void DrawShopOptions() {
-		if (!DataSaver.s.GetCurrentSave().shopInitialized) {
+		if (!DataSaver.s.GetCurrentSave().currentRun.shopInitialized) {
 			InitializeShop(DataSaver.s.GetCurrentSave());
 		}
 		
@@ -234,7 +239,7 @@ public class ShopStateController : MonoBehaviour {
 		}
 		shopArtifacts.Clear();
 		
-		DataSaver.s.GetCurrentSave().shopState = new ShopState();
+		DataSaver.s.GetCurrentSave().currentRun.shopState = new ShopState();
 		DataSaver.s.SaveActiveGame();
 	}
 
@@ -253,18 +258,36 @@ public class ShopStateController : MonoBehaviour {
 		}
 		shopArtifacts.Clear();
 
-		/*for (int i = 0; i < fleaMarketLocations.Length; i++) {
-			var buildings = fleaMarketLocations[i].GetComponentsInChildren<Cart>();
-			for (int j = 0; j < buildings.Length; j++) {
-				Destroy(buildings[j].gameObject);
+
+		if (DataSaver.s.GetCurrentSave().currentRun.shopInitialized) {
+			var prevShopState = DataSaver.s.GetCurrentSave().currentRun.shopState;
+
+			for (int i = 0; i <prevShopState.cartStates.Count; i++) {
+				var curState = prevShopState.cartStates[i];
+				var cart = Instantiate(DataHolder.s.GetCart(curState.state.uniqueName), curState.pos, curState.rot);
+				Train.ApplyStateToCart(cart, curState.state);
+				AddCartToShop(cart, false);
+				if (curState.isSnapped) {
+					var snapLoc =  PlayerWorldInteractionController.s.GetSnapLoc(curState.pos, cart.GetComponent<Cart>());
+					if (snapLoc != null) {
+						snapLoc.SnapObject(cart.gameObject);
+					}
+				}
 			}
 			
-			fleaMarketLocations[i].transform.rotation = Quaternion.Euler(0,Random.Range(0,360),0);
-
-			if (i >= fleaMarketLocationCount) {
-				fleaMarketLocations[i].gameObject.SetActive(false);
+			for (int i = 0; i <prevShopState.artifactStates.Count; i++) {
+				var curState = prevShopState.artifactStates[i];
+				var artifact = Instantiate(DataHolder.s.GetArtifact(curState.state.uniqueName), curState.pos, curState.rot);
+				Train.ApplyStateToArtifact(artifact, curState.state);
+				AddArtifactToShop(artifact, false);
+				if (curState.isSnapped) {
+					var snapLoc =  PlayerWorldInteractionController.s.GetSnapLoc(curState.pos, artifact.GetComponent<Artifact>());
+					if (snapLoc != null) {
+						snapLoc.SnapObject(artifact.gameObject);
+					}
+				}
 			}
-		}*/
+		}
 
 		SaveShopState();
 	}

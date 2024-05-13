@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SnapLocation : MonoBehaviour {
     public enum AllowedSnaps {
-        nothing, cart, cargoCart, regularArtifact, cartAndRegularArtifact, regularAndComponentArtifact, mergeItem, scrapable, red, blue, green, anyColor
+        nothing=0, cart=1, regularArtifact=2, cartAndRegularArtifact=3, regularAndComponentArtifact=4, scrapable=6, red=7, blue=8, green=9, anyColor=10, justComponentArtifact = 11
     }
 
     public AllowedSnaps myAllowedSnaps = AllowedSnaps.nothing;
@@ -17,6 +17,9 @@ public class SnapLocation : MonoBehaviour {
     public bool lerpChild = true;
 
     public bool allowSnap = true;
+
+    [HideInInspector]
+    public float curDistance;
     private void Start() {
         LevelReferences.s.allSnapLocations.Add(this);
         if (snapTransform == null) {
@@ -62,13 +65,6 @@ public class SnapLocation : MonoBehaviour {
                 return false;
             case AllowedSnaps.cart:
                 return thing is Cart;
-            case AllowedSnaps.cargoCart:
-                var myCart = thing as Cart;
-                if (myCart == null) {
-                    return false;
-                } else {
-                    return myCart.GetComponentInChildren<CargoModule>() != null;
-                }
             case AllowedSnaps.regularArtifact: 
             {
                 var myArtifact = thing as Artifact;
@@ -91,8 +87,6 @@ public class SnapLocation : MonoBehaviour {
             }
             case AllowedSnaps.regularAndComponentArtifact:
                 return thing is Artifact;
-            case AllowedSnaps.mergeItem:
-                return thing is MergeItem;
             case AllowedSnaps.scrapable:
                 var scrapable = ((MonoBehaviour)thing).GetComponent<Scrapable>();
                 return scrapable != null;
@@ -119,6 +113,14 @@ public class SnapLocation : MonoBehaviour {
                 if (!scrapItem)
                     return false;
                 return true;
+            }
+            case AllowedSnaps.justComponentArtifact: {
+                var artifact = thing as Artifact;
+                if (!artifact) {
+                    return false;
+                } else {
+                    return artifact.isComponent;
+                }
             }
             default:
                 return false;

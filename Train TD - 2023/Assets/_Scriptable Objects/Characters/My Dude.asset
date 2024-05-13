@@ -22,55 +22,17 @@ MonoBehaviour:
       myCarts:
       - uniqueName: engine_nuclear
         health: -1
-        ammo: -1
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: starter_artifact
-          level: 0
-      - uniqueName: cargo_mystery_0
+        maxHealthReduction: -1
+        attachedArtifacts: []
+      - uniqueName: repair_cart
         health: -1
-        ammo: -1
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: top_avr
+        maxHealthReduction: -1
+        attachedArtifacts: []
+      - uniqueName: ammo_cart
         health: -1
-        ammo: -1
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-      - uniqueName: empty
+        maxHealthReduction: -1
+        attachedArtifacts: []
+      - uniqueName: cannon
         health: -1
-        ammo: -1
-        level: 0
-        cargoState:
-          cargoReward: 
-          cargoLevel: 0
-          artifactReward: 
-          artifactLevel: 0
-          isLeftCargo: 0
-        attachedArtifact:
-          uniqueName: 
-          level: 0
-    starterResources:
-      scraps: 0
+        maxHealthReduction: -1
+        attachedArtifacts: []

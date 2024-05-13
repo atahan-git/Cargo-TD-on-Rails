@@ -3,26 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_HomingBullets : ActivateWhenOnArtifactRow
+public class Artifact_HomingBullets : MonoBehaviour, IChangeStateToEntireTrain
 {
 
-    protected override void _Arm() {
-        for (int i = 0; i <Train.s.carts.Count; i++) {
-            ApplyBoost(Train.s.carts[i]);
+    public void ChangeStateToEntireTrain(List<Cart> carts) {
+        for (int i = 0; i < carts.Count; i++) {
+            ApplyBoost(carts[i]);
         }
     }
-
     void ApplyBoost(Cart target) {
         if(target == null)
             return;
         
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
-            gunModule.isHoming = true;
+            gunModule.currentAffectors.isHoming = true;
         }
-    }
-
-    protected override void _Disarm() {
-        // do nothing
     }
 }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -23,30 +24,7 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
 
     public bool isAttached = false;
 
-    public int range = 0;
-    
-    public void ResetState() {
-        var artifactRangeBooster = GetComponentInParent<Cart>()?.GetComponentInChildren<GemBooster>();
-        if (artifactRangeBooster) {
-            range = artifactRangeBooster.GetRange();
-        }
-        
-        var modulesWithResetStates = GetComponentsInChildren<IResetStateArtifact>();
-        for (int i = 0; i < modulesWithResetStates.Length; i++) {
-            modulesWithResetStates[i].ResetState(0); // level goes 0, 1, 2
-        }
-        
-        ApplyToTarget.RemoveAllListeners();
-    }
-
-    public void _ApplyToTarget(Cart target) {
-        ApplyToTarget?.Invoke(target);
-    }
-
-    
-    
-    [HideInInspector]
-    public UnityEvent<Cart> ApplyToTarget = new UnityEvent<Cart>();
+    public GameObject cantAffectOverlay;
 
     public void AttachToSnapLoc(SnapLocation loc, bool doSave=true, bool doTriggerChange = true) {
         ShopStateController.s.AddArtifactToShop(this,  doSave);
@@ -66,9 +44,10 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
             if(doTriggerChange && newCart.IsAttachedToTrain())
                 newCart.GetComponentInParent<Train>().TrainChanged();
             
-            
             attachedToCartPart.SetActive(true);
             worldPart.SetActive(false);
+            
+            newCart.GetComponent<HighlightEffect>().Refresh();
             
             isAttached = true;
         }
@@ -85,10 +64,14 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
         
         GetComponent<Rigidbody>().isKinematic = false;
         GetComponent<Rigidbody>().useGravity = true;
+        
+        cantAffectOverlay.SetActive(false);
 
 
         if (oldCart != null) {
             Train.s.TrainChanged();
+            
+            oldCart.GetComponent<HighlightEffect>().Refresh();
         }
 
         isAttached = false;
@@ -118,9 +101,28 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
     public void SetHoldingDrone(DroneRepairController holder) {
         holdingDrone = holder;
     }
+
+    public string GetDescription() {
+        if (isComponent) {
+            return notAttachedDescription;
+        }
+
+        if (!isAttached) {
+            return notAttachedDescription;
+        }
+
+        var descriptionProvider = GetComponent<IArtifactDescription>();
+        if (descriptionProvider != null) {
+            return descriptionProvider.GetDescription();
+        }
+        
+        return "not implemented description";
+    }
+
+    [Multiline(2)]
+    public string notAttachedDescription;
 }
 
-
-public interface IResetStateArtifact {
-    public void ResetState(int level);
+public interface IArtifactDescription {
+    public string GetDescription();
 }

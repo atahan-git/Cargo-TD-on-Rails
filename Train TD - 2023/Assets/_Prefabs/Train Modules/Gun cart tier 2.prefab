@@ -233,8 +233,8 @@ MonoBehaviour:
   isCargo: 0
   myArtifactLocations:
   - {fileID: 6668526281674477264}
-  - {fileID: 7071820176897497030}
   - {fileID: 3229203425031605575}
+  - {fileID: 7071820176897497030}
   isBeingDisabled: 0
   trainIndex: 0
   cartPosOffset: 0
@@ -286,6 +286,8 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   invincible: 0
   mainCollider: {fileID: 5079137766063600652}
+  cartUIBar: {fileID: 0}
+  myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0

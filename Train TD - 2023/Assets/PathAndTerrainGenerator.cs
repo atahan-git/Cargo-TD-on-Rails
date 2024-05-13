@@ -18,6 +18,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         ClearAllMyPaths();
         myTerrains.Clear();
         currentTerrainGenCount = 0;
+    }
+
+    private void Start() {
         SetBiomes();
     }
 
@@ -93,15 +96,26 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     
     [Serializable]
     public class PathTree {
+        [ShowInInspector]
         public PathTree prevPathTree;
         public PathGenerator.TrainPath myPath;
+        [ShowInInspector]
         public PathTree leftPathTree;
+        [ShowInInspector]
         public PathTree rightPathTree;
 
         public bool startPath = false;
         public bool endPath = false;
 
+        public int myDepth = 0;
+
         public PathGenerator.TrainPath cityStampPath;
+        
+        public PathType myType = PathType.regular;
+        public UpgradesController.PathEnemyType enemyType;
+        public enum PathType{ regular = 0, end = 1, infinite = 2}
+        
+        public bool debugDrawGizmo = false;
     }
 
 
@@ -112,12 +126,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public void SetBiomes() {
         Biome currentBiome;
         if (biomeOverride < 0) {
-            var targetBiome = 0;
+            var targetBiome = DataSaver.s.GetCurrentSave().currentRun.currentAct-1;
             if (targetBiome < 0 || targetBiome > biomes.Length) {
                 Debug.LogError($"Illegal biome {targetBiome}");
                 targetBiome = 0;
             }
 
+            Debug.Log($"Biome set {targetBiome}");
             currentBiome = biomes[targetBiome];
         } else {
             currentBiome = biomes[biomeOverride];
@@ -224,7 +239,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         initialTerrainMade = false;
 
         currentPathTreeOffset = -PathGenerator.stationStraightDistance / 2f;
-        generatedPathDepth = 0;
         
         StartCoroutine(ReDrawTerrainAroundCenter(true));
     }
@@ -330,18 +344,18 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         StartCoroutine(ReDrawTerrainAroundCenter());
     }
 
-    public const float pathGenerateDistance = 600;
     public void PruneAndExtendPaths() {
+        var pathGenerateDistance = 300;
         
         // extend
         ForkPath(currentPathTree, 0, pathGenerateDistance);
 
         // prune
-        PrunePath(currentPathTree, 0, pathGenerateDistance,new List<PathTree>());
+        PrunePath(currentPathTree, 0, pathGenerateDistance,0,3, new List<PathTree>());
     }
 
 
-    void PrunePath(PathTree pathTree, float curDistance, float maxDistance, List<PathTree> processedList) {
+    void PrunePath(PathTree pathTree, float curDistance, float maxDistance, float curDepth, float minDepth, List<PathTree> processedList) {
         if(pathTree == null)
             return;
         if(processedList.Contains(pathTree))
@@ -349,7 +363,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             return;
         }
 
-        if (curDistance > maxDistance) {
+        if (curDistance > maxDistance && curDepth >= minDepth) {
             RemoveFromMyPaths(pathTree.myPath);
             isComboListDirty = true;
             if (pathTree.leftPathTree != null) {
@@ -372,105 +386,130 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
         
         processedList.Add(pathTree);
-
+        
         curDistance += pathTree.myPath.length;
+        curDepth += 1;
 
-        PrunePath(pathTree.prevPathTree, curDistance, maxDistance, processedList);
-        PrunePath(pathTree.leftPathTree, curDistance, maxDistance, processedList);
-        PrunePath(pathTree.rightPathTree, curDistance, maxDistance, processedList);
+        PrunePath(pathTree.prevPathTree, curDistance, maxDistance, curDepth, minDepth,processedList);
+        PrunePath(pathTree.leftPathTree, curDistance, maxDistance, curDepth, minDepth,processedList);
+        PrunePath(pathTree.rightPathTree, curDistance, maxDistance, curDepth, minDepth,processedList);
     }
 
 
-    public int generatedPathDepth = 0; // min path before we generate an end station
-    private int minCastleDepth = 2;
+    /*private int minCastleDepth = 2;
     private float endStationChance = 0.25f;
-    private bool forceEndStation = false;
+    private bool forceEndStation = false;*/
     void ForkPath(PathTree pathTree, float curDistance, float maxDistance) {
-        if(pathTree.myPath.endPath)
+        if(pathTree.myType == PathTree.PathType.end)
             return;
+
+        var newPathDepth = pathTree.myDepth + 1;
         
         var startPoint = pathTree.myPath.points[^1];
         var startDirection = PathGenerator.GetDirectionVectorOnTheLine(pathTree.myPath, pathTree.myPath.length);
-        
-        var makeEndStation = generatedPathDepth > (Mathf.Pow(2,minCastleDepth)) && Random.value < endStationChance;
-        makeEndStation = false;
-        if (forceEndStation) {
-            makeEndStation = true;
-        }
-        var leftStationMakeEnd = false;
-        var rightStationMakeEnd = false;
-        if (makeEndStation) {
-            if (Random.value < 0.5f) {
-                leftStationMakeEnd = true;
-            } else {
-                rightStationMakeEnd = true;
-            }
-        }
 
-        var leftReward = UpgradesController.s.GetGemReward();
-        var rightReward = UpgradesController.s.GetGemReward();
-        var leftElite = UpgradesController.s.GetIfElite(leftReward);
-        var rightElite = UpgradesController.s.GetIfElite(rightReward);
+        var pathType = PathTree.PathType.regular;
+        /*if (makeInfiniteBossPath) {
+            pathType = PathGenerator.TrainPath.PathType.infinite;
+        }*/
 
-        var segmentDistance = activeLevel.GetRandomSegmentLength();
-        // left fork
-        if(pathTree.leftPathTree == null) {
-            generatedPathDepth += 1;
-            var leftSegmentDirection = Quaternion.Euler(0, - 30 + Random.Range(-15, 15), 0) * startDirection;
-            pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, leftStationMakeEnd, startPoint, startDirection, leftSegmentDirection, segmentDistance);
-            if (pathTree.leftPathTree.myPath.endPath) {
-                pathTree.leftPathTree.myPath.pathRewardUniqueName = "";
-            } else {
-                pathTree.leftPathTree.myPath.pathRewardUniqueName = leftReward;
-                pathTree.leftPathTree.myPath.pathRewardMerge = leftElite;
+        var leftEnemy = MapController.s.GetMapEnemyType(true, newPathDepth);
+        var rightEnemy = MapController.s.GetMapEnemyType(false, newPathDepth);
+
+        var leftSegmentDistance = MapController.s.GetSegmentDistance(true, newPathDepth);
+        var rightSegmentDistance = MapController.s.GetSegmentDistance(false, newPathDepth);
+
+        switch (pathTree.myType) {
+            case PathTree.PathType.regular:
+            {
+                // left fork
+                if (pathTree.leftPathTree == null) {
+                    var leftSegmentDirection = Quaternion.Euler(0, -30 + Random.Range(-15, 15), 0) * startDirection;
+                    pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, pathType, startPoint, startDirection, leftSegmentDirection, leftSegmentDistance,
+                        leftEnemy, newPathDepth);
+                }
+
+                //right fork
+                if (pathTree.rightPathTree == null) {
+                    var rightSegmentDirection = Quaternion.Euler(0, 30 + Random.Range(-15, 15), 0) * startDirection;
+                    pathTree.rightPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, pathType, startPoint, startDirection, rightSegmentDirection, rightSegmentDistance,
+                        rightEnemy, newPathDepth);
+                }
             }
-        }
-        //right fork
-        if(pathTree.rightPathTree == null) {
-            var rightSegmentDirection = Quaternion.Euler(0,  30 + Random.Range(-15, 15), 0) * startDirection;
-            pathTree.rightPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, rightStationMakeEnd, startPoint, startDirection, rightSegmentDirection, segmentDistance);
-            if (pathTree.rightPathTree.myPath.endPath) {
-                pathTree.rightPathTree.myPath.pathRewardUniqueName = "";
-            } else {
-                pathTree.rightPathTree.myPath.pathRewardUniqueName = rightReward;
-                pathTree.rightPathTree.myPath.pathRewardMerge = rightElite;
+                break;
+            /*case PathGenerator.TrainPath.PathType.infinite: {
+                // left fork - infinite path doesn't fork so there is only the left path
+                if (pathTree.leftPathTree == null) {
+                    generatedPathDepth += 1;
+                    var leftSegmentDirection = startDirection;
+                    pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, pathType, startPoint, startDirection, leftSegmentDirection, segmentDistance);
+                    pathTree.leftPathTree.myPath.pathRewardUniqueName = "";
+                }
             }
+                break;*/
         }
     }
 
     private float endStationCenterOffset = 14;
-    private PathTree _MakeForkedPath(PathTree pathTree, float curDistance, float maxDistance, bool leftStationMakeEnd, Vector3 startPoint, Vector3 startDirection, Vector3 segmentDirection, float segmentDistance) {
-        if (leftStationMakeEnd) {
-            var newStationEndPath = _pathGenerator.MakeStationAtEndPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
-            var cityDistance = segmentDistance + PathGenerator.stationStraightDistance/2f + endStationCenterOffset;
-            var cityStampPath = _pathGenerator.MakeCityStampPath(PathGenerator.GetPointOnLine(newStationEndPath, cityDistance), PathGenerator.GetDirectionOnTheLine(newStationEndPath, cityDistance));
-            AddToMyPaths(newStationEndPath);
-            isComboListDirty = true;
-            var newStationEndPathTree = new PathTree() {
-                prevPathTree = pathTree,
-                myPath = newStationEndPath,
-                endPath = true,
-                cityStampPath = cityStampPath
-            };
-            cityStampPaths.Add(cityStampPath);
-            isComboListDirty = true;
-            return newStationEndPathTree;
-        } else {
-            var newPath = _pathGenerator.MakeTrainPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
-            AddToMyPaths(newPath);
-            isComboListDirty = true;
-            var newPathTree = new PathTree() {
-                prevPathTree = pathTree,
-                myPath = newPath
-            };
-
-            curDistance += newPath.length;
-
-            if (curDistance < maxDistance) {
-                ForkPath(newPathTree, curDistance, maxDistance);
+    private PathTree _MakeForkedPath(PathTree pathTree, float curDistance, float maxDistance, PathTree.PathType pathType, Vector3 startPoint, Vector3 startDirection, Vector3 segmentDirection, float segmentDistance, 
+        UpgradesController.PathEnemyType enemyType, int depth) {
+        switch (pathType) {
+            case PathTree.PathType.end: {
+                var newStationEndPath = _pathGenerator.MakeStationAtEndPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
+                var cityDistance = segmentDistance + PathGenerator.stationStraightDistance/2f + endStationCenterOffset;
+                var cityStampPath = _pathGenerator.MakeCityStampPath(PathGenerator.GetPointOnLine(newStationEndPath, cityDistance), PathGenerator.GetDirectionOnTheLine(newStationEndPath, cityDistance));
+                AddToMyPaths(newStationEndPath);
+                isComboListDirty = true;
+                var newStationEndPathTree = new PathTree() {
+                    prevPathTree = pathTree,
+                    myPath = newStationEndPath,
+                    endPath = true,
+                    cityStampPath = cityStampPath,
+                    enemyType = enemyType,
+                    myDepth = depth,
+                };
+                cityStampPaths.Add(cityStampPath);
+                isComboListDirty = true;
+                return newStationEndPathTree;
             }
+            case PathTree.PathType.regular: {
+                var newPath = _pathGenerator.MakeTrainPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
+                AddToMyPaths(newPath);
+                isComboListDirty = true;
+                var newPathTree = new PathTree() {
+                    prevPathTree = pathTree,
+                    myPath = newPath,
+                    enemyType = enemyType,
+                    myDepth = depth,
+                };
+
+                curDistance += newPath.length;
+
+                if (curDistance < maxDistance) {
+                    ForkPath(newPathTree, curDistance, maxDistance);
+                }
             
-            return newPathTree;
+                return newPathTree;
+            }
+            /*case PathGenerator.TrainPath.PathType.infinite: {
+                var newPath = _pathGenerator.MakeTrainPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
+                AddToMyPaths(newPath);
+                isComboListDirty = true;
+                var newPathTree = new PathTree() {
+                    prevPathTree = pathTree,
+                    myPath = newPath
+                };
+
+                curDistance += newPath.length;
+
+                if (curDistance < maxDistance) {
+                    ForkPath(newPathTree, curDistance, maxDistance);
+                }
+            
+                return newPathTree;
+            }*/
+            default:
+                throw new Exception($"Unsupported train path type {pathType}");
         }
     }
     
@@ -807,13 +846,17 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         makingTracks = false;
         yield return null;
     }
-    
-    
+
+
+    public bool debugDrawAllGizmos = false;
     private void OnDrawGizmosSelected() {
         for (int i = 0; i < myPaths.Count; i++) {
-            if (!myPaths[i].debugDrawGizmo) {
-                continue;
+            if (!debugDrawAllGizmos) {
+                if (!myPaths[i].debugDrawGizmo) {
+                    continue;
+                }
             }
+
             var path = myPaths[i].points;
             Vector3 startPoint = transform.position;
             Vector3 direction = Vector3.forward;
@@ -826,8 +869,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                     Gizmos.color = Color.white;
                 }
                 
-                if(myPaths[i].endPath)
-                    Gizmos.color = Color.green;
+                /*if(myPaths[i].myType == PathGenerator.TrainPath.PathType.end)
+                    Gizmos.color = Color.green;*/
 
                 Gizmos.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up);    
             }
@@ -849,6 +892,24 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             Gizmos.color = Color.cyan;
             for (int k = 0; k < path.Length-1; k++) {
                 Gizmos.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up);    
+            }
+        }
+    }
+    
+    [Button]
+    private void DebugDrawAllPaths() {
+        for (int i = 0; i < myPaths.Count; i++) {
+            var path = myPaths[i].points;
+            for (int k = 0; k < path.Length-1; k++) {
+                Debug.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up, Color.white, 1000f);    
+            }
+        }
+        
+        
+        for (int i = 0; i < cityStampPaths.Count; i++) {
+            var path = cityStampPaths[i].points;
+            for (int k = 0; k < path.Length-1; k++) {
+                Debug.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up, Color.cyan, 1000f);    
             }
         }
     }
@@ -962,19 +1023,36 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         var travelPathTree = currentPathTree;
         if (currentDistance > 0) {
-            if (currentDistance > travelPathTree.myPath.length) {
+            while (currentDistance > travelPathTree.myPath.length) {
                 currentDistance -= travelPathTree.myPath.length;
                 if (PathSelectorController.s.mainLever.topSelected) {
-                    if(travelPathTree.leftPathTree != null)
+                    if (travelPathTree.leftPathTree != null) {
                         travelPathTree = travelPathTree.leftPathTree;
+                    } else {
+                        currentDistance += travelPathTree.myPath.length;
+                        break;
+                    }
                 } else {
-                    if(travelPathTree.rightPathTree != null)
+                    if (travelPathTree.rightPathTree != null) {
                         travelPathTree = travelPathTree.rightPathTree;
+                    } else {
+                        currentDistance += travelPathTree.myPath.length;
+                        break;
+                    }
                 }
             }
         } else {
             if (travelPathTree.prevPathTree != null) {
                 travelPathTree = travelPathTree.prevPathTree;
+                while (-currentDistance > travelPathTree.myPath.length) {
+                    currentDistance += travelPathTree.myPath.length;
+                    if (travelPathTree.prevPathTree != null) {
+                        travelPathTree = travelPathTree.prevPathTree;
+                    } else {
+                        currentDistance -= travelPathTree.myPath.length;
+                        break;
+                    }
+                }
                 currentDistance += travelPathTree.myPath.length;
             }
         }

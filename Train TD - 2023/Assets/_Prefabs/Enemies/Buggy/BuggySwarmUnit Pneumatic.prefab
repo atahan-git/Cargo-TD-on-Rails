@@ -1132,7 +1132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyIcon: {fileID: 21300000, guid: d43c2da442e28124a8c35efb4bc70364, type: 3}
-  speed: 10
+  speed: 8
   primeEnemy: 0
   enemyEnterSounds:
   - {fileID: 8300000, guid: cdc2e1a88462c0a4cb2dcc37eaf71bd0, type: 3}
@@ -1386,7 +1386,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 6
+  rmsCount: 11
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25

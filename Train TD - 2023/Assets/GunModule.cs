@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
-public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringCombat, IResetState {
+public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringCombat, IResetState, IDisabledState {
 
     [Tooltip("only used for serializing player carts")]
     public string gunUniqueName = "unset unique name";
@@ -26,7 +26,6 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
 
     public bool isGigaGatling = false;
-    public bool gatlinificator = false;
 
     public float maxFireRateReduction = 0.9f;
     public float gatlingAmount;
@@ -55,7 +54,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float fireDelay = 2f; // dont use this
 
     public float GetFireDelay() {
-        if (isGigaGatling || gatlinificator) { 
+        if (isGigaGatling || currentAffectors.gatlinificator) { 
             //print((fireDelay-(Mathf.Pow(((float)Mathf.FloorToInt(gatlingAmount))/(float)maxGatlingAmount, 1/2f)*maxFireRateReduction)) * GetAttackSpeedMultiplier());
             /*if (isPlayer) {
                 return (fireDelay - (((float)Mathf.FloorToInt(gatlingAmount)) / (float)maxGatlingAmount) * maxFireRateReduction) * GetAttackSpeedMultiplier();
@@ -70,28 +69,39 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public int fireBarrageCount = 5;
     public float fireBarrageDelay = 0.1f;// dont use this
-    public float fireRateMultiplier = 1f; // higher means GOOD
-    public float fireRateDivider = 1f; // higher means BAD
     public float GetFireBarrageDelay() { return fireBarrageDelay * GetAttackSpeedMultiplier();}
     [Tooltip("beware that if damage is less than 1 then damage numbers won't show up")]
     public float projectileDamage = 2f; // dont use this
     [Tooltip("beware that if burn damage is less than 1 then damage numbers won't show up")]
     public float burnDamage = 0; // dont use this
-    public float bonusBurnDamage = 0;
-    public float damageMultiplier = 1f;
-    public float sniperDamageMultiplier = 1f;
     public float directControlDamageMultiplier = 1f;
     public float directControlFirerateMultiplier = 1f;
     public float directControlAmmoUseMultiplier = 1f;
-    public float burnDamageMultiplier = 1f;
-    public float regularToBurnDamageConversionMultiplier = 0;
-    //public float regularToIceDamageConversionMultiplier = 0;
-    public float regularToRangeConversionMultiplier = 0;
     public bool dontGetAffectByMultipliers = false;
 
     public float directControlShakeMultiplier = 1f;
 
     public bool isHeal = false;
+
+    public Affectors currentAffectors = new Affectors();
+    [Serializable]
+    public class Affectors {
+        public float damageMultiplier = 1f;
+        public float sniperDamageMultiplier = 1f;
+        
+        public float fireRateMultiplier = 1f; // higher means GOOD
+        public float fireRateDivider = 1f; // higher means BAD
+        
+        public float burnDamageMultiplier = 1f;
+        public float regularToBurnDamageConversionMultiplier = 0;
+        public float bonusBurnDamage = 0;
+
+        public float regularToRangeConversionMultiplier = 0;
+        
+        public bool gatlinificator = false;
+        public bool isHoming = false;
+        public float explosionRangeBoost = 0;
+    }
 
     public float GetDamage() {
         if (dontGetAffectByMultipliers) {
@@ -109,16 +119,16 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         var burnBulletAddonDamage = 0f;
 
         if (projectileDamage > 0) {
-            burnBulletAddonDamage = projectileDamage * regularToBurnDamageConversionMultiplier;
+            burnBulletAddonDamage = projectileDamage * currentAffectors.regularToBurnDamageConversionMultiplier;
         } else {
-            burnBulletAddonDamage = burnDamage * regularToBurnDamageConversionMultiplier;
-            burnBulletAddonDamage += burnDamage * regularToRangeConversionMultiplier;
+            burnBulletAddonDamage = burnDamage * currentAffectors.regularToBurnDamageConversionMultiplier;
+            /*burnBulletAddonDamage += burnDamage * currentAffectors.regularToRangeConversionMultiplier;*/
         }
 
         if (dontGetAffectByMultipliers) {
             return burnDamage + burnBulletAddonDamage;
         } else {
-            return (burnDamage + bonusBurnDamage + burnBulletAddonDamage) * GetBurnDamageMultiplier();
+            return (burnDamage + currentAffectors.bonusBurnDamage + burnBulletAddonDamage) * GetBurnDamageMultiplier();
         }
     }
 
@@ -181,18 +191,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public bool isLockOn = false;
     
-    public bool isHoming = false;
     public void ResetState() {
-        damageMultiplier = 1;
-        sniperDamageMultiplier = 1;
-        fireRateMultiplier = 1;
-        fireRateDivider = 1;
-        burnDamageMultiplier = 1;
-        bonusBurnDamage = 0;
-        regularToBurnDamageConversionMultiplier = 0;
-        gatlinificator = false;
-        isHoming = false;
-        explosionRangeBoost = 0;
+        currentAffectors = new Affectors();
     }
 
     private bool triggeredGatlingZero = true;
@@ -323,8 +323,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
 
     float GetAttackSpeedMultiplier() {
-        var boost = 1f/fireRateMultiplier;
-        boost *= fireRateDivider;
+        var boost = 1f/currentAffectors.fireRateMultiplier;
+        boost *= currentAffectors.fireRateDivider;
 
         if (isPlayer) {
             boost /= TweakablesMaster.s.myTweakables.playerFirerateBoost;
@@ -339,12 +339,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
 
     float GetDamageMultiplier() {
-        var dmgMul = damageMultiplier ;
+        var dmgMul = currentAffectors.damageMultiplier ;
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
-            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().cityUpgradesProgress.damageUpgradesBought * 0.2f);
-            dmgMul *= sniperDamageMultiplier;
+            dmgMul *= currentAffectors.sniperDamageMultiplier;
 
             if (beingDirectControlled) {
                 dmgMul *= directControlDamageMultiplier;
@@ -358,12 +357,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
     
     float GetBurnDamageMultiplier() {
-        var dmgMul = burnDamageMultiplier;
+        var dmgMul = currentAffectors.burnDamageMultiplier;
         
         if (isPlayer) {
             dmgMul *= TweakablesMaster.s.myTweakables.playerDamageMultiplier;
-            dmgMul *= 0.6f + (DataSaver.s.GetCurrentSave().cityUpgradesProgress.damageUpgradesBought * 0.2f);
-            dmgMul *= sniperDamageMultiplier;
+            dmgMul *= currentAffectors.sniperDamageMultiplier;
             
             if (beingDirectControlled) {
                 dmgMul *= directControlDamageMultiplier;
@@ -420,19 +418,18 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     
     public float explosionRange = 0;
-    public float explosionRangeBoost = 0;
 
     public float inaccuracyMultiplier = 1f;
 
     public float GetExplosionRange() {
         var damageToRangeConversion = 0f;
 
-        if (regularToRangeConversionMultiplier > 0) {
+        if (currentAffectors.regularToRangeConversionMultiplier > 0) {
             damageToRangeConversion = 0.25f;
-            damageToRangeConversion += projectileDamage * regularToRangeConversionMultiplier;
+            damageToRangeConversion += projectileDamage * currentAffectors.regularToRangeConversionMultiplier;
         }
 
-        return explosionRange + explosionRangeBoost +damageToRangeConversion;
+        return explosionRange + currentAffectors.explosionRangeBoost +damageToRangeConversion;
     }
     
     IEnumerator _ShootBarrage(bool isFree = false, GenericCallback shotCallback = null, GenericCallback onHitCallback = null, GenericCallback onMissCallback = null) {
@@ -448,10 +445,16 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
         if (!isPlayer) {
             if (needShootCredits) {
+                EnemyTargetAssigner.s.TryToGetShootCredits(this);
                 if (!gotShootCredits) {
-                    yield break;
+                    yield return new WaitForSeconds(Random.Range(GetFireDelay()*0.2f, GetFireDelay()*0.7f));
+
+                    if (!gotShootCredits) {
+                        yield break;
+                    } else {
+                        waitTimer = GetFireDelay();
+                    }
                 } else {
-                    EnemyTargetAssigner.s.shootRequesters.Enqueue(this);
                     gotShootCredits = false;
                 }
             }
@@ -496,7 +499,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             //print($"{bulletForward} - {randomDirection} - {bullet.transform.forward}");
             
             
-            bullet.transform.localScale = Vector3.one*(damageMultiplier*1.5f);
+            bullet.transform.localScale = Vector3.one*(currentAffectors.damageMultiplier*1.5f);
             SetColors(bullet);
             var muzzleFlash = VisualEffectsController.s.SmartInstantiate(muzzleFlashPrefab, position, rotation);
             var projectile = bullet.GetComponent<Projectile>();
@@ -513,7 +516,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
                 projectile.acceleration *= 3;
                 projectile.seekAcceleration *= 3;
             } else {
-                projectile.isHoming = isHoming;
+                projectile.isHoming = currentAffectors.isHoming;
             }
 
             projectile.SetIsPlayer(isPlayer);
@@ -555,15 +558,19 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     public bool gotShootCredits = false;
     public bool needShootCredits = false;
+    public bool neverNeedShootCredits = false;
     public float shootCreditsUse = 1f;
     private void OnEnable() {
+        if(neverNeedShootCredits)
+            return;
+        
         if (!isPlayer) {
-            var enemyHp = GetComponentInParent<EnemyHealth>();
-            if (enemyHp != null) {
-                bool isElite = GetComponentInParent<CarrierEnemy>() != null;
+            var enemy = GetComponentInParent<EnemyInSwarm>();
+            if (enemy != null) {
+                bool isElite = enemy.isElite;
                 if (!isElite) {
                     needShootCredits = true;
-                    EnemyTargetAssigner.s.shootRequesters.Enqueue(this);
+                    gotShootCredits = false;
                     //gotShootCredits = true;
                 }
             } 
@@ -571,10 +578,13 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
 
     private void OnDisable() {
+        if(neverNeedShootCredits)
+            return;
+        
         if (!isPlayer) {
-            var enemyHp = GetComponentInParent<EnemyHealth>();
-            if (enemyHp != null) {
-                bool isElite = GetComponentInParent<CarrierEnemy>() != null;
+            var enemy = GetComponentInParent<EnemyInSwarm>();
+            if (enemy != null) {
+                bool isElite = enemy.isElite;
                 if (!isElite) {
                     needShootCredits = false;
                 }
@@ -699,7 +709,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
 
     void StartShooting() {
-        if (gunActive) {
+        if (gunActive && target != null) {
             if (!isShooting) {
                 StopAllCoroutines();
 
@@ -737,14 +747,22 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public void Disable() {
         this.enabled = false;
     }
+    
+    public void CartDisabled() {
+        this.enabled = false;
+    }
+
+    public void CartEnabled() {
+        this.enabled = true;
+    }
 
     void SetColors(GameObject bullet) {
-        if (regularToBurnDamageConversionMultiplier <= 0) {
+        if (currentAffectors.regularToBurnDamageConversionMultiplier <= 0) {
             return;
         }
 
-        var mainColor = HeatToColor(regularToBurnDamageConversionMultiplier);
-        var emissiveColor = HeatToColor(regularToBurnDamageConversionMultiplier, true);
+        var mainColor = HeatToColor(currentAffectors.regularToBurnDamageConversionMultiplier);
+        var emissiveColor = HeatToColor(currentAffectors.regularToBurnDamageConversionMultiplier, true);
 
         foreach (var meshRenderer in bullet.GetComponentsInChildren<MeshRenderer>()) {
             meshRenderer.material.color = mainColor;

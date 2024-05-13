@@ -54,15 +54,16 @@ public class WorldDifficultyController : MonoBehaviour {
 
     private void Update() {
         if (PlayStateMaster.s.isCombatInProgress()) {
-            var curCombatTime = GetMissionTime();
-            var newLevel = Mathf.FloorToInt(curCombatTime / damageIncreaseInterval);
+            /*var curCombatTime = GetMissionTime();
+            var newLevel = Mathf.FloorToInt(curCombatTime / damageIncreaseInterval);*/
+            var newLevel = PathAndTerrainGenerator.s.currentPathTree.myDepth;
 
             if (newLevel > curLevel) {
                 curLevel = newLevel;
                 CalculateDifficulty();
             }
 
-            infoText.text = $"Enemy dmg x{currentDamageMultiplier}\nEnemy hp x{currentHealthMultiplier}\nStage {curLevel} - {ExtensionMethods.FormatTime(curCombatTime)}";
+            infoText.text = $"Enemy dmg x{currentDamageMultiplier}\nEnemy hp x{currentHealthMultiplier}\nStage {curLevel}"; //  - {ExtensionMethods.FormatTime(curCombatTime)}
         }
     }
 
@@ -77,6 +78,11 @@ public class WorldDifficultyController : MonoBehaviour {
         OnDifficultyChanged?.Invoke();
 
         //StartCoroutine(LerpLights());
+
+        /*currentDamageMultiplier = 1;
+        currentHealthMultiplier = 1;*/
+        
+        //infoText.text = "";
     }
 
 

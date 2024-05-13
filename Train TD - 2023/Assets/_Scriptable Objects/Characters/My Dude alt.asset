@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0c4fe353d996bd4ba6e61968d6269fe, type: 3}
+  m_Name: My Dude alt
+  m_EditorClassIdentifier: 
+  myCharacter:
+    uniqueName: My Dude
+    description: After spending his entire life training to be a Nuclear Train pilot,
+      his dreams shattered when a anti-nuclear activist infltrated and destroyed
+      the research facility. As the sole survivor he took the train and decided to
+      seek answers within <color=#AE2FBA>The Meteor</color>
+    starterTrain:
+      myCarts:
+      - uniqueName: engine_nuclear
+        health: -1
+        maxHealthReduction: -1
+        attachedArtifacts: []
+      - uniqueName: repair_cart
+        health: -1
+        maxHealthReduction: -1
+        attachedArtifacts: []
+      - uniqueName: ammo_cart
+        health: -1
+        maxHealthReduction: -1
+        attachedArtifacts: []
+      - uniqueName: gatling
+        health: -1
+        maxHealthReduction: -1
+        attachedArtifacts: []

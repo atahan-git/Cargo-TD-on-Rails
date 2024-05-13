@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetPicker : MonoBehaviour, IActiveDuringCombat {
+public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
     private IComponentWithTarget targeter;
 
     public float rotationSpan = 60f;
@@ -138,6 +138,14 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat {
 
     public void Disable() {
         this.enabled = false;
+    }
+
+    public void CartDisabled() {
+        this.enabled = false;
+    }
+
+    public void CartEnabled() {
+        this.enabled = true;
     }
 }
 
