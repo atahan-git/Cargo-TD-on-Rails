@@ -55,7 +55,7 @@ public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
     }
 
     public float GetDistance() {
-        return myDistance-2;
+        return myDistance-SpeedController.s.currentDistance;
     }
 
     public Sprite GetIcon() {

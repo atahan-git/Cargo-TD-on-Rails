@@ -26,7 +26,6 @@ public class MiniGUI_BuildingInfoCard : MonoBehaviour
 
         var gunModule = building.GetComponentInChildren<GunModule>();
         if (gunModule != null) {
-            armorPenetrationIcon.gameObject.SetActive(gunModule.canPenetrateArmor);
             fireDamageIcon.gameObject.SetActive(gunModule.GetBurnDamage() > 0);
             explosiveDamageIcon.gameObject.SetActive(gunModule.GetExplosionRange() > 0);
             

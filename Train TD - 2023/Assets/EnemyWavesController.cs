@@ -140,9 +140,7 @@ public class EnemyWavesController : MonoBehaviour {
 				} else if (uniqueGearBudget > 0) {
 					Instantiate(curLevel.uniqueEquipment[Random.Range(0, curLevel.uniqueEquipment.Length)], gunSlots[j].transform);
 					uniqueGearBudget -= 1;
-				}
-
-				{
+				}else {
 					Instantiate(curLevel.enemyGuns[Random.Range(0, curLevel.enemyGuns.Length)], gunSlots[j].transform);
 				}
 			}
@@ -180,7 +178,12 @@ public class EnemyWavesController : MonoBehaviour {
 				var gunSlots = enemy.GetComponentsInChildren<EnemyGunSlot>();
 				for (int k = 0; k < gunSlots.Length; k++) {
 					if (uniqueGearBudget > 0) {
-						Instantiate(curLevel.uniqueEquipment[Random.Range(0, curLevel.uniqueEquipment.Length)], gunSlots[k].transform);
+						if (forceSpawnWithEquipment) {
+							Instantiate(forcedEquipment, gunSlots[k].transform);
+						} else {
+							Instantiate(curLevel.uniqueEquipment[Random.Range(0, curLevel.uniqueEquipment.Length)], gunSlots[k].transform);
+						}
+
 						uniqueGearBudget -= 1;
 						//enemy.GetComponent<EnemyInSwarm>().isElite = true;
 					} else {
@@ -188,7 +191,7 @@ public class EnemyWavesController : MonoBehaviour {
 					}
 
 					if (isSmall) {
-						var guns = gunSlots[k].GetComponentsInChildren<GunModule>();
+						var guns = gunSlots[k].GetComponentsInChildren<EnemyGunModule>();
 						for (int l = 0; l < guns.Length; l++) {
 							guns[l].fireDelay *= 2;
 						}
@@ -375,4 +378,8 @@ public class EnemyWavesController : MonoBehaviour {
 	public void StopSpawningNewDynamicEnemies() {
 		spawnDynamicEnemies = false;
 	}
+	
+	[Header("Debug")]
+	public bool forceSpawnWithEquipment;
+	public GameObject forcedEquipment;
 }

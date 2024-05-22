@@ -92,12 +92,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1988266597641124702}
-  - component: {fileID: 1613401274478487657}
+  - component: {fileID: -4959625494919305453}
   - component: {fileID: 4536755725755653883}
-  - component: {fileID: 7395948368987693579}
   - component: {fileID: 3974856518095593733}
   m_Layer: 14
-  m_Name: Elite Enemy Giga Gatling
+  m_Name: _ Elite Enemy Giga Gatling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,7 +120,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1613401274478487657
+--- !u!114 &-4959625494919305453
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -130,15 +129,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1989762587238246160}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
+  m_Script: {fileID: 11500000, guid: 789a6d47a67bbd5449f24050f6d4f31f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunUniqueName: unset unique name
   gunSprite: {fileID: 21300000, guid: 61fbb9ba0a73f9241975aeaa982749ab, type: 3}
   isGigaGatling: 1
   maxFireRateReduction: 0.9
   gatlingAmount: 0
   maxGatlingAmount: 10
+  bulletPrefab: {fileID: 4908573584345181807, guid: 61b627781170e6c468fb46375d804684, type: 3}
+  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 0465628ec8050d64288d644c6a6679ea, type: 3}
+  fireDelay: 10
+  fireBarrageCount: 1
+  fireBarrageDelay: 0.2
+  rotateSpeed: 10
+  mortarRotation: 0
+  inaccuracyMultiplier: 1
+  gunShakeOnShoot: 1
+  gunShakeMagnitude: 0.04
+  isUniqueGearNoNeedForShootCredit: 0
+  shootCreditsUse: 1
   rotateTransforms:
   - transform: {fileID: 7810407359330354852}
   rotateTransform:
@@ -149,67 +159,13 @@ MonoBehaviour:
   barrelEndTransforms:
   - transform: {fileID: 455213482925859439}
   projectileSpawnOffset: 0.2
-  useProviderBullet: 0
-  myType: 0
-  bulletPrefab: {fileID: 4908573584345181807, guid: 3690077eb46ed4b488ed16149aedc46c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3819cb1af423dac46ba712e39e10fbc5, type: 3}
+  rangeOrigin: {fileID: 0}
+  waitTimer: 0
   target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 10
-  fireBarrageCount: 1
-  fireBarrageDelay: 0.2
-  projectileDamage: 10
-  burnDamage: 0
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 0
-  currentAffectors:
-    damageMultiplier: 1
-    sniperDamageMultiplier: 1
-    fireRateMultiplier: 1
-    fireRateDivider: 1
-    burnDamageMultiplier: 1
-    regularToBurnDamageConversionMultiplier: 0
-    bonusBurnDamage: 0
-    regularToRangeConversionMultiplier: 0
-    gatlinificator: 0
-    isHoming: 0
-    explosionRangeBoost: 0
-  rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 1
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 0
-  rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 0
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stopShootingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gatlingCountZeroEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gunShakeOnShoot: 0
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
-  waitTimer: 0
-  explosionRange: 0
-  inaccuracyMultiplier: 1
   gotShootCredits: 0
-  needShootCredits: 0
-  neverNeedShootCredits: 1
-  shootCreditsUse: 0.5
+  isEliteNoNeedForShootCredit: 0
 --- !u!114 &4536755725755653883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,23 +179,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Giga Gatling takes a long time to warm up but is devestating after it warms
-      up!
-  info: Uses Giga Gatling.
---- !u!114 &7395948368987693579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1989762587238246160}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d599bb9011d1e5468e9aa253af0bce9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
-  amount: 0
+    text: takes a long time to warm up but is devestating in the end
+  info: Giga gatling
 --- !u!114 &3974856518095593733
 MonoBehaviour:
   m_ObjectHideFlags: 0

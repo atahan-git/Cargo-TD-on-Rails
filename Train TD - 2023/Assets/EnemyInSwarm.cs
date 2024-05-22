@@ -35,7 +35,7 @@ public class EnemyInSwarm : MonoBehaviour
     public EnemyType myType = EnemyType.Deadly;
     
     public Sprite GetGunSprite() {
-        var gunModule = GetComponentInChildren<GunModule>();
+        var gunModule = GetComponentInChildren<EnemyGunModule>();
 
         if (gunModule != null) {
             return gunModule.gunSprite;

@@ -47,11 +47,27 @@ public class PossibleTarget : MonoBehaviour {
     }
 
     public float GetHealth() {
-        return GetComponent<IHealth>().GetHealth();
+        var cartHealth = GetComponent<ModuleHealth>();
+        if(cartHealth != null)
+            return cartHealth.GetHealth();
+
+        var enemyHealth = GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+            return enemyHealth.GetHealth();
+
+        return 0;
     }
     
     public float GetHealthPercent() {
-        return GetComponent<IHealth>().GetHealthPercent();
+        var cartHealth = GetComponent<ModuleHealth>();
+        if(cartHealth != null)
+            return cartHealth.GetHealthPercent();
+
+        var enemyHealth = GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+            return enemyHealth.GetHealthPercent();
+
+        return 0;
     }
 
     Vector3 previous;

@@ -1213,7 +1213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: A formidably average foe.
+    text: A formidably average foe
   info: Buggy
 --- !u!114 &-8854046899248982214
 MonoBehaviour:
@@ -1388,7 +1388,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 11
+  rmsCount: 10
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25

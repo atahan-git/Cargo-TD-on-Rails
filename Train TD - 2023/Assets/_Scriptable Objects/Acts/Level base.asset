@@ -29,9 +29,9 @@ MonoBehaviour:
   - {fileID: 6245074994292636220, guid: d734ebf253790494d80540c9dd406668, type: 3}
   - {fileID: 1989762587238246160, guid: e4e84a701bba43c4d9a890d0d94e7882, type: 3}
   - {fileID: 8718989495804000850, guid: 0085688f1bb76d74f9726fc4eefaaa3b, type: 3}
-  eliteEquipment:
   - {fileID: 6245074994292636220, guid: cf399717b0732c6498deee9004d31d28, type: 3}
-  - {fileID: 7989890382646654241, guid: b69baf5a8d4f57a4295b1990a0d7090d, type: 3}
+  eliteEquipment:
+  - {fileID: 593209492897996642, guid: 54d6d2698f140774a98000edcdaa332b, type: 3}
   possibleBossDatas:
   - bossName: The Army
     bossMainPrefab: {fileID: 1982649860289487492, guid: b55136b907843ad4080b5a0ee808a097, type: 3}

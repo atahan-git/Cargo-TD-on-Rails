@@ -462,7 +462,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                         ShopStateController.s.RemoveCartFromShop(selectedCart);
                         
                         // merge highlights
-                        for (int i = 0; i < Train.s.carts.Count; i++) {
+                        /*for (int i = 0; i < Train.s.carts.Count; i++) {
                             Train.s.carts[i].SetHighlightState(false);
                         }
 
@@ -483,7 +483,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                         if (canMerge) {
                             selectedCart.SetHighlightState(true, mergeItemColor);
                             mergeCart.SetHighlightState(true, mergeItemColor);
-                        }
+                        }*/
 
                     } else {
                         if (Train.s.carts.Contains(selectedCart)) {

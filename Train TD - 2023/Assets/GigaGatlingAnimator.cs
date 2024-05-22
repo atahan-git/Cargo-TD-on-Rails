@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class GigaGatlingAnimator : MonoBehaviour
 {
-    private GunModule _gunModule;
+    private EnemyGunModule _gunModule;
 
     public Transform rotatingBit;
     public float rotationSpeedMultiplier = 1;
     // Start is called before the first frame update
     void Start() {
-        _gunModule = GetComponentInParent<GunModule>();
+        _gunModule = GetComponentInParent<EnemyGunModule>();
     }
 
     private void Update() {

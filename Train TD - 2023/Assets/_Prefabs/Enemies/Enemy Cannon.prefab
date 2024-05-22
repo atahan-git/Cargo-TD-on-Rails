@@ -157,9 +157,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7776181817063871095}
-  - component: {fileID: 7358532349240148288}
+  - component: {fileID: 201372604546249266}
   - component: {fileID: 5659048418371139538}
-  - component: {fileID: 1647928361650604834}
   - component: {fileID: 7614134857780905663}
   m_Layer: 14
   m_Name: Enemy Cannon
@@ -185,7 +184,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7358532349240148288
+--- !u!114 &201372604546249266
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,15 +193,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 7773282509180063289}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
+  m_Script: {fileID: 11500000, guid: 789a6d47a67bbd5449f24050f6d4f31f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunUniqueName: unset unique name
   gunSprite: {fileID: 21300000, guid: 8445c017ed6362a4381194ee86773dda, type: 3}
   isGigaGatling: 0
   maxFireRateReduction: 0.9
   gatlingAmount: 0
   maxGatlingAmount: 4
+  bulletPrefab: {fileID: 4908573584345181807, guid: 7b2d8106beb73cd468e4146e8e238b62, type: 3}
+  muzzleFlashPrefab: {fileID: 980176138545819842, guid: b595ad5e8de2fd04fbf90cdabf010410, type: 3}
+  fireDelay: 8
+  fireBarrageCount: 1
+  fireBarrageDelay: 0.1
+  rotateSpeed: 10
+  mortarRotation: 0
+  inaccuracyMultiplier: 1
+  gunShakeOnShoot: 1
+  gunShakeMagnitude: 0.04
+  isUniqueGearNoNeedForShootCredit: 0
+  shootCreditsUse: 1
   rotateTransforms:
   - transform: {fileID: 4271870319053767654}
   rotateTransform:
@@ -213,67 +223,13 @@ MonoBehaviour:
   barrelEndTransforms:
   - transform: {fileID: 7774662325720271930}
   projectileSpawnOffset: 0.2
-  useProviderBullet: 0
-  myType: 0
-  bulletPrefab: {fileID: 4908573584345181807, guid: 3690077eb46ed4b488ed16149aedc46c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3819cb1af423dac46ba712e39e10fbc5, type: 3}
+  rangeOrigin: {fileID: 0}
+  waitTimer: 0
   target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 8
-  fireBarrageCount: 1
-  fireBarrageDelay: 0.2
-  projectileDamage: 100
-  burnDamage: 0
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 0
-  currentAffectors:
-    damageMultiplier: 1
-    sniperDamageMultiplier: 1
-    fireRateMultiplier: 1
-    fireRateDivider: 1
-    burnDamageMultiplier: 1
-    regularToBurnDamageConversionMultiplier: 0
-    bonusBurnDamage: 0
-    regularToRangeConversionMultiplier: 0
-    gatlinificator: 0
-    isHoming: 0
-    explosionRangeBoost: 0
-  rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 1
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 0
-  rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 0
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stopShootingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gatlingCountZeroEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gunShakeOnShoot: 0
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
-  waitTimer: 0
-  explosionRange: 0
-  inaccuracyMultiplier: 1
   gotShootCredits: 0
-  needShootCredits: 0
-  neverNeedShootCredits: 0
-  shootCreditsUse: 4
+  isEliteNoNeedForShootCredit: 0
 --- !u!114 &5659048418371139538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,22 +243,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Cannon hits slow but hits hard. Drops extra ammo.
-  info: Uses Cannon.
---- !u!114 &1647928361650604834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7773282509180063289}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d599bb9011d1e5468e9aa253af0bce9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
-  amount: 0
+    text: fires slowly but hits hard
+  info: Cannon
 --- !u!114 &7614134857780905663
 MonoBehaviour:
   m_ObjectHideFlags: 0

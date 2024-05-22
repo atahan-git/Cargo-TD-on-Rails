@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public class EnemyTargetPicker : MonoBehaviour
 {
@@ -26,7 +27,15 @@ public class EnemyTargetPicker : MonoBehaviour
         mySelfTarget = GetComponentInParent<PossibleTarget>();
     }
 
+    public float delay;
     private void Update() {
+        if (delay > 0) {
+            delay -= Time.deltaTime;
+            return;
+        } else {
+            delay = Random.Range(1f, 3f);
+        }
+        
         if (targeter.SearchingForTargets()) {
             var closestTargetNotAvoided = ClosestTarget(true);
 

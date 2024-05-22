@@ -1078,7 +1078,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Big strong enemy with two guns
+    text: Big strong enemy
   info: Truck
 --- !u!114 &1197492073205690642
 MonoBehaviour:

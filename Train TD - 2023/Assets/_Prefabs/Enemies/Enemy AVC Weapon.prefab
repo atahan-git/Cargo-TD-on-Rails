@@ -9,10 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 590309703709213484}
-  - component: {fileID: 415876576007311387}
+  - component: {fileID: 8409246685700370968}
   - component: {fileID: 7661655701024433139}
   - component: {fileID: 3266030194221328009}
-  - component: {fileID: -791189082078864775}
   m_Layer: 14
   m_Name: Enemy AVC Weapon
   m_TagString: Untagged
@@ -37,7 +36,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &415876576007311387
+--- !u!114 &8409246685700370968
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,15 +45,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 593209492897996642}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
+  m_Script: {fileID: 11500000, guid: 789a6d47a67bbd5449f24050f6d4f31f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunUniqueName: unset unique name
   gunSprite: {fileID: 21300000, guid: bec3762d1db84584099e1e504d2ab9e9, type: 3}
   isGigaGatling: 0
   maxFireRateReduction: 0.9
   gatlingAmount: 0
-  maxGatlingAmount: 0
+  maxGatlingAmount: 4
+  bulletPrefab: {fileID: 4908573584345181807, guid: 760204ac4bae14f43b050618c2a5d696, type: 3}
+  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 78b564a528069ec4798d987dbc12c51c, type: 3}
+  fireDelay: 4
+  fireBarrageCount: 2
+  fireBarrageDelay: 0.2
+  rotateSpeed: 10
+  mortarRotation: 0
+  inaccuracyMultiplier: 1
+  gunShakeOnShoot: 1
+  gunShakeMagnitude: 0.04
+  isUniqueGearNoNeedForShootCredit: 0
+  shootCreditsUse: 1
   rotateTransforms:
   - transform: {fileID: 7765424429026798987}
   rotateTransform:
@@ -66,67 +76,13 @@ MonoBehaviour:
   - transform: {fileID: 594081064391482721}
   - transform: {fileID: 6865992294043940538}
   projectileSpawnOffset: 0.2
-  useProviderBullet: 0
-  myType: 0
-  bulletPrefab: {fileID: 4908573584345181807, guid: 98bc522f3c4ff4b44a93406dcf01c13c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3a4d3fe2abd806c46964330e5993cfa2, type: 3}
+  rangeOrigin: {fileID: 0}
+  waitTimer: 0
   target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 4
-  fireBarrageCount: 2
-  fireBarrageDelay: 0.2
-  projectileDamage: 20
-  burnDamage: 0
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 0
-  currentAffectors:
-    damageMultiplier: 1
-    sniperDamageMultiplier: 1
-    fireRateMultiplier: 1
-    fireRateDivider: 1
-    burnDamageMultiplier: 1
-    regularToBurnDamageConversionMultiplier: 0
-    bonusBurnDamage: 0
-    regularToRangeConversionMultiplier: 0
-    gatlinificator: 0
-    isHoming: 0
-    explosionRangeBoost: 0
-  rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 1
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 0
-  rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 0
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stopShootingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gatlingCountZeroEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gunShakeOnShoot: 0
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
-  waitTimer: 0
-  explosionRange: 0
-  inaccuracyMultiplier: 1
   gotShootCredits: 0
-  needShootCredits: 0
-  neverNeedShootCredits: 0
-  shootCreditsUse: 1
+  isEliteNoNeedForShootCredit: 0
 --- !u!114 &7661655701024433139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,23 +109,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Rifle is the standard weapon. Medium damage and drops some extra ammo on
-      death.
-  info: Uses AVC.
---- !u!114 &-791189082078864775
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 593209492897996642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d599bb9011d1e5468e9aa253af0bce9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
-  amount: 0
+    text: A standard rifle
+  info: AVC
 --- !u!1 &594081064391482720
 GameObject:
   m_ObjectHideFlags: 0

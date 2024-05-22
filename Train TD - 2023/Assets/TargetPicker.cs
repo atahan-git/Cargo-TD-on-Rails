@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
     private IComponentWithTarget targeter;
@@ -24,7 +25,15 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
         mySelfTarget = GetComponentInParent<PossibleTarget>();
     }
 
+    public float delay = 0;
     private void Update() {
+        if (delay > 0) {
+            delay -= Time.deltaTime;
+            return;
+        } else {
+            delay = Random.Range(1f, 3f);
+        }
+        
         if (targeter.SearchingForTargets()) {
             var closestTargetNotAvoided = ClosestTarget(true);
 
@@ -155,8 +164,6 @@ public interface IComponentWithTarget {
 
     public Transform GetRangeOrigin();
     public Transform GetActiveTarget();
-
-    public float GetDamage();
 
     public bool SearchingForTargets();
 } 

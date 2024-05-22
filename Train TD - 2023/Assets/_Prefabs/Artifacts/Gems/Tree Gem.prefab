@@ -147,6 +147,10 @@ PrefabInstance:
       propertyPath: needsToBeBought
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: notAttachedDescription
+      value: Repairs carts slowly.
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
 --- !u!1 &1509524458239976382 stripped
@@ -166,6 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3fec6409b513cf4d8ea515d6495b8b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reloadDelayBase: 10
-  reloadBoostPerLevel: -2
-  currentReloadDelay: 0
+  repairDelay: 5
+  repairChunks: 1
+  reloadBullets: 1
+  currentDescription: 

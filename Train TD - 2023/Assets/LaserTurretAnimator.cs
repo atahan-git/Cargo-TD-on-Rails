@@ -44,11 +44,11 @@ public class LaserTurretAnimator : MonoBehaviour
             return;
         }
         
-        _gunModule.startWarmUpEvent.AddListener(OnWarmUp);
+        _gunModule.startShootingEvent.AddListener(OnStartShooting);
         _gunModule.stopShootingEvent.AddListener(OnStopShooting);
     }
 
-    void OnWarmUp() {
+    void OnStartShooting() {
         warmUpTime = _gunModule.GetFireDelay();
         PlayGunShoot();
         myBeam.ActivateBeam();

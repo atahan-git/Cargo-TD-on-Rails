@@ -63,7 +63,7 @@ public class AOEDamage : MonoBehaviour {
             }
 
             if (singleDamage) {
-                var health = other.gameObject.GetComponentInParent<IHealth>();
+                var health = other.gameObject.GetComponentInParent<EnemyHealth>();
                 DealDamage(health);
             } else {
                 AddToDamageList(other);
@@ -73,7 +73,7 @@ public class AOEDamage : MonoBehaviour {
     }
 
     private void OnTriggerExit(Collider other) {
-        var health = other.gameObject.GetComponentInParent<IHealth>();
+        var health = other.gameObject.GetComponentInParent<EnemyHealth>();
         if (health != null) {
             if (damageList.Contains(health)) {
                 damageList.Remove(health);
@@ -82,10 +82,10 @@ public class AOEDamage : MonoBehaviour {
     }
 
 
-    public List<IHealth> damageList = new List<IHealth>();
+    public List<EnemyHealth> damageList = new List<EnemyHealth>();
 
     void AddToDamageList(Collider other) {
-        var health = other.gameObject.GetComponentInParent<IHealth>();
+        var health = other.gameObject.GetComponentInParent<EnemyHealth>();
 
         if (health != null) {
             if (!damageList.Contains(health))
@@ -93,14 +93,14 @@ public class AOEDamage : MonoBehaviour {
         }
     }
 
-    void DealDamage(IHealth target) {
+    void DealDamage(EnemyHealth target) {
         if (target != null) {
             var dmg = projectileDamage;
             var armorProtected = false;
-            if (target.HasArmor() && !canPenetrateArmor) {
+            /*if (target.HasArmor() && !canPenetrateArmor) {
                 dmg = projectileDamage/ 2;
                 armorProtected = true;
-            }
+            }*/
 
             if (isSlowDamage) {
                 if (target.IsPlayer()) {

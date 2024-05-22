@@ -192,7 +192,6 @@ GameObject:
   - component: {fileID: -5908320950975022257}
   - component: {fileID: 2564255422046077385}
   - component: {fileID: 7427781900297684245}
-  - component: {fileID: -2084665083962906048}
   - component: {fileID: 1628824566}
   - component: {fileID: 1578029168716991636}
   m_Layer: 11
@@ -292,6 +291,8 @@ MonoBehaviour:
   selfDamageAmounts: 140000000a000000
   invincible: 0
   mainCollider: {fileID: 232269251456713494}
+  cartUIBar: {fileID: 0}
+  myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
   currentBurn: 0
@@ -317,18 +318,6 @@ MonoBehaviour:
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
   enemiesTargetingMe: []
---- !u!114 &-2084665083962906048
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3399934084524781478}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e03d89f262df7ef43ad10e8140eccbf4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &1628824566
 Rigidbody:
   m_ObjectHideFlags: 0

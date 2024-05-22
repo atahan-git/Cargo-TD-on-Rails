@@ -8,9 +8,9 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActiveDuringShopping, IDisabledState {
+public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IDisabledState {
 
-    public static bool isImmune = false;
+    public static bool debugImmune = false;
     
     public float baseHealth = 50;
     [ReadOnly]
@@ -84,7 +84,7 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
     [Button]
     public void DealDamage(float damage, Vector3? hitPoint) {
         Assert.IsTrue(damage > 0);
-        if(isImmune || invincible)
+        if(debugImmune || invincible)
             return;
         
         if (invincibilityTime > 0) {
@@ -672,10 +672,6 @@ public class ModuleHealth : MonoBehaviour, IHealth, IActiveDuringCombat, IActive
         var meshCol = GetComponentInChildren<MeshCollider>();
 
         return meshCol;
-    }
-
-    public bool HasArmor() {
-        return false;
     }
 
     public float GetHealth() {

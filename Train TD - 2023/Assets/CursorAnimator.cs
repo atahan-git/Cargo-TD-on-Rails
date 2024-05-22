@@ -41,8 +41,12 @@ public class CursorAnimator : MonoBehaviour {
 		    var rot = Quaternion.LookRotation(hit.normal);
 		    var prefab = LevelReferences.s.dirtBulletHitEffectPrefab;
 		    
-		    var health = hit.collider.gameObject.GetComponentInParent<IHealth>();
-		    if (health != null) {
+		    var cart = hit.collider.gameObject.GetComponentInParent<ModuleHealth>();
+		    if (cart != null) {
+			    prefab = LevelReferences.s.metalBulletHitEffectPrefab;
+		    }
+		    var enemy = hit.collider.gameObject.GetComponentInParent<EnemyHealth>();
+		    if (enemy != null) {
 			    prefab = LevelReferences.s.metalBulletHitEffectPrefab;
 		    }
 		    VisualEffectsController.s.SmartInstantiate(prefab, pos, rot);

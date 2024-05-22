@@ -8,7 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
+public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 
 	public float baseHealth = 200f;
 	
@@ -204,10 +204,6 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 	void Die(bool giveRewards = true) {
 		isAlive = false;
 
-		var extraRewards = GetComponentsInChildren<EnemyReward>();
-		//var otherRewards = GetComponentInChildren<EnemyCartReward>();
-		
-		
 		if (giveRewards) {
 			var rewardMoney = 0;
 			if (maxHealth >= 80) {
@@ -261,10 +257,6 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 
 	public Collider GetMainCollider() {
 		return GetComponentInChildren<BoxCollider>();
-	}
-
-	public bool HasArmor() {
-		return false;
 	}
 
 	public float GetHealthPercent() {
@@ -337,23 +329,4 @@ public class EnemyHealth : MonoBehaviour, IHealth,IPlayerHoldable {
 	public void SetHoldingDrone(DroneRepairController holder) {
 		holdingDrone = holder;
 	}
-}
-
-
-public interface IHealth {
-	public bool IsAlive();
-	public void DealDamage(float damage, Vector3? damageHitPoint);
-	public void RepairChunk();
-	public void BurnDamage(float damage);
-	public bool IsPlayer();
-	public GameObject GetGameObject();
-	public Collider GetMainCollider();
-	public bool HasArmor();
-	public float GetHealthPercent();
-	public float GetHealth();
-	public float GetShieldPercent();
-	public bool IsShieldActive();
-	public string GetHealthRatioString();
-
-	public Transform GetUITransform();
 }

@@ -31,7 +31,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1334753444529555513}
-  - {fileID: 9033463761200534756}
   m_Father: {fileID: 4633706734324331389}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
@@ -85,37 +84,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &5400277143868939863
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9033463761200534756}
-  m_Layer: 14
-  m_Name: BarrelEnd (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &9033463761200534756
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5400277143868939863}
-  m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: -0.24222991, y: 0.8056174, z: 0}
-  m_LocalScale: {x: 13.608406, y: 13.608406, z: 13.608406}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6030735477964533872}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6245074994292636220
 GameObject:
   m_ObjectHideFlags: 0
@@ -125,13 +93,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6242162578806785938}
-  - component: {fileID: 814589029433658915}
+  - component: {fileID: 653041601325200676}
   - component: {fileID: 5681084119528593804}
-  - component: {fileID: 8967220105404282961}
-  - component: {fileID: 6648436410140143833}
   - component: {fileID: 4971180238582831025}
   m_Layer: 14
-  m_Name: Elite Enemy Heal Launcher
+  m_Name: _ Elite Enemy Heal Launcher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,7 +119,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &814589029433658915
+--- !u!114 &653041601325200676
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,15 +128,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 6245074994292636220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
+  m_Script: {fileID: 11500000, guid: 789a6d47a67bbd5449f24050f6d4f31f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunUniqueName: Heal Gun
   gunSprite: {fileID: 21300000, guid: f66cdbf48d45ba8448681a24250118c3, type: 3}
   isGigaGatling: 0
   maxFireRateReduction: 0.9
   gatlingAmount: 0
-  maxGatlingAmount: 0
+  maxGatlingAmount: 4
+  bulletPrefab: {fileID: 4908573584345181807, guid: 63848ee133d1df24a88c1c9b3be629a4, type: 3}
+  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 91d07708a7b424b4fa8523e77356c595, type: 3}
+  fireDelay: 2
+  fireBarrageCount: 1
+  fireBarrageDelay: 0.2
+  rotateSpeed: 10
+  mortarRotation: 0
+  inaccuracyMultiplier: 1
+  gunShakeOnShoot: 0
+  gunShakeMagnitude: 0.04
+  isUniqueGearNoNeedForShootCredit: 1
+  shootCreditsUse: 1
   rotateTransforms:
   - transform: {fileID: 4633706734324331389}
   rotateTransform:
@@ -180,69 +157,14 @@ MonoBehaviour:
     centerBarrelEnd: {fileID: 0}
   barrelEndTransforms:
   - transform: {fileID: 1334753444529555513}
-  - transform: {fileID: 9033463761200534756}
   projectileSpawnOffset: 0.2
-  useProviderBullet: 0
-  myType: 0
-  bulletPrefab: {fileID: 4908573584345181807, guid: a36118034611a644a9f177bb21d41342, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 704ed75930e83c04784fdf7df4f8809c, type: 3}
+  rangeOrigin: {fileID: 0}
+  waitTimer: 0
   target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 2
-  fireBarrageCount: 1
-  fireBarrageDelay: 0.2
-  projectileDamage: 25
-  burnDamage: 0
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 1
-  currentAffectors:
-    damageMultiplier: 1
-    sniperDamageMultiplier: 1
-    fireRateMultiplier: 1
-    fireRateDivider: 1
-    burnDamageMultiplier: 1
-    regularToBurnDamageConversionMultiplier: 0
-    bonusBurnDamage: 0
-    regularToRangeConversionMultiplier: 0
-    gatlinificator: 0
-    isHoming: 0
-    explosionRangeBoost: 0
-  rotateSpeed: 10
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 1
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 0
-  rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 0
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stopShootingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gatlingCountZeroEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gunShakeOnShoot: 0
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
-  waitTimer: 0
-  explosionRange: 0
-  inaccuracyMultiplier: 1
   gotShootCredits: 0
-  needShootCredits: 0
-  neverNeedShootCredits: 1
-  shootCreditsUse: 1
+  isEliteNoNeedForShootCredit: 0
 --- !u!114 &5681084119528593804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,34 +182,6 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 1
---- !u!114 &8967220105404282961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6245074994292636220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d599bb9011d1e5468e9aa253af0bce9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
-  amount: 5
---- !u!114 &6648436410140143833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6245074994292636220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d599bb9011d1e5468e9aa253af0bce9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
-  amount: 0
 --- !u!114 &4971180238582831025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,8 +195,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Heal cannon will heal enemies.
-  info: Uses a Heal Cannon.
+    text: Heals nearby enemies
+  info: Heal Cannon
 --- !u!1 &8779518294047818299
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +221,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8779518294047818299}
   m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: 0.23406464, y: 0.8056174, z: 0}
+  m_LocalPosition: {x: -0.03, y: 1.23, z: 0}
   m_LocalScale: {x: 13.608406, y: 13.608406, z: 13.608406}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -4935,7 +4935,6 @@ GameObject:
   - component: {fileID: 6196790002924656710}
   - component: {fileID: 477182462790521095}
   - component: {fileID: 4764124627092903387}
-  - component: {fileID: 5050948014000765582}
   - component: {fileID: 2668763570930725688}
   - component: {fileID: 3526058441876773978}
   m_Layer: 11
@@ -5043,22 +5042,10 @@ MonoBehaviour:
   myId: 0
   myType: 1
   targetTransform: {fileID: 0}
-  avoid: 1
+  avoid: 0
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
   enemiesTargetingMe: []
---- !u!114 &5050948014000765582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 731734174617468776}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e03d89f262df7ef43ad10e8140eccbf4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &2668763570930725688
 Rigidbody:
   m_ObjectHideFlags: 0

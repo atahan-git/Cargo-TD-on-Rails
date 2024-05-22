@@ -17,7 +17,7 @@ public class EnemyTargetAssigner : MonoBehaviour {
     //public float shootCreditIncreasePerAct;
     public float maxShootCredit = 20;
     
-    public Queue<GunModule> shootRequesters = new Queue<GunModule>();
+    public Queue<EnemyGunModule> shootRequesters = new Queue<EnemyGunModule>();
 
     public TMP_Text shootCreditDisplay;
     
@@ -37,7 +37,7 @@ public class EnemyTargetAssigner : MonoBehaviour {
     }
 
 
-    public void TryToGetShootCredits(GunModule requester) {
+    public void TryToGetShootCredits(EnemyGunModule requester) {
 
         if (shootCredit > 0) {
             requester.gotShootCredits = true;
@@ -51,7 +51,7 @@ public class EnemyTargetAssigner : MonoBehaviour {
 
 
     void DispenseShootCredits() {
-        while (shootRequesters.TryDequeue(out GunModule result)) {
+        while (shootRequesters.TryDequeue(out EnemyGunModule result)) {
             if (result != null) {
                 result.gotShootCredits = true;
                 shootCredit -= result.shootCreditsUse;

@@ -92,11 +92,6 @@ public class CheatsController : MonoBehaviour {
                 Invoke(nameof(QuickStart), 0.01f);
             }
 
-            if (playerDealMaxDamage) {
-                TweakablesMaster.s.myTweakables.playerDamageMultiplier = 20;
-                TweakablesMaster.s.ApplyTweakableChange();
-            }
-
             if (autoPlayTest) {
                 AutoPlaytester.s.StartAutoPlayer(true);
             }
@@ -121,7 +116,8 @@ public class CheatsController : MonoBehaviour {
     }
     
     private void Update() {
-        ModuleHealth.isImmune = playerIsImmune;
+        ModuleHealth.debugImmune = playerIsImmune;
+        GunModule.debugMaxDamage = playerDealMaxDamage;
     }
 
     /*[Button]

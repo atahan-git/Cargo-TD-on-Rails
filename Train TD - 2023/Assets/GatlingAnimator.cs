@@ -28,8 +28,8 @@ public class GatlingAnimator : MonoBehaviour {
             return;
         }
         
-        _gunModule.startWarmUpEvent.AddListener(OnWarmUp);
-        _gunModule.gatlingCountZeroEvent.AddListener(OnGatlingCountZero);
+        _gunModule.startShootingEvent.AddListener(OnStartShooting);
+        _gunModule.stopShootingEvent.AddListener(OnStopShooting);
 
 
         easterEggSidewaysRotate = EasterEggController.s.GetEasterEggDisplay(EasterEggController.EasterEggChances.rare4);
@@ -37,13 +37,13 @@ public class GatlingAnimator : MonoBehaviour {
 
     public bool isRotating = false;
     public float curSpeed = 0;
-    void OnWarmUp() {
+    void OnStartShooting() {
         warmUpTime = _gunModule.GetFireDelay();
         angleDelta = rotationSpeed / warmUpTime;
         isRotating = true;
     }
     
-    void OnGatlingCountZero() {
+    void OnStopShooting() {
         isRotating = false;
         /*introAudioSource.Stop();
         loopAudioSource.Stop();

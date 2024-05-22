@@ -14,7 +14,6 @@ public class Projectile : MonoBehaviour {
     public float speed = 5f;
     public float projectileDamage = 20f;
     public float burnDamage = 0;
-    //public float damage = 20f;
     public float explosionRange = 0; // 0.5f for rockets
 
     public bool isHeal = false;
@@ -29,8 +28,6 @@ public class Projectile : MonoBehaviour {
     public float seekStrength = 180f;
 
     public bool isPlayerBullet = false;
-
-    public bool canPenetrateArmor = false;
 
     public Transform target;
     
@@ -52,10 +49,7 @@ public class Projectile : MonoBehaviour {
     public float mortarAimPredictTime = 1f;
     public float mortarVelocityMultiplier = 0.5f;
 
-    public LineRenderer myLine;
-
     public bool isPhaseThrough = false;
-    //public bool isBurnDamage = false;
     public bool isSlowDamage = false;
     public bool isHoming = false;
     private void Start() {
@@ -130,8 +124,7 @@ public class Projectile : MonoBehaviour {
         if (isPlayer) {
             layer = LevelReferences.s.playerBulletLayer.LayerIndex;
         } else {
-            if(GetComponent<BulletHealth>() == null)
-                layer = LevelReferences.s.enemyBulletLayer.LayerIndex;
+            layer = LevelReferences.s.enemyBulletLayer.LayerIndex;
         }
 
         var children = GetComponentsInChildren<Transform>(includeInactive: true);
@@ -173,7 +166,7 @@ public class Projectile : MonoBehaviour {
                 }
                 
                 
-                var health = hit.transform.GetComponentInParent<IHealth>();
+                var health = hit.transform.GetComponentInParent<EnemyHealth>();
         
                 DealDamage(health);
                 
@@ -281,7 +274,7 @@ public class Projectile : MonoBehaviour {
             }
 
             if (myHitType != HitType.Mortar) {
-                var health = target.GetComponentInParent<IHealth>();
+                var health = target.GetComponentInParent<EnemyHealth>();
 
                 if (health != null) {
                     DealDamage(health);
@@ -301,7 +294,7 @@ public class Projectile : MonoBehaviour {
 
     private void OnCollisionEnter(Collision other) {
         if (!isDead) {
-            var health = other.gameObject.GetComponentInParent<IHealth>();
+            var health = other.gameObject.GetComponentInParent<EnemyHealth>();
 
             if (health != null) {
                 if (isPlayerBullet && health.IsPlayer()) {
@@ -381,7 +374,7 @@ public class Projectile : MonoBehaviour {
     }
 
     void PhaseDamage(Collider other) {
-        var health = other.gameObject.GetComponentInParent<IHealth>();
+        var health = other.gameObject.GetComponentInParent<EnemyHealth>();
 
         if (health != null) {
             DealDamage(health);
@@ -398,10 +391,10 @@ public class Projectile : MonoBehaviour {
 
         var targets = Physics.OverlapSphere(transform.position, explosionRange);
 
-        var healthsInRange = new List<IHealth>();
+        var healthsInRange = new List<EnemyHealth>();
 
         if (other != null) {
-            var contactHealth = other.gameObject.GetComponentInParent<IHealth>();
+            var contactHealth = other.gameObject.GetComponentInParent<EnemyHealth>();
             if (isPlayerBullet) {
                 if (contactHealth != null && !contactHealth.IsPlayer()) {
                     healthsInRange.Add(contactHealth);
@@ -416,7 +409,7 @@ public class Projectile : MonoBehaviour {
         for (int i = 0; i < targets.Length; i++) {
             var target = targets[i];
             
-            var health = target.gameObject.GetComponentInParent<IHealth>();
+            var health = target.gameObject.GetComponentInParent<EnemyHealth>();
             if (isPlayerBullet) {
                 if (health != null && !health.IsPlayer()) {
                     if (!healthsInRange.Contains(health)) {
@@ -450,11 +443,11 @@ public class Projectile : MonoBehaviour {
         var targets = Physics.OverlapSphere(transform.position, effectiveRange);
 
 
-        var healthsInRange = new List<IHealth>();
+        var healthsInRange = new List<EnemyHealth>();
         for (int i = 0; i < targets.Length; i++) {
             var target = targets[i];
             
-            var health = target.gameObject.GetComponentInParent<IHealth>();
+            var health = target.gameObject.GetComponentInParent<EnemyHealth>();
             if (health != null && (
                 (!health.IsPlayer() && isPlayerBullet) ||
                 (health.IsPlayer() && !isPlayerBullet)
@@ -465,7 +458,7 @@ public class Projectile : MonoBehaviour {
             }
         }
 
-        var contactTarget = other.collider.GetComponentInParent<IHealth>();
+        var contactTarget = other.collider.GetComponentInParent<EnemyHealth>();
         if (contactTarget != null) {
             if (!healthsInRange.Contains(contactTarget)) {
                 healthsInRange.Add(contactTarget);
@@ -483,7 +476,7 @@ public class Projectile : MonoBehaviour {
     }
 
     private void ContactDamage(Collision other) {
-        var health = other.collider.gameObject.GetComponentInParent<IHealth>();
+        var health = other.collider.gameObject.GetComponentInParent<EnemyHealth>();
         
         DealDamage(health);
         
@@ -508,12 +501,13 @@ public class Projectile : MonoBehaviour {
                 ApplyHitForceToObject(health);
 
 
-                if (health.HasArmor() && !canPenetrateArmor) {
+                /*if (health.HasArmor() && !canPenetrateArmor) {
                     // if enemy has armor and we cannot penetrate it, show it through an effect
                     hitPrefab = LevelReferences.s.enemyCantPenetrateHitEffectPrefab;
                 } else {
-                    hitPrefab = LevelReferences.s.enemyRegularHitEffectPrefab;
-                }
+                    
+                }*/
+                hitPrefab = LevelReferences.s.enemyRegularHitEffectPrefab;
             }
         }
 
@@ -522,7 +516,7 @@ public class Projectile : MonoBehaviour {
     }
 
 
-    void ApplyHitForceToObject(IHealth health) {
+    void ApplyHitForceToObject(EnemyHealth health) {
         var collider = health.GetMainCollider();
         var closestPoint = collider.ClosestPoint(transform.position);
         var rigidbody = collider.GetComponent<Rigidbody>();
@@ -542,14 +536,10 @@ public class Projectile : MonoBehaviour {
     }
 
 
-    void DealDamage(IHealth target) {
+    void DealDamage(EnemyHealth target) {
         if (target != null) {
             var dmg = projectileDamage;
             var armorProtected = false;
-            if (target.HasArmor() && !canPenetrateArmor) {
-                dmg = projectileDamage/ 2;
-                armorProtected = true;
-            }
 
             if (isSlowDamage) {
                 if (target.IsPlayer()) {

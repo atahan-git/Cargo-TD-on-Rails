@@ -304,13 +304,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8721917312497420284}
-  - component: {fileID: 2658500604106378829}
-  - component: {fileID: 6042444706114320447}
-  - component: {fileID: -871136541088157513}
+  - component: {fileID: 7938366313709704569}
   - component: {fileID: 7734873297440282591}
   - component: {fileID: 1439648940965544332}
   m_Layer: 14
-  m_Name: Elite Enemy Rocket Launcher
+  m_Name: _ Elite Enemy Rocket Launcher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -333,7 +331,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2658500604106378829
+--- !u!114 &7938366313709704569
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -342,15 +340,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 8718989495804000850}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
+  m_Script: {fileID: 11500000, guid: 789a6d47a67bbd5449f24050f6d4f31f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunUniqueName: unset unique name
   gunSprite: {fileID: 21300000, guid: fec227fc5b9ef8848bc5c349d122d353, type: 3}
   isGigaGatling: 0
   maxFireRateReduction: 0.9
   gatlingAmount: 0
   maxGatlingAmount: 4
+  bulletPrefab: {fileID: 7110668419382630654, guid: 146350eae53527f44abcd0da35b64838, type: 3}
+  muzzleFlashPrefab: {fileID: 9155879028066676231, guid: 35c71a4c5105a0e4e99bc4419ba1a8bf, type: 3}
+  fireDelay: 8
+  fireBarrageCount: 1
+  fireBarrageDelay: 0.1
+  rotateSpeed: 10
+  mortarRotation: 0
+  inaccuracyMultiplier: 1
+  gunShakeOnShoot: 1
+  gunShakeMagnitude: 0.04
+  isUniqueGearNoNeedForShootCredit: 0
+  shootCreditsUse: 1
   rotateTransforms:
   - transform: {fileID: 8062815419133752083}
   rotateTransform:
@@ -361,96 +370,14 @@ MonoBehaviour:
   barrelEndTransforms:
   - transform: {fileID: 4408772733913466967}
   - transform: {fileID: 5978435266795672714}
-  projectileSpawnOffset: 0
-  useProviderBullet: 0
-  myType: 0
-  bulletPrefab: {fileID: 7110668419382630654, guid: 38d2797b60af6b3449dea991dc05d6f3, type: 3}
-  muzzleFlashPrefab: {fileID: 9155879028066676231, guid: 20718e1ecbf4a0a48851a1815d4ceeaa, type: 3}
+  projectileSpawnOffset: 0.2
+  rangeOrigin: {fileID: 0}
+  waitTimer: 0
   target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 8
-  fireBarrageCount: 1
-  fireBarrageDelay: 0.2
-  projectileDamage: 100
-  burnDamage: 0
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 0
-  currentAffectors:
-    damageMultiplier: 1
-    sniperDamageMultiplier: 1
-    fireRateMultiplier: 1
-    fireRateDivider: 1
-    burnDamageMultiplier: 1
-    regularToBurnDamageConversionMultiplier: 0
-    bonusBurnDamage: 0
-    regularToRangeConversionMultiplier: 0
-    gatlinificator: 0
-    isHoming: 0
-    explosionRangeBoost: 0
-  rotateSpeed: 1
   gunActive: 1
   IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 1
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 0
-  rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 0
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stopShootingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gatlingCountZeroEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  gunShakeOnShoot: 0
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
-  waitTimer: 0
-  explosionRange: 0.5
-  inaccuracyMultiplier: 1
   gotShootCredits: 0
-  needShootCredits: 0
-  neverNeedShootCredits: 1
-  shootCreditsUse: 3
---- !u!114 &6042444706114320447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8718989495804000850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d599bb9011d1e5468e9aa253af0bce9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
-  amount: 5
---- !u!114 &-871136541088157513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8718989495804000850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d599bb9011d1e5468e9aa253af0bce9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
-  amount: 0
+  isEliteNoNeedForShootCredit: 0
 --- !u!114 &7734873297440282591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,8 +391,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Hits hard and has a long range. Drops both fuel and ammo as reward.
-  info: Uses a Rocket Launcher.
+    text: Hits hard and has a long range
+  info: Rocket Launcher
 --- !u!114 &1439648940965544332
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,39 +3,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Artifact_TreeGem : MonoBehaviour, IChangeCartState
+public class Artifact_TreeGem : MonoBehaviour, IChangeCartState, IActiveDuringCombat,IArtifactDescription, IDisabledState
 {
     public void ChangeState(Cart target) {
         // do nothing
+
+        currentDescription = "Repairs the cart slowly";
+        var hasAmmo = false;
+        foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
+            hasAmmo = true;
+        }
+
+        if (hasAmmo) {
+            currentDescription = "Reloads then repairs the cart";
+        }
+        
     }
-    /*//[Space]
-    public float reloadDelayBase = 2f;
-    public float reloadBoostPerLevel = -0.5f;
-    public float currentReloadDelay = 0;
+    //[Space]
+    public float repairDelay = 5;
+    public int repairChunks = 1;
+    public int reloadBullets = 1;
 
     private Artifact myArtifact;
+    
+    
+    public string currentDescription;
     private void Start() {
         myArtifact = GetComponent<Artifact>();
-    }
-
-    protected override void _Arm() {
-        var range = GetComponent<Artifact>().range;
-        ApplyBoost(GetComponentInParent<Cart>());
-        for (int i = 1; i < range+1; i++) {
-            ApplyBoost(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-            ApplyBoost(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
-        }
-    }
-
-    void ApplyBoost(Cart target) {
-        if(target == null)
-            return;
-
-        bool didApply = true;
-        
-        if (didApply) {
-            GetComponent<Artifact>()._ApplyToTarget(target);
-        }
     }
 
     void ApplyReloadOrHealth(Cart target) {
@@ -44,27 +38,15 @@ public class Artifact_TreeGem : MonoBehaviour, IChangeCartState
 
         var hasAmmo = false;
         foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
-            moduleAmmo.Reload(1);
+            moduleAmmo.Reload(reloadBullets);
             hasAmmo = true;
         }
 
         if (!hasAmmo) {
-            target.GetHealthModule().RepairChunk();
+            target.GetHealthModule().RepairChunk(repairChunks);
         }
+        
         VisualEffectsController.s.SmartInstantiate(LevelReferences.s.growthEffectPrefab, target.uiTargetTransform, VisualEffectsController.EffectPriority.High);
-    }
-
-    protected override void _Disarm() {
-        // do nothing
-    }
-
-    public void ResetState(int level) {
-        currentReloadDelay = reloadDelayBase + (level * reloadBoostPerLevel);
-    }
-    
-    public void ActivateForCombat() {
-        this.enabled = true;
-        activeDelay = LevelReferences.s.smallEffectFirstActivateTimeAfterCombatStarts;
     }
 
     private float activeDelay;
@@ -74,44 +56,37 @@ public class Artifact_TreeGem : MonoBehaviour, IChangeCartState
                 if (myArtifact.isAttached) {
                     activeDelay -= Time.deltaTime;
                     if (activeDelay <= 0) {
-                        activeDelay = currentReloadDelay;
+                        activeDelay = repairDelay;
 
-                        if (!enemyToApplyTo) {
-                            var range = GetComponent<Artifact>().range;
-                            ApplyReloadOrHealth(GetComponentInParent<Cart>());
-                            for (int i = 1; i < range + 1; i++) {
-                                ApplyReloadOrHealth(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
-                                ApplyReloadOrHealth(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
-                            }
-                        }
+                        ApplyReloadOrHealth(GetComponentInParent<Cart>());
+                        /*for (int i = 1; i < range + 1; i++) {
+                            ApplyReloadOrHealth(Train.s.GetNextBuilding(i, GetComponentInParent<Cart>()));
+                            ApplyReloadOrHealth(Train.s.GetNextBuilding(-i, GetComponentInParent<Cart>()));
+                        }*/
                     }
-                }
-            } else {
-                activeDelay -= Time.deltaTime;
-                if (activeDelay <= 0) {
-                    activeDelay = currentReloadDelay;
-
-                    if (enemyToApplyTo) {
-                        ApplyToEnemy();
-                    } 
                 }
             }
         }
     }
 
-   
+
+    public void ActivateForCombat() {
+        this.enabled = true;
+    }
+
     public void Disable() {
         this.enabled = false;
     }
-    
-    void ApplyToEnemy() {
-        enemyToApplyTo.GetComponent<EnemyHealth>().RepairChunk();
-        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.growthEffectPrefab, enemyToApplyTo.transform, VisualEffectsController.EffectPriority.High);
+
+    public string GetDescription() {
+        return currentDescription;
     }
 
-    private EnemyInSwarm enemyToApplyTo;
-    public void ApplyToEnemyWithGem(EnemyInSwarm enemy) {
-        enemyToApplyTo = enemy;
-        //throw new NotImplementedException();
-    }*/
+    public void CartDisabled() {
+        this.enabled = false;
+    }
+
+    public void CartEnabled() {
+        this.enabled = true;
+    }
 }
