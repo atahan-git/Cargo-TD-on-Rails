@@ -12,7 +12,7 @@ public class DebugPathFollower : MonoBehaviour
     [Range(-1,1)]
     public float smallOffset;
     public PathAndTerrainGenerator pathAndTerrainGenerator;
-    void Update() {
+    void LateUpdate() {
         if(pathAndTerrainGenerator == null)
             return;
         

@@ -43,6 +43,13 @@ public class Train : MonoBehaviour {
     public void DrawTrain(DataSaver.TrainState trainState) {
         StopAllCoroutines();
         suppressRedraw = true;
+
+        if (trainMiddle != null) {
+            if (trainMiddle.childCount > 0) {
+                trainMiddle.GetChild(0).SetParent(null);
+            }
+        }
+        
         transform.DeleteAllChildren();
         suppressRedraw = false;
         
@@ -83,6 +90,9 @@ public class Train : MonoBehaviour {
         isTrainDrawn = true;
         
         Invoke(nameof(TrainChanged),0.01f);
+        
+        //CameraController.s.transform.SetParent(trainMiddle);
+        //CameraController.s.transform.localPosition = Vector3.zero;
 
         onTrainCartsChanged?.Invoke();
     }
@@ -301,6 +311,10 @@ public class Train : MonoBehaviour {
         if(carts.Count == 0)
             return;
 
+        
+        transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
+        transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
+        
         if (newspaperMode) {
             UpdateCartPositionsNewspaper();
             return;
@@ -345,7 +359,7 @@ public class Train : MonoBehaviour {
 
 
         var upOffset = Vector3.up * trainFrontBackMiddleYOffset;
-        
+
         var frontDist = (totalLength / 2f) + trainFrontBackDistanceOffset;
         trainFront.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(frontDist) + upOffset;
         trainFront.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(frontDist);
@@ -437,7 +451,7 @@ public class Train : MonoBehaviour {
     }
 
 
-    private void Update() {
+    private void LateUpdate() {
         UpdateCartPositions();
     }
 

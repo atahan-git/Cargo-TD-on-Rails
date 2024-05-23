@@ -41,9 +41,6 @@ public class SceneLoader : MonoBehaviour {
     }
 
 
-    
-    
-
     public GameObject loadingScreen;
     public GameObject loadingText;
     public CanvasGroup canvasGroup;

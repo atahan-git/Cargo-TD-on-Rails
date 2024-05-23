@@ -113,6 +113,8 @@ public class Projectile : MonoBehaviour {
                 break;
         }
     }
+
+    public Vector3 initialVelocity;
     
     public void SetIsPlayer(bool isPlayer) {
         if (isHeal)
@@ -214,7 +216,7 @@ public class Projectile : MonoBehaviour {
             switch (myHitType) {
                 case HitType.Bullet:
                 case HitType.Rocket:
-                    GetComponent<Rigidbody>().MovePosition(transform.position + transform.forward * curSpeed * Time.fixedDeltaTime);
+                    GetComponent<Rigidbody>().MovePosition(transform.position + (transform.forward * curSpeed * Time.fixedDeltaTime) + (initialVelocity*Time.fixedDeltaTime));
                     break;
                 case HitType.Mortar:
                     GetComponent<Rigidbody>().MovePosition(transform.position + mortarVelocity * Time.fixedDeltaTime);

@@ -38,14 +38,16 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
         curSpeed = 0;
         curSeekStrength = 0;
     }
-    public void SetUp(GameObject originObject, Transform _target) {
+    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity) {
         myOriginObject = originObject;
         target = _target;
+        initialVelocity = _initialVelocity;
     }
     void DestroySelf() {
         Destroy(gameObject);
     }
 
+    public Vector3 initialVelocity;
     void FixedUpdate() {
         if (!isDead) {
             if (target != null) {
@@ -62,7 +64,7 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
                 }
             }
 
-            GetComponent<Rigidbody>().MovePosition(transform.position + transform.forward * curSpeed * Time.fixedDeltaTime);
+            GetComponent<Rigidbody>().MovePosition(transform.position + (transform.forward * curSpeed * Time.fixedDeltaTime) + (initialVelocity*Time.fixedDeltaTime));
         }
     }
     

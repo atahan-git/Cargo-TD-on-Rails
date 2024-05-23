@@ -102,6 +102,10 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
         return gunActive;
     }
 
+    [FoldoutGroup("Internal Variables")]
+    public Vector3 myVelocity;
+    [FoldoutGroup("Internal Variables")]
+    public Vector3 lastPos;
     private void Update() {
         if (gunActive) {
             if (target != null) {
@@ -133,6 +137,9 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
             gatlingAmount -= Time.deltaTime * 2;
             gatlingAmount = Mathf.Clamp(gatlingAmount, 0, maxGatlingAmount);
         }
+        
+        myVelocity = (transform.position - lastPos) / Time.deltaTime;
+        lastPos = transform.position;
     }
 
     public void LookAtLocation(Vector3 location) {
@@ -253,7 +260,7 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
             bullet.transform.forward = Vector3.RotateTowards(bulletForward, randomDirection,actualInaccuracy*Mathf.Deg2Rad, 0);
             
             var muzzleFlash = VisualEffectsController.s.SmartInstantiate(muzzleFlashPrefab, position, rotation);
-            bullet.GetComponent<IEnemyProjectile>().SetUp(GetComponentInParent<Rigidbody>().gameObject, target);
+            bullet.GetComponent<IEnemyProjectile>().SetUp(GetComponentInParent<Rigidbody>().gameObject, target, myVelocity);
 
             if (gunShakeOnShoot)
                 StartCoroutine(ShakeGun());
@@ -386,5 +393,5 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
 
 
 public interface IEnemyProjectile {
-    public void SetUp(GameObject originObject, Transform _target);
+    public void SetUp(GameObject originObject, Transform _target, Vector3 _intialVelocity);
 }

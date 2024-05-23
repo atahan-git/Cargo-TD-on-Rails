@@ -930,7 +930,6 @@ GameObject:
   - component: {fileID: -3177139399781246017}
   - component: {fileID: 2564255422046077385}
   - component: {fileID: 7427781900297684245}
-  - component: {fileID: -2084665083962906048}
   - component: {fileID: 1628824566}
   - component: {fileID: 1578029168716991636}
   m_Layer: 11
@@ -1054,18 +1053,6 @@ MonoBehaviour:
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
   enemiesTargetingMe: []
---- !u!114 &-2084665083962906048
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3399934084524781478}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e03d89f262df7ef43ad10e8140eccbf4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &1628824566
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1326,14 +1313,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseShieldAmount: 500
   currentShieldAmount: 500
-  currentMaxShieldAmount: 500
   curRegenTimer: 0.5
   regenSpeed: 50
-  regenMultiplier: 1
-  regenTimerReductionMultiplier: 1
-  regenTimerReductionDivider: 1
-  prefabToSpawnWhenShieldIsHit: []
-  prefabToSpawnWhenShieldIsDestroyed: []
+  currentAffectors:
+    regenMultiplier: 1
+    regenTimerReductionMultiplier: 1
+    regenTimerReductionDivider: 1
+    shieldMoveSpeedReducer: 1
+    shieldMoveSpeedIncreaser: 1
+    currentMaxShieldAmount: 500
+    shieldCoverage: 2
   myPhysicalShieldBar: {fileID: 5259756413705080856}
 --- !u!114 &4115984167156386904
 MonoBehaviour:
@@ -1348,6 +1337,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myHealth: {fileID: 0}
+  myShields: {fileID: 0}
   physicalShield: {fileID: 8885054787469578461}
 --- !u!1 &3594827500495483965
 GameObject:

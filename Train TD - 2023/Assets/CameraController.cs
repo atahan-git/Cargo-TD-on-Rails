@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class CameraController : MonoBehaviour {
     public static CameraController s;
@@ -97,6 +98,8 @@ public class CameraController : MonoBehaviour {
         
         rotateAction.action.performed += RotateCamera;
         rotateReverseAction.action.performed += RotateCameraReverse;
+        
+        
     }
 
 
@@ -132,6 +135,14 @@ public class CameraController : MonoBehaviour {
         cameraCenter.transform.rotation = Quaternion.Euler(0, rotationAngleTarget, 0);
         SetMainCamPos();
         DisableDirectControl();
+
+        mainCamera.transform.SetParent(transform);
+    }
+
+    private void OnDestroy() {
+        if (mainCamera != null && SceneLoader.s != null) {
+            mainCamera.transform.SetParent(SceneLoader.s.transform);
+        }
     }
 
     private void Update() {

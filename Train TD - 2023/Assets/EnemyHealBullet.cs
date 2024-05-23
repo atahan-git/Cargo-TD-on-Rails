@@ -28,15 +28,17 @@ public class EnemyHealBullet : MonoBehaviour, IEnemyProjectile
     private void Start() {
         Invoke("DestroySelf", lifetime);
     }
-    public void SetUp(GameObject originObject, Transform _target) {
+    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity) {
         myOriginObject = originObject;
         target = _target;
+        initialVelocity = _initialVelocity;
     }
 
     void DestroySelf() {
         Destroy(gameObject);
     }
 
+    public Vector3 initialVelocity;
     void FixedUpdate() {
         if (!isDead) {
             if (target != null) {
@@ -51,7 +53,7 @@ public class EnemyHealBullet : MonoBehaviour, IEnemyProjectile
                 }
             }
 
-            GetComponent<Rigidbody>().MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
+            GetComponent<Rigidbody>().MovePosition(transform.position + (transform.forward * speed * Time.fixedDeltaTime) + (initialVelocity*Time.fixedDeltaTime));
         }
     }
 

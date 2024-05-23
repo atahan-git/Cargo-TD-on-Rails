@@ -210,6 +210,10 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         currentAffectors = new Affectors();
     }
 
+    [FoldoutGroup("Internal Variables")]
+    public Vector3 myVelocity;
+    [FoldoutGroup("Internal Variables")]
+    public Vector3 lastPos;
     private void Update() {
         if (gunActive) {
             if (target != null) {
@@ -254,6 +258,10 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         if (stopShootingTimer <= 0) {
             StopShootingFindingHelperThingy();
         }
+
+
+        myVelocity = (transform.position - lastPos) / Time.deltaTime;
+        lastPos = transform.position;
     }
 
     public void LookAtLocation(Vector3 location) {
@@ -471,6 +479,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
             projectile.SetIsPlayer(true);
             projectile.source = this;
+            projectile.initialVelocity = myVelocity;
 
             projectile.onHitCallback = onHitCallback;
             projectile.onMissCallback = onMissCallback;

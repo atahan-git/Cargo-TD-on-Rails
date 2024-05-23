@@ -572,32 +572,12 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         //Debug.Break();
         reDrawing = true;
-        
-        while (drawCenter.x > terrainWidth/2f) {
-            drawCenter.x -= terrainWidth;
-        }
-
-        while (drawCenter.x < -terrainWidth/2f) {
-            drawCenter.x += terrainWidth;
-        }
-        
-        while (drawCenter.z > terrainWidth/2f) {
-            drawCenter.z -= terrainWidth;
-        }
-
-        while (drawCenter.z < -terrainWidth/2f) {
-            drawCenter.z += terrainWidth;
-        }
-
-        for (int i = 0; i < myTerrains.Count; i++) {
-            myTerrains[i].needToBePurged = true;
-        }
 
         if (!makingTracks) {
             StartCoroutine(MakeTracksAroundCenter(instant));
         }
 
-        var diff =  drawCenter-center;
+        var diff =  drawCenter;
         var viewCount = Mathf.CeilToInt(terrainViewRange * 2 / TerrainGenerator.terrainWidth);
         if (viewCount % 2 == 0) {
             viewCount += 1;
@@ -657,7 +637,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             transform.parent.GetComponentInChildren<ReflectionProbe>().RenderProbe();
             needReflectionProbe = false;
         }
-        
         //Debug.Break();
     }
 
@@ -788,7 +767,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     private bool makingTracks = false;
     public IEnumerator MakeTracksAroundCenter(bool instant = false) {
         makingTracks = true;
-        var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange*2);
+        var viewBound = new Bounds(drawCenter, Vector3.one * terrainViewRange*2);
 
         var n = 0;
         for (int i = 0; i < myPaths.Count; i++) {
@@ -920,7 +899,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             myPaths[i].debugDrawGizmo = false;
         }
     }
-    
+
+    private Vector3 prevDrawCenter;
     private void Update() {
         if (terrainStabilizedTimer > 0) {
             terrainStabilizedTimer -= Time.deltaTime;
@@ -936,7 +916,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             return;
         }
 
-        var point = GetPointOnActivePath(0);
+        /*var point = GetPointOnActivePath(0);
 
         for (int i = 0; i < myPaths.Count; i++) {
             var points = myPaths[i].points;
@@ -961,7 +941,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             myTerrains[i].terrain.transform.position -= point;
             myTerrains[i].topLeftPos -= point;
             myTerrains[i].bounds.center -= point;
-        }*/
+        }#1#
         transform.position -= point;
 
         for (int i = 0; i < myTerrains.Count; i++) {
@@ -970,9 +950,12 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
 
         drawCenter -= point;
-        center -= point;
+        center -= point;*/
 
-        if (Mathf.Abs(drawCenter.x)  > terrainWidth/2f || Mathf.Abs(drawCenter.z)  > terrainWidth/2f) {
+        drawCenter = GetPointOnActivePath(SpeedController.s.currentDistance);
+        //if (Mathf.Abs(drawCenter.x)  > terrainWidth/2f || Mathf.Abs(drawCenter.z)  > terrainWidth/2f) {
+        if(Vector3.Distance(drawCenter, prevDrawCenter) > terrainWidth/2f) {
+            prevDrawCenter = drawCenter;
             StartCoroutine(ReDrawTerrainAroundCenter());
         }
     }
