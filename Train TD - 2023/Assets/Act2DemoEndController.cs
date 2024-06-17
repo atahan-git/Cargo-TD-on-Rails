@@ -13,17 +13,18 @@ public class Act2DemoEndController : MonoBehaviour {
 
     public GameObject deathCrystal;
 
+    public int deathAct = 3;
     public void OnEnterShop()
     {
         EnemyWavesController.s.act2DemoEndNoSpawn = false;
-        if (DataSaver.s.GetCurrentSave().currentRun.currentAct > 1) {
+        if (DataSaver.s.GetCurrentSave().currentRun.currentAct >= deathAct) {
             EnemyWavesController.s.act2DemoEndNoSpawn = true;
         } 
     }
 
 
     public void OnStartCombat() {
-        if (DataSaver.s.GetCurrentSave().currentRun.currentAct > 1) {
+        if (DataSaver.s.GetCurrentSave().currentRun.currentAct >= deathAct) {
             var myObj = Instantiate(deathCrystal, Vector3.forward * 100, Quaternion.identity);
             myObj.GetComponent<Act2DemoEndCrystalCollision>().SetUp(50);
         }

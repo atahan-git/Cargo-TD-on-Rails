@@ -19,6 +19,10 @@ public class EnemyBullet : MonoBehaviour, IEnemyProjectile
     
     public GameObject instantDestroy;
 
+    public bool isArrow = false;
+    public float arrowLeaveChance = 1f;
+    public GameObject arrowObject;
+
     [FoldoutGroup("Internal Variables")]
     public GameObject myOriginObject;
     [FoldoutGroup("Internal Variables")]
@@ -37,6 +41,10 @@ public class EnemyBullet : MonoBehaviour, IEnemyProjectile
         myOriginObject = originObject;
         target = _target;
         initialVelocity = _initialVelocity;
+    }
+
+    public Vector3 GetInitialVelocity() {
+        return initialVelocity;
     }
 
     void DestroySelf() {
@@ -58,7 +66,7 @@ public class EnemyBullet : MonoBehaviour, IEnemyProjectile
                 }
             }
 
-            GetComponent<Rigidbody>().MovePosition(transform.position + (transform.forward * speed * Time.fixedDeltaTime) + (initialVelocity*Time.fixedDeltaTime));
+            GetComponent<Rigidbody>().velocity = (transform.forward * speed ) + (initialVelocity);
         }
     }
 
@@ -75,6 +83,13 @@ public class EnemyBullet : MonoBehaviour, IEnemyProjectile
                     particle.Stop();
                     Destroy(particle.gameObject, 1f);
                 }
+            }
+
+            var trail = GetComponentInChildren<SmartTrail>();
+            if (trail != null) {
+                trail.StopTrailing();
+                trail.transform.SetParent(VisualEffectsController.s.transform);
+                Destroy(trail.gameObject, 1f);
             }
 
             if(toSpawnOnDeath != null)

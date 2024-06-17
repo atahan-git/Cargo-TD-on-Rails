@@ -747,6 +747,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   constantForce: 10
   deathTime: 20
+  isAttachedToFloor: 0
+  addedChunks: []
+  canAttachToFloor: 1
 --- !u!1 &3204448666573442090
 GameObject:
   m_ObjectHideFlags: 0
@@ -20473,6 +20476,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   constantForce: 10
   deathTime: 20
+  isAttachedToFloor: 0
+  addedChunks: []
+  canAttachToFloor: 1
 --- !u!1 &6055321154774132514
 GameObject:
   m_ObjectHideFlags: 0
@@ -20518,6 +20524,8 @@ Transform:
   - {fileID: 71067716085260603}
   - {fileID: 1999974931065277426}
   - {fileID: 7529853399586258172}
+  - {fileID: 9106405343726434096}
+  - {fileID: 8577995739836924897}
   m_Father: {fileID: 7632133576773074817}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20614,6 +20622,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   constantForce: 10
   deathTime: 20
+  isAttachedToFloor: 0
+  addedChunks: []
+  canAttachToFloor: 1
 --- !u!1 &6305795369646882835
 GameObject:
   m_ObjectHideFlags: 0
@@ -20731,6 +20742,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   constantForce: 10
   deathTime: 20
+  isAttachedToFloor: 0
+  addedChunks: []
+  canAttachToFloor: 1
 --- !u!1 &7382756833421889683
 GameObject:
   m_ObjectHideFlags: 0
@@ -20951,6 +20965,7 @@ MonoBehaviour:
   obj: {fileID: 6055321154774132514}
   forceSource: {fileID: 2720380567915356951}
   forceAmount: {x: 4000, y: 6000}
+  deathTime: 40
 --- !u!114 &7595974982892567077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20966,6 +20981,7 @@ MonoBehaviour:
   obj: {fileID: 9073543041073606323}
   forceSource: {fileID: 2720380568580995473}
   forceAmount: {x: 1000, y: 1500}
+  deathTime: 40
 --- !u!114 &7595974982892567076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20981,6 +20997,7 @@ MonoBehaviour:
   obj: {fileID: 6305795369646882835}
   forceSource: {fileID: 2720380569267891130}
   forceAmount: {x: 1000, y: 1500}
+  deathTime: 40
 --- !u!114 &7595974982892567079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20996,6 +21013,7 @@ MonoBehaviour:
   obj: {fileID: 3002907189047404246}
   forceSource: {fileID: 2720380569012585293}
   forceAmount: {x: 1000, y: 1500}
+  deathTime: 40
 --- !u!114 &7595974982892567078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21011,6 +21029,7 @@ MonoBehaviour:
   obj: {fileID: 6053451312839980112}
   forceSource: {fileID: 2720380568777777221}
   forceAmount: {x: 1000, y: 1500}
+  deathTime: 40
 --- !u!114 &7595974982892567083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21142,6 +21161,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   constantForce: 10
   deathTime: 20
+  isAttachedToFloor: 0
+  addedChunks: []
+  canAttachToFloor: 1
 --- !u!1 &9166626304163447837
 GameObject:
   m_ObjectHideFlags: 0
@@ -21295,4 +21317,140 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1046195756885079350, guid: 14455273e5a26a947a26caf9a4dfdd38, type: 3}
   m_PrefabInstance: {fileID: 1713307805011195290}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5109453347908329108
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 8615940907163512477}
+    m_Modifications:
+    - target: {fileID: 173658653119048095, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_Name
+      value: Crystal decor (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.308
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.307
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.988
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8622226
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.23351507
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.05869865
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.4456426
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 20.51
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -19.286
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -58.186
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+--- !u!4 &9106405343726434096 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+  m_PrefabInstance: {fileID: 5109453347908329108}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5729483054578313797
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 8615940907163512477}
+    m_Modifications:
+    - target: {fileID: 173658653119048095, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_Name
+      value: Crystal decor (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.8554194
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.8554194
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.8554194
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.48
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.99
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9400147
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.1347352
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.2932336
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.1106023
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -10.862
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -36.277
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 16.989
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+--- !u!4 &8577995739836924897 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4073540867930581412, guid: fd8d8e2080b43b8488d18284ebb34a08, type: 3}
+  m_PrefabInstance: {fileID: 5729483054578313797}
   m_PrefabAsset: {fileID: 0}

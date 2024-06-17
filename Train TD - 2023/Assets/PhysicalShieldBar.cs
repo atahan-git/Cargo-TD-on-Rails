@@ -71,7 +71,7 @@ public class PhysicalShieldBar : MonoBehaviour {
         targetShieldPercent = percent;
     }
 
-    public void SetSize(int size) { // 0 means covering 1 carts
+    public void SetSize(float size) { // 0 means covering 1 carts
         for (int i = 0; i < bars.Length; i++) {
             var scale =  bars[i].transform.localScale;
             scale.z = defaultSize * (size+1.1f);

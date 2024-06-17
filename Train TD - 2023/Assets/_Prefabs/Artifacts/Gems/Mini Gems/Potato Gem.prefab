@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6195704730702566083
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 586818211553822249, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: rmsCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: myTooltip.text
+      value: Makes things explosive.
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2887714300150370317, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -2432090755550338912, guid: 118fbbac6c0afc545b1971b842b29d0d, type: 3}
+    - target: {fileID: 2966999489241683928, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3f8fa6a4c2bbb554fab600b94358a7f2, type: 2}
+    - target: {fileID: 3000658176013270734, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -2432090755550338912, guid: 118fbbac6c0afc545b1971b842b29d0d, type: 3}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.06959248
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.06959248
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.06959248
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.052
+      objectReference: {fileID: 0}
+    - target: {fileID: 4150176515199512765, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3f8fa6a4c2bbb554fab600b94358a7f2, type: 2}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.06959248
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.06959248
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.06959248
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4686409788300702077, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Name
+      value: Potato Gem
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: buyCost
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: myRarity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: mySprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c484442d8101a9447ada7452496af412, type: 3}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: uniqueName
+      value: potato_gem
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: displayName
+      value: Potato Gem
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: needsToBeBought
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: gunCartDescription
+      value: Adds or increases gun's explosion radius
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: ammoCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: repairCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: shieldCartDescription
+      value: not implemented yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: notAttachedDescription
+      value: Does nothing!
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+--- !u!1 &1509524458239976382 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4686409788300702077, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+  m_PrefabInstance: {fileID: 6195704730702566083}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-2776630001500811144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509524458239976382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f70a5359d15da0408327da68c556003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

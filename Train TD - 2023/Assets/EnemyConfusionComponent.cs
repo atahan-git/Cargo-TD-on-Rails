@@ -32,6 +32,12 @@ public class EnemyConfusionComponent : MonoBehaviour,IComponentWithTarget,IEnemy
 
     public GameObject activateExplosion;
 
+    public enum ConfusionMode {
+        controlFlip, screenFlip
+    }
+
+    public ConfusionMode myMode;
+
     private void Start() {
         chargingParticles.SetActive(true);
         chargedParticles.SetActive(true);
@@ -69,9 +75,8 @@ public class EnemyConfusionComponent : MonoBehaviour,IComponentWithTarget,IEnemy
 
         } else if (curTime < chargeTime + activeTime) {
             // shuffle!
-            if (!areInputsShuffled) {
-                ShuffleInputs();
-            }
+            ApplyConfusion();
+            
             if (isCharging) {
                 ChangeChargingState(false);
             }
@@ -79,7 +84,7 @@ public class EnemyConfusionComponent : MonoBehaviour,IComponentWithTarget,IEnemy
             rotatePart.transform.Rotate(Vector3.up, 720 * Time.deltaTime);
             
         } else {
-            RestoreInputs();
+            UndoConfusion();
             curTime = 0;
         }
         
@@ -109,9 +114,52 @@ public class EnemyConfusionComponent : MonoBehaviour,IComponentWithTarget,IEnemy
     }
 
 
-    public bool areInputsShuffled = false;
+    public bool isConfusionApplied = false;
+
+     void ApplyConfusion() {
+         if (!isConfusionApplied) {
+             isConfusionApplied = true;
+             switch (myMode) {
+                 case ConfusionMode.controlFlip:
+                     ShuffleInputs();
+                     MiniGUI_ConfusedOverlay.s.SetConfused(true, "inputs are flipped");
+                     break;
+                 case ConfusionMode.screenFlip:
+                     FlipScreen();
+                     MiniGUI_ConfusedOverlay.s.SetConfused(true, "the screen is flipped");
+                     break;
+             }
+             
+         }
+     }
+
+     void UndoConfusion() {
+         if (isConfusionApplied) {
+             isConfusionApplied = false;
+             switch (myMode) {
+                 case ConfusionMode.controlFlip:
+                     RestoreInputs();
+                     break;
+                 case ConfusionMode.screenFlip:
+                     RestoreScreen();
+                     break;
+             }
+        
+             MiniGUI_ConfusedOverlay.s.SetConfused(false, "");
+         }
+    }
+
+     void FlipScreen() {
+         ExtensionMethods.SetRenderFeatureState<FlipScreenRenderFeature>(true);
+         PlayerWorldInteractionController.s.screenIsFlipped = true;
+     }
+
+     void RestoreScreen() {
+         ExtensionMethods.SetRenderFeatureState<FlipScreenRenderFeature>(false);
+         PlayerWorldInteractionController.s.screenIsFlipped = false;
+     }
+
     void ShuffleInputs() {
-        areInputsShuffled = true;
         SwapActionBindings(primaryClick.action, secondaryClick.action);
         SwapActionBindings(directControlLeftClick.action, directControlExit.action);
         //SwapActionBindings(directControlActivate.action, directControlExit.action);
@@ -121,18 +169,14 @@ public class EnemyConfusionComponent : MonoBehaviour,IComponentWithTarget,IEnemy
         exp.transform.rotation = activateExplosion.transform.rotation;
         exp.SetActive(true);
         
-        MiniGUI_ConfusedOverlay.s.SetConfused(true);
     }
 
     void RestoreInputs() {
-        areInputsShuffled = false;
         primaryClick.action.RemoveAllBindingOverrides();
         secondaryClick.action.RemoveAllBindingOverrides();
         directControlLeftClick.action.RemoveAllBindingOverrides();
         //directControlActivate.action.RemoveAllBindingOverrides();
         directControlExit.action.RemoveAllBindingOverrides();
-        
-        MiniGUI_ConfusedOverlay.s.SetConfused(false);
     }
     
     private void SwapActionBindings(InputAction action1, InputAction action2)
@@ -157,7 +201,7 @@ public class EnemyConfusionComponent : MonoBehaviour,IComponentWithTarget,IEnemy
     }
 
     private void OnDestroy() {
-        RestoreInputs();
+        UndoConfusion();
     }
 
     public void SetTarget(Transform _target) {

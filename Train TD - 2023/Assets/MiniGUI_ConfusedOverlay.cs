@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MiniGUI_ConfusedOverlay : MonoBehaviour {
 
     public static MiniGUI_ConfusedOverlay s;
+    private TMP_Text myText;
 
     private void Awake() {
         s = this;
+        myText = GetComponentInChildren<TMP_Text>();
     }
 
     public bool isConfused = false;
@@ -22,13 +25,14 @@ public class MiniGUI_ConfusedOverlay : MonoBehaviour {
     void Update()
     {
         if (isConfused) {
-            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, 1, 1 * Time.deltaTime);
+            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, 1, 2 * Time.deltaTime);
         } else {
-            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, 0, 3 * Time.deltaTime);
+            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, 0, 4 * Time.deltaTime);
         }
     }
 
-    public void SetConfused(bool _isConfused) {
+    public void SetConfused(bool _isConfused, string confusedText) {
         isConfused = _isConfused;
+        myText.text = "Confused!\n" + confusedText;
     }
 }

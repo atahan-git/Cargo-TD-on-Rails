@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class SmitheryController : MonoBehaviour
+public class SmitheryController : MonoBehaviour, IResetShopBuilding
 {
     
     public SnapLocation location1;
@@ -17,19 +17,22 @@ public class SmitheryController : MonoBehaviour
 
     public ScrapPaymentSlot paymentSlot;
 
-    public bool upgradeUsed = false;
-
     private void Start() {
         smithery.OnStuffCollided.AddListener(UpgradeDone);
+    }
+
+    public void CheckIfShouldEnableSelf() {
         if (DataSaver.s.GetCurrentSave().currentRun.currentAct == 1) {
             gameObject.SetActive(false);
+        }else {
+            gameObject.SetActive(true);
         }
     }
 
     void Update()
     {
-        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging() && !upgradeUsed) {
-            if (!location1.IsEmpty() && !location2.IsEmpty() /*&& paymentSlot.AllSlotsFull()*/)
+        if (!isEngaged && !PlayerWorldInteractionController.s.isDragging()) {
+            if (!location1.IsEmpty() && !location2.IsEmpty() && paymentSlot.AllSlotsFull())
                 CheckAndDoUpgrade();
         }
 
@@ -39,38 +42,74 @@ public class SmitheryController : MonoBehaviour
 
 
     private bool isCartUpgrade = false;
+    private string upgradeResult;
     void CheckAndDoUpgrade() {
         var cart1 = location1.GetComponentInChildren<Cart>();
         var cart2 = location2.GetComponentInChildren<Cart>();
 
-        
+        upgradeResult = "";
 
         if (cart1 != null && cart2 != null) {
-            var upgradeResult = DataHolder.s.GetMergeResult(cart1.uniqueName, cart2.uniqueName);
+            upgradeResult = DataHolder.s.GetMergeResult(cart1.uniqueName, cart2.uniqueName);
             if ( DataHolder.s.IsLegalMergeResult(upgradeResult)) {
                 EngageUpgrade(true);
                 return;
             }
         }
+
+        var artifact1 = location1.GetComponentInChildren<Artifact>();
+        var artifact2 = location2.GetComponentInChildren<Artifact>();
+
+        if (artifact1 != null || artifact2 != null) {
+            if (cart1 != null) {
+                upgradeResult = DataHolder.s.GetUpgradeResult(cart1.uniqueName);
+                if ( DataHolder.s.IsLegalMergeResult(upgradeResult)) {
+                    EngageUpgrade(false);
+                    return;
+                }
+            }
+
+            if (cart2 != null) {
+                upgradeResult = DataHolder.s.GetUpgradeResult(cart2.uniqueName);
+                if ( DataHolder.s.IsLegalMergeResult(upgradeResult)) {
+                    EngageUpgrade(false);
+                    return;
+                }
+            }
+        }
         
 
         // if cannot upgrade then unsnap the carts
-        
+
+        GameObject thing1 = null;
         if (cart1 != null) {
-            cart1.transform.SetParent(null);
-            cart1.GetComponent<Rigidbody>().isKinematic = false;
-            cart1.GetComponent<Rigidbody>().useGravity = true;
-            cart1.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
+            thing1 = cart1.gameObject;
+        } else if(artifact1 != null) {
+            thing1 = artifact1.gameObject;
         }
+
+        GameObject thing2 = null;
         if (cart2 != null) {
-            cart2.transform.SetParent(null);
-            cart2.GetComponent<Rigidbody>().isKinematic = false;
-            cart2.GetComponent<Rigidbody>().useGravity = true;
-            cart2.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
+            thing2 = cart2.gameObject;
+        } else if(artifact2 != null) {
+            thing2 = artifact2.gameObject;
+        }
+        
+        if (thing1 != null) {
+            thing1.transform.SetParent(null);
+            thing1.GetComponent<Rigidbody>().isKinematic = false;
+            thing1.GetComponent<Rigidbody>().useGravity = true;
+            thing1.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
+        }
+        if (thing2 != null) {
+            thing2.transform.SetParent(null);
+            thing2.GetComponent<Rigidbody>().isKinematic = false;
+            thing2.GetComponent<Rigidbody>().useGravity = true;
+            thing2.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
         }
     }
 
-    Vector3 GetRandomYeetForce() {
+    public static Vector3 GetRandomYeetForce() {
         var randomForceDirection = Random.onUnitSphere;
         if (randomForceDirection.y < 0) {
             randomForceDirection.y = -randomForceDirection.y;
@@ -97,32 +136,56 @@ public class SmitheryController : MonoBehaviour
         SetColliderStatus(allParent, false);
         smithery.EngageAnim();
         
-        //paymentSlot.DoPayment();
+        paymentSlot.DoPayment();
     }
 
     void UpgradeDone() {
-        SetColliderStatus(allParent, true);
         isEngaged = false;
-        var cart1 = location1.GetComponentInChildren<Cart>();
-        var cart2 = location2.GetComponentInChildren<Cart>();
-        
-        var upgradeResult = DataHolder.s.GetMergeResult(cart1.uniqueName, cart2.uniqueName);
+        var thing1 = location1.GetComponentInChildren<IPlayerHoldable>() as MonoBehaviour;
+        var thing2 = location2.GetComponentInChildren<IPlayerHoldable>() as MonoBehaviour;
 
-        var newCart = Instantiate(DataHolder.s.GetCart(upgradeResult).gameObject, cart1.transform.position, cart1.transform.rotation).GetComponent<Cart>();
+        var newCart = Instantiate(DataHolder.s.GetCart(upgradeResult).gameObject, thing1.transform.position, thing1.transform.rotation).GetComponent<Cart>();
         Train.ApplyStateToCart(newCart, new DataSaver.TrainState.CartState(){uniqueName = upgradeResult});
         ShopStateController.s.AddCartToShop(newCart);
         newCart.GetComponent<Rigidbody>().isKinematic = false;
         newCart.GetComponent<Rigidbody>().useGravity = true;
         newCart.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
-        
-        ShopStateController.s.RemoveCartFromShop(cart1);
-        ShopStateController.s.RemoveCartFromShop(cart2);
-        Destroy(cart1);
-        Destroy(cart2);
-        
-        MakeCannotMergeAnymore();
 
+        if (thing1 is Cart) {
+            ShopStateController.s.RemoveCartFromShop(thing1 as Cart);
+
+            foreach (var artifactLocation in (thing1 as Cart).myArtifactLocations) {
+                if (!artifactLocation.IsEmpty()) {
+                    artifactLocation.GetComponentInChildren<Artifact>().DetachFromCart();
+                }
+            }
+            
+        }else if (thing1 is Artifact) {
+            ShopStateController.s.RemoveArtifactFromShop(thing1 as Artifact);
+        }
+        if (thing2 is Cart) {
+            ShopStateController.s.RemoveCartFromShop(thing2 as Cart);
+            
+            foreach (var artifactLocation in (thing2 as Cart).myArtifactLocations) {
+                if (!artifactLocation.IsEmpty()) {
+                    artifactLocation.GetComponentInChildren<Artifact>().DetachFromCart();
+                }
+            }
+            
+        }else if (thing2 is Artifact) {
+            ShopStateController.s.RemoveArtifactFromShop(thing2 as Artifact);
+        }
+        Destroy(thing1.gameObject);
+        Destroy(thing2.gameObject);
+        
+        //MakeCannotMergeAnymore();
+
+        Invoke(nameof(CanCollideAgain), 0.2f);
+    }
+
+    void CanCollideAgain() {
         Train.s.TrainChanged();
+        SetColliderStatus(allParent, true);
     }
 
 

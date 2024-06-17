@@ -84,7 +84,7 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
     [FoldoutGroup("Internal Variables")]
     private IEnumerator ActiveShootCycle;
     [FoldoutGroup("Internal Variables")]
-    private bool isShooting = false;
+    public bool isShooting = false;
     [FoldoutGroup("Internal Variables")]
     public Transform target;
     [FoldoutGroup("Internal Variables")]
@@ -260,7 +260,12 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
             bullet.transform.forward = Vector3.RotateTowards(bulletForward, randomDirection,actualInaccuracy*Mathf.Deg2Rad, 0);
             
             var muzzleFlash = VisualEffectsController.s.SmartInstantiate(muzzleFlashPrefab, position, rotation);
-            bullet.GetComponent<IEnemyProjectile>().SetUp(GetComponentInParent<Rigidbody>().gameObject, target, myVelocity);
+            var rg = GetComponentInParent<Rigidbody>();
+            if (rg) {
+                bullet.GetComponent<IEnemyProjectile>().SetUp(rg.gameObject, target, myVelocity);
+            } else {
+                bullet.GetComponent<IEnemyProjectile>().SetUp(gameObject, target, myVelocity);
+            }
 
             if (gunShakeOnShoot)
                 StartCoroutine(ShakeGun());
@@ -288,6 +293,7 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
 
     [Button]
     public void ShootBarrageDebug() {
+        gotShootCredits = true;
         StartCoroutine(_ShootBarrage());
     }
 
@@ -338,7 +344,8 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
         StartShooting();
     }
 
-    void StopShooting() {
+    [Button]
+    public void StopShooting() {
         if (isShooting) {
             if(ActiveShootCycle != null)
                 StopCoroutine(ActiveShootCycle);
@@ -347,7 +354,8 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
         }
     }
 
-    void StartShooting() {
+    [Button]
+    public void StartShooting() {
         if (gunActive && target != null) {
             if (!isShooting) {
                 StopAllCoroutines();
@@ -393,5 +401,6 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
 
 
 public interface IEnemyProjectile {
-    public void SetUp(GameObject originObject, Transform _target, Vector3 _intialVelocity);
+    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity);
+    public Vector3 GetInitialVelocity();
 }

@@ -43,6 +43,11 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
         target = _target;
         initialVelocity = _initialVelocity;
     }
+
+    public Vector3 GetInitialVelocity() {
+        return initialVelocity;
+    }
+
     void DestroySelf() {
         Destroy(gameObject);
     }
@@ -64,7 +69,7 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
                 }
             }
 
-            GetComponent<Rigidbody>().MovePosition(transform.position + (transform.forward * curSpeed * Time.fixedDeltaTime) + (initialVelocity*Time.fixedDeltaTime));
+            GetComponent<Rigidbody>().velocity =  (transform.forward * curSpeed) + (initialVelocity);
         }
     }
     
@@ -81,6 +86,13 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
                     particle.Stop();
                     Destroy(particle.gameObject, 1f);
                 }
+            }
+            
+            var trail = GetComponentInChildren<SmartTrail>();
+            if (trail != null) {
+                trail.StopTrailing();
+                trail.transform.SetParent(VisualEffectsController.s.transform);
+                Destroy(trail.gameObject, 1f);
             }
             
             if(toSpawnOnDeath != null)

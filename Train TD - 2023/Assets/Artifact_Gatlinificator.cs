@@ -15,18 +15,17 @@ public class Artifact_Gatlinificator : MonoBehaviour, IChangeStateToEntireTrain
     void ApplyBoost(Cart target) {
         if(target == null)
             return;
-        
-        
-        
+
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
             if (gunModule.isGigaGatling) {
-                gunModule.currentAffectors.fireRateMultiplier += 1.5f;
+                gunModule.currentAffectors.speed *= 2f;
+                gunModule.currentAffectors.gatlinificator = true;
             } else {
                 gunModule.currentAffectors.gatlinificator = true;
-                gunModule.currentAffectors.fireRateDivider += 1f;
+                gunModule.currentAffectors.speed /= 2f;
             }
 
-            gunModule.ammoPerBarrageMultiplier = 0.5f;
+            //gunModule.currentAffectors.efficiency *= 1.5f;
         }
 
         /*foreach (var roboRepair in target.GetComponentsInChildren<RoboRepairModule>()) {

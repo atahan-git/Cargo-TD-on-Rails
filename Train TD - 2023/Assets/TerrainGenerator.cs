@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using Unity.Burst;
 using Unity.Collections;
@@ -17,9 +18,9 @@ public class TerrainGenerator : MonoBehaviour
     public AnimationCurve continentalnessMap = AnimationCurve.Linear(0,0,1,1);
     public AnimationCurve transitionMap = AnimationCurve.Linear(0,0,1,1);
 
-    public const int gridSize = 257;
-    public const int terrainWidth = 25;
-    public const int terrainHeight = 50;
+    public const int gridSize = 129;
+    public const float terrainWidth = 12.5f;
+    public const float terrainHeight = 50;
     public const int maxDistance = gridSize*gridSize+1;
     public const float gridStep = ((float)terrainWidth)/(gridSize-1);
     public int detailGridSize;
@@ -44,8 +45,9 @@ public class TerrainGenerator : MonoBehaviour
         
         public float[,] distanceMap;
         public float[,] heightmap;
-        //public int[,] detailmap0;
-        //public int[,] detailmap1;
+        public int[,] detailmap0;
+        public int[,] detailmap1;
+        public int[,] pebbleMap;
         
         public Terrain terrain;
         public bool needReDraw = true;
@@ -61,81 +63,9 @@ public class TerrainGenerator : MonoBehaviour
         public bool needToBePurged = false;
         public bool beingProcessed = false;
 
+        public int biome = 1;
+
         public TreeInstance[] treeInstances;
-
-        //public bool jobsInit = false;
-        //public AddVector3ToList grass0Job;
-        //public AddVector3ToList grass1Job;
-        //public NativeArray<Matrix4x4> grassPositions0;
-        //public NativeArray<Matrix4x4> grassPositions1;
-        public bool needReBatchingForGrass = false;
-        public bool hasAnyGrass = false;
-        
-        [BurstCompile]
-        public struct AddVector3ToList : IJobParallelFor
-        {
-            public NativeArray<Matrix4x4> positions;
-            [Unity.Collections.ReadOnly] 
-            public Vector3 toAdd;
-
-            public void Execute(int i) {
-                var matrix = positions[i];
-                matrix.m03 += toAdd.x;
-                matrix.m13 += toAdd.y;
-                matrix.m23 += toAdd.z;
-                positions[i] = matrix;
-            }
-        }
-
-        //private JobHandle prevJob;
-
-        public void InitJobs() {
-            /*if (!jobsInit) {
-                grass0Job = new AddVector3ToList();
-                grass1Job = new AddVector3ToList();
-                jobsInit = true;
-            }*/
-        }
-
-        private bool jobsInProgress = false;
-        private JobHandle handle0;
-        private JobHandle handle1;
-        public void AddToGrassPositions(Vector3 delta) {
-            if (hasAnyGrass) {
-                InitJobs();
-                /*if (grassPositions0.IsCreated && grassPositions1.IsCreated) {
-                    grass0Job.positions = grassPositions0;
-                    grass0Job.toAdd = delta;
-                    grass1Job.positions = grassPositions1;
-                    grass1Job.toAdd = delta;
-                    handle0 = grass0Job.Schedule(grassPositions0.Length, 64);
-                    handle1 = grass1Job.Schedule(grassPositions1.Length, 64);
-                    jobsInProgress = true;
-                    handle0.Complete();
-                    handle1.Complete();
-                    jobsInProgress = false;
-                }*/
-            }
-        }
-
-        public void DisposeNativeArray() {
-            /*if (jobsInit && jobsInProgress) {
-                if (!handle0.IsCompleted) {
-                    handle0.Complete();
-                }
-
-                if (!handle1.IsCompleted) {
-                    handle1.Complete();
-                }
-            }
-            
-            if (grassPositions0.IsCreated) {
-                grassPositions0.Dispose();
-            }
-            if (grassPositions1.IsCreated) {
-                grassPositions1.Dispose();
-            }*/
-        }
 
         public float GetPos_X(int x, int y) {
             return x*gridStep + coordinates.x*terrainWidth;
@@ -147,11 +77,21 @@ public class TerrainGenerator : MonoBehaviour
         public Vector3 GetRealPos(int x, int y) {
             return new Vector3(x * gridStep, 0, y * gridStep) + topLeftPosition;
         }
+
+        public void SetData(Terrain _terrain) {
+            distanceMap = new float[gridSize, gridSize];
+            heightmap = new float[gridSize, gridSize];
+            terrain = _terrain;
+            pathAndTerrainGenerator = PathAndTerrainGenerator.s;
+            var detailGridSize = _terrain.terrainData.detailWidth;
+            detailmap0 = new int[detailGridSize, detailGridSize];
+            detailmap1 = new int[detailGridSize, detailGridSize];
+            pebbleMap = new int[detailGridSize, detailGridSize];
+        }
     }
-   
 
     public ObjectPool terrainPool;
-
+    
     [Button]
     public void ChangeSeed() {
         seed = new Vector2(Random.Range(1000, 10000f), Random.Range(1000, 10000f));
@@ -199,6 +139,13 @@ public class TerrainGenerator : MonoBehaviour
         terrainInformation.topLeftPosition = terrain.GetPosition();
         //terrainInformation.bounds.SetMinMax(terrainInformation.topLeftPos, terrainInformation.topLeftPos + new Vector3(terrainWidth,10,terrainWidth));
 
+        
+        terrainInformation.biome = DataSaver.s.GetCurrentSave().currentRun.currentAct-1;
+
+        //var stopwatch = new System.Diagnostics.Stopwatch();
+        //stopwatch.Start();
+        //stopwatch.Stop();
+        //Debug.Log($"Pre Processing Time: {stopwatch.ElapsedMilliseconds}ms");
         ResetPostAndDistMap(terrainInformation);
         ImprintNeighborEdges(terrainInformation);
         
@@ -225,7 +172,7 @@ public class TerrainGenerator : MonoBehaviour
             CalculateInitialDistanceMaps(trainTerrain, paths);
             done = true;
         }).Start();*/
-
+        
         ThreadPool.QueueUserWorkItem(o => {
             CalculateInitialDistanceMaps(trainTerrain, paths);
             done = true;
@@ -233,6 +180,7 @@ public class TerrainGenerator : MonoBehaviour
         
         while (!done)
             yield return null;
+        
         trainTerrain.beingProcessed = false;
         DoneInitialDistanceMapCalculation(trainTerrain,completeCallback);
     }
@@ -322,8 +270,6 @@ public class TerrainGenerator : MonoBehaviour
 
         // detailmap0 grass stuff
         System.Random random = new System.Random();
-        /*var grassList0 = new List<Matrix4x4>();
-        var grassList1 = new List<Matrix4x4>();
         for (var y = 0; y < detailGridSize; y++)
         {
             for (var x = 0; x < detailGridSize; x++) {
@@ -337,42 +283,29 @@ public class TerrainGenerator : MonoBehaviour
                 var height = information.heightmap[distanceX, distanceY];
 
                 realPos.y = height * terrainHeight;
-                
+
                 var incline = InclineAtPos(distanceX, distanceY, information.heightmap);
                 //print(incline);
-                
-                var density0 = GetGrassDensity(posX, posY, grassFrequency0, grassThreshold0, grassMaxDensity0, distance, incline);
-                var density1 = GetGrassDensity(posX+500, posY+500, grassFrequency1, grassThreshold1, grassMaxDensity1,distance,incline);
 
-                for (int i = 0; i < density0; i++) {
-                    if (NextFloat(random) < grassOverallDensity) {
-                        var pos = realPos + new Vector3(NextFloat(random) * detailGridStep, 0, NextFloat(random) * detailGridStep);
-                        grassList0.Add(Matrix4x4.TRS(pos, Quaternion.Euler(0, NextFloat(random) * 360, 0), Vector3.one));
-                    }
+                var grassData0 = biome0grass0;
+                var grassData1 = biome0grass1;
+
+                if (information.biome == 1) {
+                    grassData0 = biome1grass0;
+                    grassData1 = biome1grass1;
                 }
 
-                for (int i = 0; i < density1; i++) {
-                    if (NextFloat(random) < grassOverallDensity) {
-                        var pos = realPos + new Vector3(NextFloat(random) * detailGridStep, 0, NextFloat(random) * detailGridStep);
-                        grassList1.Add(Matrix4x4.TRS(pos, Quaternion.Euler(0, NextFloat(random) * 360, 0), Vector3.one));
-                    }
+                information.detailmap0[x, y] = GetGrassDensity(posX, posY, grassData0.grassFrequency, grassData0.grassThreshold, grassData0.grassMaxDensity, distance, incline);
+                information.detailmap1[x, y] = GetGrassDensity(posX + 500, posY + 500, grassData1.grassFrequency, grassData1.grassThreshold, grassData1.grassMaxDensity, distance, incline);
+
+                if (distance < maxPebbleDistance) {
+                    information.pebbleMap[x, y] = random.Next(5) > 3 ? 1 : 0;
+                } else {
+                    information.pebbleMap[x, y] = 0;
                 }
             }
         }
 
-        var totalGrassCount = grassList0.Count + grassList1.Count;
-        //print($"Grass Count: {totalGrassCount}");
-
-        information.hasAnyGrass = totalGrassCount > 0;
-
-        if (information.hasAnyGrass) {
-            information.DisposeNativeArray();
-            information.grassPositions0 = new NativeArray<Matrix4x4>(grassList0.ToArray(), Allocator.Persistent);
-            information.grassPositions1 = new NativeArray<Matrix4x4>(grassList1.ToArray(), Allocator.Persistent);
-
-            information.needReBatchingForGrass = true;
-        }*/
-        information.hasAnyGrass = false;
 
         List<TreeInstance> treeInstances = new List<TreeInstance>();
         var maxRandomOffset = (1f / treeGridSize) / 2f;
@@ -384,16 +317,29 @@ public class TerrainGenerator : MonoBehaviour
                 var posY = information.GetPos_Y(distanceX, distanceY);
                 var distance = information.distanceMap[distanceX, distanceY];
 
-                if (NextFloat(random) < GetRandomTreeChance(posX, posY, distance)) {
-                    TreeInstance treeTemp = new TreeInstance();
-                    treeTemp.position = new Vector3((float)x/treeGridSize,0, (float)y/treeGridSize) + new Vector3(NextFloat(random, -maxRandomOffset,maxRandomOffset), 0, NextFloat(random,-maxRandomOffset,maxRandomOffset));
-                    treeTemp.prototypeIndex = 0;
-                    treeTemp.widthScale = NextFloat(random,0.5f,1.2f);
-                    treeTemp.heightScale = treeTemp.widthScale;
-                    treeTemp.rotation = NextFloat(random, 0f, 2 * Mathf.PI);
-                    treeTemp.color = Color.white;
-                    treeTemp.lightmapColor = Color.white;
-                    treeInstances.Add(treeTemp);
+                var treeDatas = new List<TreeData>();
+                if (information.biome == 0) {
+                    treeDatas.Add(biome0Trees);
+                }else if (information.biome == 1) {
+                    treeDatas.Add(biome1Trees);
+                    treeDatas.Add(biome1Gems);
+                }
+
+                for (int i = 0; i < treeDatas.Count; i++) {
+                    var myData = treeDatas[i];
+                    var density = GetTreeDensity(myData, posX, posY, distance, i * 500);
+                    if (NextFloat(random) < density*myData.treeChanceAtMaxDensity) {
+                        TreeInstance treeTemp = new TreeInstance();
+                        treeTemp.position = new Vector3((float)x/treeGridSize,0, (float)y/treeGridSize) + new Vector3(NextFloat(random, -maxRandomOffset,maxRandomOffset), 0, NextFloat(random,-maxRandomOffset,maxRandomOffset));
+                        treeTemp.prototypeIndex = i;
+                        var densityToScale = Mathf.Clamp(density, myData.minDensity, 1f);
+                        treeTemp.widthScale = NextFloat(random,myData.sizeScale.x,myData.sizeScale.y)*densityToScale;
+                        treeTemp.heightScale = treeTemp.widthScale;
+                        treeTemp.rotation = NextFloat(random, 0f, 2 * Mathf.PI);
+                        treeTemp.color = Color.white;
+                        treeTemp.lightmapColor = Color.white;
+                        treeInstances.Add(treeTemp);
+                    }
                 }
             }
         }
@@ -419,20 +365,32 @@ public class TerrainGenerator : MonoBehaviour
         return (float)val;
     }
 
+    [Header("Trees")]
     public int treeGridSize = 65;
-    public float treeFrequency = 0.1f;
-    public float treeThreshold = 0.6f;
-    public float treeMaxThreshold = 0.7f;
     public float treeMinDistance = 3;
     public float treeFadeToMax =5;
 
-    float GetRandomTreeChance(float x, float y, float distance) {
-        var value = GetNoise(seed.x + x * treeFrequency * scale, seed.y + y * treeFrequency * scale);
-        if (value > treeThreshold && distance > treeMinDistance) {
-            value = value - treeThreshold;
-            value /= (1 - treeThreshold);
+    public TreeData biome0Trees;
+    public TreeData biome1Trees;
+    public TreeData biome1Gems;
+
+    [Serializable]
+    public class TreeData {
+        public float treeFrequency = 0.1f;
+        public float treeThreshold = 0.6f;
+        public float treeMaxThreshold = 0.7f;
+        public float treeChanceAtMaxDensity = 0.1f;
+        public Vector2 sizeScale = new Vector2(0.5f, 1.2f);
+        public float minDensity = 0.8f;
+    }
+
+    float GetTreeDensity(TreeData data, float x, float y, float distance, float offset) {
+        var value = GetNoise(seed.x + x * data.treeFrequency * scale + offset, seed.y + y * data.treeFrequency * scale + offset);
+        if (value > data.treeThreshold && distance > treeMinDistance) {
+            value = value - data.treeThreshold;
+            value /= (1 - data.treeThreshold);
             value = Mathf.Clamp01(value);
-            if (value > treeMaxThreshold) {
+            if (value > data.treeMaxThreshold) {
                 value = 1;
             }
             var distanceMultiplier = (distance- treeMinDistance)/treeFadeToMax;
@@ -444,16 +402,25 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    public float grassFrequency0 = 1f;
-    public float grassFrequency1 = 1f;
-    public float grassThreshold0 = 0.5f;
-    public float grassThreshold1 = 0.3f;
-    public float grassOverallDensity = 0.1f;
-    public int grassMaxDensity0 = 16;
-    public int grassMaxDensity1 = 5;
-    public float minGrassDistance = 3;
+    [Header("Grass Settings")]
+    public float minGrassDistance = 0.5f;
     public float maxGrassDistance = 20;
     public float grassFadeToMaxWidth = 5;
+    public float maxPebbleDistance = 10;
+
+
+    public GrassData biome0grass0;
+    public GrassData biome0grass1;
+    public GrassData biome1grass0;
+    public GrassData biome1grass1;
+    
+    [Serializable]
+    public class GrassData {
+        public float grassFrequency = 1f;
+        public float grassThreshold = 0.5f;
+        public int grassMaxDensity = 16;
+    }
+    
     private float maxGrassIncline = 0.03f;
     private float grassInclineFadeWidth = 0.01f;
     
@@ -653,6 +620,7 @@ public class TerrainGenerator : MonoBehaviour
             done = true;
         }).Start();
         */
+        
         ThreadPool.QueueUserWorkItem(o => {
             CalculateChangedDistanceMapsAndHeightMaps(trainTerrain);
             done = true;
@@ -660,6 +628,7 @@ public class TerrainGenerator : MonoBehaviour
         
         while (!done)
             yield return null;
+        
         DoneCalculateChangedDistanceMapsAndHeightMaps(trainTerrain);
     }
 
@@ -790,9 +759,9 @@ public class TerrainGenerator : MonoBehaviour
 
         information.beingFinished = false;
         information.beingProcessed = false;
-        //stopwatch.Stop();
-        //Debug.Log($"Finished up terrain at {information.coordinates.x}, {information.coordinates.y}");
-        //Debug.Log($"Set Terrain Data Time: {stopwatch.ElapsedMilliseconds}ms");
+        /*stopwatch.Stop();
+        Debug.Log($"Finished up terrain at {information.coordinates.x}, {information.coordinates.y}");
+        Debug.Log($"Set Terrain Data Time: {stopwatch.ElapsedMilliseconds}ms");*/
     }
 
 
@@ -1007,31 +976,64 @@ public class TerrainGenerator : MonoBehaviour
         if (terrain == null || terrain.gameObject == null)
             return;
         var terrainData = terrain.terrainData;
-
+        
         terrainData.SetHeights(0, 0, Transpose(information.heightmap));
+        //StartCoroutine(UpdateTerrainHeights(terrainData, Transpose(information.heightmap), 64));
 
         terrain.terrainData = terrainData;
         terrain.GetComponent<TerrainCollider>().terrainData = terrainData;
-
+        
         // TERRAIN DETAILS DISABLED HERE
-        //information.terrain.terrainData.SetDetailLayer(0, 0, 0, Transpose(information.detailmap0));
-        //information.terrain.terrainData.SetDetailLayer(0, 0, 1, Transpose(information.detailmap1));
+        information.terrain.terrainData.SetDetailLayer(0, 0, 0, Transpose(information.detailmap0));
+        information.terrain.terrainData.SetDetailLayer(0, 0, 1, Transpose(information.detailmap1));
+        information.terrain.terrainData.SetDetailLayer(0, 0, 2, Transpose(information.pebbleMap));
 
         information.terrain.terrainData.SetTreeInstances(information.treeInstances, true);
+    }
+    IEnumerator UpdateTerrainHeights(TerrainData terrainData, float[,] heights, int batchSize)
+    {
+        int width = heights.GetLength(0);
+        int height = heights.GetLength(1);
+    
+        for (int x = 0; x < width; x += batchSize)
+        {
+            for (int y = 0; y < height; y += batchSize)
+            {
+                int xEnd = Mathf.Min(x + batchSize, width);
+                int yEnd = Mathf.Min(y + batchSize, height);
+                int xSize = xEnd - x;
+                int ySize = yEnd - y;
+            
+                float[,] batch = new float[xSize, ySize];
+            
+                for (int bx = 0; bx < xSize; bx++)
+                {
+                    for (int by = 0; by < ySize; by++)
+                    {
+                        batch[bx, by] = heights[x + bx, y + by];
+                    }
+                }
+            
+                terrainData.SetHeights(x, y, batch);
+                yield return null; // Wait until next frame
+            }
+        }
     }
 
 
     T[,] Transpose<T>(T[,] arr) {
         var size = arr.GetLength(0);
-        T[,] transposed = new T[size, size];
         
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                transposed[y, x] = arr[x, y];
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = x + 1; y < size; y++)
+            {
+                // Swap matrix[x, y] with matrix[y, x]
+                (arr[x, y], arr[y, x]) = (arr[y, x], arr[x, y]);
             }
         }
 
-        return transposed;
+        return arr;
     }
     
     public void DebugSetOtherMap(TrainTerrain information, float[,] map) {

@@ -18,20 +18,12 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     private LineRenderer lineRenderer;
 
     public Vector3 boundsSize;
-    public float myXOffset = 0;
-    public float targetXOffset = 0;
     
-    public bool isTeleporting = false;
-    public Vector2 teleportTiming = Vector2.zero;
-
-    public bool isStealing = false;
     public bool isLeaving = false;
     public bool isForwardLeave = false;
 
     public Sprite mainSprite;
     public Sprite gunSprite;
-
-    public bool isDeadly = true;
 
     public bool IsTrain() {
         return false;
@@ -50,7 +42,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         //lineRenderer = GetComponentInChildren<LineRenderer>();
     }
 
-    private DisablerHarpoonModule _disablerHarpoonModule;
     public void SetUp( float position, bool isMoving, bool _isLeft) {
         wavePosition = position;
         isWaveMoving = isMoving;
@@ -58,10 +49,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         if (isMoving) {
             currentSpeed = mySpeed;
         }
-
-        teleportTimer = 0;
-
-        _disablerHarpoonModule = GetComponentInChildren<DisablerHarpoonModule>();
 
         /*var allEnemyHealths = GetComponentsInChildren<EnemyHealth>();
 
@@ -83,35 +70,29 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         }
         
         mainSprite = primeEnemy.enemyIcon;
-        isTeleporting = primeEnemy.isTeleporting;
-        teleportTiming = primeEnemy.teleportTiming;
-        isStealing = primeEnemy.isStealing;
-        isNuker = primeEnemy.isNuker;
-        nukingTime = primeEnemy.nukingTime;
+        
+        var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
         
         var myBounds = new Bounds(transform.position, Vector3.zero);
-        var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
 
         for (int i = 0; i < allSwarmMakers.Length; i++) {
             myBounds.Encapsulate(allSwarmMakers[i].GetComponent<Collider>().bounds);
         }
 
         boundsSize = myBounds.size;
-        var mismatchedCenter = transform.position - myBounds.center;
+        /*var mismatchedCenter = transform.position - myBounds.center;
 
         for (int i = 0; i < allSwarmMakers.Length; i++) {
             allSwarmMakers[i].transform.position += mismatchedCenter;
-        }
+        }*/
 
         SetLeftyness(_isLeft);
         SetTargetPosition();
-        myXOffset = targetXOffset;
 
         for (int i = 0; i < allSwarmMakers.Length; i++) {
             EnemyFlockingController.s.AddEnemySwarmMaker(allSwarmMakers[i]);
         }
-        
-        
+
         DistanceAndEnemyRadarController.s.RegisterUnit(this);
     }
 
@@ -122,9 +103,9 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             var allSwarmMakers = GetComponentsInChildren<EnemySwarmMaker>();
 
             for (int i = 0; i < allSwarmMakers.Length; i++) {
-                var pos = allSwarmMakers[i].transform.position;
+                var pos = allSwarmMakers[i].transform.localPosition;
                 pos.x = -pos.x;
-                allSwarmMakers[i].transform.position = pos;
+                allSwarmMakers[i].transform.localPosition = pos;
             }
         }
     }
@@ -152,7 +133,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     public float targetDistanceOffset;
     public float currentDistanceOffset;
     public float targetDistChangeTimer;
-    public float teleportTimer;
 
     private bool instantLerp = false;
     private bool movePos = true;
@@ -195,12 +175,9 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             var adjustedWavePosition = wavePosition - playerPos + currentDistanceOffset;
             lookVector = PathAndTerrainGenerator.s.GetDirectionVectorOnActivePath(adjustedWavePosition);
             var left = Quaternion.AngleAxis(-90, Vector3.up) * lookVector;
-            var targetPos = PathAndTerrainGenerator.s.GetPointOnActivePath(adjustedWavePosition) + left * myXOffset;
+            var targetPos = PathAndTerrainGenerator.s.GetPointOnActivePath(adjustedWavePosition);
             var targetRot = PathAndTerrainGenerator.s.GetRotationOnActivePath(adjustedWavePosition);
 
-            Debug.DrawLine(targetPos, targetPos + left*boundsSize.x/2f);
-            Debug.DrawLine(targetPos, targetPos - left*boundsSize.x/2f);
-            
             //Debug.DrawLine(targetPos, targetPos + left * 5, Color.red, 1f);
             //Debug.DrawLine(targetPos, targetPos +Vector3.up*5, Color.green, 1f);
             if (movePos) {
@@ -225,23 +202,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             targetDistChangeTimer -= Time.deltaTime;
             if (targetDistChangeTimer <= 0 && !isLeaving) {
                 targetDistChangeTimer = Random.Range(2f, 15f);
-                if (isStealing) {
-                    targetDistChangeTimer = Random.Range(15f, 25f);
-                }
                 SetTargetPosition();
-            }
-            
-            if (isTeleporting && !isLeaving) {
-                teleportTimer -= Time.deltaTime;
-                if (teleportTimer <= 0 && distance < 10) {
-                    teleportTimer = Random.Range(teleportTiming.x, teleportTiming.y);
-                    Teleport();
-                }
-                
-                if (distance > 30 && teleportTimer <= 0 && distance < 40) {
-                    teleportTimer = Random.Range(teleportTiming.y * 0.9f, teleportTiming.y * 1.1f);
-                    Teleport();
-                }
             }
 
             var showRouteDisplay = distance > 10 && distance < 60;
@@ -255,175 +216,34 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
             } else {
                 DestroyRouteDisplay();
             }
-            
-            
 
-            
+
             if (distance > 100 && isLeaving) {
                 Debug.Log("Destroying wave due to leaving");
                 Destroy(gameObject);
             }
 
-            myXOffset = Mathf.MoveTowards(myXOffset, targetXOffset, 0.1f * Time.deltaTime * currentSpeed);
-            
         } else if(PlayStateMaster.s.isCombatFinished()) {
             if (MissionWinFinisher.s.isWon) {
                 targetSpeed = 0;
             } else {
                 targetSpeed = mySpeed;
             }
-            transform.position = Vector3.forward * (wavePosition - playerPos + currentDistanceOffset - 0.2f) + Vector3.left * myXOffset;
+            transform.position = Vector3.forward * (wavePosition - playerPos + currentDistanceOffset - 0.2f);
             wavePosition += currentSpeed * Time.deltaTime;
             currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, speedChangeDelta * Time.deltaTime);
             DestroyRouteDisplay();
         }
     }
 
-    private List<GameObject> teleportEffects = new List<GameObject>();
-    public void Teleport() {
-        targetDistChangeTimer = Random.Range(4f, 15f);
-        var cars = GetComponentsInChildren<Rigidbody>();
-        for (int i = 0; i < cars.Length; i++) {
-            var target = cars[i].transform;
-            var effect = Instantiate(LevelReferences.s.teleportStartEffect, target.transform.position,Quaternion.identity);
-            effect.transform.SetParent(target);
-            teleportEffects.Add(effect);
-        }
-        
-        Invoke(nameof(FinishTeleport), LevelReferences.s.teleportTime);
-    }
-
-    void FinishTeleport() {
-        for (int i = 0; i < teleportEffects.Count; i++) {
-            if (teleportEffects[i] != null) {
-                teleportEffects[i].transform.SetParent(null);
-            }
-        }
-
-        teleportEffects.Clear();
-
-        currentSpeed = LevelReferences.s.speed;
-        SetLeftyness(!isLeft);
-        SetTargetPosition();
-        myXOffset = targetXOffset;
-        currentDistanceOffset = targetDistanceOffset;
-        wavePosition = SpeedController.s.currentDistance;
-        instantLerp = true;
-        
-        var cars = GetComponentsInChildren<Rigidbody>();
-        for (int i = 0; i < cars.Length; i++) {
-            var target = cars[i].transform;
-            Instantiate(LevelReferences.s.teleportCompleteEffect, target.transform.position, Quaternion.identity).transform.SetParent(target);
-        }
-    }
-
     private void SetTargetPosition() {
-        if(isStealing) {
-            SetTargetPositionStealing();
-        } else if (isNuker) {
-            SetPositionNuking();
-        } else {
-            var trainLength = Train.s.GetTrainLength();
-            var halfLength = (trainLength / 2f) + DataHolder.s.cartLength*2f; // with a little padding at the end
-            halfLength -= boundsSize.z / 2f;
-            targetDistanceOffset = Random.Range(-halfLength, halfLength);
-
-            var minX = 0.7f + boundsSize.x / 2f;
-            var maxX = 3.2f - boundsSize.x / 2f;
-
-            if (maxX > minX) {
-                targetXOffset = Random.Range(minX,maxX);
-            } else {
-                targetXOffset = (3.2f + 0.7f) / 2f;
-            }
-
-            if (!isLeft)
-                targetXOffset = -targetXOffset;
-        }
+        var trainLength = Train.s.GetTrainLength();
+        var halfLength = (trainLength / 2f) + DataHolder.s.cartLength*2f; // with a little padding at the end
+        halfLength -= boundsSize.z / 2f;
+        targetDistanceOffset = Random.Range(-halfLength, halfLength);
     }
     
     
-    public bool isNuker = false;
-
-    public float nukingTime = 20;
-    public float currentNukingTime = 0;
-    
-    public Cart nukingTarget;
-    void SetPositionNuking() {
-        var carts = new List<Cart>();
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            var cart = Train.s.carts[i];
-            var legalCartType = !cart.GetHealthModule().invincible;
-            var hasDirectControl = cart.GetComponentInChildren<IDirectControllable>() != null;
-            if (!cart.isDestroyed && legalCartType && !cart.isBeingDisabled && !hasDirectControl) {
-                carts.Add(cart);
-            }
-        }
-
-
-        if (carts.Count == 0) {
-            return;
-        }
-        
-        nukingTarget = carts[Random.Range(0, carts.Count)];
-
-        targetDistanceOffset = nukingTarget.transform.position.z + Random.Range(-0.35f, 0.35f); // this works because the Train is at perfectly 0
-
-        targetXOffset = Random.Range(1.9f, 2.5f);
-        
-        GetComponentInChildren<DisablerHarpoonModule>().SetTarget(nukingTarget); // we are assuming stealers come in packs of 1
-        
-        if (!isLeft)
-            targetXOffset = -targetXOffset;
-
-        currentNukingTime = nukingTime;
-        targetDistChangeTimer = 100000;
-    }
-    
-
-    private Cart lastTarget;
-    void SetTargetPositionStealing() {
-        var carts = new List<Cart>();
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            var cart = Train.s.carts[i];
-            var legalCartType = !cart.isCargo && !cart.isMainEngine;
-            var hasDirectControl = cart.GetComponentInChildren<IDirectControllable>() != null;
-            if (!cart.isDestroyed && legalCartType && !cart.isBeingDisabled && !hasDirectControl) {
-                carts.Add(cart);
-            }
-        }
-
-
-        if (carts.Count == 0) {
-            return;
-        }
-        
-        Cart randomCart = null;
-        for (int i = 0; i < 10; i++) {
-            randomCart = carts[Random.Range(0, carts.Count)];
-
-            if(lastTarget == null)
-                break;
-            if (Vector3.Distance(randomCart.transform.position, lastTarget.transform.position) > 0.01f) {
-                break;
-            }
-        }
-
-        if (randomCart == null) {
-            return;
-        }
-
-        lastTarget = randomCart;
-
-        targetDistanceOffset = randomCart.transform.position.z + Random.Range(-0.5f, 0.5f); // this works because the Train is at perfectly 0
-
-        targetXOffset = Random.Range(0.9f, 1.7f);
-        
-        GetComponentInChildren<DisablerHarpoonModule>().SetTarget(randomCart); // we are assuming stealers come in packs of 1
-        
-        if (!isLeft)
-            targetXOffset = -targetXOffset;
-    }
     void DestroyRouteDisplay() {
         if (waveDisplay != null) {
             Destroy(waveDisplay.gameObject);
@@ -519,52 +339,12 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     }
 
 
-    private float nukingDiveMoveSpeed = 0f;
     private void Update() {
         LerpLineRenderedAlpha();
-        if (isNuker) {
-            if (_disablerHarpoonModule != null && !isNuking) {
-                if (_disablerHarpoonModule.harpoonEngaged) {
-                    currentNukingTime -= Time.deltaTime;
-
-                    if (currentNukingTime <= 1f) {
-                        EngageNuke();
-                    }
-                } else {
-                    currentNukingTime = nukingTime;
-                }
-
-                _disablerHarpoonModule.UpdateColor(1f - currentNukingTime / nukingTime);
-            }
-
-            if (isNuking) {
-                currentNukingTime -= Time.deltaTime;
-                _disablerHarpoonModule.UpdateColor(1f - currentNukingTime / nukingTime);
-
-
-                transform.position = Vector3.MoveTowards(transform.position, nukingTarget.transform.position, nukingDiveMoveSpeed * Time.deltaTime);
-                nukingDiveMoveSpeed += 2f * Time.deltaTime;
-
-                if (Vector3.Distance(transform.position, nukingTarget.transform.position) < 0.4f) {
-                    Debug.Log("Destroying due to nuking");
-                    Destroy(gameObject);
-                    var carRealPos = GetComponentInChildren<CarLikeMovementOffsetsController>();
-                    Instantiate(LevelReferences.s.bigDamagePrefab, carRealPos.transform.position, carRealPos.transform.rotation);
-                    nukingTarget.GetHealthModule().Die();
-                }
-            }
-        }
     }
 
     private bool isNuking = false;
-    void EngageNuke() {
-        isNuking = true;
-        targetDistanceOffset = nukingTarget.transform.position.z;
-        targetXOffset = 0;
-        movePos = false;
-        nukingDiveMoveSpeed = 0;
-    }
-
+    
     void LerpLineRenderedAlpha() {
         if(isLerp)
             currentAlpha = Mathf.Lerp(currentAlpha, targetAlpha, currentLerpSpeed * Time.deltaTime);
@@ -650,8 +430,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
 
     public void Leave(bool _isForwardLeave) {
         isLeaving = true;
-        isStealing = false;
-        isTeleporting = false;
         isWaveMoving = true;
         isForwardLeave = _isForwardLeave;
         

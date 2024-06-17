@@ -6,8 +6,10 @@ using UnityEngine;
 public class ParticlesDuringShop : MonoBehaviour {
     private void Start() {
         if (!PlayStateMaster.s.isCombatInProgress()) {
+            isActive = false;
             Activate();
         } else {
+            isActive = true;
             Disable();
         }
         

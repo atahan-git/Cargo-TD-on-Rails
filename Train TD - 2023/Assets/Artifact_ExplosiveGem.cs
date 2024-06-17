@@ -8,7 +8,7 @@ public class Artifact_ExplosiveGem: MonoBehaviour, IChangeCartState,IArtifactDes
     public void ChangeState(Cart target) {
         var didApply = false;
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
-            gunModule.currentAffectors.regularToRangeConversionMultiplier += 0.01f;
+            gunModule.currentAffectors.explosionRangeAdd += 0.5f;
             didApply = true;
             if (gunModule.projectileDamage > 0) {
                 currentDescription = "Adds an explosion";

@@ -33,9 +33,12 @@ public class PathSelectorController : MonoBehaviour {
 	public GameObject trainStationStart;
 	public GameObject trainStationEnd;
 
+	public GameObject radarAndTrackPicker;
+
 	private void OnEnable() {
 		trackSwitchAction.action.Enable();
 		trackSwitchAction.action.performed += TrackSwitch;
+		radarAndTrackPicker.SetActive(true);
 	}
 
     private void Start()
@@ -51,6 +54,9 @@ public class PathSelectorController : MonoBehaviour {
 	private void OnDisable() {
 		trackSwitchAction.action.Disable();
 		trackSwitchAction.action.performed -= TrackSwitch;
+		trainCrossingSpeaker.Stop();
+		if(radarAndTrackPicker!= null)
+			radarAndTrackPicker.SetActive(false);
 	}
 
 	

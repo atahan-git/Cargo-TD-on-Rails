@@ -52,8 +52,9 @@ public class WorldDifficultyController : MonoBehaviour {
         OnCombatStart();
     }
 
+    public bool overrideDifficulty = false;
     private void Update() {
-        if (PlayStateMaster.s.isCombatInProgress()) {
+        if (PlayStateMaster.s.isCombatInProgress() && !overrideDifficulty) {
             /*var curCombatTime = GetMissionTime();
             var newLevel = Mathf.FloorToInt(curCombatTime / damageIncreaseInterval);*/
             var newLevel = PathAndTerrainGenerator.s.currentPathTree.myDepth;
@@ -62,8 +63,6 @@ public class WorldDifficultyController : MonoBehaviour {
                 curLevel = newLevel;
                 CalculateDifficulty();
             }
-
-            infoText.text = $"Enemy dmg x{currentDamageMultiplier}\nEnemy hp x{currentHealthMultiplier}\nStage {curLevel}"; //  - {ExtensionMethods.FormatTime(curCombatTime)}
         }
     }
 
@@ -73,8 +72,25 @@ public class WorldDifficultyController : MonoBehaviour {
 
     [Button]
     public void CalculateDifficulty() {
-        currentDamageMultiplier = curLevel * enemyDamageIncreasePerLevel + baseDamageMultiplier;
-        currentHealthMultiplier = curLevel * enemyHealthIncreasePerLevel + baseHealthMultiplier;
+        var act = DataSaver.s.GetCurrentSave().currentRun.currentAct;
+        if (overrideDifficulty) {
+            act = 1;
+        }
+        
+        var actMultiplier = 1f;
+        var actBaseHealthMutliplierAdd = 0f;
+        var actBaseDamageMutliplierAdd = 0f;
+        if (act == 2) {
+            actMultiplier = 2.5f;
+            actBaseDamageMutliplierAdd = 1.5f;
+            actBaseHealthMutliplierAdd = 2.5f;
+        }else if (act == 3) {
+            actMultiplier = 4f;
+            actBaseDamageMutliplierAdd = 1f;
+            actBaseHealthMutliplierAdd = 5f;
+        }
+        currentDamageMultiplier = (curLevel * enemyDamageIncreasePerLevel + baseDamageMultiplier)*actMultiplier + actBaseDamageMutliplierAdd;
+        currentHealthMultiplier = (curLevel * enemyHealthIncreasePerLevel + baseHealthMultiplier)*actMultiplier + actBaseHealthMutliplierAdd;
         OnDifficultyChanged?.Invoke();
 
         //StartCoroutine(LerpLights());
@@ -82,7 +98,7 @@ public class WorldDifficultyController : MonoBehaviour {
         /*currentDamageMultiplier = 1;
         currentHealthMultiplier = 1;*/
         
-        //infoText.text = "";
+        infoText.text = $"Enemy dmg x{currentDamageMultiplier}\nEnemy hp x{currentHealthMultiplier}\nStage {curLevel}"; //  - {ExtensionMethods.FormatTime(curCombatTime)}
     }
 
 

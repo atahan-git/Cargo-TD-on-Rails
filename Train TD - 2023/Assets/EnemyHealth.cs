@@ -64,7 +64,11 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 		if ((currentHealth <= 0 || currentHealth < maxHealth*0.05f) && isAlive) {
 			Die();
 		}
-		
+
+		if (currentHealth >= 0) {
+			mySwarm.TookDamage(damage / maxHealth);
+		}
+
 		SetBuildingShaderHealth(currentHealth / maxHealth);
 	}
 
@@ -100,6 +104,8 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 	public List<GameObject> activeBurnEffects = new List<GameObject>();
 	void SetBurnEffects() {
 		var targetBurnEffectCount = (int)burnSpeed/2f;
+
+		targetBurnEffectCount = Mathf.Clamp(targetBurnEffectCount, 0,20);
 
 		if (activeBurnEffects.Count > targetBurnEffectCount) {
 			

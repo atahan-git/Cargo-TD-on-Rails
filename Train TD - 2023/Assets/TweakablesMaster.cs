@@ -44,9 +44,6 @@ public class Tweakables {
 
     public float playerAmmoUseMultiplier = 1f;
 
-    public float autoRepairTimeMultiplier = 1f;
-    public float directRepairTimeMultiplier = 1f;
-
     public Tweakables Copy() {
         var serialized = SerializationUtility.SerializeValue(this, DataFormat.Binary);
         return SerializationUtility.DeserializeValue<Tweakables>(serialized, DataFormat.Binary);

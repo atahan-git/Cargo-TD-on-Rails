@@ -819,15 +819,12 @@ MonoBehaviour:
           cartStates: []
         runGameVersion: 0.0.0.a
       showWakeUp: 0
+      instantRestart: 0
       castlesTraveled: 0
       money: 0
       tutorialProgress:
+        prologueDone: 0
         showTutorials: 0
-        firstCityTutorialDone: 0
-        initialCutscenePlayed: 0
-        cameraDone: 0
-        directControlHint: 0
-        reloadHint: 0
     - saveName: unnamed
       isActiveSave: 0
       isRealSaveFile: 0
@@ -850,15 +847,12 @@ MonoBehaviour:
           cartStates: []
         runGameVersion: 0.0.0.a
       showWakeUp: 0
+      instantRestart: 0
       castlesTraveled: 0
       money: 0
       tutorialProgress:
+        prologueDone: 0
         showTutorials: 0
-        firstCityTutorialDone: 0
-        initialCutscenePlayed: 0
-        cameraDone: 0
-        directControlHint: 0
-        reloadHint: 0
     - saveName: unnamed
       isActiveSave: 0
       isRealSaveFile: 0
@@ -881,15 +875,12 @@ MonoBehaviour:
           cartStates: []
         runGameVersion: 0.0.0.a
       showWakeUp: 0
+      instantRestart: 0
       castlesTraveled: 0
       money: 0
       tutorialProgress:
+        prologueDone: 0
         showTutorials: 0
-        firstCityTutorialDone: 0
-        initialCutscenePlayed: 0
-        cameraDone: 0
-        directControlHint: 0
-        reloadHint: 0
     loadingComplete: 0
     dontSave: 0
     saveLockTimer: 0
@@ -1256,7 +1247,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 268434231
+    m_Bits: 536869687
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1359,7 +1350,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -181.45007, y: 25}
+  m_AnchoredPosition: {x: -344.5, y: 25}
   m_SizeDelta: {x: 362.90002, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8895161276308715612

@@ -4933,7 +4933,7 @@ ParticleSystem:
   m_GameObject: {fileID: 4978886333475321717}
   serializedVersion: 8
   lengthInSec: 5
-  simulationSpeed: 1
+  simulationSpeed: 2
   stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
@@ -10084,6 +10084,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 3030598966336547067}
     m_Modifications:
     - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: simulationSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: LightsModule.enabled
       value: 0
       objectReference: {fileID: 0}
@@ -10093,11 +10097,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
-      value: 15
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2666722449267634794, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: m_Range
@@ -10188,6 +10192,10 @@ PrefabInstance:
       value: Explosion _Fire_2_LWRP
       objectReference: {fileID: 0}
     - target: {fileID: 8211207519893372180, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: simulationSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8211207519893372180, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: ShapeModule.type
       value: 2
       objectReference: {fileID: 0}
@@ -10230,6 +10238,14 @@ PrefabInstance:
     - target: {fileID: 8211207519893372180, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: ClampVelocityModule.magnitude.scalar
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8211207519893372180, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8211207519893372180, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9189196644627636578, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: m_IsActive

@@ -53,8 +53,6 @@ public class CameraController : MonoBehaviour {
     public InputActionReference moveGamepadAction;
     public InputActionReference gamepadSnapMoveForward;
     public InputActionReference gamepadSnapMoveBackward;
-    public InputActionReference rotateAction;
-    public InputActionReference rotateReverseAction;
     public InputActionReference zoomAction;
     public InputActionReference zoomGamepadAction;
     public InputActionReference rotateCameraAction;
@@ -81,8 +79,6 @@ public class CameraController : MonoBehaviour {
     {
         moveAction.action.Enable();
         moveGamepadAction.action.Enable();
-        rotateAction.action.Enable();
-        rotateReverseAction.action.Enable();
         zoomAction.action.Enable();
         rotateCameraAction.action.Enable();
         aimAction.action.Enable();
@@ -95,11 +91,6 @@ public class CameraController : MonoBehaviour {
         
         rotateSmoothAction.action.Enable();
         rotateSmoothGamepadAction.action.Enable();
-        
-        rotateAction.action.performed += RotateCamera;
-        rotateReverseAction.action.performed += RotateCameraReverse;
-        
-        
     }
 
 
@@ -107,8 +98,6 @@ public class CameraController : MonoBehaviour {
     { 
         moveAction.action.Disable();
         moveGamepadAction.action.Disable();
-        rotateAction.action.Disable();
-        rotateReverseAction.action.Disable();
         zoomAction.action.Disable();
         rotateCameraAction.action.Disable();
         aimAction.action.Disable();
@@ -121,9 +110,6 @@ public class CameraController : MonoBehaviour {
         
         rotateSmoothAction.action.Disable();
         rotateSmoothGamepadAction.action.Disable();
-        
-        rotateAction.action.performed -= RotateCamera;
-        rotateReverseAction.action.performed -= RotateCameraReverse;
     }
 
     public GameObject cameraLerpDummy;
@@ -236,6 +222,7 @@ public class CameraController : MonoBehaviour {
     void ProcessVelocityPredictionAndAimAssist() {
         var allTargets = LevelReferences.s.allTargetValues;
         var allTargetsReal = LevelReferences.s.allTargets;
+        var targetCount = LevelReferences.s.targetValuesCount;
  
         var myPosition =  mainCamera.transform.position;
         var myForward = mainCamera.transform.forward;
@@ -250,10 +237,10 @@ public class CameraController : MonoBehaviour {
         var curTargetVelocityLocation = Vector3.zero;
         bool hasTarget = false;
 
-        if(allTargets.Length != allTargetsReal.Count)
+        if(targetCount != allTargetsReal.Count)
             return;
         
-        for (int i = 0; i < allTargets.Length; i++) {
+        for (int i = 0; i < targetCount; i++) {
             if(allTargets[i].type != PossibleTarget.Type.enemy)
                 continue;
 
@@ -458,7 +445,7 @@ public class CameraController : MonoBehaviour {
         regularPos = Vector3.zero;
         regularZoom = 0;
         
-        cameraCenter.position = regularPos;
+        cameraCenter.localPosition = regularPos;
         currentZoom = regularZoom;
     }
 
@@ -488,8 +475,8 @@ public class CameraController : MonoBehaviour {
 
     public void EnterMapMode() {
         isSnappedToMap = true;
-        regularPos = cameraCenter.position;
-        cameraCenter.position = mapPos;
+        regularPos = cameraCenter.localPosition;
+        cameraCenter.localPosition = mapPos;
         regularZoom = currentZoom;
         currentZoom = mapZoom;
         regularAngle = rotationAngleTarget;
@@ -503,8 +490,8 @@ public class CameraController : MonoBehaviour {
 
     public void ExitMapMode() {
         isSnappedToMap = false;
-        mapPos = cameraCenter.position;
-        cameraCenter.position = regularPos;
+        mapPos = cameraCenter.localPosition;
+        cameraCenter.localPosition = regularPos;
         mapZoom = currentZoom;
         currentZoom = regularZoom;
         mapAngle = rotationAngleTarget;
@@ -736,18 +723,6 @@ public class CameraController : MonoBehaviour {
         cameraCenter.position += delta.normalized*1.5f;*/
     }
 
-
-
-    public void RotateCamera(InputAction.CallbackContext info) {
-        //isRight = !isRight;
-        rotationAngleTarget += clickRotAngle;
-    }
-
-    public void RotateCameraReverse(InputAction.CallbackContext info) {
-        rotationAngleTarget -= clickRotAngle;
-    }
-
-    
     public void ToggleCameraEdgeMove() {
         canEdgeMove = !canEdgeMove;
     }

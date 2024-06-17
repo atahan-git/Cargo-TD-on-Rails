@@ -5008,7 +5008,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseHealth: 1000
-  maxHealth: 1000
   maxHealthReduction: 0
   currentHealth: 1000
   damageReductionMultiplier: 1
@@ -5020,6 +5019,10 @@ MonoBehaviour:
   invincible: 0
   mainCollider: {fileID: 0}
   cartUIBar: {fileID: 0}
+  currentAffectors:
+    maxHealth: 100
+    armor: 1
+    flatArmor: 0
   myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
@@ -35075,6 +35078,7 @@ MonoBehaviour:
   damage: 300
   damageInterval: 10
   curDamageInterval: 0
+  lizardControlled: 1
 --- !u!114 &8604652415522148574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35107,7 +35111,10 @@ MonoBehaviour:
   directControlCamPositions:
   - {fileID: 3327034061576637923}
   - {fileID: 2311973318849027932}
+  currentAffectors:
+    vampiric: 0
   crystalStored: 0
+  vampiricHealthStorage: 0
 --- !u!114 &4642265588999390392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45013,7 +45020,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
   randomSeed: 0
@@ -45769,7 +45776,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -94308,7 +94315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 628575918464587269, guid: ccac8082c653b81439d260c798a9c429, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.065
+      value: 0.302
       objectReference: {fileID: 0}
     - target: {fileID: 628575918464587269, guid: ccac8082c653b81439d260c798a9c429, type: 3}
       propertyPath: m_LocalRotation.w

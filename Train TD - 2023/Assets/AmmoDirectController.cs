@@ -20,6 +20,8 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     public ModuleAmmo myModuleAmmo;
     public Transform[] directControlCamPositions;
 
+    public Transform positionsParent;
+
     public Transform dropAmmoPos;
     public Transform dropAmmoBackMostPos;
     public Transform dropAmmoFrontMostPos;
@@ -68,9 +70,14 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
 
     [Serializable]
     public class Affectors {
-        public float moveSpeedMultiplier = 1f;
-        public float moveSpeedReducer = 1f;
-        public float reloadAmountMultiplier = 1f;
+        public float power = 1;
+        public float speed = 1;
+        public float efficiency = 1;
+
+        public float uranium = 0;
+        public float fire = 0;
+
+        public bool vampiric = false;
     }
 
     public void ActivateDirectControl() {
@@ -122,11 +129,15 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     private bool ammoFull = false;
     Color ammoFullColor = Color.white;
     public void UpdateDirectControl() {
-        if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myModuleAmmo == null || myAmmoBar == null) {
+        if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myHealth.myCart.isBeingDisabled || myModuleAmmo == null || myAmmoBar == null) {
             // in case our module gets destroyed
             DirectControlMaster.s.DisableDirectControl();
             return;
         }
+
+        positionsParent.transform.localPosition = Vector3.Lerp(positionsParent.transform.localPosition, Vector3.up* (Mathf.Min(myModuleAmmo.curAmmo+18)+2)*myAmmoBar.ammoChunkHeight, 2*Time.deltaTime);
+
+        var delayMultiplier = (1f / currentAffectors.speed);
         
         if (needNewOnes) {
             if (curDelay > 0) {
@@ -142,7 +153,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                 ammoFull = neededAmmoCount <= 0;
                 ammo_full.SetActive(neededAmmoCount <= 0);
                 if(neededAmmoCount > 0){
-                    MakeNewOnes(Mathf.CeilToInt(curReloadCount*currentAffectors.reloadAmountMultiplier)); // this means sometimes we can "over-reload"
+                    MakeNewOnes(Mathf.CeilToInt(curReloadCount*currentAffectors.power)); // this means sometimes we can "over-reload"
                 }
             }
         }
@@ -175,7 +186,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                     dropWasSuccess = false;
                 }
 
-                if (dist < perfectMatchDistance) {
+                if (dropWasSuccess && (dist < perfectMatchDistance * currentAffectors.efficiency || currentAffectors.uranium > 0)) {
                     dropWasPerfect = true;
                 }
                 
@@ -186,17 +197,22 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                 }
                 curReloadCount = baseReloadCount*(curPerfectComboCount+1);
 
+                if (currentAffectors.uranium > 0 && dropWasSuccess) {
+                    
+                    myHealth.GetComponentInChildren<Artifact_UraniumGem>().ApplyDamage(myHealth.myCart, curReloadCount*5);
+                }
+
                 if (dropWasSuccess) {
                     var toReload = newOnes.Count;
                     NewOnePlacementSuccess();
                     myModuleAmmo.Reload(toReload);
 
-                    curDelay = nextBlockDelay*(currentAffectors.moveSpeedReducer/currentAffectors.moveSpeedMultiplier);
+                    curDelay = nextBlockDelay*delayMultiplier;
                     SetNewCurPos(true);
                 } else {
                     NewOnePlacementFailed();
                     
-                    curDelay = nextBlockBadDelay*(currentAffectors.moveSpeedReducer/currentAffectors.moveSpeedMultiplier);
+                    curDelay = nextBlockBadDelay*delayMultiplier;
                     SetNewCurPos(false);
                 }
 
@@ -216,15 +232,16 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
             }
         }
 
+        var speedMultiplier = currentAffectors.speed;
         if (!dropping && !needNewOnes) {
             if (moveForward) {
-                curPos += moveSpeed * Time.deltaTime * (currentAffectors.moveSpeedMultiplier/currentAffectors.moveSpeedReducer);
+                curPos += moveSpeed * Time.deltaTime * speedMultiplier;
                 if (curPos >= 1f) {
                     curPos = 1f;
                     moveForward = false;
                 }
             } else {
-                curPos -= moveSpeed * Time.deltaTime * (currentAffectors.moveSpeedMultiplier/currentAffectors.moveSpeedReducer);
+                curPos -= moveSpeed * Time.deltaTime * speedMultiplier;
                 if (curPos <= 0f) {
                     curPos = 0f;
                     moveForward = true;
@@ -242,6 +259,18 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
             ammoFullColor.a = Mathf.MoveTowards(ammoFullColor.a, 0, 10 * Time.deltaTime);
             ammo_full.GetComponent<TMP_Text>().color = ammoFullColor;
             ammo_full.gameObject.SetActive(ammoFullColor.a > 0);
+        }
+    }
+    
+    public float vampiricHealthStorage;
+    void DoAdd() {
+        if (currentAffectors.vampiric) {
+            vampiricHealthStorage += 50 * (curPerfectComboCount+1);
+
+            while (vampiricHealthStorage > ModuleHealth.repairChunkSize) {
+                GetComponentInParent<ModuleHealth>().RepairChunk();
+                vampiricHealthStorage -= ModuleHealth.repairChunkSize;
+            }
         }
     }
 
@@ -319,6 +348,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     }
     
     void NewOnePlacementSuccess() {
+        DoAdd();
         for (int i = 0; i < newOnes.Count; i++) {
             var newOne = newOnes[i];
             newOne.transform.GetChild(0).GetComponent<MeshRenderer>().material = LevelReferences.s.ammoLightActiveMat;
@@ -326,22 +356,22 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
             myAmmoBar.velocity.Add(0f);
         }
 
-        var otherAmmoModules = Train.s.GetComponentsInChildren<ModuleAmmo>();
+        /*var otherAmmoModules = Train.s.GetComponentsInChildren<ModuleAmmo>();
         for (int i = 0; i < otherAmmoModules.Length; i++) {
             if (otherAmmoModules[i] != myModuleAmmo) {
                 otherAmmoModules[i].Reload(droppingAmmoChunks.Count);
             }
-        }
+        }*/
         
         droppingAmmoChunks.Clear();
         newOnes.Clear();
 
 
-        if (healOnReload) {
+        /*if (healOnReload) {
             for (int i = 0; i < Train.s.carts.Count; i++) {
                 Train.s.carts[i].GetHealthModule().RepairChunk(curPerfectComboCount+1);
             }
-        }
+        }*/
     }
 
     public GameObject failedSpawnEffect;

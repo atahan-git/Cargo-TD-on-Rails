@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3131472773226864196}
   - component: {fileID: 9053637695810302002}
   - component: {fileID: 5370361985719847357}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Cube_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,6 +108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5355183945712540510}
   - component: {fileID: -7341780442569844779}
+  - component: {fileID: 6025634011239549283}
   m_Layer: 13
   m_Name: Terrain Tracks mesh col
   m_TagString: Untagged
@@ -148,6 +149,30 @@ MonoBehaviour:
   myPool: {fileID: 0}
   isActive: 0
   _lifetime: -1
+--- !u!205 &6025634011239549283
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9103192466670027846}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.03
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 9053637695810302002}
+    - renderer: {fileID: 4735605367353366511}
+  - screenRelativeHeight: 0.015
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 9053637695810302002}
+  m_Enabled: 1
 --- !u!1001 &6231198871945825131
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -222,6 +247,11 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 3451118302482216456, guid: a8f759a9f9651c6439005045b8ad54e3, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a8f759a9f9651c6439005045b8ad54e3, type: 3}
+--- !u!23 &4735605367353366511 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: a8f759a9f9651c6439005045b8ad54e3, type: 3}
+  m_PrefabInstance: {fileID: 6231198871945825131}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5905084570639281280 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a8f759a9f9651c6439005045b8ad54e3, type: 3}

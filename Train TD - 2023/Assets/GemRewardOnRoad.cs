@@ -4,12 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
-    private float myDistance = 0;
+    public float myDistance = 0;
 
-    public Transform snapTarget;
+    public bool autoStart = true;
+
+    public bool isBigGem = false;
 
     private void Start() {
-        SetUp(PathSelectorController.s.nextSegmentChangeDistance);
+        if (autoStart) {
+            SetUp(PathSelectorController.s.nextSegmentChangeDistance);
+        }
     }
 
     public void SetUp(float distance) {
@@ -44,8 +48,8 @@ public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
     }
 
     void GiveReward() {
-        VisualEffectsController.s.SmartInstantiate(toSpawnOnDeath, transform.position, transform.rotation, VisualEffectsController.EffectPriority.Always);
-        StopAndPick3RewardUIController.s.ShowGemReward();
+        var deathEffect = VisualEffectsController.s.SmartInstantiate(toSpawnOnDeath, transform.position, transform.rotation, VisualEffectsController.EffectPriority.Always);
+        StopAndPick3RewardUIController.s.ShowGemReward( isBigGem);
     }
 
     public Sprite radarIcon;
@@ -55,7 +59,7 @@ public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
     }
 
     public float GetDistance() {
-        return myDistance-SpeedController.s.currentDistance;
+        return myDistance;
     }
 
     public Sprite GetIcon() {

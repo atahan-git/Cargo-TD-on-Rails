@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -164,7 +165,7 @@ public class CheatsController : MonoBehaviour {
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var modHealth = Train.s.carts[i].GetComponent<ModuleHealth>();
 
-            var targetHP = modHealth.maxHealth / 4f;
+            var targetHP = modHealth.GetMaxHealth() / 4f;
 
             if (modHealth.currentHealth > targetHP) {
                 modHealth.DealDamage(modHealth.currentHealth-targetHP, null);
@@ -185,6 +186,13 @@ public class CheatsController : MonoBehaviour {
         for (int i = 0; i < enemies.Length; i++) {
             enemies[i].DealDamage(10000, null);
         }
+    }
+
+
+    [Button]
+    public void SetTargetFramerate(int target) {
+        
+        Application.targetFrameRate = target;
     }
 
 }

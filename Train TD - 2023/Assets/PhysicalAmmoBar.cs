@@ -35,8 +35,19 @@ public class PhysicalAmmoBar : MonoBehaviour {
         }
     }
 
+    public void RemoveChunk(GameObject chunk) {
+        var index = allAmmoChunks.IndexOf(chunk);
+        if (index>=0) {
+            allAmmoChunks.RemoveAt(index);
+            velocity.RemoveAt(index);
+        }
+    }
 
     public void OnAmmoTypeChange() {
+        if (ammoTypeSet) {
+            return;
+        }
+        
         if (GetComponentInParent<Cart>()) {
             ammoChunk = LevelReferences.s.ammo_player;
         } else {

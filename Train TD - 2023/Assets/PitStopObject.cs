@@ -6,10 +6,13 @@ using UnityEngine;
 public class PitStopObject : MonoBehaviour, IShowOnDistanceRadar {
 
     public float myDistance;
+
+    public GameObject cartRewardChest;
     public void SetUp(float distance) {
         myDistance = distance;
         awardGiven = false;
         DistanceAndEnemyRadarController.s.RegisterUnit(this);
+        Instantiate(cartRewardChest).GetComponent<CartRewardOnRoad>().SetUp(myDistance);
     }
 
     public bool awardGiven = false;
@@ -21,7 +24,6 @@ public class PitStopObject : MonoBehaviour, IShowOnDistanceRadar {
         if (!awardGiven) {
             if (SpeedController.s.currentDistance > myDistance) {
                 awardGiven = true;
-                StopAndPick3RewardUIController.s.ShowCartReward();
                 DistanceAndEnemyRadarController.s.RemoveUnit(this);
             }
         }
@@ -38,7 +40,7 @@ public class PitStopObject : MonoBehaviour, IShowOnDistanceRadar {
     }
 
     public float GetDistance() {
-        return myDistance - SpeedController.s.currentDistance;
+        return myDistance;
     }
 
     public Sprite GetIcon() {

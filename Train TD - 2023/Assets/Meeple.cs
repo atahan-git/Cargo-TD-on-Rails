@@ -168,7 +168,7 @@ public class Meeple : MonoBehaviour, IPlayerHoldable {
         pos = transform.parent.position + pos;
 
         var outPos = Vector3.zero;
-        if (Physics.Raycast(pos + Vector3.up * 3, Vector3.down, out RaycastHit hit, 10, LevelReferences.s.groundLayer | LevelReferences.s.buildingLayer)) {
+        if (Physics.Raycast(pos + Vector3.up * 3, Vector3.down, out RaycastHit hit, 10)) {
             outPos= hit.point;
         } else {
             outPos= pos + Vector3.up * MeepleZone.groundLevel;

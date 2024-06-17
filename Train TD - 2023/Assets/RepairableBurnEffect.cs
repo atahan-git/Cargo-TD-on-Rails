@@ -12,5 +12,7 @@ public class RepairableBurnEffect : MonoBehaviour {
         canRepair = false;
         GetComponentInChildren<Collider>().gameObject.SetActive(false);
         GetComponent<SmartDestroy>().Engage();
+
+        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.repairDoneEffect, transform.parent, transform.position, transform.rotation);
     }
 }

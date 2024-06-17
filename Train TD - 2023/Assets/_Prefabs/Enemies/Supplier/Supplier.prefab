@@ -87,7 +87,6 @@ GameObject:
   - component: {fileID: -9071780919949792927}
   - component: {fileID: 2757841068463546037}
   - component: {fileID: 2757841068463546039}
-  - component: {fileID: 593568044335744060}
   - component: {fileID: -2782966826875252555}
   - component: {fileID: -3111788393246512852}
   m_Layer: 14
@@ -135,6 +134,7 @@ MonoBehaviour:
   isStealing: 0
   isNuker: 0
   nukingTime: 20
+  isElite: 0
   myType: 0
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
@@ -165,6 +165,7 @@ MonoBehaviour:
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
+  mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
   burnSpeed: 0
@@ -188,18 +189,6 @@ MonoBehaviour:
   flying: 0
   velocity: {x: 0, y: 0, z: 0}
   enemiesTargetingMe: []
---- !u!114 &593568044335744060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2757841068463546042}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e03d89f262df7ef43ad10e8140eccbf4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &-2782966826875252555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -388,7 +377,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 16
+  rmsCount: 15
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25

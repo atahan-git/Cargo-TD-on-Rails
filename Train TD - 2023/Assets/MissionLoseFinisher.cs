@@ -29,11 +29,12 @@ public class MissionLoseFinisher : MonoBehaviour {
     public enum MissionLoseReason {
         noEngine, noMysteryCargo, abandon, everyCartExploded, endOfDemo
     }
-    
+
     public void MissionLost(MissionLoseReason loseReason) {
         if (isMissionLost)
             return;
 
+        DataSaver.s.GetCurrentSave().tutorialProgress.prologueDone = true;
         DataSaver.s.GetCurrentSave().showWakeUp = true;
         DataSaver.s.GetCurrentSave().isInARun = false;
 
@@ -56,7 +57,7 @@ public class MissionLoseFinisher : MonoBehaviour {
                 loseReasonText.text = $"You have reached the end of current state of the game! Atahan needs to add more stuff before you can continue.";
                 break;
             default:
-                loseReasonText.text = "You cannot continue for unknown reasons (the programmer needs to fill this in!.";
+                loseReasonText.text = "You cannot continue for unknown reasons (Atahan needs to fill this in!)";
                 Debug.Log($"Unknown mission lose reason {loseReason}");
                 break;
         }
@@ -79,50 +80,7 @@ public class MissionLoseFinisher : MonoBehaviour {
         }
         
         loseUI.SetActive(true);
-
-
-        /*if (DataSaver.s.GetCurrentSave().currentRun.currentAct >= 2) { // only award recovered artifacts if player beats the first boss
-            var allArtifacts = ArtifactsController.s.myArtifacts;
-
-            var eligibleComponents = new List<Artifact>();
-            var eligibleGems = new List<Artifact>();
-            for (int i = 0; i < allArtifacts.Count; i++) {
-                switch (allArtifacts[i].myRarity) {
-                    case UpgradesController.CartRarity.common:
-                    case UpgradesController.CartRarity.rare:
-                    case UpgradesController.CartRarity.epic:
-                        eligibleGems.Add(allArtifacts[i]);
-                        break;
-                    case UpgradesController.CartRarity.boss:
-                        eligibleComponents.Add(allArtifacts[i]);
-                        break;
-                    case UpgradesController.CartRarity.special:
-                        // do nothing. We never recover special artifacts
-                        break;
-                }
-            }
-
-            var eligibleCarts = new List<Cart>();
-
-            for (int i = 0; i < Train.s.carts.Count; i++) {
-                var cart = Train.s.carts[i];
-                if (!cart.isCargo && !cart.isMainEngine && !cart.isMysteriousCart && cart.myRarity != UpgradesController.CartRarity.special) {
-                    eligibleCarts.Add(cart);
-                }
-            }
-
-            if (eligibleComponents.Count > 0) {
-                DataSaver.s.GetCurrentSave().metaProgress.bonusComponent = eligibleComponents[Random.Range(0, eligibleComponents.Count)].uniqueName;
-            }
-
-            if (eligibleGems.Count > 0) {
-                DataSaver.s.GetCurrentSave().metaProgress.bonusGem = eligibleGems[Random.Range(0, eligibleGems.Count)].uniqueName;
-            }
-
-            if (eligibleCarts.Count > 0) {
-                DataSaver.s.GetCurrentSave().metaProgress.bonusCart = eligibleCarts[Random.Range(0, eligibleCarts.Count)].uniqueName;
-            }
-        }*/
+        
 
         DataSaver.s.SaveActiveGame();
         
@@ -142,6 +100,11 @@ public class MissionLoseFinisher : MonoBehaviour {
 
         FMODMusicPlayer.s.PauseMusic();
         DirectControlMaster.s.DisableDirectControl();
+
+
+        if (DataSaver.s.GetCurrentSave().instantRestart) {
+            BackToMenu();
+        }
     }
 
 

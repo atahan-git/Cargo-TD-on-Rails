@@ -15,12 +15,14 @@ public class UpgradesController : MonoBehaviour {
 	}
 
 	public RewardWithWeight[] gemRewards;
+	public RewardWithWeight[] bigGemRewards;
 	public RewardWithWeight[] cartRewards;
 	public RewardWithWeight[] componentRewards;
 	
 	public float noRewardChance = 0.2f;
 
 	public List<string> recentGemRewards = new List<string>();
+	public List<string> recentBigGemRewards = new List<string>();
 	public List<string> recentCartRewards = new List<string>();
 	public List<string> allComponentRewards = new List<string>();
 
@@ -68,12 +70,20 @@ public class UpgradesController : MonoBehaviour {
 		};
 	}
 
-	public string GetGemReward() {
-		return GetRewards(gemRewards, recentGemRewards, 2);
+	public string GetGemReward(bool isBigGem) {
+		if (isBigGem) {
+			return GetRewards(bigGemRewards, recentBigGemRewards, 2);
+		} else {
+			return GetRewards(gemRewards, recentGemRewards, 2);
+		}
 	}
 
 	public string GetCartReward() {
 		return GetRewards(cartRewards, recentCartRewards, 2);
+	}
+	
+	public string GetComponentReward() {
+		return GetRewards(componentRewards, allComponentRewards, 100);
 	}
 
 	string GetRewards(RewardWithWeight[] rewards, List<string> dupeList, int dupeAllowance) {
@@ -91,7 +101,7 @@ public class UpgradesController : MonoBehaviour {
 		
 		
 		dupeList.Add(rewardUniqueName);
-		while (dupeList.Count > 2) {
+		while (dupeList.Count > dupeAllowance) {
 			dupeList.RemoveAt(0);
 		}
 

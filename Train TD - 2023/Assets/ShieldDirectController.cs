@@ -66,7 +66,7 @@ public class ShieldDirectController : MonoBehaviour, IDirectControllable
 			rightAmount = -1;
 		}
 		
-		physicalShield.transform.localPosition += Vector3.forward*rightAmount*Time.deltaTime * (myShields.currentAffectors.shieldMoveSpeedIncreaser/myShields.currentAffectors.shieldMoveSpeedReducer);
+		physicalShield.transform.localPosition += Vector3.forward*rightAmount*Time.deltaTime * (myShields.currentAffectors.speed);
 	}
 	
 	public Color GetHighlightColor() {

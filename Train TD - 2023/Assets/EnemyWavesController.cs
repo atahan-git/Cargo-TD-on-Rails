@@ -74,7 +74,7 @@ public class EnemyWavesController : MonoBehaviour {
 	}
 
 
-	void MakeSegmentEnemy(float distance, UpgradesController.PathEnemyType enemyType) {
+	public void MakeSegmentEnemy(float distance, UpgradesController.PathEnemyType enemyType, bool forceDirection = false, bool forcedLeft = false, bool spawnMoving = false) {
 		var enemyBudget = 1;
 		var uniqueGearBudget = 0;
 		var eliteGearBudget = 0;
@@ -105,13 +105,21 @@ public class EnemyWavesController : MonoBehaviour {
 				break;
 		}
 
+		enemyBudget += DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
+		uniqueGearBudget += DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
+
 		if (enemyBudget == 6) {
 			var isLeft = Random.value < 0.5f;
-			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, 4, false,isLeft);
-			MakeEnemyBattalion(distance, 0, 0, 0, 3, false, !isLeft);
+			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, 4, spawnMoving,isLeft);
+			MakeEnemyBattalion(distance, 0, 0, 0, 3, spawnMoving, !isLeft);
 		} else {
+			var direction = Random.value < 0.5f;
+
+			if (forceDirection) {
+				direction = forcedLeft;
+			}
 			
-			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, enemyBudget, false,Random.value < 0.5f);
+			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, enemyBudget, spawnMoving,direction);
 		}
 		
 	}
@@ -205,6 +213,15 @@ public class EnemyWavesController : MonoBehaviour {
 		waves.Add(wave);
 	}
 
+	public void SpawnCustomBattalion(GameObject battalionPrefab, float distance, bool spawnMoving, bool isLeft) {
+		var playerDistance = SpeedController.s.currentDistance;
+		var wave = Instantiate(battalionPrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
+		wave.transform.SetParent(transform);
+		
+		wave.SetUp(distance, spawnMoving, isLeft);
+		waves.Add(wave);
+	}
+
 	int[] RandomIntsThatAddUpToInput(int total, int count) {
 		float[] randomFloats = new float[count];
 		var sum = 0f;
@@ -228,6 +245,7 @@ public class EnemyWavesController : MonoBehaviour {
 	}
 
 	EnemySwarmMaker GetSlot(EnemySwarmMaker[] slots) {
+		return slots[0];
 		var legalSlots = new List<EnemySwarmMaker>();
 		for (int i = 0; i < slots.Length; i++) {
 			if (slots[i].currentFill < slots[i].enemyCapacity) {

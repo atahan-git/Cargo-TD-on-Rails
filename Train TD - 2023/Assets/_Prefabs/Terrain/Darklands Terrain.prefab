@@ -48,11 +48,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
+    topLeftPosition: {x: 0, y: 0, z: 0}
     coordinates: {x: 0, y: 0}
-    topLeftPos: {x: 0, y: 0, z: 0}
-    bounds:
-      m_Center: {x: 0, y: 0, z: 0}
-      m_Extent: {x: 0, y: 0, z: 0}
     terrain: {fileID: 0}
     needReDraw: 1
     needReDistance: 0
@@ -66,6 +63,7 @@ MonoBehaviour:
     pathAndTerrainGenerator: {fileID: 0}
     needToBePurged: 0
     beingProcessed: 0
+    biome: 1
   isInitialized: 0
 --- !u!218 &2040300268567586271
 Terrain:
@@ -78,15 +76,15 @@ Terrain:
   serializedVersion: 6
   m_TerrainData: {fileID: 15600000, guid: 975c63e17f2d065449b66807063cb1ee, type: 2}
   m_TreeDistance: 100
-  m_TreeBillboardDistance: 5
+  m_TreeBillboardDistance: 35
   m_TreeCrossFadeLength: 5
   m_TreeMaximumFullLODCount: 1000
-  m_DetailObjectDistance: 5
+  m_DetailObjectDistance: 15
   m_DetailObjectDensity: 0.1
-  m_HeightmapPixelError: 10
+  m_HeightmapPixelError: 2.5
   m_SplatMapDistance: 100
   m_HeightmapMaximumLOD: 0
-  m_ShadowCastingMode: 1
+  m_ShadowCastingMode: 0
   m_DrawHeightmap: 1
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
@@ -100,7 +98,7 @@ Terrain:
   m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
   m_GroupingID: 0
   m_RenderingLayerMask: 1
-  m_AllowAutoConnect: 1
+  m_AllowAutoConnect: 0
 --- !u!154 &2040300268567586268
 TerrainCollider:
   m_ObjectHideFlags: 0

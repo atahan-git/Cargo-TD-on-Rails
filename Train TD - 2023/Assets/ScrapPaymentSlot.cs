@@ -95,9 +95,9 @@ public class ScrapPaymentSlot : MonoBehaviour {
         for (int i = 0; i < snapLocations.Length; i++) {
             snapLocations[i].allowSnap = snappable;
             var snappedScrap = snapLocations[i].GetSnappedObject();
-            if (snappedScrap != null) {
+            /*if (snappedScrap != null) {
                 snappedScrap.GetComponent<ScrapsItem>().canHold = snappable;
-            }
+            }*/
         }
     }
 
@@ -121,6 +121,21 @@ public class ScrapPaymentSlot : MonoBehaviour {
             if (snapParent.transform.localRotation == targetRotation) {
                 isMoving = false;
                 SetSnappableState();
+            }
+        } else {
+            if (!isOpen) {
+                for (int i = 0; i < allSnaps.Count; i++) {
+                    if (allSnaps[i].GetSnappedObject() != null) {
+                        if (allSnaps[i].GetSnappedObject().GetComponent<Artifact>()) {
+                            ShopStateController.s.RemoveArtifactFromShop(allSnaps[i].GetSnappedObject().GetComponent<Artifact>());
+                        }else if (allSnaps[i].GetSnappedObject().GetComponent<Cart>()) {
+                            ShopStateController.s.RemoveCartFromShop(allSnaps[i].GetSnappedObject().GetComponent<Cart>());
+                        }
+                        
+                        Destroy(allSnaps[i].GetSnappedObject().gameObject);
+                    }
+                }
+                SetOpenState(true);
             }
         }
     }

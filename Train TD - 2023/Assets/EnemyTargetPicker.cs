@@ -15,6 +15,7 @@ public class EnemyTargetPicker : MonoBehaviour
 
     private PossibleTarget mySelfTarget;
 
+    public bool dontCareAboutAvoids = false;
 
     [NonSerialized]
     public UnityEvent<Transform> OnTargetChanged = new UnityEvent<Transform>();
@@ -33,7 +34,7 @@ public class EnemyTargetPicker : MonoBehaviour
             delay -= Time.deltaTime;
             return;
         } else {
-            delay = Random.Range(1f, 3f);
+            delay = Random.Range(0.25f, 0.5f);
         }
         
         if (targeter.SearchingForTargets()) {
@@ -73,6 +74,7 @@ public class EnemyTargetPicker : MonoBehaviour
         Transform closestTarget = null;
         var allTargets = LevelReferences.s.allTargetValues;
         var allTargetsReal = LevelReferences.s.allTargets;
+        var targetCount = LevelReferences.s.targetValuesCount;
         var myId = -1;
         if (mySelfTarget != null) {
             myId = mySelfTarget.myId;
@@ -81,13 +83,13 @@ public class EnemyTargetPicker : MonoBehaviour
         //var myDamage = targeter.GetDamage();
         var myPosition = origin.position;
         
-        for (int i = 0; i < allTargets.Length; i++) {
+        for (int i = 0; i < targetCount; i++) {
             if (i != myId) {
                 var target = allTargets[i];
                 var targetActive = target.active;
                 var canTarget = target.type == PossibleTarget.Type.player;
                 var targetHasEnoughHealth = target.health > 0;
-                var targetNotAvoided = !target.avoid || !doAvoidCheck;
+                var targetNotAvoided = dontCareAboutAvoids || !target.avoid || !doAvoidCheck;
 
                 if (targetActive && canTarget && targetNotAvoided && targetHasEnoughHealth) {
                     if (IsPointInsideRange(allTargets[i].position, myPosition, range, out float distance)) {

@@ -7,8 +7,7 @@ public class RubbleFollowFloor : MonoBehaviour {
     public float constantForce = 10f;
 
     public float deathTime = 30f;
-
-
+    
     public bool isAttachedToFloor = false;
 
 
@@ -19,8 +18,9 @@ public class RubbleFollowFloor : MonoBehaviour {
     }
 
     void InitiateDeathTimer() {
-        deathTime = 30;
-        Invoke(nameof(DestroyNow), deathTime);
+        if (deathTime > 0) {
+            Invoke(nameof(DestroyNow), deathTime);
+        }
     }
 
     void StopDeathTimer() {
@@ -33,7 +33,6 @@ public class RubbleFollowFloor : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        deathTime -= Time.deltaTime;
         GetComponent<Rigidbody>().AddForce(Vector3.back * constantForce);
     }
     

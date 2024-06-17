@@ -134,7 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunSprite: {fileID: 21300000, guid: 61fbb9ba0a73f9241975aeaa982749ab, type: 3}
   isGigaGatling: 1
-  maxFireRateReduction: 0.9
+  maxFireRateReduction: 0.95
   gatlingAmount: 0
   maxGatlingAmount: 10
   bulletPrefab: {fileID: 4908573584345181807, guid: 61b627781170e6c468fb46375d804684, type: 3}
@@ -147,7 +147,7 @@ MonoBehaviour:
   inaccuracyMultiplier: 1
   gunShakeOnShoot: 1
   gunShakeMagnitude: 0.04
-  isUniqueGearNoNeedForShootCredit: 0
+  isUniqueGearNoNeedForShootCredit: 1
   shootCreditsUse: 1
   rotateTransforms:
   - transform: {fileID: 7810407359330354852}
@@ -161,11 +161,14 @@ MonoBehaviour:
   projectileSpawnOffset: 0.2
   rangeOrigin: {fileID: 0}
   waitTimer: 0
+  isShooting: 0
   target: {fileID: 0}
   gunActive: 1
   IsBarrelPointingCorrectly: 0
   gotShootCredits: 0
   isEliteNoNeedForShootCredit: 0
+  myVelocity: {x: 0, y: 0, z: 0}
+  lastPos: {x: 0, y: 0, z: 0}
 --- !u!114 &4536755725755653883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,6 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   range: 5
+  dontCareAboutAvoids: 0
+  delay: 0
 --- !u!1 &3001637107580992308
 GameObject:
   m_ObjectHideFlags: 0

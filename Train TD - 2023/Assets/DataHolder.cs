@@ -177,7 +177,7 @@ public class DataHolder : MonoBehaviour {
     public string GetMergeResult(string uniqueName1, string uniqueName2) {
         var inputStrings = new List<string>() { PreProcess(uniqueName1), PreProcess(uniqueName2) };
         inputStrings.Sort();
-
+        
         for (int i = 0; i < mergeDatas.Length; i++) {
             if (mergeDatas[i].sources[0] == inputStrings[0] && mergeDatas[i].sources[1] == inputStrings[1]) {
                 return mergeDatas[i].result;
@@ -187,6 +187,19 @@ public class DataHolder : MonoBehaviour {
         return null;
     }
 
+    public string GetUpgradeResult(string uniqueName) {
+        for (int i = 0; i < mergeDatas.Length; i++) {
+            if (mergeDatas[i].sources[0] == PreProcess(anyArtifact) && mergeDatas[i].sources[1] == PreProcess(uniqueName)) {
+                return mergeDatas[i].result;
+            }
+        }
+
+        return null;
+    }
+
+
+    public const string anyArtifact = "___AnyArtifact";
+    
     public bool IsLegalMergeResult(string result) {
         return result != null;
     }

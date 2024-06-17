@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source1: cannon
   source2: cannon
-  result: railgun
+  result: railgun_cart

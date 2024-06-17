@@ -78,7 +78,7 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	public void StartLevel(bool legitStart) {
-		PlayStateMaster.s.SetCurrentLevel(DataHolder.s.levelArchetypeScriptables[Random.Range(0,DataHolder.s.levelArchetypeScriptables.Length)].GenerateLevel());
+		PlayStateMaster.s.SetCurrentLevel(DataHolder.s.levelArchetypeScriptables[DataSaver.s.GetCurrentSave().currentRun.currentAct-1].GenerateLevel());
 		MapController.s.MakeNewMap();
 		if (PlayStateMaster.s.IsLevelSelected()) {
 			var currentLevel = PlayStateMaster.s.currentLevel;
@@ -126,9 +126,12 @@ public class ShopStateController : MonoBehaviour {
 	public void AddCartToShop(Cart cart, bool doSave = true) {
 		if(PlayStateMaster.s.isCombatInProgress())
 			return;
-		shopCarts.Add(cart);
-		if(doSave)
-			SaveShopState();
+		
+		if (!shopCarts.Contains(cart)) {
+			shopCarts.Add(cart);
+			if(doSave)
+				SaveShopState();
+		}
 	}
 
 	public void RemoveArtifactFromShop(Artifact artifact, bool doSave = true) {

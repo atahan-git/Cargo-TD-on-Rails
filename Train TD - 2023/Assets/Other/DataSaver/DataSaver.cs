@@ -216,6 +216,8 @@ public class DataSaver {
 
 		public bool showWakeUp = false;
 
+		public bool instantRestart = false;
+
 		public int castlesTraveled = 0;
 		public int money = 0;
 		
@@ -259,13 +261,8 @@ public class DataSaver {
 
 	[Serializable]
 	public class TutorialProgress {
-		public bool showTutorials;
-		public bool firstCityTutorialDone;
-		public bool initialCutscenePlayed;
-		public bool cameraDone;
-
-		public bool directControlHint;
-		public bool reloadHint;
+		public bool prologueDone = false;
+		public bool showTutorials = true;
 	}
 
 	[Serializable]

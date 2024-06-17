@@ -90,7 +90,7 @@ ParticleSystem:
   m_GameObject: {fileID: 2143993077254738053}
   serializedVersion: 8
   lengthInSec: 5
-  simulationSpeed: 1
+  simulationSpeed: 4
   stopAction: 2
   cullingMode: 0
   ringBufferMode: 0
@@ -1025,8 +1025,8 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 3
-        scalar: 30
-        minScalar: 20
+        scalar: 7
+        minScalar: 5
         maxCurve:
           serializedVersion: 2
           m_Curve:
@@ -4952,28 +4952,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3290193414898142845, guid: 4b19fa5bb3bedf24386e79dc0d6f9573, type: 3}
       propertyPath: possibleSounds.Array.size
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3290193414898142845, guid: 4b19fa5bb3bedf24386e79dc0d6f9573, type: 3}
       propertyPath: possibleSounds.Array.data[0]
       value: 
-      objectReference: {fileID: 8300000, guid: e0c70bed5c1a4443083a81de5648c7d5, type: 3}
+      objectReference: {fileID: 8300000, guid: 8dcfc8a77ba86574e870db5d8ca1405d, type: 3}
     - target: {fileID: 3290193414898142845, guid: 4b19fa5bb3bedf24386e79dc0d6f9573, type: 3}
       propertyPath: possibleSounds.Array.data[1]
       value: 
-      objectReference: {fileID: 8300000, guid: 7d3ddaa2d10a0bf43a6c3fed2776c80d, type: 3}
+      objectReference: {fileID: 8300000, guid: 633d457bf6332174ea8a901354c013a7, type: 3}
     - target: {fileID: 3290193414898142845, guid: 4b19fa5bb3bedf24386e79dc0d6f9573, type: 3}
       propertyPath: possibleSounds.Array.data[2]
       value: 
-      objectReference: {fileID: 8300000, guid: 7d3ddaa2d10a0bf43a6c3fed2776c80d, type: 3}
+      objectReference: {fileID: 8300000, guid: 160af504111789b428ca24d923a90632, type: 3}
     - target: {fileID: 3290193414898142845, guid: 4b19fa5bb3bedf24386e79dc0d6f9573, type: 3}
       propertyPath: possibleSounds.Array.data[3]
       value: 
-      objectReference: {fileID: 8300000, guid: 34fba408e7868e3449c3fcbf7dcbb358, type: 3}
+      objectReference: {fileID: 8300000, guid: ac4b004b99cc79844befc2ba287bd5c4, type: 3}
     - target: {fileID: 3290193414898142845, guid: 4b19fa5bb3bedf24386e79dc0d6f9573, type: 3}
       propertyPath: possibleSounds.Array.data[4]
       value: 
-      objectReference: {fileID: 8300000, guid: 11b6dc5cfb1d508408d764b59cfc3106, type: 3}
+      objectReference: {fileID: 8300000, guid: 1684a56b5fb934f449de424294983298, type: 3}
     - target: {fileID: 3290193414898142845, guid: 4b19fa5bb3bedf24386e79dc0d6f9573, type: 3}
       propertyPath: possibleSounds.Array.data[5]
       value: 

@@ -42,10 +42,9 @@ public class PlayStateMaster : MonoBehaviour {
         
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);
 
-        //OnShopEntered.AddListener(SpeedController.s.ResetDistance);
+        // if adding anything here make sure to add it to Prologue controller too
         OnShopEntered.AddListener(PlayStateMaster.s.ClearLevel);
         OnShopEntered.AddListener(Train.s.DrawTrainBasedOnSaveData);
-        //OnShopEntered.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         OnShopEntered.AddListener(ShopStateController.s.OpenShopUI);
         OnShopEntered.AddListener(FMODMusicPlayer.s.PlayMenuMusic);
         OnShopEntered.AddListener(MainMenu.s.ExitMainMenu);
@@ -59,6 +58,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnShopEntered.AddListener(LevelReferences.s.ClearCombatHoldableThings);
         OnShopEntered.AddListener(NewspaperController.s.CheckShowNewspaper);
         OnShopEntered.AddListener(Act2DemoEndController.s.OnEnterShop);
+        OnShopEntered.AddListener(ResetShopBuildings.s.OnShopEntered);
         
         OnCombatEntered.AddListener(WorldDifficultyController.s.OnCombatStart);
         OnCombatEntered.AddListener(FMODMusicPlayer.s.PlayCombatMusic);
@@ -180,6 +180,9 @@ public class PlayStateMaster : MonoBehaviour {
             FirstTimeTutorialController.s.RemoveAllTutorialStuff();
             _gameState = GameState.mainMenu;
             MainMenu.s.OpenProfileMenu();
+            if (!DataSaver.s.GetCurrentSave().tutorialProgress.prologueDone) {
+                PrologueController.s.EngagePrologue();
+            }
         }
     }
 
@@ -246,6 +249,17 @@ public class PlayStateMaster : MonoBehaviour {
                 OnDrawWorld?.Invoke();
             }, WorldGenerationProgress,
             () => {OnShopEntered?.Invoke();}));
+    }
+
+    public void EnterPrologue() {
+        _gameState = GameState.combat;
+        
+        StopAllCoroutines();
+        
+        StartCoroutine(Transition(true, () => {
+                PrologueController.s.DrawPrologueWorld();
+            }, WorldGenerationProgress,
+            () => {PrologueController.s.PrologueLoadComplete();}));
     }
 
     public void EnterNewAct() {

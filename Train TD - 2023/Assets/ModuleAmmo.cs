@@ -10,29 +10,40 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     [ShowInInspector]
     public float curAmmo { get; private set; }
     public int _maxAmmo = 100;
-    public float maxAmmoMultiplier = 1f;
 
     [ShowInInspector]
     public int maxAmmo {
-        get { return Mathf.RoundToInt(_maxAmmo * maxAmmoMultiplier); }
+        get { return Mathf.RoundToInt(_maxAmmo * currentAffectors.maxAmmoMultiplier); }
     }
 
     public PhysicalAmmoBar myAmmoBar;
+    public Cart myCart;
+    
+    public Affectors currentAffectors;
+
+    [Serializable]
+    public class Affectors {
+        public float maxAmmoMultiplier = 1;
+        public float reloadEfficiency = 1;
+        public float reloadOverTime = 0;
+    }
+
+    public bool dontLoseAmmoInThisDisable = false;
 
     public void ResetState() {
-        maxAmmoMultiplier = 1;
-        reloadEfficiency = 1;
+        currentAffectors = new Affectors();
 
         myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
         myAmmoBar.OnAmmoTypeChange();
         
-        ChangeMaxAmmo(0);
+        ChangeMaxAmmo();
         UpdateModuleState();
     }
 
     private void Start() {
         myAmmoBar = GetComponentInChildren<PhysicalAmmoBar>();
         myAmmoBar.OnAmmoTypeChange();
+        myCart = GetComponentInParent<Cart>();
         UpdateModuleState();
     }
 
@@ -88,10 +99,9 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
             myAmmoBar.OnReload(false, curAmmo);
     }
     
-    public void ChangeMaxAmmo(float multiplierChange) {
-        maxAmmoMultiplier += multiplierChange;
+    public void ChangeMaxAmmo() {
         if (PlayStateMaster.s.isCombatInProgress()) {
-            curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo*2);
+            //curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo*2);
         } else { 
             curAmmo = maxAmmo;
         }
@@ -121,8 +131,8 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
     public void ActivateForCombat() {
         this.enabled = true;
-        
-        Reload(-1,false);
+        if(!PlayStateMaster.s.isCombatInProgress())
+            Reload(-1,false);
         
         UpdateModuleState();
     }
@@ -135,7 +145,6 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
 
     public void Disable() {
         this.enabled = false;
-        curAmmo = 0;
         UpdateModuleState();
         if(myAmmoBar != null)
             myAmmoBar.OnUse( curAmmo);
@@ -149,10 +158,27 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     }
 
     public void CartDisabled() {
-        curAmmo = 0;
+        if (dontLoseAmmoInThisDisable) {
+            dontLoseAmmoInThisDisable = false;
+        } else {
+            curAmmo = 0;
+        }
+
         UpdateModuleState();
         if(myAmmoBar != null)
             myAmmoBar.OnUse( curAmmo);
+    }
+
+
+    public float autoReloadCharge = 0;
+    public void Update() {
+        if (!myCart.isDestroyed) {
+            autoReloadCharge += currentAffectors.reloadOverTime * Time.deltaTime;
+            if (autoReloadCharge >= 1) {
+                autoReloadCharge -= 1;
+                Reload(1);
+            }
+        }
     }
 
     public void CartEnabled() {

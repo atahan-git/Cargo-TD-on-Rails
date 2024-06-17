@@ -44,6 +44,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         return _comboList;
     }
     public bool isComboListDirty = false;
+
+    public GameObject distantMountains;
     
     private int lastId = 0;
     void AddToMyPaths(PathGenerator.TrainPath toAdd) {
@@ -124,8 +126,18 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
 
     public void SetBiomes() {
+        SetBiomes(-1);
+    }
+    public void SetBiomes(int _biomeOverride, bool repopulateTerrain = true) {
         Biome currentBiome;
-        if (biomeOverride < 0) {
+        var actualBiomeOverride = -1;
+        if (biomeOverride >= 0) {
+            actualBiomeOverride = biomeOverride;
+        }
+        if (_biomeOverride >= 0) {
+            actualBiomeOverride = _biomeOverride;
+        }
+        if (actualBiomeOverride < 0) {
             var targetBiome = DataSaver.s.GetCurrentSave().currentRun.currentAct-1;
             if (targetBiome < 0 || targetBiome > biomes.Length) {
                 Debug.LogError($"Illegal biome {targetBiome}");
@@ -135,7 +147,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             Debug.Log($"Biome set {targetBiome}");
             currentBiome = biomes[targetBiome];
         } else {
-            currentBiome = biomes[biomeOverride];
+            currentBiome = biomes[actualBiomeOverride];
         }
 
         for (int i = 0; i < biomes.Length; i++) {
@@ -144,7 +156,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         
         currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
 
-        terrainPool.RePopulateWithNewObject(currentBiome.terrainPrefab);
+        if(repopulateTerrain)
+            terrainPool.RePopulateWithNewObject(currentBiome.terrainPrefab);
     }
 
 
@@ -213,13 +226,16 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public float terrainGenerationProgress = 0;
     private bool needReflectionProbe = false;
+
+    private float regularTerrainViewRange = 75;
+    private float mapTerrainViewRange = 20;
     public void MakeStarterAreaTerrain() {
         terrainGenerationProgress = 0;
         needReflectionProbe = true;
         ClearTerrains();
         ClearAllMyPaths();
         cityStampPaths.Clear();
-        terrainViewRange = 20;
+        terrainViewRange = mapTerrainViewRange;
         
         var starterStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward, Vector3.forward, Random.Range(30,50));
         AddToMyPaths(starterStationPath);
@@ -243,6 +259,50 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         StartCoroutine(ReDrawTerrainAroundCenter(true));
     }
 
+    public static Vector3 CircleTerrainCenter() {
+        return Vector3.left * 100;
+    }
+    public void MakeCircleTerrainForPrologue() {
+        terrainGenerationProgress = 0;
+        needReflectionProbe = true;
+        ClearTerrains();
+        ClearAllMyPaths();
+        cityStampPaths.Clear();
+        terrainViewRange = regularTerrainViewRange;
+        
+        var isGoodTrack = false;
+
+        PathGenerator.TrainPath track = null;
+        var n = 0;
+        while (!isGoodTrack) {
+            track = _pathGenerator.MakeCirclePath(CircleTerrainCenter());
+            isGoodTrack = Vector3.Distance(track.points[0], track.points[^1]) < 0.1f;
+            n++;
+
+            if (n > 20) {
+                Debug.LogError("Could not make a good track in under 20 tries");
+            }
+        }
+        Debug.Log($"made good path in {n} tries");
+        AddToMyPaths(track);
+        isComboListDirty = true;
+        
+        currentPathTree = new PathTree() {
+            startPath = true,
+            myPath = track,
+        };
+        currentPathTree.leftPathTree = currentPathTree;
+        currentPathTree.rightPathTree = currentPathTree;
+
+        initialTerrainMade = false;
+
+        currentPathTreeOffset = 35;
+        
+        distantMountains.SetActive(false);
+        
+        StartCoroutine(ReDrawTerrainAroundCenter(true));
+    }
+
 
     [Button]
     public void DebugMakeCirclePath() {
@@ -252,7 +312,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         PathGenerator.TrainPath track = null;
         var n = 0;
         while (!isGoodTrack) {
-            track = _pathGenerator.MakeCirclePath(Vector3.left * 100);
+            track = _pathGenerator.MakeCirclePath(CircleTerrainCenter());
             isGoodTrack = Vector3.Distance(track.points[0], track.points[^1]) < 1;
             n++;
 
@@ -338,7 +398,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         if (activeLevel == null) {
             return;
         }
-        terrainViewRange = 50;
+        terrainViewRange = regularTerrainViewRange;
         
         PruneAndExtendPaths();
         StartCoroutine(ReDrawTerrainAroundCenter());
@@ -525,8 +585,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public Vector3 drawCenter = Vector3.zero;
     private System.Diagnostics.Stopwatch _stopwatch = new System.Diagnostics.Stopwatch();
 
-    private int terrainWidth => TerrainGenerator.terrainWidth;
-    private int currentTerrainGenCount = 0;
+    private float terrainWidth => TerrainGenerator.terrainWidth;
+    public int currentTerrainGenCount = 0;
     private int maxThreads => SystemInfo.processorCount-1;
     /*public void MakeTerrain() {
         print($"--------------------- Max Threads: {maxThreads}");
@@ -572,6 +632,10 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         //Debug.Break();
         reDrawing = true;
+        
+        for (int i = 0; i < myTerrains.Count; i++) {
+            myTerrains[i].needToBePurged = true;
+        }
 
         if (!makingTracks) {
             StartCoroutine(MakeTracksAroundCenter(instant));
@@ -588,9 +652,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         
         for (int i = 0; i < terrainCount; i++) {
             var offset = GetSpiralNumber(i);
+            if (offset.magnitude > viewCount/2f) {
+                continue;
+            }
             offset.x += Mathf.RoundToInt(diff.x / terrainWidth);
             offset.y += Mathf.RoundToInt(diff.z / terrainWidth);
             var coordinates = new Vector2Int(offset.x, offset.y);
+
             var existingTerrain = GetTerrainAtCoordinates(coordinates);
             //Debug.Log($"Trying to draw terrain at coords {coordinates.x}, {coordinates.y} with diff {diff/terrainWidth}");
             if (existingTerrain == null) {
@@ -605,14 +673,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 if (!instant) {
                     yield return null;
                     yield return null;
-                    yield return null;
                 }
+
             } else {
                 existingTerrain.needToBePurged = false;
             }
 
             terrainGenerationProgress += addition;
-
             /*while (currentTerrainGenCount > maxThreads) {
                 yield return null;
             }*/
@@ -632,6 +699,17 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         while (currentTerrainGenCount > 0) {
             yield return null;
         }
+
+        if (instant) {
+            while (terrainStabilizedTimer > 0) {
+                yield return new WaitForSeconds(0.2f);
+                terrainGenerationProgress = Mathf.Lerp(terrainGenerationProgress, 1, 0.2f);
+                if (terrainGenerationProgress >= 1) {
+                    terrainGenerationProgress -= 0.1f;
+                }
+            }
+        }
+        
         terrainGenerationProgress = 1f;
         if (needReflectionProbe) {
             transform.parent.GetComponentInChildren<ReflectionProbe>().RenderProbe();
@@ -768,12 +846,14 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public IEnumerator MakeTracksAroundCenter(bool instant = false) {
         makingTracks = true;
         var viewBound = new Bounds(drawCenter, Vector3.one * terrainViewRange*2);
+        DebugDrawBounds(viewBound, Color.magenta, 3f);
 
         var n = 0;
         for (int i = 0; i < myPaths.Count; i++) {
             var trainPath = myPaths[i];
             //print(trainPath.bounds);
             if (trainPath.bounds.Intersects(viewBound)) {
+                DebugDrawBounds(trainPath.bounds, Color.green, 3f);
                 var index = 0;
                 
                 if (!myTracks.ContainsKey(trainPath.trackObjectsId)) {
@@ -790,11 +870,13 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                         GameObject newTrack;
                         if (Vector3.Angle(direction, directionFurther) > 0) {
                             newTrack = bentTrackPool.Spawn(point, rotation);
-                            Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+direction,Color.red, 1000f);
-                            Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+directionFurther,Color.blue, 1000f);
-                            Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+Vector3.Cross(direction, directionFurther).normalized,Color.green, 1000f);
+                            //Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+direction,Color.red, 1000f);
+                            //Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+directionFurther,Color.blue, 1000f);
+                            //Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+Vector3.Cross(direction, directionFurther).normalized,Color.green, 1000f);
                             if (Vector3.Cross(direction, directionFurther).y > 0) {
                                 newTrack.transform.localScale = new Vector3(-1, 1, 1);
+                            } else {
+                                newTrack.transform.localScale = new Vector3(1, 1, 1);
                             }
                         } else {
                             newTrack = trackPool.Spawn(point, rotation);
@@ -812,6 +894,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                     }
                 }
             } else {
+                DebugDrawBounds(trainPath.bounds, Color.red, 3f);
                 if (myTracks.ContainsKey(trainPath.trackObjectsId)) {
                     var listOfTracks = myTracks[trainPath.trackObjectsId];
                     for (int j = 0; j < listOfTracks.Count; j++) {
@@ -824,6 +907,38 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         makingTracks = false;
         yield return null;
+    }
+    
+    void DebugDrawBounds(Bounds b,Color color, float delay=0)
+    {
+        return;
+        // bottom
+        var p1 = new Vector3(b.min.x, b.min.y, b.min.z);
+        var p2 = new Vector3(b.max.x, b.min.y, b.min.z);
+        var p3 = new Vector3(b.max.x, b.min.y, b.max.z);
+        var p4 = new Vector3(b.min.x, b.min.y, b.max.z);
+
+        Debug.DrawLine(p1, p2, color, delay);
+        Debug.DrawLine(p2, p3, color, delay);
+        Debug.DrawLine(p3, p4, color, delay);
+        Debug.DrawLine(p4, p1, color, delay);
+
+        // top
+        var p5 = new Vector3(b.min.x, b.max.y, b.min.z);
+        var p6 = new Vector3(b.max.x, b.max.y, b.min.z);
+        var p7 = new Vector3(b.max.x, b.max.y, b.max.z);
+        var p8 = new Vector3(b.min.x, b.max.y, b.max.z);
+
+        Debug.DrawLine(p5, p6, color, delay);
+        Debug.DrawLine(p6, p7, color, delay);
+        Debug.DrawLine(p7, p8, color, delay);
+        Debug.DrawLine(p8, p5, color, delay);
+
+        // sides
+        Debug.DrawLine(p1, p5, color, delay);
+        Debug.DrawLine(p2, p6, color, delay);
+        Debug.DrawLine(p3, p7, color, delay);
+        Debug.DrawLine(p4, p8, color, delay);
     }
 
 
@@ -952,7 +1067,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         drawCenter -= point;
         center -= point;*/
 
-        drawCenter = GetPointOnActivePath(SpeedController.s.currentDistance);
+        drawCenter = GetPointOnActivePath(0);
         //if (Mathf.Abs(drawCenter.x)  > terrainWidth/2f || Mathf.Abs(drawCenter.z)  > terrainWidth/2f) {
         if(Vector3.Distance(drawCenter, prevDrawCenter) > terrainWidth/2f) {
             prevDrawCenter = drawCenter;
@@ -961,6 +1076,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     }
 
 
+    // 0 is train center
     public Vector3 GetPointOnActivePath(float currentDistanceOffset) {
         var currentDistance = GetCurrentDistance(currentDistanceOffset);
         var correctPath = GetCorrectPath(ref currentDistance);
@@ -1041,5 +1157,16 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
 
         return travelPathTree.myPath;
+    }
+
+
+    [Button]
+    void DebugApplySunAndSkyboxEditor(int biome) {
+        var currentBiome = biomes[biome];
+        for (int i = 0; i < biomes.Length; i++) {
+            biomes[i].sun.gameObject.SetActive(false);
+        }
+        
+        currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
     }
 }
