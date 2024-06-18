@@ -278,7 +278,7 @@ MonoBehaviour:
   efficiencyMultiplier: 0
   healthMultiplier: 0
   armorMultiplier: 0
-  flatArmor: 0
+  flatArmor: 2
 --- !u!4 &8031456230174456653 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1178956488490637021, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}

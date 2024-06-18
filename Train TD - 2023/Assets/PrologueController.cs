@@ -523,6 +523,7 @@ public class PrologueController : MonoBehaviour {
         }
         yield return new WaitForSeconds(timeRemaining);
         EnemyWavesController.s.Cleanup();
+        EnemyWavesController.s.enemiesInitialized = true;
         SetBiome(0);
         
         meteorShard.SetParticlesState(false);

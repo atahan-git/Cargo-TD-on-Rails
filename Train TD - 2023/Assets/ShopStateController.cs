@@ -40,6 +40,7 @@ public class ShopStateController : MonoBehaviour {
 	
 	public void BackToMainMenu() {
 		starterUI.SetActive(false);
+		DataSaver.s.GetCurrentSave().instantRestart = false;
 		PlayStateMaster.s.OpenMainMenu();
 
 		// MusicPlayer.s.SwapMusicTracksAndPlay(false);

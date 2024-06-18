@@ -9897,7 +9897,7 @@ MonoBehaviour:
   mySprite: {fileID: 21300000, guid: 9f335c8a28298d5408d69e1af3e13e22, type: 3}
   isAttached: 0
   cantAffectOverlay: {fileID: 0}
-  canDrag: 1
+  canDrag: 0
   notAttachedDescription: It crackles with power
 --- !u!114 &345498072250168633
 MonoBehaviour:

@@ -181,7 +181,8 @@ public class PlayStateMaster : MonoBehaviour {
             _gameState = GameState.mainMenu;
             MainMenu.s.OpenProfileMenu();
             if (!DataSaver.s.GetCurrentSave().tutorialProgress.prologueDone) {
-                PrologueController.s.EngagePrologue();
+                Debug.Log("Would've started prologue automatically but that's disabled for now.");
+                //PrologueController.s.EngagePrologue();
             }
         }
     }
