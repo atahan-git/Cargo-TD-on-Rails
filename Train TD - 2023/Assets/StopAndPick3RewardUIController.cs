@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class StopAndPick3RewardUIController : MonoBehaviour {
 	public static StopAndPick3RewardUIController s;
@@ -12,12 +13,23 @@ public class StopAndPick3RewardUIController : MonoBehaviour {
 	public GameObject gemRewardPrefab;
 	public GameObject cartRewardPrefab;
 
-	public Transform instantiatePos;
+	public Vector3 GetRewardPos() {
+		return Train.s.trainFront.position + Vector3.up/2f;
+	}
+
+	public Quaternion GetRewardRotation() {
+		return Random.rotation;
+	}
+
+	public Vector3 GetUpForce() {
+		return SmitheryController.GetRandomYeetForce();
+	}
+	
 	private void Awake() {
 		s = this;
 		showRewardScreen.SetActive(false);
 	}
-	
+
 	void ClearAndShowScreen() {
 		SetTimeSlowdownState(true);
 		rewardsParent.DeleteAllChildren();
@@ -27,7 +39,10 @@ public class StopAndPick3RewardUIController : MonoBehaviour {
 	}
 
 	IEnumerator ShowScreenWithDelay() {
-		yield return new WaitForSecondsRealtime(1f);
+		if (PlayStateMaster.s.isCombatInProgress()) {
+			yield return new WaitForSecondsRealtime(1f);
+		}
+
 		showRewardScreen.SetActive(true);
 	}
 
@@ -38,28 +53,35 @@ public class StopAndPick3RewardUIController : MonoBehaviour {
 	}
 
 	public void TryShowGemReward() {
-		if (PathAndTerrainGenerator.s.currentPathTree.myDepth % 2 == 1) {
-			//ShowGemReward();
-			// the gem will spawn the reward on its own now
-		} else {
-			if (PathAndTerrainGenerator.s.currentPathTree.myDepth < MapController.s.currentMap.bossDepth) {
-				SpawnGemRewardNextIntersection();
-			}
+		if (PathAndTerrainGenerator.s.currentPathTree.myDepth < MapController.s.currentMap.bossDepth) {
+			SpawnGemRewardNextIntersection();
 		}
 	}
 
-	public void ShowGemReward() {
+	public void ShowGemReward(bool isBigGem) {
 		ClearAndShowScreen();
 		for (int i = 0; i < 3; i++) {
-			Instantiate(gemRewardPrefab, rewardsParent).GetComponent<MiniGUI_Pick3GemReward>().SetUp(UpgradesController.s.GetGemReward());
+			Instantiate(gemRewardPrefab, rewardsParent).GetComponent<MiniGUI_Pick3GemReward>().SetUp(UpgradesController.s.GetGemReward(isBigGem), isBigGem);
 		}
 	}
 
 	public GameObject gemRewardOnRoadPrefab;
+	public GameObject bigGemRewardOnRoadPrefab;
+
 	void SpawnGemRewardNextIntersection() {
-		Instantiate(gemRewardOnRoadPrefab);
+		switch (MapController.s.GetSwitchRewardAtDepth(PathAndTerrainGenerator.s.currentPathTree.myDepth+1)) {
+			case MapController.SwitchReward.empty:
+				// do nothing
+				break;
+			case MapController.SwitchReward.miniGem:
+				Instantiate(gemRewardOnRoadPrefab);
+				break;
+			case MapController.SwitchReward.bigGem:
+				Instantiate(bigGemRewardOnRoadPrefab);
+				break;
+		}
 	}
-	
+
 
 	public void ShowCartReward() {
 		ClearAndShowScreen();
@@ -77,6 +99,14 @@ public class StopAndPick3RewardUIController : MonoBehaviour {
 		HideScreen();
 	}
 
+
+	public void ShowComponentReward() {
+		ClearAndShowScreen();
+		for (int i = 0; i < 3; i++) {
+			Instantiate(gemRewardPrefab, rewardsParent).GetComponent<MiniGUI_Pick3GemReward>().SetUp(UpgradesController.s.GetComponentReward(), false);
+		}
+	}
+	
 	void SetTimeSlowdownState(bool state) {
 		TimeController.s.SetSlowDownAndPauseState(state);
 	}

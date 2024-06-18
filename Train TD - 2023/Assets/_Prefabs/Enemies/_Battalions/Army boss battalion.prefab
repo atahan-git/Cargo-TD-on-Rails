@@ -51,28 +51,17 @@ MonoBehaviour:
   wavePosition: -1
   isLeft: 0
   boundsSize: {x: 0, y: 0, z: 0}
-  myXOffset: 0
-  targetXOffset: 0
-  isTeleporting: 0
-  teleportTiming: {x: 0, y: 0}
-  isStealing: 0
   isLeaving: 0
   isForwardLeave: 0
   mainSprite: {fileID: 0}
   gunSprite: {fileID: 0}
-  isDeadly: 1
   currentSpeed: 0
   targetSpeed: 0
   distance: 0
   targetDistanceOffset: 0
   currentDistanceOffset: 0
   targetDistChangeTimer: 0
-  teleportTimer: 0
   lookVector: {x: 0, y: 0, z: 1}
-  isNuker: 0
-  nukingTime: 20
-  currentNukingTime: 0
-  nukingTarget: {fileID: 0}
   activeAlpha: 0.8
   disabledAlpha: 0.2
   onLerpSpeed: 2
@@ -107,7 +96,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1982649860747568155}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.267, y: 0, z: 0}
+  m_LocalPosition: {x: 1.797, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -129,6 +118,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5716f35fe7475df4a8a2ab97df72a4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyCapacity: 1
+  currentFill: 0
   activeEnemies: []
   unsquished: 0
   swarmCenter: {x: 0, y: 0, z: 0}

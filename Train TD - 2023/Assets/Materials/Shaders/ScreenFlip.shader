@@ -1,66 +1,51 @@
-Shader "ColorBlit"
+Shader "ScreenFlip"
 {
+      Properties
+    {
+        _MainTex ("Texture", 2D) = "white" {}
+    }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline" = "UniversalPipeline"}
+        Tags { "RenderType"="Opaque" }
         LOD 100
-        ZTest Always ZWrite Off Cull Off
+
         Pass
         {
-            Name "ColorBlitPass"
-
-            HLSLPROGRAM
+            CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "UnityCG.cginc"
 
-            struct Attributes
+            struct appdata_t
             {
-                float4 positionHCS   : POSITION;
-                float2 uv           : TEXCOORD0;
-                //UNITY_VERTEX_INPUT_INSTANCE_ID
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
             };
 
-            struct Varyings
+            struct v2f
             {
-                float4  positionCS  : SV_POSITION;
-                float2  uv          : TEXCOORD0;
-                //UNITY_VERTEX_OUTPUT_STEREO
+                float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
             };
 
-            Varyings vert(Attributes input)
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+
+            v2f vert (appdata_t v)
             {
-                Varyings output;
-                //UNITY_SETUP_INSTANCE_ID(input);
-                //UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-                // Note: The pass is setup with a mesh already in clip
-                // space, that's why, it's enough to just output vertex
-                // positions
-                output.positionCS = float4(input.positionHCS.xyz, 1.0);
-
-                #if UNITY_UV_STARTS_AT_TOP
-                output.positionCS.y *= -1;
-                #endif
-
-                float2 flippedUV = float2(1.0 - input.uv.x, input.uv.y);
-                //output.uv = input.uv;
-                output.uv = flippedUV;
-                return output;
+                v2f o;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                return o;
             }
 
-            TEXTURE2D_X(_CameraOpaqueTexture);
-            SAMPLER(sampler_CameraOpaqueTexture);
-
-            float _Intensity;
-
-            half4 frag (Varyings input) : SV_Target
+            fixed4 frag (v2f i) : SV_Target
             {
-                //UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                float4 color = SAMPLE_TEXTURE2D_X(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, input.uv);
-                return color /** float4(0, _Intensity, 0, 1)*/;
+                // Flip the horizontal coordinate
+                float2 flippedUV = float2(1.0 - i.uv.x, i.uv.y);
+                return tex2D(_MainTex, flippedUV);
             }
-            ENDHLSL
+            ENDCG
         }
     }
 }

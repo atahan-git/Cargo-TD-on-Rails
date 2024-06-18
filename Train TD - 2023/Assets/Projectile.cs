@@ -39,7 +39,7 @@ public class Projectile : MonoBehaviour {
     public bool ballistaHitEffect = false;
     
     public enum HitType {
-        Bullet, Rocket, Mortar, Laser
+        Bullet, Rocket, Mortar, Laser, Railgun
     }
 
     public HitType myHitType = HitType.Bullet;
@@ -111,8 +111,23 @@ public class Projectile : MonoBehaviour {
             case HitType.Laser:
                 HitScan();
                 break;
+            
+            case HitType.Railgun:
+                RailgunScan();
+                break;
+        }
+
+        var particles = GetComponentsInChildren<ParticleSystem>();
+        for (int i = 0; i < particles.Length; i++) {
+            if (particles[i].trails.enabled) {
+                myTrails.Add(particles[i]);
+            }
         }
     }
+
+    public List<ParticleSystem> myTrails = new List<ParticleSystem>();
+
+    public Vector3 initialVelocity;
     
     public void SetIsPlayer(bool isPlayer) {
         if (isHeal)
@@ -179,6 +194,63 @@ public class Projectile : MonoBehaviour {
             }
         }
     }
+    
+    void RailgunScan() {
+        var hitPrefab = LevelReferences.s.mortarMiniHitPrefab;
+        
+        foreach( var hit in Physics.RaycastAll(transform.position, transform.forward, hitScanRange, hitScanLayerMask)) {
+            if (!hit.rigidbody)
+                return;
+            
+            if (hit.rigidbody.gameObject != myOriginObject) {
+                var otherProjectile = hit.transform.root.GetComponent<Projectile>();
+                if (otherProjectile != null) {
+                    if (otherProjectile.isPlayerBullet == isPlayerBullet) {
+                        // we don't want projectiles from the same faction collide with each other
+                        return;
+                    }
+                }
+
+                var train = hit.transform.root.GetComponent<Train>();
+
+                if (train != null && isPlayerBullet) {
+                    // make player bullets dont hit the player
+                    return;
+                }
+
+                var enemy = hit.transform.root.GetComponent<EnemyWavesController>();
+
+                if (enemy != null && !isPlayerBullet) {
+                    // make enemy projectiles not hit the player projectiles
+                    return;
+                }
+                
+                
+                var health = hit.transform.GetComponentInParent<EnemyHealth>();
+        
+                DealDamage(health);
+                
+                var pos = hit.point;
+                var rotation = Quaternion.LookRotation(hit.normal);
+
+                VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation);
+            }
+        }
+        
+
+        var lineEndPos = transform.position + transform.forward * hitScanRange;
+
+        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit2, hitScanRange, LevelReferences.s.groundLayer)) {
+            lineEndPos = hit2.point + transform.forward*5;
+        }
+
+        var line = GetComponentInChildren<SmartTrail>();
+        if (line) {
+            line.RailgunOntoPoint(transform.position, lineEndPos);
+        }
+
+        SmartDestroySelf();
+    }
 
     private bool didHit = false;
     void DestroySelf() {
@@ -214,13 +286,13 @@ public class Projectile : MonoBehaviour {
             switch (myHitType) {
                 case HitType.Bullet:
                 case HitType.Rocket:
-                    GetComponent<Rigidbody>().MovePosition(transform.position + transform.forward * curSpeed * Time.fixedDeltaTime);
+                    GetComponent<Rigidbody>().velocity = (transform.forward * curSpeed) + (initialVelocity);
                     break;
                 case HitType.Mortar:
-                    GetComponent<Rigidbody>().MovePosition(transform.position + mortarVelocity * Time.fixedDeltaTime);
+                    /*GetComponent<Rigidbody>().MovePosition(transform.position + mortarVelocity * Time.fixedDeltaTime);
                     mortarVelocity += mortarGravity * Time.fixedDeltaTime;
 
-                    transform.rotation = Quaternion.LookRotation(mortarVelocity);
+                    transform.rotation = Quaternion.LookRotation(mortarVelocity);*/
                     break;
             }
         }
@@ -243,6 +315,13 @@ public class Projectile : MonoBehaviour {
                     particle.Stop();
                     Destroy(particle.gameObject, 1f);
                 }
+            }
+            
+            var trail = GetComponentInChildren<SmartTrail>();
+            if (trail != null) {
+                trail.StopTrailing();
+                trail.transform.SetParent(VisualEffectsController.s.transform);
+                Destroy(trail.gameObject, 5f);
             }
             
             Destroy(instantDestroy);
@@ -432,7 +511,7 @@ public class Projectile : MonoBehaviour {
             VisualEffectsController.s.SmartInstantiate(miniHitPrefab, closestPoint, Quaternion.identity);
         }
 
-        VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, Quaternion.identity);
+        VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, Quaternion.identity, VisualEffectsController.EffectPriority.Medium);
     }
 
     private void ExplosiveDamage(Collision other) {
@@ -469,7 +548,7 @@ public class Projectile : MonoBehaviour {
             DealDamage(health);
             ApplyHitForceToObject(health);
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            VisualEffectsController.s.SmartInstantiate(miniHitPrefab, closestPoint, Quaternion.identity);
+            //VisualEffectsController.s.SmartInstantiate(miniHitPrefab, closestPoint, Quaternion.identity);
         }
 
         VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, Quaternion.identity).transform.localScale = Vector3.one*effectiveRange;

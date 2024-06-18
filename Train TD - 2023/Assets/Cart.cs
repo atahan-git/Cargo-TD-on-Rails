@@ -60,8 +60,6 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
         //genericParticlesParent.DeleteAllChildren();
         GetHealthModule().ResetState();
 
-        
-        
         var modulesWithResetStates = GetComponentsInChildren<IResetState>();
         for (int i = 0; i < modulesWithResetStates.Length; i++) {
             modulesWithResetStates[i].ResetState(); 
@@ -79,7 +77,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
         Train.s.OnCartDestroyedOrRevived();
 
         if (isDisabled) {
-            GetComponent<PossibleTarget>().avoid = true;
+            GetComponent<PossibleTarget>().avoid = isDestroyed;
 
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {

@@ -33,6 +33,7 @@ public class RangeVisualizer : MonoBehaviour {
     }
 
     void SetVisualiserAllShowState(bool state) {
+        state = false;
         rangeEdgeRenderer.enabled = false; //we want to always disable this and only show when later selected
         targetingRenderer.enabled = state;
     }
@@ -110,7 +111,7 @@ public class RangeVisualizer : MonoBehaviour {
         
     }
 
-    void Update()
+    void LateUpdate()
     {
         //if (!trainBuilding.isBuilt) {
             DrawRangeEdge();
@@ -138,6 +139,7 @@ public class RangeVisualizer : MonoBehaviour {
     }
 
     public void ChangeVisualizerEdgeShowState(bool isActive) {
+        isActive = false;
         rangeEdgeRenderer.enabled = isActive;
     }
 }

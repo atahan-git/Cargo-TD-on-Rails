@@ -641,6 +641,10 @@ PrefabInstance:
       propertyPath: displayName
       value: Gatlinificator
       objectReference: {fileID: 0}
+    - target: {fileID: 9107765271094784149, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
+      propertyPath: notAttachedDescription
+      value: Gatlinifies everything
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 194f07d41bdd7c04a85c1f4c6006782f, type: 3}
 --- !u!4 &283698765719430380 stripped

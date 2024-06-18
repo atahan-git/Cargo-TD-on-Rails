@@ -13,7 +13,6 @@ public class Train : MonoBehaviour {
     public Transform trainFront;
     public Transform trainBack;
     public Transform trainMiddle;
-    public float trainFrontBackDistanceOffset = 0.199f;
     public float trainFrontBackMiddleYOffset = 0.639f;
 
     public List<Cart> carts = new List<Cart>();
@@ -43,6 +42,13 @@ public class Train : MonoBehaviour {
     public void DrawTrain(DataSaver.TrainState trainState) {
         StopAllCoroutines();
         suppressRedraw = true;
+
+        if (trainMiddle != null) {
+            if (trainMiddle.childCount > 0) {
+                trainMiddle.GetChild(0).SetParent(null);
+            }
+        }
+        
         transform.DeleteAllChildren();
         suppressRedraw = false;
         
@@ -83,6 +89,9 @@ public class Train : MonoBehaviour {
         isTrainDrawn = true;
         
         Invoke(nameof(TrainChanged),0.01f);
+        
+        //CameraController.s.transform.SetParent(trainMiddle);
+        //CameraController.s.transform.localPosition = Vector3.zero;
 
         onTrainCartsChanged?.Invoke();
     }
@@ -301,6 +310,9 @@ public class Train : MonoBehaviour {
         if(carts.Count == 0)
             return;
 
+        transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
+        transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
+        
         if (newspaperMode) {
             UpdateCartPositionsNewspaper();
             return;
@@ -345,13 +357,14 @@ public class Train : MonoBehaviour {
 
 
         var upOffset = Vector3.up * trainFrontBackMiddleYOffset;
-        
-        var frontDist = (totalLength / 2f) + trainFrontBackDistanceOffset;
+
+        var frontDist = (totalLength / 2f) + carts[0].length + 0.4f;
+        var backDist = -(totalLength / 2f) + 0.2f;
         trainFront.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(frontDist) + upOffset;
         trainFront.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(frontDist);
         
-        trainBack.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(-frontDist) + upOffset;
-        trainBack.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(-frontDist);
+        trainBack.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(backDist) + upOffset;
+        trainBack.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(backDist);
 
         trainMiddle.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
         trainMiddle.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
@@ -432,16 +445,30 @@ public class Train : MonoBehaviour {
 
         //print(health);
         if (health <= 0) {
+            if (currentAffectors.lizardTail != null) {
+                currentAffectors.lizardTail.TailUp();
+                return;
+            }
+            
             MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.everyCartExploded);
         }
     }
+    
+    public Affectors currentAffectors = new Affectors();
+    [Serializable]
+    public class Affectors {
+        public Artifact_LizardTail lizardTail = null;
+        public bool dupeGems = false;
+    }
 
 
-    private void Update() {
+    private void LateUpdate() {
         UpdateCartPositions();
     }
 
     public void UpdateThingsAffectingOtherThings() {
+        currentAffectors = new Affectors();
+        
         for (int i = 0; i < carts.Count; i++) {
             carts[i].ResetState();
         }
@@ -449,10 +476,6 @@ public class Train : MonoBehaviour {
         for (int i = 0; i < ShopStateController.s.shopCarts.Count; i++) {
             if(ShopStateController.s.shopCarts[i] != null && ShopStateController.s.shopCarts[i].gameObject != null)
                 ShopStateController.s.shopCarts[i].ResetState();
-        }
-        
-        for (int i = 0; i < carts.Count; i++) {
-            carts[i].GetHealthModule().UpdateHpState();
         }
             
         GetComponent<AmmoTracker>().RegisterAmmoProviders();
@@ -462,13 +485,18 @@ public class Train : MonoBehaviour {
         for (int i = 0; i < applyStateToEntireTrain.Length; i++) {
             applyStateToEntireTrain[i].ChangeStateToEntireTrain(carts);
         }
+
+        for (int i = 0; i < carts.Count; i++) {
+            carts[i].GetHealthModule().UpdateHpState();
+        }
         
         MaxHealthModified();
     }
 
     public void RemoveCart(Cart cart) {
         carts.Remove(cart);
-        cart.transform.SetParent(null);
+        if(cart.gameObject != null)
+            cart.transform.SetParent(null);
         
         for (int i = 0; i < carts.Count; i++) {
             carts[i].trainIndex = i;

@@ -42,13 +42,15 @@ public class SnapLocation : MonoBehaviour {
             if (snapTransform.childCount > 0) {
                 var child = GetSnappedObject();
 
-                //var isArtifact = child.GetComponent<Artifact>() != null;
 
                 var offset = Vector3.zero;
 
-                /*if (isArtifact) {
-                    offset = Vector3.up * (3 / 4f);
-                }*/
+                if (myAllowedSnaps == AllowedSnaps.cartAndRegularArtifact) {
+                    var isArtifact = child.GetComponent<Artifact>() != null;
+                    if (isArtifact) {
+                        offset = Vector3.up * (3 / 4f);
+                    }
+                }
 
                 child.transform.localPosition = Vector3.Lerp(child.transform.localPosition, offset, snapLerpSpeed * Time.deltaTime);
                 child.transform.localRotation = Quaternion.Slerp(child.transform.localRotation, Quaternion.identity, snapSlerpSpeed * Time.deltaTime);
@@ -59,6 +61,10 @@ public class SnapLocation : MonoBehaviour {
     public bool CanSnap(IPlayerHoldable thing) {
         if (!allowSnap)
             return false;
+
+        if (!isActiveAndEnabled) {
+            return false;
+        }
         
         switch (myAllowedSnaps) {
             case AllowedSnaps.nothing:
@@ -137,6 +143,22 @@ public class SnapLocation : MonoBehaviour {
 
     public void SnapObject(GameObject gameObject) {
         gameObject.transform.SetParent(snapTransform);
+    }
+
+    public void UnSnapExistingObject() {
+        var snappedObject = GetSnappedObject();
+        if (snappedObject != null) {
+            snappedObject.transform.SetParent(null);
+            snappedObject.GetComponent<Rigidbody>().isKinematic = false;
+            snappedObject.GetComponent<Rigidbody>().useGravity = true;
+            snappedObject.GetComponent<Rigidbody>().AddForce(SmitheryController.GetRandomYeetForce());
+
+            if (snappedObject.GetComponent<Artifact>() != null) {
+                ShopStateController.s.AddArtifactToShop(snappedObject.GetComponent<Artifact>());
+            } else if (snappedObject.GetComponent<Cart>() != null) {
+                ShopStateController.s.AddCartToShop(snappedObject.GetComponent<Cart>());
+            }
+        }
     }
 
     public void SetVisualizeState(bool state) {

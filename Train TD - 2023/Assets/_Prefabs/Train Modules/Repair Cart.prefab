@@ -294,7 +294,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseHealth: 500
-  maxHealth: 500
   maxHealthReduction: 0
   currentHealth: 500
   damageReductionMultiplier: 1
@@ -306,6 +305,10 @@ MonoBehaviour:
   invincible: 0
   mainCollider: {fileID: 2305579421082905276}
   cartUIBar: {fileID: 0}
+  currentAffectors:
+    maxHealth: 100
+    armor: 1
+    flatArmor: 0
   myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
@@ -592,26 +595,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   droneDockedPosition: {fileID: 5467044659569103530}
+  dockOffset: 0
   drone: {fileID: 8806251016524702177}
   droneScript: {fileID: 0}
   beingDirectControlled: 0
+  droneCannotActivateOverride: 0
+  droneActive: 1
   target: {fileID: 0}
   gettingNewTarget: 0
   health: {fileID: 0}
   myHealth: {fileID: 0}
-  selfRepairPerSecond: 1
+  selfRepairSpeed: 1
   carryDraggableMode: 0
   caughtCarry: 0
   catchPosition: {x: 0, y: 0, z: 0}
-  autoRepairTime: 2
+  autoRepairTime: 5
   currentAffectors:
-    directControlRepairTime: 0.7
-    repairRateIncreaseMultiplier: 1
-    repairRateIncreaseReducer: 1
-    droneAccelerationReducer: 1
-    droneAccelerationIncreaser: 1
-    megaRepair: 0
-    droneSizeMultiplier: 1
+    power: 1
+    speed: 1
+    efficiency: 1
+    uranium: 0
+    fire: 0
+    iron: 0
+  maxVelocity: 10
   curVelocity: 0
 --- !u!114 &4864364574015463401
 MonoBehaviour:
@@ -627,7 +633,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myHealth: {fileID: 0}
   currentFlightVelocity: {x: 0, y: 0, z: 0}
-  repairTime: 1
+  baseRepairTime: 0.7
+  AffectedRepairTime: 1
   curRepairTime: 0
 --- !u!1 &3594827500495483965
 GameObject:

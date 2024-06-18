@@ -92,8 +92,8 @@ public class TeleporterHarpoonsModule : MonoBehaviour
 
     public GameObject harpoonShootEffect;
     public GameObject harpoonDisengageEffect;
-    public GameObject teleportingCartStartEffect;
-    public GameObject teleportingCartEndEffect;
+    public GameObject teleportingCartStartEffect =>LevelReferences.s.teleportingCartStartEffect;
+    public GameObject teleportingCartEndEffect=>LevelReferences.s.teleportingCartEndEffect;
     IEnumerator RopeLerp(HarpoonData myHarpoon) {
         myHarpoon.ropeEndPoint.SetParent(null);
         var ropeTarget = myHarpoon.harpoonObject.transform.GetChild(0);
@@ -148,13 +148,13 @@ public class TeleporterHarpoonsModule : MonoBehaviour
     private void Update() {
         var distance = Mathf.Abs(myWave.GetDistance() - SpeedController.s.currentDistance);
 
-        myWave.teleportTimer = 1000; // we dont want to use the same teleporter logic as the rest of the enemies
+        //myWave.teleportTimer = 1000; // we dont want to use the same teleporter logic as the rest of the enemies
         myWave.targetDistChangeTimer = 1000;
 
         // if we get too far away we still want to teleport closer
         if (carTeleportTimer <= 0 && distance > 30 && distance < 40) {
             carTeleportTimer = carTeleportingState;
-            myWave.Teleport();
+            //myWave.Teleport();
         }
 
         if (carTeleportTimer > 0) {
@@ -238,7 +238,7 @@ public class TeleporterHarpoonsModule : MonoBehaviour
         // then wait a bit then teleport our car and begin again.
         if (carTeleportTimer < 0) {
             carTeleportTimer = carTeleportingState;
-            myWave.Teleport();
+            //myWave.Teleport();
 
             // finish up
             waitTimer = waitState;

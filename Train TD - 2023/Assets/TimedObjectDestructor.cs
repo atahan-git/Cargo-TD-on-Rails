@@ -10,7 +10,8 @@ public class TimedObjectDestructor : MonoBehaviour {
     public bool onlyDisable = false;
 
     private void Start() {
-        Invoke("DestroyNow", timeout);
+        if(timeout > 0)
+            Invoke("DestroyNow", timeout);
     }
 
 

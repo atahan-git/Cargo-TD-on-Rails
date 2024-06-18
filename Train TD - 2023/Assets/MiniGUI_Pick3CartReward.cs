@@ -38,13 +38,16 @@ public class MiniGUI_Pick3CartReward : MonoBehaviour
 
 
     public void Select() {
-        var cart = Instantiate(DataHolder.s.GetCart(myItemUniqueName).gameObject, StopAndPick3RewardUIController.s.instantiatePos).GetComponent<Cart>();
+        var cart = Instantiate(DataHolder.s.GetCart(myItemUniqueName).gameObject, StopAndPick3RewardUIController.s.GetRewardPos(), StopAndPick3RewardUIController.s.GetRewardRotation()).GetComponent<Cart>();
         Train.ApplyStateToCart(cart, new DataSaver.TrainState.CartState(){uniqueName = myItemUniqueName});
-        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.goodItemSpawnEffectPrefab, StopAndPick3RewardUIController.s.instantiatePos);
+        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.goodItemSpawnEffectPrefab,  StopAndPick3RewardUIController.s.GetRewardPos(), StopAndPick3RewardUIController.s.GetRewardRotation());
 
         
-        cart.GetComponent<Rigidbody>().isKinematic = false;
-        cart.GetComponent<Rigidbody>().useGravity = true;
+        var rg = cart.GetComponent<Rigidbody>();
+        rg.isKinematic = false;
+        rg.useGravity = true;
+        rg.velocity = Train.s.GetTrainForward() * LevelReferences.s.speed;
+        rg.AddForce(StopAndPick3RewardUIController.s.GetUpForce());
         
         LevelReferences.s.combatHoldableThings.Add(cart);
         

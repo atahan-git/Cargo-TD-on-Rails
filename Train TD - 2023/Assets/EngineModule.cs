@@ -30,6 +30,10 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
       if (CheatsController.s.trainDoesntLoseSteam) {
          return 0;
       }
+
+      if (!lizardControlled && !isDestroyed) {
+         return 0;
+      }
       
       var pressureDropIndex = 0;
       for (int i = 0; i < pressureDropRanges.Length; i++) {
@@ -81,6 +85,8 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public float damage = 100;
    public float damageInterval = 2;
    public float curDamageInterval = 0;
+
+   public bool lizardControlled = true;
    
    private void OnEnable() {
       SpeedController.s.AddEngine(this);
@@ -111,7 +117,7 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
             if (curDamageInterval <= 0) {
                var health = GetComponentInParent<ModuleHealth>();
                health.SelfDamage(damage*damageAmount);
-               VisualEffectsController.s.SmartInstantiate(LevelReferences.s.mediumDamagePrefab, health.GetUITransform());
+               VisualEffectsController.s.SmartInstantiate(LevelReferences.s.mediumDamagePrefab, health.GetUITransform().position, Quaternion.identity);
                curDamageInterval = damageInterval;
             }
 
@@ -138,6 +144,7 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public void ResetState() {
       extraSpeedAdd = 0;
       extraEnginePower = 0;
+      lizardControlled = true;
    }
 
    public void CartDisabled() {

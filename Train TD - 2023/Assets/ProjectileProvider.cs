@@ -13,7 +13,7 @@ public class ProjectileProvider : MonoBehaviour {
 
  
     public enum ProjectileTypes {
-	    regularBullet = 0, cannonBullet = 1, rocket = 2, lazer = 3, flamethrowerFire = 4, steamFire = 5, scrapBullet = 6, stickyBullet = 7,
+	    regularBullet = 0, cannonBullet = 1, rocket = 2, lazer = 3, flamethrowerFire = 4, steamFire = 5, scrapBullet = 6, stickyBullet = 7, shotgunPellets = 8,
     }
 
     

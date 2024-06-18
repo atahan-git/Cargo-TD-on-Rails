@@ -32,7 +32,7 @@ public class Act2DemoEndCrystalCollision : MonoBehaviour, IShowOnDistanceRadar {
 	}
 
 	public float GetDistance() {
-		return myDistance-SpeedController.s.currentDistance;
+		return myDistance;
 	}
 
 	public Sprite GetIcon() {

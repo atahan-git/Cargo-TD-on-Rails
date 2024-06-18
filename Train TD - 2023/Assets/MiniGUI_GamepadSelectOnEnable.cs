@@ -15,7 +15,7 @@ public class MiniGUI_GamepadSelectOnEnable : MonoBehaviour {
 			AddToGamepadButtons();
 		} else {
 			SettingsController.autoSelectDelay = 2;
-			Invoke(nameof(AddToGamepadButtons),0.05f);
+			Invoke(nameof(AddToGamepadButtons),0.1f);
 		}
 	}
 

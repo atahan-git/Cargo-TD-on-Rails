@@ -89,6 +89,11 @@ public class MainMenu : MonoBehaviour {
         
         /*if(SettingsController.GamepadMode())
             EventSystem.current.SetSelectedGameObject(ProfileUI.GetComponentInChildren<Button>().gameObject);*/
+
+        if (DataSaver.s.GetCurrentSave().instantRestart) {
+            DataSaver.s.GetCurrentSave().instantRestart = false;
+            StartGame();
+        }
     }
 
     public void StartGame() {

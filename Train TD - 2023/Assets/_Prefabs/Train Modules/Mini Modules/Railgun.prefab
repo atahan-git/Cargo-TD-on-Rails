@@ -461,6 +461,7 @@ Transform:
   m_Children:
   - {fileID: 5891583664425259778}
   - {fileID: 3794319236452520140}
+  - {fileID: 5553941267143250934}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -477,8 +478,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Shoot big bulet.
-  info: Railgun
+    text: Shoots a projectile that penetrates all enemies
+  info: Railgun Cart
 --- !u!114 &2934280374143819819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,18 +487,53 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3146471024428373951}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   gunUniqueName: railgun
-  gunSprite: {fileID: 21300000, guid: 8445c017ed6362a4381194ee86773dda, type: 3}
+  gunSprite: {fileID: 21300000, guid: a8c3594a448aa6a4fb74ae48df3f2056, type: 3}
   isGigaGatling: 0
-  gatlinificator: 0
   maxFireRateReduction: 0.875
   gatlingAmount: 0
   maxGatlingAmount: 8
+  useProviderBullet: 0
+  myType: 1
+  bulletPrefab: {fileID: 4908573584345181807, guid: 0f72bfe2f8895fd499049f35214ce1ee, type: 3}
+  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3819cb1af423dac46ba712e39e10fbc5, type: 3}
+  fireDelay: 5.5
+  fireBarrageCount: 1
+  fireBarrageDelay: 0.1
+  projectileDamage: 100
+  burnDamage: 0
+  dontGetAffectByMultipliers: 0
+  currentAffectors:
+    power: 1
+    speed: 1
+    efficiency: 1
+    flatDamageAdd: 0
+    flatAmmoCostAdd: 0
+    uranium: 0
+    fire: 0
+    explosionRangeAdd: 0
+    vampiric: 0
+    gatlinificator: 0
+    isHoming: 0
+    ancientDisabled: 0
+    lizardOverride: 0
+  isLockOn: 0
+  rotateSpeed: 5
+  isHeal: 0
+  directControlShakeMultiplier: 1
+  mortarRotation: 0
+  isHitScan: 0
+  ammoPerBarrage: 3
+  explosionRange: 0
+  inaccuracyMultiplier: 0
+  gunShakeOnShoot: 1
+  gunShakeMagnitudeMultiplier: 1
+  gunRotateUpOnShoot: 2
   rotateTransforms:
   - transform: {fileID: 6833337181557650807}
   rotateTransform:
@@ -507,65 +543,33 @@ MonoBehaviour:
     centerBarrelEnd: {fileID: 0}
   barrelEndTransforms:
   - transform: {fileID: 114461445968113465}
-  projectileSpawnOffset: 0.2
-  useProviderBullet: 1
-  myType: 1
-  bulletPrefab: {fileID: 4908573584345181807, guid: 3690077eb46ed4b488ed16149aedc46c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3819cb1af423dac46ba712e39e10fbc5, type: 3}
-  target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 8
-  fireBarrageCount: 1
-  fireBarrageDelay: 0.1
-  fireRateMultiplier: 1
-  fireRateDivider: 1
-  projectileDamage: 100
-  burnDamage: 0
-  bonusBurnDamage: 0
-  damageMultiplier: 1
-  sniperDamageMultiplier: 1
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  burnDamageMultiplier: 1
-  regularToBurnDamageConversionMultiplier: 0
-  regularToRangeConversionMultiplier: 0
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 0
-  rotateSpeed: 10
-  gunActive: 1
-  IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 2
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 1
-  rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 1
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
+  projectileSpawnOffset: 0
+  rangeOrigin: {fileID: 5553941267143250934}
+  startShootingEvent:
     m_PersistentCalls:
       m_Calls: []
   stopShootingEvent:
     m_PersistentCalls:
       m_Calls: []
-  gatlingCountZeroEvent:
+  onBulletFiredEvent:
     m_PersistentCalls:
       m_Calls: []
-  gunShakeOnShoot: 1
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
-  isHoming: 0
   waitTimer: 0
-  explosionRange: 0
-  explosionRangeBoost: 0
-  inaccuracyMultiplier: 1
-  gotShootCredits: 0
-  needShootCredits: 0
-  shootCreditsUse: 1
+  isActuallyShooting: 0
+  target: {fileID: 0}
+  targetLastTrackTime: 0
+  beingDirectControlled: 0
+  gunActive: 1
+  IsBarrelPointingCorrectly: 0
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
+  myVelocity: {x: 0, y: 0, z: 0}
+  lastPos: {x: 0, y: 0, z: 0}
+  lastRot: {x: 0, y: 0, z: 0, w: 0}
+  hadTargetLastFrame: 0
+  vampiricHealthStorage: 0
+  gunCannotActivateOverride: 0
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -578,10 +582,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 526befd34cf41534caf067b5a62ca473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpan: 75
+  rotationSpan: 180
   range: 6
   myPossibleTargets: 00000000
   canHitFlying: 0
+  checkForHealing: 0
+  delay: 0
 --- !u!1 &3453434237798867949
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,7 +817,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6285531141936119896}
-  m_LocalRotation: {x: 6.1232336e-17, y: -0, z: 6.1232336e-17, w: -1}
+  m_LocalRotation: {x: -0.19936797, y: 0, z: 0, w: 0.97992474}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_ConstrainProportionsScale: 0
@@ -823,7 +829,38 @@ Transform:
   - {fileID: 466214269392350081}
   m_Father: {fileID: 5891583664425259778}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -23, y: 0, z: 0}
+--- !u!1 &8649860465512869140
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5553941267143250934}
+  m_Layer: 11
+  m_Name: Railgun default look rotation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5553941267143250934
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8649860465512869140}
+  m_LocalRotation: {x: -0.19936797, y: 0, z: 0, w: 0.97992474}
+  m_LocalPosition: {x: 0, y: 0.000000014901161, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3248300930352555991}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: -23, y: 0, z: 0}
 --- !u!1 &8793443569306674401
 GameObject:
   m_ObjectHideFlags: 0

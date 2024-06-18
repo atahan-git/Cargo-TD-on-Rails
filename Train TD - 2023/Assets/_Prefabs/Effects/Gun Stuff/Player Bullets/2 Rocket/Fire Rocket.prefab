@@ -14624,7 +14624,6 @@ MonoBehaviour:
   isTargetSeeking: 1
   seekStrength: 440
   isPlayerBullet: 0
-  canPenetrateArmor: 0
   target: {fileID: 0}
   source: {fileID: 0}
   ballistaHitEffect: 0
@@ -14632,10 +14631,11 @@ MonoBehaviour:
   mortarGravity: {x: 0, y: -9.81, z: 0}
   mortarAimPredictTime: 1
   mortarVelocityMultiplier: 0.5
-  myLine: {fileID: 0}
   isPhaseThrough: 0
   isSlowDamage: 0
   isHoming: 0
+  myTrails: []
+  initialVelocity: {x: 0, y: 0, z: 0}
   hitScanLayerMask:
     serializedVersion: 2
     m_Bits: 0

@@ -15,6 +15,15 @@ public class MapController : MonoBehaviour {
 		trainTargetPos = train.transform.position;
 	}
 
+	private void OnEnable() {
+		allMap.SetActive(true);
+	}
+
+	private void OnDisable() {
+		if(allMap != null)
+			allMap.SetActive(false);
+	}
+
 	[Serializable]
 	public class MapState {
 		public List<SegmentState> leftSegments = new List<SegmentState>();
@@ -30,7 +39,13 @@ public class MapController : MonoBehaviour {
 		public float length;
 		public UpgradesController.PathEnemyType enemyType;
 	}
+	
+	public enum SwitchReward {
+		empty, miniGem, bigGem
+	}
 
+	public GameObject allMap;
+	
 	public Transform trackPiecesParent;
 	public GameObject emptyTrack;
 	public GameObject goodThingTrack;
@@ -130,16 +145,34 @@ public class MapController : MonoBehaviour {
 			    Instantiate(emptyTrack, trackPiecesParent).GetComponent<MiniGUI_TrackPath>().SetUpTrack(currentMap.leftSegments[i].length * minimapLengthMultiplier);
 		    }
 
-		    if (i % 2 == 1) {
+		    /*if (i % 2 == 1) {
 			    Instantiate(switchWithGemPiece, trackPiecesParent);
 		    } else {
 			    Instantiate(switchPiece, trackPiecesParent);
+		    }*/
+
+		    switch (GetSwitchRewardAtDepth(i)) {
+			    case SwitchReward.empty:
+				    Instantiate(switchPiece, trackPiecesParent);
+				    break;
+			    case SwitchReward.miniGem:
+				case SwitchReward.bigGem:
+				    Instantiate(switchWithGemPiece, trackPiecesParent);
+				    break;
 		    }
 	    }
 
 	    Instantiate(bossTrack, trackPiecesParent).GetComponent<MiniGUI_TrackPath>().SetUpTrack(currentMap.bossSegment.length*minimapLengthMultiplier);
 
 	    trackPiecesParent.GetComponent<ManualHorizontalLayoutGroup>().isDirty = true;
+    }
+
+    SwitchReward[] depthRewards = new []{SwitchReward.empty, SwitchReward.miniGem, SwitchReward.miniGem, SwitchReward.bigGem}; // then repeats 
+    public SwitchReward GetSwitchRewardAtDepth(int depth) {
+	    if (depth > currentMap.bossDepth) {
+		    return SwitchReward.empty;
+	    }
+	    return depthRewards[depth % depthRewards.Length];
     }
 
 

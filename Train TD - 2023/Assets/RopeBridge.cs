@@ -28,7 +28,7 @@ public class RopeBridge : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update() {
+    void LateUpdate() {
         ropeSegLen = Vector3.Distance(StartPoint.position, EndPoint.position) / segmentLength;
         this.DrawRope();
     }
@@ -64,13 +64,13 @@ public class RopeBridge : MonoBehaviour
     {
         //Constrant to First Point 
         RopeSegment firstSegment = this.ropeSegments[0];
-        firstSegment.posNow = this.StartPoint.position;
+        firstSegment.posNow = transform.InverseTransformPoint(this.StartPoint.position);
         this.ropeSegments[0] = firstSegment;
 
 
         //Constrant to Second Point 
         RopeSegment endSegment = this.ropeSegments[this.ropeSegments.Count - 1];
-        endSegment.posNow = this.EndPoint.position;
+        endSegment.posNow = transform.InverseTransformPoint(this.EndPoint.position);
         this.ropeSegments[this.ropeSegments.Count - 1] = endSegment;
 
         for (int i = 0; i < this.segmentLength - 1; i++)
@@ -104,7 +104,7 @@ public class RopeBridge : MonoBehaviour
         Vector3[] ropePositions = new Vector3[this.segmentLength];
         for (int i = 0; i < this.segmentLength; i++)
         {
-            ropePositions[i] = this.ropeSegments[i].posNow;
+            ropePositions[i] = transform.TransformPoint(this.ropeSegments[i].posNow);
         }
 
         lineRenderer.SetPositions(ropePositions);

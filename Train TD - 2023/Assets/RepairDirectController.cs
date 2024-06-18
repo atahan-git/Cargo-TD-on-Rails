@@ -34,7 +34,8 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 	public Vector3 currentFlightVelocity;
 
-	public float repairTime = 1f;
+	public float baseRepairTime = 0.7f;
+	public float AffectedRepairTime = 1f;
 	public float curRepairTime;
 	
 	public void ActivateDirectControl() {
@@ -94,7 +95,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	public LayerMask repairLookMask => DirectControlMaster.s.repairLookMask;
 
 	public void UpdateDirectControl() {
-		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myRepairController == null || myRepairController.carryDraggableMode) {
+		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed|| myHealth.myCart.isBeingDisabled  || myRepairController == null || myRepairController.carryDraggableMode) {
 			// in case our module gets destroyed
 			DirectControlMaster.s.DisableDirectControl();
 			return;
@@ -119,7 +120,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		
 		validRepairImage.gameObject.SetActive(validTarget);
 
-
 		var drone = myRepairController.drone;
 		
 		drone.transform.rotation = Quaternion.Lerp(drone.transform.rotation, camTrans.transform.rotation, 20*Time.unscaledDeltaTime);
@@ -134,9 +134,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		
 		drone.GetComponent<RepairDrone>().SetCurrentlyRepairingState(doRepair && validTarget);
 
-		repairTime = myRepairController.currentAffectors.directControlRepairTime * TweakablesMaster.s.myTweakables.directRepairTimeMultiplier;
-		if (repairTime < 0) {
-			repairTime = 0.1f;
+		AffectedRepairTime = baseRepairTime / myRepairController.GetEfficiency();
+		if (AffectedRepairTime <= 0.1f) {
+			AffectedRepairTime = 0.1f;
 		}
 
 		if (validTarget) {
@@ -144,7 +144,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 				curRepairTime += Time.deltaTime;
 
 				
-				if (curRepairTime > repairTime) {
+				if (curRepairTime > AffectedRepairTime) {
 					myRepairController.DoRepair(repairTarget.GetComponentInParent<ModuleHealth>(), repairTarget);
 					
 					repairingSlider.value = 1;
@@ -159,10 +159,10 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			curRepairTime -= Time.deltaTime;
 		}
 
-		curRepairTime = Mathf.Clamp(curRepairTime, 0, repairTime);
+		curRepairTime = Mathf.Clamp(curRepairTime, 0, AffectedRepairTime);
 
 		//print($"{validTarget} - {doRepair} - {curRepairTime}");
-		repairingSlider.value = Mathf.Clamp01(curRepairTime / repairTime);
+		repairingSlider.value = Mathf.Clamp01(curRepairTime / AffectedRepairTime);
 	}
 	
 	public Vector3 CalculateFlightVelocity(Vector3 previousVelocity, Vector3 wasdInput, Transform cameraTransform, bool upInput, bool downInput)
@@ -181,7 +181,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		Vector3 moveDirection = (forward * wasdInput.y + right * wasdInput.x).normalized;
 
 		// Calculate the horizontal velocity change
-		Vector3 horizontalVelocityChange = moveDirection  * 10 * myRepairController.currentAffectors.droneAccelerationIncreaser/myRepairController.currentAffectors.droneAccelerationReducer;
+		Vector3 horizontalVelocityChange = moveDirection  * 10;
 
 		// Calculate the vertical velocity change
 		float verticalVelocityChange = ((upInput ? 1:0) - (downInput ? 1:0)) * 10;
@@ -198,10 +198,15 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		verticalSpeed = Mathf.Lerp(verticalSpeed, 0, 8 * Time.deltaTime);
 
 		// Clamp velocity to maximum flight speed
-		previousVelocity = Vector3.ClampMagnitude(previousVelocity, 1.5f);
+		previousVelocity = Vector3.ClampMagnitude(previousVelocity, 1.5f * myRepairController.GetSpeed());
 		verticalSpeed = Mathf.Clamp(verticalSpeed, -1, 1);
 
 		previousVelocity.y = verticalSpeed;
+
+		var vectorToTrainCenter = Train.s.trainMiddle.position - myRepairController.drone.transform.position;
+		if (vectorToTrainCenter.magnitude > 20) {
+			previousVelocity = vectorToTrainCenter.normalized * 1.5f;
+		}
 
 		return previousVelocity;
 	}

@@ -48,6 +48,7 @@ public class MissionWinFinisher : MonoBehaviour {
 		PlayerWorldInteractionController.s.canSelect = false;
 		//EnemyHealth.winSelfDestruct?.Invoke(false);
 
+		DataSaver.s.GetCurrentSave().tutorialProgress.prologueDone = true;
 
 
 		for (int i = 0; i < scriptsToDisable.Length; i++) {

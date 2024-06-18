@@ -38,7 +38,6 @@ public class EnemyTargetAssigner : MonoBehaviour {
 
 
     public void TryToGetShootCredits(EnemyGunModule requester) {
-
         if (shootCredit > 0) {
             requester.gotShootCredits = true;
             shootCredit -= requester.shootCreditsUse;

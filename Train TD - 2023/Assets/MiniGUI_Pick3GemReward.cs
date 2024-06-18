@@ -11,8 +11,10 @@ public class MiniGUI_Pick3GemReward : MonoBehaviour {
     public Image icon;
 
     public string myItemUniqueName;
-    public void SetUp(string uniqueName) {
+    public bool isBigGem = false;
+    public void SetUp(string uniqueName, bool _isBigGem) {
         myItemUniqueName = uniqueName;
+        isBigGem = _isBigGem;
 
         var artifact = DataHolder.s.GetArtifact(myItemUniqueName);
         title.text = artifact.displayName;
@@ -22,15 +24,25 @@ public class MiniGUI_Pick3GemReward : MonoBehaviour {
 
 
     public void Select() {
-       var gem = Instantiate(DataHolder.s.GetArtifact(myItemUniqueName).gameObject, StopAndPick3RewardUIController.s.instantiatePos);
-       VisualEffectsController.s.SmartInstantiate(LevelReferences.s.goodItemSpawnEffectPrefab, StopAndPick3RewardUIController.s.instantiatePos);
-       
-       
-       gem.GetComponent<Rigidbody>().isKinematic = false;
-       gem.GetComponent<Rigidbody>().useGravity = true;
-       
-       LevelReferences.s.combatHoldableThings.Add(gem.GetComponent<Artifact>());
+       MakeGem();
+
+       if (isBigGem && Train.s.currentAffectors.dupeGems) {
+	       MakeGem();
+       }
        
        StopAndPick3RewardUIController.s.RewardWasPicked();
+    }
+
+    void MakeGem() {
+	    var gem = Instantiate(DataHolder.s.GetArtifact(myItemUniqueName).gameObject, StopAndPick3RewardUIController.s.GetRewardPos(), StopAndPick3RewardUIController.s.GetRewardRotation());
+	    Instantiate(LevelReferences.s.goodItemSpawnEffectPrefab, StopAndPick3RewardUIController.s.GetRewardPos(), StopAndPick3RewardUIController.s.GetRewardRotation());
+       
+	    var rg = gem.GetComponent<Rigidbody>();
+	    rg.isKinematic = false;
+	    rg.useGravity = true;
+	    rg.velocity = Train.s.GetTrainForward() * LevelReferences.s.speed;
+	    rg.AddForce(StopAndPick3RewardUIController.s.GetUpForce());
+       
+	    LevelReferences.s.combatHoldableThings.Add(gem.GetComponent<Artifact>());
     }
 }

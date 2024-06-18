@@ -317,9 +317,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Two flame throwers. Shoots flames that burns any enemy it touches. Good
-      against single big enemies or group of smaller enemies, but has limited range.
-  info: Flame Throwers
+    text: Shoots flames that burns any enemy it touches.
+  info: Flame Thrower Cart
 --- !u!114 &2934280374143819819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,7 +326,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3146471024428373951}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
@@ -335,10 +334,45 @@ MonoBehaviour:
   gunUniqueName: flames
   gunSprite: {fileID: 21300000, guid: aba5e5016c4c6674eb61199621225374, type: 3}
   isGigaGatling: 0
-  gatlinificator: 0
   maxFireRateReduction: 0.875
   gatlingAmount: 0
   maxGatlingAmount: 8
+  useProviderBullet: 1
+  myType: 4
+  bulletPrefab: {fileID: 4908573584345181807, guid: 60e9917752faf82449ada92968bd6508, type: 3}
+  muzzleFlashPrefab: {fileID: 980176138545819842, guid: d13b04fe45d03c24fab8310c0c9450fb, type: 3}
+  fireDelay: 0.5
+  fireBarrageCount: 5
+  fireBarrageDelay: 0.1
+  projectileDamage: 0
+  burnDamage: 0.4
+  dontGetAffectByMultipliers: 0
+  currentAffectors:
+    power: 1
+    speed: 1
+    efficiency: 1
+    flatDamageAdd: 0
+    flatAmmoCostAdd: 0
+    uranium: 0
+    fire: 0
+    explosionRangeAdd: 0
+    vampiric: 0
+    gatlinificator: 0
+    isHoming: 0
+    ancientDisabled: 0
+    lizardOverride: 0
+  isLockOn: 0
+  rotateSpeed: 10
+  isHeal: 0
+  directControlShakeMultiplier: 1
+  mortarRotation: 0
+  isHitScan: 0
+  ammoPerBarrage: 0.5
+  explosionRange: 0
+  inaccuracyMultiplier: 1
+  gunShakeOnShoot: 0
+  gunShakeMagnitudeMultiplier: 1
+  gunRotateUpOnShoot: 2
   rotateTransforms: []
   rotateTransform:
     anchor: {fileID: 2927632870427338314}
@@ -348,64 +382,32 @@ MonoBehaviour:
   barrelEndTransforms:
   - transform: {fileID: 7349334640653558217}
   projectileSpawnOffset: 0
-  useProviderBullet: 1
-  myType: 4
-  bulletPrefab: {fileID: 4908573584345181807, guid: 60e9917752faf82449ada92968bd6508, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: d13b04fe45d03c24fab8310c0c9450fb, type: 3}
-  target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 0.5
-  fireBarrageCount: 5
-  fireBarrageDelay: 0.1
-  fireRateMultiplier: 1
-  fireRateDivider: 1
-  projectileDamage: 0
-  burnDamage: 0.3
-  bonusBurnDamage: 0
-  damageMultiplier: 1
-  sniperDamageMultiplier: 1
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  burnDamageMultiplier: 1
-  regularToBurnDamageConversionMultiplier: 0
-  regularToRangeConversionMultiplier: 0
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 1
-  isHeal: 0
-  rotateSpeed: 10
-  gunActive: 1
-  IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 0.5
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 1
   rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 1
-  needWarmUp: 0
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
+  startShootingEvent:
     m_PersistentCalls:
       m_Calls: []
   stopShootingEvent:
     m_PersistentCalls:
       m_Calls: []
-  gatlingCountZeroEvent:
+  onBulletFiredEvent:
     m_PersistentCalls:
       m_Calls: []
-  gunShakeOnShoot: 0
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
-  isHoming: 0
   waitTimer: 0
-  explosionRange: 0
-  explosionRangeBoost: 0
-  inaccuracyMultiplier: 1
-  gotShootCredits: 0
-  needShootCredits: 0
-  shootCreditsUse: 0.5
+  isActuallyShooting: 0
+  target: {fileID: 0}
+  targetLastTrackTime: 0
+  beingDirectControlled: 0
+  gunActive: 1
+  IsBarrelPointingCorrectly: 0
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
+  myVelocity: {x: 0, y: 0, z: 0}
+  lastPos: {x: 0, y: 0, z: 0}
+  lastRot: {x: 0, y: 0, z: 0, w: 0}
+  hadTargetLastFrame: 0
+  vampiricHealthStorage: 0
+  gunCannotActivateOverride: 0
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,6 +424,8 @@ MonoBehaviour:
   range: 3.5
   myPossibleTargets: 00000000
   canHitFlying: 0
+  checkForHealing: 0
+  delay: 0
 --- !u!1 &4532553131099445004
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class EngineDirectController : MonoBehaviour, IDirectControllable {
+public class EngineDirectController : MonoBehaviour, IDirectControllable, IResetState {
 
     
     private void Start() {
@@ -22,6 +23,13 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
     
     public SpeedometerScript pressureGauge =>DirectControlMaster.s.pressureGauge;
     public TMP_Text pressureInfo =>DirectControlMaster.s.pressureInfo;
+    
+    public Affectors currentAffectors;
+
+    [Serializable]
+    public class Affectors {
+        public bool vampiric = false;
+    }
     
     public void ActivateDirectControl() {
         var currentCameraForward = MainCameraReference.s.cam.transform.forward;
@@ -49,7 +57,7 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
 
     public int crystalStored = 0;
     public void UpdateDirectControl() {
-        if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myEngineModule == null) {
+        if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myHealth.myCart.isBeingDisabled  || myEngineModule == null) {
             // in case our module gets destroyed
             DirectControlMaster.s.DisableDirectControl();
             return;
@@ -71,6 +79,8 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
                 myEngineModule.currentPressure +=  0.05f;
                 crystalStored -= 1;
             }
+
+            DoAdd();
         }
         
         pressureGauge.SetSpeed(myEngineModule.currentPressure);
@@ -79,6 +89,18 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
                             $"Self Damage: {myEngineModule.GetSelfDamageMultiplier()}";
 
 
+    }
+
+    public float vampiricHealthStorage;
+    void DoAdd() {
+        if (currentAffectors.vampiric) {
+            vampiricHealthStorage += 15;
+
+            if (vampiricHealthStorage > ModuleHealth.repairChunkSize) {
+                GetComponentInParent<ModuleHealth>().RepairChunk();
+                vampiricHealthStorage -= ModuleHealth.repairChunkSize;
+            }
+        }
     }
 
 
@@ -97,5 +119,9 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable {
 
     public GamepadControlsHelper.PossibleActions GetActionKey() {
         return GamepadControlsHelper.PossibleActions.engineControl;
+    }
+
+    public void ResetState() {
+        currentAffectors = new Affectors();
     }
 }

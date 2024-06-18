@@ -302,7 +302,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2870468164549859303}
-  - component: {fileID: 1182013964502472724}
   - component: {fileID: 9107765271094784149}
   - component: {fileID: 8337465227500983344}
   - component: {fileID: 5500142556484884695}
@@ -330,24 +329,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1182013964502472724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4686409788300702077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdcee4c1407ad384fb315781e1889bf9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myTooltip:
-    text: Unset Artifact
-  curTimer: 0
-  showingTooltip: 0
-  doubleTimer: 0
-  enableOnHover: {fileID: 0}
 --- !u!114 &9107765271094784149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,10 +349,9 @@ MonoBehaviour:
   attachedToCartPart: {fileID: 4456789783911681847}
   mySprite: {fileID: 21300000, guid: 56889afb4476afb4eaf40711e10300c4, type: 3}
   isAttached: 0
-  range: 0
-  ApplyToTarget:
-    m_PersistentCalls:
-      m_Calls: []
+  cantAffectOverlay: {fileID: 0}
+  canDrag: 1
+  notAttachedDescription: 
 --- !u!54 &8337465227500983344
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -380,7 +360,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4686409788300702077}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 10
   m_Drag: 1
   m_AngularDrag: 1
   m_UseGravity: 0

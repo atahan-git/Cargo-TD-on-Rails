@@ -3,6 +3,9 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using Random = UnityEngine.Random;
 
 //It is common to create a class to contain all of your
@@ -156,4 +159,35 @@ public static class ExtensionMethods {
         return new Quaternion(Result.x, Result.y, Result.z, Result.w);
     }
 
+    public static ScriptableRendererFeature SetRenderFeatureState<T>(bool state) where T : ScriptableRendererFeature {
+        
+        var asset = GraphicsSettings.currentRenderPipeline;
+        var type = asset.GetType();
+        var propertyInfo = type.GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
+ 
+        if (propertyInfo == null)
+        {
+            return null;
+        }
+ 
+        var scriptableRenderData = (ScriptableRendererData[])propertyInfo.GetValue(asset);
+ 
+        if (scriptableRenderData != null && scriptableRenderData.Length > 0)
+        {
+            foreach (var renderData in scriptableRenderData)
+            {
+                foreach (var rendererFeature in renderData.rendererFeatures)
+                {
+                    if (rendererFeature is T)
+                    {
+                        rendererFeature.SetActive(state);
+ 
+                        return rendererFeature;
+                    }
+                }
+            }
+        }
+ 
+        return null;
+    }
 }

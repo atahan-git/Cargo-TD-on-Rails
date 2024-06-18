@@ -26,7 +26,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
     
     public IPlayerHoldable currentSelectedThing;
-    MonoBehaviour currentSelectedThingMonoBehaviour => currentSelectedThing as MonoBehaviour;
+    public MonoBehaviour currentSelectedThingMonoBehaviour => currentSelectedThing as MonoBehaviour;
     public Vector3 dragBasePos;
 
     
@@ -120,12 +120,13 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public Color shieldColor = Color.cyan;
     public Color enemyColor = Color.white;
     public Color meepleColor = Color.white;
+    public Color clickableColor = Color.white;
     public Color mergeItemColor = Color.yellow;
 
     bool CanInteract() {
         return !(!canSelect || Pauser.s.isPaused || PlayStateMaster.s.isLoading || DirectControlMaster.s.directControlLock > 0);
     }
-    private void Update() {
+    private void LateUpdate() {
         if (!CanInteract()) {
             return;
         }
@@ -275,7 +276,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     bool CanDragArtifact(Artifact artifact) {
-        return true; 
+        return artifact.canDrag; 
     }
     bool CanDragCart(Cart cart) {
         return (!cart.isMainEngine && cart.canPlayerDrag) && (PlayStateMaster.s.isShopOrEndGame() || !cart.IsAttachedToTrain());
@@ -283,6 +284,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     
     bool CanDragMeeple(Meeple meeple) {
         return PlayStateMaster.s.isShopOrEndGame();
+    }
+    
+    bool CanDragGenericClickable(IGenericClickable genericClickable) {
+        return true;
     }
 
     bool CanDragThing(IPlayerHoldable thing) {
@@ -296,6 +301,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             return CanDragMeeple(meeple);
         } else if (thing is ScrapsItem scrapsItem) {
             return scrapsItem.CanDrag();
+        }else if (thing is IGenericClickable genericClickable) {
+            return CanDragGenericClickable(genericClickable);
         }
         
         return false;
@@ -315,6 +322,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         isComboDragStarted = true;
         
         isSnapping = false;
+        
+        currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
 
         displacedArtifact = null;
         currentSnapLoc = null;
@@ -341,9 +350,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         
         if(!(currentSelectedThing is Meeple))
             currentSelectedThingMonoBehaviour.transform.SetParent(null);
-        
-        
-        currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
 
         if (currentSelectedThing is Artifact) {
             for (int i = 0; i < Train.s.carts.Count; i++) {
@@ -352,6 +358,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     artifactSlot.SetVisualizeState(artifactSlot.CanSnap(currentSelectedThing));
                 }
             }
+        }
+
+        if (currentSelectedThing is IGenericClickable genericClickable) {
+            genericClickable.Click();
+            Deselect();
         }
 
         if (LevelReferences.s.combatHoldableThings.Contains(currentSelectedThing)) {
@@ -415,8 +426,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             UpdateOnTrainCartSnapLocationPositions();
         
         var newSnapLoc = GetSnapLoc();
-
         var shouldSnap = newSnapLoc != null;
+        
         if (isSnapping != shouldSnap || newSnapLoc != currentSnapLoc) {
             isSnapping = shouldSnap;
 
@@ -439,6 +450,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
                 if (currentSelectedThing is Artifact selectedArtifact) {
                     selectedArtifact.DetachFromCart();
+                    selectedArtifact.GetComponent<Rigidbody>().isKinematic = true;
+                    selectedArtifact.GetComponent<Rigidbody>().useGravity = false;
                 }
                 
                 
@@ -453,7 +466,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (isSnapping) {
             if (newSnapLoc != currentSnapLoc) {
                 if (currentSelectedThing is Cart selectedCart) {
-                    Assert.IsTrue(newSnapLoc.IsEmpty()); // you should not be able to snap carts to full locations in the current implementation
+                    if (!newSnapLoc.IsEmpty()) {
+                        newSnapLoc.UnSnapExistingObject();
+                    }
                     
                     newSnapLoc.SnapObject(selectedCart.gameObject);
                     var onTrainIndex = onTrainCartSnapLocations.IndexOf(newSnapLoc);
@@ -501,16 +516,23 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                         displacedArtifact = null;
                     }
                     selectedArtifact.DetachFromCart();
+                    selectedArtifact.GetComponent<Rigidbody>().isKinematic = true;
+                    selectedArtifact.GetComponent<Rigidbody>().useGravity = false;
                     
                     if (newSnapLoc.IsEmpty()) {
                         selectedArtifact.AttachToSnapLoc(newSnapLoc);
                     } else {
                         displacedArtifact = newSnapLoc.GetSnappedObject().GetComponent<Artifact>();
-                        displacedArtifactSource = newSnapLoc;
-                        displacedArtifact.DetachFromCart();
-                        if (sourceSnapLocation != null) {
-                            displacedArtifact.AttachToSnapLoc(sourceSnapLocation);
-                        } 
+                        if (displacedArtifact != null) {
+                            displacedArtifactSource = newSnapLoc;
+                            displacedArtifact.DetachFromCart();
+                            if (sourceSnapLocation != null) {
+                                displacedArtifact.AttachToSnapLoc(sourceSnapLocation);
+                            }
+                        } else {
+                            newSnapLoc.UnSnapExistingObject();
+                        }
+                        
                         
                         selectedArtifact.AttachToSnapLoc(newSnapLoc);
                     }
@@ -605,14 +627,27 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 rigid.useGravity = false;
             }
 
+            if (PlayStateMaster.s.isCombatInProgress()) {
+                if (displacedArtifact != null) {
+                    if (!LevelReferences.s.combatHoldableThings.Contains(displacedArtifact)) {
+                        LevelReferences.s.combatHoldableThings.Add(displacedArtifact);
+                    }
+                }
+            }
+
         }else{
             currentSelectedThing.SetHoldingState(false);
             
             if (currentSelectedThing.GetHoldingDrone() != null) {
                 currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
                 currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
-            }   
-            
+            }
+
+            if (PlayStateMaster.s.isCombatInProgress()) {
+                if (currentSelectedThingMonoBehaviour is Cart || currentSelectedThingMonoBehaviour is Artifact)
+                    LevelReferences.s.combatHoldableThings.Add(currentSelectedThing);
+            }
+
             var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
 
             if (PlayStateMaster.s.isCombatInProgress()) {
@@ -687,11 +722,17 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
+    public bool screenIsFlipped = false;
     public Ray GetRay() {
         if (SettingsController.GamepadMode()) {
             return GamepadControlsHelper.s.GetRay();
         } else {
-            return LevelReferences.s.mainCam.ScreenPointToRay(GetMousePos());
+            var pos = GetMousePos();
+            if (screenIsFlipped) {
+                pos.x = Screen.width - pos.x;
+            }
+
+            return LevelReferences.s.mainCam.ScreenPointToRay(pos);
         }
     }
 
@@ -736,15 +777,22 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
+    private IPlayerHoldable GetFirstPriorityItem() {
+        if (SettingsController.GamepadMode()) {
+            return GetFirstPriorityItemGamePad();
+        } else {
+            return GetFirstPriorityItemMouse();
+        }
+    }
 
     private RaycastHit[] hitCastArray = new RaycastHit[32];
     private IPlayerHoldable[] hitSeenObjects = new IPlayerHoldable[32];
-    private IPlayerHoldable GetFirstPriorityItem() {
-        // selection preference: artifact -> cart -> enemy -> meeple -> merge item
+    private IPlayerHoldable GetFirstPriorityItemGamePad() {
+        // selection preference: artifact -> cart -> enemy -> meeple -> merge item -> IGenericClickable
         RaycastHit hit;
         Ray ray = GetRay();
 
-        var size = Physics.SphereCastNonAlloc(ray, GetSphereCastRadius(true), hitCastArray, 100f, LevelReferences.s.allSelectablesLayer);
+        var size = Physics.SphereCastNonAlloc(ray, GetSphereCastRadius(true), hitCastArray, 20f, LevelReferences.s.allSelectablesLayer);
         if (size == 0) {
             return null;
         }
@@ -764,6 +812,41 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             return item;
         } else {
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.cycleSelectedItem);
+        }
+
+        return null;
+    }
+
+    IPlayerHoldable GetFirstPriorityItemMouse() {
+        // selection preference: artifact -> cart -> enemy -> meeple -> merge item
+        RaycastHit hit;
+        Ray ray = GetRay();
+        
+        Debug.DrawRay(GetRay().origin,GetRay().direction*10);
+
+        var maxDistance = 20f;
+        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, maxDistance, LevelReferences.s.artifactLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<Artifact>();
+        }
+    
+        if (Physics.Raycast(ray, out hit, maxDistance, LevelReferences.s.buildingLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<Cart>();
+        }
+
+        if (Physics.Raycast(ray,  out hit, maxDistance, LevelReferences.s.enemyLayer)) {
+            return hit.collider.GetComponentInParent<EnemyHealth>();
+        }
+
+        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, maxDistance, LevelReferences.s.meepleLayer)) {
+            return hit.collider.GetComponentInParent<Meeple>();
+        }
+
+        if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, maxDistance, LevelReferences.s.scrapsItemLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<ScrapsItem>();
+        }
+        
+        if (Physics.SphereCast(ray, GetSphereCastRadius(), out hit, maxDistance, LevelReferences.s.genericClickableLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<IGenericClickable>();
         }
 
         return null;
@@ -827,9 +910,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }else if (currentSelectedThing is Meeple meeple) {
                 meeple.GetClicked();
                 infoCardActive = false;
-            } /*else if (currentSelectedThing is ScrapsItem scrapsItem) {
-                scrapsItemInfoCard.Show();
-            }*/else {
+            } else if (currentSelectedThing is IGenericClickable genericClickable) {
+                genericClickable.Click();
+            }else {
                 infoCardActive = false;
             }
 
@@ -849,8 +932,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         TimeController.s.SetTimeSlowForDetailScreen(false);
     }
 
+    [Button]
     public void Deselect() {
-        if (currentSelectedThing != null) {
+        if (currentSelectedThing != null && currentSelectedThingMonoBehaviour != null && currentSelectedThingMonoBehaviour.gameObject != null) {
             var temp = currentSelectedThing;
             currentSelectedThing = null;
             SelectThing(temp, false);
@@ -918,6 +1002,13 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         return meepleColor;
     }
     void DeselectMeeple(Meeple meeple) { }
+    
+    Color SelectGenericClickable(IGenericClickable clickable) {
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.clickGate);
+        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
+        return clickableColor;
+    }
+    void DeselectGenericClickable(IGenericClickable clickable) { }
 
     Color SelectScrapsItem(ScrapsItem scrapsItem) {
         return scrapsItem.GetSelectColor();
@@ -951,6 +1042,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 myColor = SelectMeeple(meeple);
             }else if (newSelectableThing is ScrapsItem scrapsItem) {
                 myColor = SelectScrapsItem(scrapsItem);
+            }else if (newSelectableThing is IGenericClickable genericClickable) {
+                myColor = SelectGenericClickable(genericClickable);
             }
 
             if (outline != null) {
@@ -1140,3 +1233,6 @@ public interface IPlayerHoldable {
 }
 
 
+public interface IGenericClickable : IPlayerHoldable {
+    public void Click();
+}

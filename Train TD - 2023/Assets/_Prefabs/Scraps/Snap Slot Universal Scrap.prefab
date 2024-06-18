@@ -147,7 +147,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7952169929428300567
 Transform:
   m_ObjectHideFlags: 0
@@ -371,9 +371,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc5541a892ccc9240ab0f2dd7a1865ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myAllowedSnaps: 11
+  myAllowedSnaps: 2
   snapTransform: {fileID: 3770419954712543413}
   visualizeEffect: {fileID: 0}
   snapDistance: 1
   lerpChild: 1
   allowSnap: 1
+  curDistance: 0

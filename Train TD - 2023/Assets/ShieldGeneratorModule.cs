@@ -14,13 +14,12 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState {
 	public Affectors currentAffectors;
 	[Serializable]
 	public class Affectors {
-		public float regenMultiplier = 1f;
-		public float regenTimerReductionMultiplier = 1f;
-		public float regenTimerReductionDivider = 1f;
-		public float shieldMoveSpeedReducer = 1;
-		public float shieldMoveSpeedIncreaser= 1;
-		public float currentMaxShieldAmount = 500;
-		public int shieldCoverage = 2; // covering this+2 carts
+		public float power = 1f;
+		public float speed = 1;
+		public float efficiency = 1;
+
+		public float uranium = 0;
+		public int iron = 0;
 	}
 
 	private ModuleHealth myHealth;
@@ -32,22 +31,21 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState {
 	}
 
 	private void Update() {
-		if (currentShieldAmount > 0) {
-			if (curRegenTimer > 0) {
-				curRegenTimer -= Time.deltaTime * currentAffectors.regenTimerReductionMultiplier * (1/currentAffectors.regenTimerReductionDivider);
-			} else {
-				currentShieldAmount += regenSpeed * Time.deltaTime * currentAffectors.regenMultiplier;
-			}
-		} else {
-			if (curRegenTimer > 0) {
-				curRegenTimer -= Time.deltaTime * currentAffectors.regenTimerReductionMultiplier * (1/currentAffectors.regenTimerReductionDivider);
-			} else {
-				myHealth.myProtector = this;
-				currentShieldAmount = currentAffectors.currentMaxShieldAmount;
-			}
-		}
+		if (currentShieldAmount <= 0) {
+			if (curRegenTimer <= 0) {
+				myHealth.myProtector = this; // this will be true for one frame only
+			} 
+		} 
 		
-		myPhysicalShieldBar.UpdateShieldPercent(currentShieldAmount/currentAffectors.currentMaxShieldAmount);
+		if (curRegenTimer > 0) {
+			curRegenTimer -= Time.deltaTime * (1f/currentAffectors.efficiency);
+		} else {
+			currentShieldAmount += regenSpeed * currentAffectors.speed;
+		}
+
+		currentShieldAmount = Mathf.Clamp(currentShieldAmount, 0, GetMaxShields());
+		
+		myPhysicalShieldBar.UpdateShieldPercent(currentShieldAmount/GetMaxShields());
 	}
 
 	public void ProtectFromDamage(float damage) {
@@ -65,21 +63,22 @@ public class ShieldGeneratorModule : MonoBehaviour, IResetState {
 	}
 
 	public void ResetState() {
-		currentAffectors.currentMaxShieldAmount = baseShieldAmount;
-		
-		if (PlayStateMaster.s.isCombatInProgress()) {
-			currentShieldAmount = Mathf.Clamp(currentShieldAmount, 0, currentAffectors.currentMaxShieldAmount);
-		} else {
-			currentShieldAmount = currentAffectors.currentMaxShieldAmount;
-		}
-
-
 		currentAffectors = new Affectors();
 		
+		if (PlayStateMaster.s.isCombatInProgress()) {
+			//currentShieldAmount = Mathf.Clamp(currentShieldAmount, 0, GetMaxShields());
+		} else {
+			currentShieldAmount = GetMaxShields();
+		}
+
 		SetShieldSize();
 	}
 
+	public float GetMaxShields() {
+		return baseShieldAmount * currentAffectors.power;
+	}
+
 	public void SetShieldSize() {
-		myPhysicalShieldBar.SetSize(currentAffectors.shieldCoverage);
+		myPhysicalShieldBar.SetSize(1+currentAffectors.iron);
 	}
 }

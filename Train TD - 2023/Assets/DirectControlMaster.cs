@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -124,10 +125,16 @@ public class DirectControlMaster : MonoBehaviour {
 		
 		activateAction.action.Disable();
 	}
-
+	
+	[HideInInspector]
+	public UnityEvent<bool> OnDirectControlStateChange = new UnityEvent<bool>();
 
 	public void AssumeDirectControl(IDirectControllable source) {
 		if (!directControlInProgress && directControlLock <= 0) {
+			if (((MonoBehaviour)source).GetComponentInParent<Cart>().isDestroyed) {
+				return;
+			}
+			
 			currentDirectControllable = source;
 			PlayerWorldInteractionController.s.canSelect = false;
 
@@ -147,6 +154,8 @@ public class DirectControlMaster : MonoBehaviour {
 			notImplementedUI.SetActive(false);
 			
 			currentDirectControllable.ActivateDirectControl();
+			
+			OnDirectControlStateChange?.Invoke(true);
 		}
 	}
 
@@ -165,6 +174,7 @@ public class DirectControlMaster : MonoBehaviour {
 			masterDirectControlUI.SetActive(false);
 			
 			currentDirectControllable.DisableDirectControl();
+			OnDirectControlStateChange?.Invoke(false);
 		}
 	}
 

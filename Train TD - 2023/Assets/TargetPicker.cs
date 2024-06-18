@@ -31,7 +31,7 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
             delay -= Time.deltaTime;
             return;
         } else {
-            delay = Random.Range(1f, 3f);
+            delay = Random.Range(0.25f, 0.5f);
         }
         
         if (targeter.SearchingForTargets()) {
@@ -62,6 +62,7 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
         Transform closestTarget = null;
         var allTargets = LevelReferences.s.allTargetValues;
         var allTargetsReal = LevelReferences.s.allTargets;
+        var targetCount = LevelReferences.s.targetValuesCount;
         var myId = -1;
         if (mySelfTarget != null) {
             myId = mySelfTarget.myId;
@@ -71,7 +72,7 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
         var myPosition = origin.position;
         var myForward = origin.forward;
 
-        for (int i = 0; i < allTargets.Length; i++) {
+        for (int i = 0; i < targetCount; i++) {
             if (i != myId) {
                 var target = allTargets[i];
                 var targetActive = target.active;

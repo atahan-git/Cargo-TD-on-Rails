@@ -40,12 +40,6 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 	public bool hasAmmo => myActiveGun.HasAmmo();
 	public bool needAmmo = true;
 
-	public bool isSniper = false;
-	public float sniperMultiplier = 0;
-	public float sniperMultiplierGain = 0.2f;
-	public float sniperMultiplierLoss = 0.5f;
-	public float sniperMaxMultiplier = 5;
-
 	public GameObject isFire => DirectControlMaster.s.isFire;
 	public GameObject isExplosive => DirectControlMaster.s.isExplosive;
 	public GameObject isSticky => DirectControlMaster.s.isSticky;
@@ -98,21 +92,15 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 				CameraController.s.velocityAdjustment = false;
 				break;
 		}
+
+		if (myActiveGun.isHitScan) {
+			CameraController.s.velocityAdjustment = false;
+		}
 		
 		curRocketLockInTime = rocketLockOnTime;
 
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shoot);
 		GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
-		
-		isSniper = myActiveGun.currentAffectors.isHoming;
-		
-		if (isSniper) {
-			sniperAmount.text = $"Smart Bullets:\n+{sniperMultiplier*100:F0}%";
-			sniperAmount.gameObject.SetActive(true);
-		} else {
-			sniperAmount.gameObject.SetActive(false);
-				
-		}
 
 		ApplyBulletTypes();
 			
@@ -139,7 +127,6 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.shoot);
 		GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
 		
-		isSniper = false;
 		
 		DirectControlMaster.s.fadeToBlackImage.gameObject.SetActive(false);
 
@@ -150,9 +137,6 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		if (isDirectControl) {
 			gunModule.DeactivateGun();
 			gunModule.beingDirectControlled = true;
-			if (isSniper) {
-				gunModule.currentAffectors.sniperDamageMultiplier = sniperMultiplier;
-			}
 
 			gunModule.directControlDamageMultiplier = DirectControlMaster.s.directControlDamageMultiplier;
 			gunModule.directControlFirerateMultiplier = DirectControlMaster.s.directControlFirerateMultiplier;
@@ -160,7 +144,6 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		} else {
 			gunModule.beingDirectControlled = false;
 			gunModule.gatlingAmount = 0;
-			gunModule.currentAffectors.sniperDamageMultiplier = 1;
 			
 			gunModule.directControlDamageMultiplier = 1;
 			gunModule.directControlFirerateMultiplier = 1;
@@ -192,7 +175,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 	public void UpdateDirectControl() {
 		ProcessCameraFadeAmount();
 		
-		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myActiveGun == null) {
+		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed|| myHealth.myCart.isBeingDisabled  || myActiveGun == null) {
 			// in case our module gets destroyed
 			DirectControlMaster.s.DisableDirectControl();
 			return;
@@ -302,15 +285,16 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 					if (curCooldown >= myActiveGun.GetFireDelay() && ShootAction.action.IsPressed() && !enterDirectControlShootLock) {
 						ApplyBulletTypes();
 						myActiveGun.ShootBarrage(false, OnShoot, OnHit, OnMiss);
+						//Debug.Break();
 						curCooldown = 0;
 					}
 
 					if (ShootAction.action.IsPressed() && !enterDirectControlShootLock) {
 						myActiveGun.gatlingAmount += Time.deltaTime;
-						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.maxGatlingAmount);
+						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					} else {
 						myActiveGun.gatlingAmount -= Time.deltaTime;
-						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.maxGatlingAmount);
+						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					}
 
 					break;
@@ -325,17 +309,17 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 
 					if (hasTarget) {
 						myActiveGun.gatlingAmount += Time.deltaTime;
-						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.maxGatlingAmount);
+						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					} else {
 						myActiveGun.gatlingAmount -= Time.deltaTime;
-						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.maxGatlingAmount);
+						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					}
 
 					break;
 			}
 		}
 
-		gatlinificationSlider.value = Mathf.Clamp01(myActiveGun.gatlingAmount / myActiveGun.maxGatlingAmount);
+		gatlinificationSlider.value = Mathf.Clamp01(myActiveGun.gatlingAmount / myActiveGun.GetMaxGatlingAmount());
 
 		rocketLockOnTime = Mathf.Min(1, myActiveGun.GetFireDelay() * (1 / 2f));
 		curCooldown += Time.deltaTime;
@@ -435,22 +419,10 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 			DirectControlMaster.s.PlayOnHitSound( hitPitch + Random.Range(-hitPitchRandomness, hitPitchRandomness));
 			currentOnHit += 1;
 		}
-
-		if (isSniper) {
-			sniperMultiplier += sniperMultiplierGain;
-			sniperMultiplier = Mathf.Clamp(sniperMultiplier, 0, sniperMaxMultiplier);
-			myActiveGun.currentAffectors.sniperDamageMultiplier = 1+sniperMultiplier;
-			sniperAmount.text = $"Smart Bullets:\n+{sniperMultiplier*100:F0}%";
-		}
 	}
 
 	void OnMiss() {
-		if (isSniper) {
-			sniperMultiplier *= sniperMultiplierLoss;
-			sniperMultiplier = Mathf.Clamp(sniperMultiplier, 0, sniperMaxMultiplier);
-			myActiveGun.currentAffectors.sniperDamageMultiplier = 1+sniperMultiplier;
-			sniperAmount.text = $"Smart Bullets:\n+{sniperMultiplier*100:F0}%";
-		}
+		
 	}
 
 	private bool doFade = false;

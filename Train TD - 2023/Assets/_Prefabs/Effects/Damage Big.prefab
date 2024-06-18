@@ -71,6 +71,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 4823831419910563292}
     m_Modifications:
     - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: simulationSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: LightsModule.enabled
       value: 0
       objectReference: {fileID: 0}
@@ -80,11 +84,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
-      value: 15
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1426406565802554127, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2666722449267634794, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: m_Range
@@ -100,15 +104,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6741277836466104671, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6741277836466104671, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6741277836466104671, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6746551768193739954, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: m_RootOrder
@@ -178,25 +182,37 @@ PrefabInstance:
       propertyPath: LightsModule.maxLights
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 9189196644627636579, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9189196644627636579, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9189196644627636579, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9189196644627636581, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+    - target: {fileID: 8211207519893372180, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
       value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 9189196644627636581, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+    - target: {fileID: 8211207519893372180, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9189196644627636579, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9189196644627636579, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9189196644627636579, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9189196644627636581, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: simulationSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9189196644627636581, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9189196644627636581, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edbcd3b3c18ccf44db5b7031741faf88, type: 3}

@@ -4,75 +4,76 @@ using UnityEngine.Rendering.Universal;
 
 public class FlipScreenRenderFeature : ScriptableRendererFeature
 {
+    [System.Serializable]
+    public class BlitSettings
+    {
+        public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRendering;
+        public Material blitMaterial = null;
+    }
 
-	public Shader m_Shader;
-	public float m_Intensity;
+    public BlitSettings settings = new BlitSettings();
+    SimpleBlitPass blitPass;
 
-	Material m_Material;
+    public override void Create()
+    {
+        blitPass = new SimpleBlitPass(settings);
+    }
 
-	ColorBlitPass m_RenderPass;
+    public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
+    {
+        if (!isActive || settings.blitMaterial == null)
+        {
+            return;
+        }
+        
+        if (renderingData.cameraData.renderType == CameraRenderType.Base)
+        {
+            blitPass.Setup(renderer.cameraColorTarget);
+            renderer.EnqueuePass(blitPass);
+        }
+    }
 
-	public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
-	{
-		if (renderingData.cameraData.cameraType == CameraType.Game)
-		{
-			// Calling ConfigureInput with the ScriptableRenderPassInput.Color argument
-			// ensures that the opaque texture is available to the Render Pass.
-			m_RenderPass.ConfigureInput(ScriptableRenderPassInput.Color);
-			m_RenderPass.SetIntensity(m_Intensity);
-			renderer.EnqueuePass(m_RenderPass);
-		}
-	}
+    public class SimpleBlitPass : ScriptableRenderPass
+    {
+        private Material blitMaterial;
+        private RenderTargetIdentifier source;
+        private RenderTargetHandle temporaryColorTexture;
 
-	public override void Create()
-	{
-		m_Material = CoreUtils.CreateEngineMaterial(m_Shader);
-		m_RenderPass = new ColorBlitPass(m_Material);
-	}
+        public SimpleBlitPass(BlitSettings settings)
+        {
+            this.blitMaterial = settings.blitMaterial;
+            this.renderPassEvent = settings.renderPassEvent;
+            temporaryColorTexture.Init("_TemporaryColorTexture");
+        }
 
-	protected override void Dispose(bool disposing)
-	{
-		CoreUtils.Destroy(m_Material);
-	}
+        public void Setup(RenderTargetIdentifier source)
+        {
+            this.source = source;
+        }
 
+        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        {
+            cmd.GetTemporaryRT(temporaryColorTexture.id, cameraTextureDescriptor);
+            ConfigureTarget(temporaryColorTexture.Identifier());
+            ConfigureClear(ClearFlag.None, Color.black);
+        }
 
-	class ColorBlitPass  : ScriptableRenderPass {
-		ProfilingSampler m_ProfilingSampler = new ProfilingSampler("ColorBlit");
-		Material m_Material;
-		float m_Intensity;
+        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+        {
+            CommandBuffer cmd = CommandBufferPool.Get("SimpleBlitPass");
 
-		public ColorBlitPass (Material material)
-		{
-			m_Material = material;
-			renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
-		}
+            // Blit to temporary render texture
+            Blit(cmd, source, temporaryColorTexture.Identifier(), blitMaterial);
+            // Blit back to camera target
+            Blit(cmd, temporaryColorTexture.Identifier(), source);
 
-		public void SetIntensity(float intensity)
-		{
-			m_Intensity = intensity;
-		}
+            context.ExecuteCommandBuffer(cmd);
+            CommandBufferPool.Release(cmd);
+        }
 
-		public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-		{
-			var camera = renderingData.cameraData.camera;
-			if (camera.cameraType != CameraType.Game)
-				return;
-
-			if (m_Material == null)
-				return;
-
-			CommandBuffer cmd = CommandBufferPool.Get();
-			using (new ProfilingScope(cmd, m_ProfilingSampler))
-			{
-				m_Material.SetFloat("_Intensity", m_Intensity);
-
-				//The RenderingUtils.fullscreenMesh argument specifies that the mesh to draw is a quad.
-				cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, m_Material);
-			}
-			context.ExecuteCommandBuffer(cmd);
-			cmd.Clear();
-
-			CommandBufferPool.Release(cmd);
-		}
-	}
+        public override void FrameCleanup(CommandBuffer cmd)
+        {
+            cmd.ReleaseTemporaryRT(temporaryColorTexture.id);
+        }
+    }
 }

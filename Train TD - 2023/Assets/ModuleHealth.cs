@@ -11,10 +11,9 @@ using Random = UnityEngine.Random;
 public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IDisabledState {
 
     public static bool debugImmune = false;
+    public static bool prologueIndestructable = false;
     
     public float baseHealth = 50;
-    [ReadOnly]
-    public float maxHealth = 50;
     public float maxHealthReduction = 0;
     public float currentHealth = 50;
 
@@ -54,7 +53,8 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     }
 
     public void SetHealthBarState(bool isVisible) {
-        cartUIBar.SetVisible(isVisible);
+        if(cartUIBar != null)
+            cartUIBar.SetVisible(isVisible);
     }
     
     private void OnDestroy() {
@@ -63,9 +63,16 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
                 Destroy(cartUIBar.gameObject);
     }
 
-    [NonSerialized] public bool glassCart;
+    public Affectors currentAffectors;
+    [Serializable]
+    public class Affectors {
+        public float maxHealth = 100;
+        public float armor = 1;
+        public float flatArmor = 0;
+    }
     public void ResetState() {
-        maxHealth = baseHealth;
+        currentAffectors = new Affectors();
+        currentAffectors.maxHealth = baseHealth;
 
         if (PlayStateMaster.s.isCombatInProgress()) {
             currentHealth = Mathf.Clamp(currentHealth, 0, GetMaxHealth());
@@ -73,9 +80,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
             currentHealth = GetMaxHealth();
         }
 
-        glassCart = false;
-
-        UpdateHpState();
+        //UpdateHpState();
     }
 
     public ShieldGeneratorModule myProtector;
@@ -99,8 +104,29 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         }
         
         damage *= damageReductionMultiplier;
+
+        damage += currentAffectors.flatArmor;
+
+        if (currentAffectors.armor > 1) {
+            var reduction = currentAffectors.armor - 1;
+            var multiplier = 1 - reduction;
+            multiplier = Mathf.Clamp(multiplier, 0.1f, 1f); // max reduction is 90% so 1/10 damage
+            damage *= multiplier;
+        }
+
+        if (currentAffectors.armor < 1) {
+            // take 90% more damage means armor*= 1/1.9f = ~0.52 armor
+            // then multiplier = 1/armor = 1.9
+            var multiplier = 1/currentAffectors.armor; 
+            multiplier = Mathf.Clamp(multiplier,1,10); // max 0.1 armor meaning 10x damage
+            damage *= multiplier;
+        }
         
         currentHealth -= damage;
+        
+        if (currentHealth <= 10 && prologueIndestructable) {
+            currentHealth = 10;
+        }
 
         if(currentHealth <= 0) {
             currentHealth = 0;
@@ -111,6 +137,11 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     }
 
     public void UpdateHpState(Vector3? hitPoint = null) {
+        currentHealth = Mathf.Clamp(currentHealth, 0, GetMaxHealth());
+        if (!PlayStateMaster.s.isCombatInProgress()) {
+            currentHealth = GetMaxHealth();
+        }
+        
         Train.s.HealthModified();
         UpdateHPCriticalIndicators();
         SetBuildingShaderHealth();
@@ -186,9 +217,9 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 
     public float GetMaxHealth(bool withReduction = true) {
         if (withReduction) {
-            return maxHealth - maxHealthReduction;
+            return currentAffectors.maxHealth - maxHealthReduction;
         } else {
-            return maxHealth;
+            return currentAffectors.maxHealth;
         }
     }
 
@@ -605,8 +636,8 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         //maxHealthReduction += maxHealthReductionChunkSize;
         
         if (toRepair.canRepair) {
-            var effect = Instantiate(LevelReferences.s.repairDoneEffect, toRepair.transform.position, toRepair.transform.rotation);
-            effect.transform.SetParent(myCart.genericParticlesParent);
+            //var effect = Instantiate(LevelReferences.s.repairDoneEffect, toRepair.transform.position, toRepair.transform.rotation);
+            //effect.transform.SetParent(myCart.genericParticlesParent);
             toRepair.Repair();
             activeBurnEffects.Remove(toRepair);
             
@@ -630,17 +661,6 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     }
 
     public void RepairChunk(int count) {
-        for (int i = 0; i < activeBurnEffects.Count; i++) {
-            if (!activeBurnEffects[i].isTaken) {
-                RepairChunk(activeBurnEffects[i]);
-                count -= 1;
-            }
-
-            if (count <= 0) {
-                return;
-            }
-        }
-        
         for (int i = 0; i < count; i++) {
             RepairChunk();
         }
@@ -720,5 +740,10 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 
     public void CartEnabled() {
         this.enabled = true;
+    }
+
+    public void MultiplyMaxHealthByAmount(float amount) {
+        currentAffectors.maxHealth *= amount;
+        currentHealth *= amount;
     }
 }

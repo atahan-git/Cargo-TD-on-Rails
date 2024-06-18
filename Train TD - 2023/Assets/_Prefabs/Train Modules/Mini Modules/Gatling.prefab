@@ -345,9 +345,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip:
-    text: Two super fast gatling guns. Shoots fast inaccurate shots. Each shot uses
-      little ammo but goes through ammo fast.
-  info: Gatling Guns
+    text: ' Shoots fast inaccurate shots. '
+  info: Gatling Cart
 --- !u!114 &2934280374143819819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,7 +354,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3146471024428373951}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77a00eae84002064bb32ca6cc299f785, type: 3}
   m_Name: 
@@ -366,6 +365,42 @@ MonoBehaviour:
   maxFireRateReduction: 0.92
   gatlingAmount: 0
   maxGatlingAmount: 4
+  useProviderBullet: 1
+  myType: 0
+  bulletPrefab: {fileID: 4908573584345181807, guid: 98bc522f3c4ff4b44a93406dcf01c13c, type: 3}
+  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 8f78b5537a14f8e40a70e1e6f66220a5, type: 3}
+  fireDelay: 3
+  fireBarrageCount: 1
+  fireBarrageDelay: 0.1
+  projectileDamage: 2
+  burnDamage: 0
+  dontGetAffectByMultipliers: 0
+  currentAffectors:
+    power: 1
+    speed: 1
+    efficiency: 1
+    flatDamageAdd: 0
+    flatAmmoCostAdd: 0
+    uranium: 0
+    fire: 0
+    explosionRangeAdd: 0
+    vampiric: 0
+    gatlinificator: 0
+    isHoming: 0
+    ancientDisabled: 0
+    lizardOverride: 0
+  isLockOn: 0
+  rotateSpeed: 20
+  isHeal: 0
+  directControlShakeMultiplier: 0.5
+  mortarRotation: 0
+  isHitScan: 0
+  ammoPerBarrage: 0.2
+  explosionRange: 0
+  inaccuracyMultiplier: 1
+  gunShakeOnShoot: 1
+  gunShakeMagnitudeMultiplier: 1
+  gunRotateUpOnShoot: 2
   rotateTransforms: []
   rotateTransform:
     anchor: {fileID: 483469733385342657}
@@ -375,67 +410,32 @@ MonoBehaviour:
   barrelEndTransforms:
   - transform: {fileID: 9060155755661591850}
   projectileSpawnOffset: 0.2
-  useProviderBullet: 1
-  myType: 0
-  bulletPrefab: {fileID: 4908573584345181807, guid: 98bc522f3c4ff4b44a93406dcf01c13c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 8f78b5537a14f8e40a70e1e6f66220a5, type: 3}
-  target: {fileID: 0}
-  mortarRotation: 0
-  fireDelay: 2
-  fireBarrageCount: 1
-  fireBarrageDelay: 0.1
-  projectileDamage: 1.5
-  burnDamage: 0
-  directControlDamageMultiplier: 1
-  directControlFirerateMultiplier: 1
-  directControlAmmoUseMultiplier: 1
-  dontGetAffectByMultipliers: 0
-  directControlShakeMultiplier: 0.5
-  isHeal: 0
-  currentAffectors:
-    damageMultiplier: 1
-    sniperDamageMultiplier: 1
-    fireRateMultiplier: 1
-    fireRateDivider: 1
-    burnDamageMultiplier: 1
-    regularToBurnDamageConversionMultiplier: 0
-    bonusBurnDamage: 0
-    regularToRangeConversionMultiplier: 0
-    gatlinificator: 0
-    isHoming: 0
-    explosionRangeBoost: 0
-  rotateSpeed: 20
-  gunActive: 1
-  IsBarrelPointingCorrectly: 0
-  ammoPerBarrage: 0.1
-  ammoPerBarrageMultiplier: 1
-  isPlayer: 1
   rangeOrigin: {fileID: 0}
-  canPenetrateArmor: 0
-  needWarmUp: 1
-  startWarmUpEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onBulletFiredEvent:
+  startShootingEvent:
     m_PersistentCalls:
       m_Calls: []
   stopShootingEvent:
     m_PersistentCalls:
       m_Calls: []
-  gatlingCountZeroEvent:
+  onBulletFiredEvent:
     m_PersistentCalls:
       m_Calls: []
-  gunShakeOnShoot: 1
-  gunShakeMagnitudeMultiplier: 1
-  beingDirectControlled: 0
-  isLockOn: 0
   waitTimer: 0
-  explosionRange: 0
-  inaccuracyMultiplier: 1
-  gotShootCredits: 0
-  needShootCredits: 0
-  neverNeedShootCredits: 0
-  shootCreditsUse: 0.1
+  isActuallyShooting: 0
+  target: {fileID: 0}
+  targetLastTrackTime: 0
+  beingDirectControlled: 0
+  gunActive: 1
+  IsBarrelPointingCorrectly: 0
+  directControlDamageMultiplier: 1
+  directControlFirerateMultiplier: 1
+  directControlAmmoUseMultiplier: 1
+  myVelocity: {x: 0, y: 0, z: 0}
+  lastPos: {x: 0, y: 0, z: 0}
+  lastRot: {x: 0, y: 0, z: 0, w: 0}
+  hadTargetLastFrame: 0
+  vampiricHealthStorage: 0
+  gunCannotActivateOverride: 0
 --- !u!114 &7371494607064308679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,6 +453,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 0
+  delay: 0
 --- !u!1 &4868666074182737494
 GameObject:
   m_ObjectHideFlags: 0

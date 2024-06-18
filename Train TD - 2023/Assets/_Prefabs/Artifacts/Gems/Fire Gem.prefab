@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 586818211553822249, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: rmsCount
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: myTooltip.text
       value: Makes things deal fire damage.
@@ -54,6 +58,38 @@ PrefabInstance:
     - target: {fileID: 2870468164549859303, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2887714300150370317, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -1077663603857795934, guid: acb74713593b9fb41bd3f46f1a8108fd, type: 3}
+    - target: {fileID: 3000658176013270734, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -1077663603857795934, guid: acb74713593b9fb41bd3f46f1a8108fd, type: 3}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.27556932
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.27556932
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606250654571921063, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.27556932
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2755693
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2755693
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228584923583721129, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2755693
       objectReference: {fileID: 0}
     - target: {fileID: 4686409788300702077, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: m_Name
@@ -114,3 +150,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88a6363c4c5b8ab459f9652fdf76ec57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentDescription: 

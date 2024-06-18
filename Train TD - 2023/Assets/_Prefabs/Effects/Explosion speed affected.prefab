@@ -214,8 +214,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 1046195756885079350}
     m_Modifications:
     - target: {fileID: 793658156676631739, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: m_Range
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 793658156676631739, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_RenderMode
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4452414225387048414, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4452414225387048414, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5651631637482812614, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_Materials.Array.size
@@ -243,27 +255,67 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5874716716262006708, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
-      value: 40
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5874716716262006708, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
-      value: 30
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6914621571854746565, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6914621571854746565, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7498321294424180272, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7498321294424180274, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7498321294528022316, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7498321294528022318, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7498321295048761852, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7498321295048761853, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: EmissionModule.rateOverDistance.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7498321295048761855, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7498321295048761855, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7498321295048761855, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 7498321295170158714, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: ShapeModule.radius.value
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7498321295170158714, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7498321295170158714, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minMaxState
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7498321295170158716, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_LocalScale.x
@@ -307,15 +359,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8331988088689381987, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 8331988088689381987, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 8331988088689381987, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 8331988088689381987, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: m_LocalPosition.x

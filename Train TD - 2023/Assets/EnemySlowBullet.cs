@@ -28,15 +28,21 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
         Invoke("DestroySelf", lifetime);
     }
 
-    public void SetUp(GameObject originObject, Transform _target) {
+    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity) {
         myOriginObject = originObject;
         target = _target;
+        initialVelocity = _initialVelocity;
     }
-    
+
+    public Vector3 GetInitialVelocity() {
+        return initialVelocity;
+    }
+
     void DestroySelf() {
         Destroy(gameObject);
     }
 
+    public Vector3 initialVelocity;
     void FixedUpdate() {
         if (!isDead) {
             if (target != null) {
@@ -51,7 +57,7 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
                 }
             }
 
-            GetComponent<Rigidbody>().MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
+            GetComponent<Rigidbody>().velocity = (transform.forward * speed ) + (initialVelocity);
         }
     }
 
@@ -68,6 +74,13 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
                     particle.Stop();
                     Destroy(particle.gameObject, 1f);
                 }
+            }
+            
+            var trail = GetComponentInChildren<SmartTrail>();
+            if (trail != null) {
+                trail.StopTrailing();
+                trail.transform.SetParent(VisualEffectsController.s.transform);
+                Destroy(trail.gameObject, 1f);
             }
 
             if(toSpawnOnDeath != null)

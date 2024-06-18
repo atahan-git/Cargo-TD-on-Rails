@@ -867,7 +867,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 1
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -920,7 +920,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -5890,7 +5890,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 200
+      scalar: 20
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -14657,9 +14657,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a77113c7d8d2a46a434a02b73da00a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileDamage: 50
+  projectileDamage: 150
   burnDamage: 0
-  isHeal: 0
   toSpawnOnDeath: {fileID: 647799738284327089, guid: 0f96f7c60053621468c19a7085e01136, type: 3}
   lifetime: 20
   topSpeed: 5
@@ -14672,6 +14671,7 @@ MonoBehaviour:
   isDead: 0
   curSpeed: 0
   curSeekStrength: 0
+  initialVelocity: {x: 0, y: 0, z: 0}
 --- !u!54 &1887827696573373486
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -14687,7 +14687,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 0
 --- !u!114 &1200985300037230527
 MonoBehaviour:
   m_ObjectHideFlags: 0

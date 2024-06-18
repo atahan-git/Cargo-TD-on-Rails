@@ -46,6 +46,7 @@ public class LevelReferences : MonoBehaviour {
     public GameObject repairEffectPrefab;
     public GameObject shieldUpEffectPrefab;
     public GameObject goodItemSpawnEffectPrefab;
+    public GameObject cartBeingDisabledEffect;
     
     [Space]
     
@@ -66,9 +67,12 @@ public class LevelReferences : MonoBehaviour {
     
     [Space]
 
-    public GameObject teleportStartEffect;
-    public float teleportTime = 1f;
-    public GameObject teleportCompleteEffect;
+    public GameObject teleportFromEffect;
+    public GameObject teleportToEffect;
+    
+    
+    public GameObject teleportingCartStartEffect;
+    public GameObject teleportingCartEndEffect;
     
     [Space]
 
@@ -80,6 +84,7 @@ public class LevelReferences : MonoBehaviour {
 
     public List<PossibleTarget> allTargets = new List<PossibleTarget>();
     public TargetValues[] allTargetValues = new TargetValues[0];
+    public int targetValuesCount = 0;
     public bool targetsDirty;
 
     
@@ -102,6 +107,16 @@ public class LevelReferences : MonoBehaviour {
             health = (int)target.GetHealth();
             healthPercent = target.GetHealthPercent();
         }
+
+        public void Set(PossibleTarget target) {
+            type = target.myType;
+            position = target.targetTransform.position;
+            avoid = target.avoid;
+            flying = target.flying;
+            active = target.enabled;
+            health = (int)target.GetHealth();
+            healthPercent = target.GetHealthPercent();
+        }
     }
 
     [Space]
@@ -113,6 +128,7 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask artifactLayer;
     public LayerMask meepleLayer;
     public LayerMask scrapsItemLayer;
+    public LayerMask genericClickableLayer;
     public LayerMask allSelectablesLayer;
 
     [Space]
@@ -171,16 +187,23 @@ public class LevelReferences : MonoBehaviour {
 
     private void Awake() {
         s = this;
-        
+        allTargetValues = new TargetValues[64];
+        for (int i = 0; i < allTargetValues.Length; i++) {
+            allTargetValues[i] = new TargetValues();
+        }
     }
 
     private void Update() {
-        if (allTargetValues.Length != allTargets.Count || targetsDirty) {
-            allTargetValues = new TargetValues[allTargets.Count];
+        targetValuesCount = allTargets.Count;
+        if (targetValuesCount > allTargetValues.Length) {
+            allTargetValues = new TargetValues[allTargetValues.Length*2];
+            for (int i = 0; i < allTargetValues.Length; i++) {
+                allTargetValues[i] = new TargetValues();
+            }
         }
 
-        for (int i = 0; i < allTargetValues.Length; i++) {
-            allTargetValues[i] = new TargetValues(allTargets[i]);
+        for (int i = 0; i < targetValuesCount; i++) {
+            allTargetValues[i].Set(allTargets[i]);
             allTargets[i].myId = i;
         }
 

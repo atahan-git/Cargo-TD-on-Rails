@@ -219,7 +219,7 @@ public class FMODMusicPlayer : MonoBehaviour
         tmpCount = 0;
 
         int highestCount = 0;
-        List<string> highestType = new List<string>();
+        //List<string> highestType = new List<string>();
         foreach (EnemyWave wave in enemyWaves)
         {
             // if a wave is close enough and is not leaving combat, count it as "engaging"

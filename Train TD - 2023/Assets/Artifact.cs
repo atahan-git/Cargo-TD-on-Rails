@@ -26,6 +26,8 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
 
     public GameObject cantAffectOverlay;
 
+    public bool canDrag = true;
+
     public void AttachToSnapLoc(SnapLocation loc, bool doSave=true, bool doTriggerChange = true) {
         ShopStateController.s.AddArtifactToShop(this,  doSave);
         
@@ -39,6 +41,8 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
         var newCart = GetComponentInParent<Cart>();
         
         if (newCart != null) {
+            isAttached = true;
+            
             ShopStateController.s.RemoveArtifactFromShop(this, doSave);
             
             if(doTriggerChange && newCart.IsAttachedToTrain())
@@ -48,8 +52,6 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
             worldPart.SetActive(false);
             
             newCart.GetComponent<HighlightEffect>().Refresh();
-            
-            isAttached = true;
         }
     }
 
@@ -65,16 +67,16 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
         GetComponent<Rigidbody>().isKinematic = false;
         GetComponent<Rigidbody>().useGravity = true;
         
-        cantAffectOverlay.SetActive(false);
+        if(cantAffectOverlay != null)
+            cantAffectOverlay.SetActive(false);
 
+        isAttached = false;
 
         if (oldCart != null) {
             Train.s.TrainChanged();
             
             oldCart.GetComponent<HighlightEffect>().Refresh();
         }
-
-        isAttached = false;
     }
     
     public Transform GetUITargetTransform() {

@@ -8,7 +8,7 @@ using UnityEngine;
 public class MergeDataScriptable : ScriptableObject {
     [ValueDropdown("GetAllModuleNames")]
     public string source1;
-    [ValueDropdown("GetAllModuleNames")]
+    [ValueDropdown("GetAllModuleNamesWithRandomArtifact")]
     public string source2;
     [Space]
     [ValueDropdown("GetAllModuleNames")]
@@ -31,7 +31,14 @@ public class MergeDataScriptable : ScriptableObject {
     }
     
     private static IEnumerable GetAllModuleNames() {
-        return GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
+        var allBuildings =  GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
+        return allBuildings;
+    }
+    
+    private static IEnumerable GetAllModuleNamesWithRandomArtifact() {
+        var allBuildings =  GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
+        allBuildings.Add(DataHolder.anyArtifact);
+        return allBuildings;
     }
 }
 

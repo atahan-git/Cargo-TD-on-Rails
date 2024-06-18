@@ -61,7 +61,9 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
         }
 
 
-        transform.localPosition = Vector3.Lerp(transform.localPosition, target, lerpSpeed * Time.deltaTime);
+        var trainSpeedMultiplier = LevelReferences.s.speed / 5f;
+        trainSpeedMultiplier = Mathf.Clamp01(trainSpeedMultiplier);
+        transform.localPosition = Vector3.Lerp(transform.localPosition, target, lerpSpeed*trainSpeedMultiplier * Time.deltaTime);
 
         targetTargetPosition.y = target.y;
         target = Vector3.MoveTowards(target, targetTargetPosition, targetMoveSpeed * Time.deltaTime * GetRealMoveSpeed());

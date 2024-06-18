@@ -232,6 +232,7 @@ MonoBehaviour:
   description: {fileID: 7183850223955386037}
   icon: {fileID: 8800200304245176791}
   myItemUniqueName: 
+  isBigGem: 0
 --- !u!1 &6095596210962781085
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,9 +329,9 @@ MonoBehaviour:
   m_fontSize: 25
   m_fontSizeBase: 25
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 25
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
