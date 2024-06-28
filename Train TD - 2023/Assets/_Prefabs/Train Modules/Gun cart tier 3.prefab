@@ -280,7 +280,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseHealth: 2000
-  maxHealth: 500
   maxHealthReduction: 0
   currentHealth: 2000
   damageReductionMultiplier: 1
@@ -292,6 +291,10 @@ MonoBehaviour:
   invincible: 0
   mainCollider: {fileID: 232269251456713494}
   cartUIBar: {fileID: 0}
+  currentAffectors:
+    maxHealth: 100
+    armor: 1
+    flatArmor: 0
   myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
@@ -299,6 +302,11 @@ MonoBehaviour:
   burnSpeed: 0
   activeBurnEffects: []
   activeMaxHealthReductionPlates: []
+  surfaceColliders:
+  - {fileID: 232269251456713494}
+  - {fileID: 5950496328330637981}
+  - {fileID: 5079137766063600652}
+  - {fileID: 7556241088505064055}
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1604,6 +1612,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0bde51db4531a7a4bb6edfa521dee460, type: 3}
   m_PrefabInstance: {fileID: 5132411373334240383}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &7556241088505064055 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: 0bde51db4531a7a4bb6edfa521dee460, type: 3}
+  m_PrefabInstance: {fileID: 5132411373334240383}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7608951610318832132
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1685,6 +1698,11 @@ PrefabInstance:
       objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0bde51db4531a7a4bb6edfa521dee460, type: 3}
+--- !u!64 &5079137766063600652 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: 0bde51db4531a7a4bb6edfa521dee460, type: 3}
+  m_PrefabInstance: {fileID: 7608951610318832132}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7931635340401288687 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0bde51db4531a7a4bb6edfa521dee460, type: 3}
@@ -2036,6 +2054,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+--- !u!64 &5950496328330637981 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+  m_PrefabInstance: {fileID: 9038932455756973205}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8861399962216932222 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}

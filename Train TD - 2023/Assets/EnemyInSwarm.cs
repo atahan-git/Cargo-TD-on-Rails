@@ -53,6 +53,8 @@ public class EnemyInSwarm : MonoBehaviour
     public Vector3 boilRealDelta;
     public Vector3 boidTargetDelta;
 
+    public Vector3 boidPosition;
+
     public EnemySwarmMaker mySwarm;
     public EnemyWave myWave;
     private void Start() {

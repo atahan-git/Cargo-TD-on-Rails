@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
+using static VisualEffectsController;
 
 public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringCombat, IResetState, IDisabledState {
 
@@ -26,27 +27,23 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     [Header("Gatling info")]
     public bool isGigaGatling = false;
-
+    public bool isLazer = false;
+    public float lazerMinDamageMultiplier = 0.1f;
+    public float gatlingDecayMultiplier = 1f;
+    
     public float maxFireRateReduction = 0.9f;
     public float gatlingAmount;
     public int maxGatlingAmount = 4;
 
     public int GetMaxGatlingAmount() {
-        return currentAffectors.gatlinificator ? (maxGatlingAmount * 2) : maxGatlingAmount;
+        return (isGigaGatling && currentAffectors.gatlinificator) ? (maxGatlingAmount * 2) : maxGatlingAmount;
     }
     
     [Header("Bullet Info")]
-    public bool useProviderBullet = false;
-    [ShowIf("useProviderBullet")]
     public ProjectileProvider.ProjectileTypes myType;
 
-    [HideIf("useProviderBullet")]
-    public GameObject bulletPrefab;
-    [HideIf("useProviderBullet")]
-    public GameObject muzzleFlashPrefab;
-
     public float GetFireDelay() {
-        if (isGigaGatling || currentAffectors.gatlinificator) { 
+        if (!isLazer && (isGigaGatling || currentAffectors.gatlinificator)) { 
             var reduction = Mathf.Pow(gatlingAmount / GetMaxGatlingAmount(), 1 / 3f) * maxFireRateReduction;
             return (fireDelay * (1-reduction)) * GetAttackSpeedMultiplier();
         } else {
@@ -280,13 +277,13 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
                 IsBarrelPointingCorrectly = false;
 
                 if (!beingDirectControlled) {
-                    gatlingAmount -= Time.deltaTime*2;
+                    gatlingAmount -= Time.deltaTime*2*gatlingDecayMultiplier;
                     gatlingAmount = Mathf.Clamp(gatlingAmount, 0, GetMaxGatlingAmount());
                 }
             }
         } else {
             if (!beingDirectControlled) {
-                gatlingAmount -= Time.deltaTime * 2;
+                gatlingAmount -= Time.deltaTime * 2*gatlingDecayMultiplier;
                 gatlingAmount = Mathf.Clamp(gatlingAmount, 0, GetMaxGatlingAmount());
             }
             
@@ -388,6 +385,13 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         
         if (beingDirectControlled) {
             dmgMul *= directControlDamageMultiplier;
+        }
+
+        if (isLazer) {
+            var reduction = Mathf.Pow(gatlingAmount / GetMaxGatlingAmount(), 3);
+            reduction = Mathf.Clamp(reduction, lazerMinDamageMultiplier, 1f);
+            dmgMul *= reduction;
+            //print(reduction);
         }
 
         return dmgMul;
@@ -497,11 +501,6 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         }
 
         for (int i = 0; i < fireBarrageCount; i++) {
-            if (useProviderBullet) {
-                bulletPrefab = ProjectileProvider.s.GetProjectile(myType);
-                muzzleFlashPrefab = ProjectileProvider.s.GetMuzzleFlash(myType, isGigaGatling);
-            }
-
             var barrelEnd = GetShootTransform().transform;
             var position = barrelEnd.position;
             var rotation = barrelEnd.rotation;
@@ -513,19 +512,16 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             var actualInaccuracy = Random.Range(0, addAngleInaccuracy);
             actualInaccuracy *= inaccuracyMultiplier;
             
-            var bullet = VisualEffectsController.s.SmartInstantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
+            var bullet = ProjectileProvider.s.GetProjectile(myType, currentAffectors.fire, position + barrelEnd.forward*projectileSpawnOffset, rotation);
 
             var bulletForward = bullet.transform.forward;
             
             bullet.transform.forward = Vector3.RotateTowards(bulletForward, randomDirection,actualInaccuracy*Mathf.Deg2Rad, 0);
             //print($"{bulletForward} - {randomDirection} - {bullet.transform.forward}");
-            
-            
+
             bullet.transform.localScale = Vector3.one*(currentAffectors.power*1.5f);
             if (i == 0 || GetFireBarrageDelay() > 0) {
-                var muzzleFlash = Instantiate(muzzleFlashPrefab,barrelEnd);
-                muzzleFlash.transform.localPosition = Vector3.zero;
-                muzzleFlash.transform.localRotation = Quaternion.identity;
+                var muzzleFlash = ProjectileProvider.s.GetMuzzleFlash(myType, position, rotation, transform, beingDirectControlled ? EffectPriority.Always : EffectPriority.High);
             }
 
             var projectile = bullet.GetComponent<Projectile>();

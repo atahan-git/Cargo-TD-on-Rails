@@ -17,7 +17,6 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
     public float topSeekStrength = 440f;
     public float seekAcceleration = 200f;
     
-    public GameObject instantDestroy;
 
     [FoldoutGroup("Internal Variables")]
     public GameObject myOriginObject;
@@ -29,18 +28,25 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
     public float curSpeed;
     [FoldoutGroup("Internal Variables")] 
     public float curSeekStrength;
+    
+    
     private void Start() {
-        Invoke("DestroySelf", lifetime);
-
         projectileDamage *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier;
         burnDamage *= TweakablesMaster.s.myTweakables.enemyDamageMultiplier;
-        
+    }
+
+    private void OnEnable() {
+        isDead = false;
         curSpeed = 0;
         curSeekStrength = 0;
+        if (instantDestroy)
+            instantDestroy.SetActive(true);
+        
+        Invoke("DestroySelf", lifetime);
     }
-    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity) {
+    
+    public void SetUp(GameObject originObject,  Vector3 _initialVelocity) {
         myOriginObject = originObject;
-        target = _target;
         initialVelocity = _initialVelocity;
     }
 
@@ -48,9 +54,6 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
         return initialVelocity;
     }
 
-    void DestroySelf() {
-        Destroy(gameObject);
-    }
 
     public Vector3 initialVelocity;
     void FixedUpdate() {
@@ -73,6 +76,10 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
         }
     }
     
+    public GameObject instantDestroy;
+    void DestroySelf() {
+        GetComponent<PooledObject>().DestroyPooledObject();
+    }
     void SmartDestroySelf() {
         if (!isDead) {
             isDead = true;
@@ -81,25 +88,21 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
 
             foreach (var particle in particles) {
                 if (particle.gameObject != instantDestroy) {
-                    particle.transform.SetParent(VisualEffectsController.s.transform);
-                    particle.transform.localScale = Vector3.one;
                     particle.Stop();
-                    Destroy(particle.gameObject, 1f);
                 }
             }
             
             var trail = GetComponentInChildren<SmartTrail>();
             if (trail != null) {
                 trail.StopTrailing();
-                trail.transform.SetParent(VisualEffectsController.s.transform);
-                Destroy(trail.gameObject, 1f);
             }
             
-            if(toSpawnOnDeath != null)
-                Instantiate(toSpawnOnDeath, transform.position, transform.rotation);
-            
-            Destroy(instantDestroy);
-            Destroy(gameObject);
+            if(instantDestroy != null)
+                instantDestroy.SetActive(false);
+
+            GetComponent<PooledObject>().lifeTime = ProjectileProvider.bulletAfterDeathLifetime;
+
+            GetComponent<Rigidbody>().detectCollisions = false;
         }
     }
 
@@ -175,7 +178,7 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
             hitPrefab = LevelReferences.s.metalBulletHitEffectPrefab;
         }
 
-        VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation);
+        VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation, VisualEffectsController.EffectPriority.Medium);
     }
 
 
@@ -185,11 +188,15 @@ public class EnemyRocket : MonoBehaviour,IEnemyProjectile{
             var dmg = projectileDamage;
             
             if (dmg > 0) {
-                target.DealDamage(dmg, transform.position);
-                if(dmg > 1)
-                    VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                        .GetComponent<MiniGUI_DamageNumber>()
-                        .SetUp(target.GetUITransform(), (int)dmg, false, false, false);
+                target.DealDamage(dmg, transform.position, Quaternion.AngleAxis(180, transform.up) * transform.rotation);
+                if (dmg > 1) {
+                    var damageNumbers = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
+                        VisualEffectsController.EffectPriority.damageNumbers);
+                    if (damageNumbers != null) {
+                        damageNumbers.GetComponent<MiniGUI_DamageNumber>()
+                            .SetUp(target.GetUITransform(), (int)dmg, false, false, false);
+                    }
+                }
             }
 
             if (burnDamage > 0) {

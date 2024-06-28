@@ -25,7 +25,7 @@ public class GeroBeamHit : MonoBehaviour {
 		}
 		
 		transform.localScale =scale/10;
-		transform.Find("BeamFlash").GetComponent<ScaleWiggle>().DefScale = scale;
+		transform.Find("BeamFlash").GetComponent<ScaleWiggle>().DefScale = Vector3.one*10;
 
 	}
 

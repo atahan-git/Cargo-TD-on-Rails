@@ -85,6 +85,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         public GameObject terrainPrefab;
         public Light sun;
         public SkyboxParametersScriptable skybox;
+        public float skyboxLightIntensity = 1.56f;
     }
 
     public int biomeOverride = -1;
@@ -150,11 +151,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             currentBiome = biomes[actualBiomeOverride];
         }
 
-        for (int i = 0; i < biomes.Length; i++) {
-            biomes[i].sun.gameObject.SetActive(false);
-        }
-        
-        currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
+        ApplyBiome(currentBiome);
 
         if(repopulateTerrain)
             terrainPool.RePopulateWithNewObject(currentBiome.terrainPrefab);
@@ -276,11 +273,12 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         var n = 0;
         while (!isGoodTrack) {
             track = _pathGenerator.MakeCirclePath(CircleTerrainCenter());
-            isGoodTrack = Vector3.Distance(track.points[0], track.points[^1]) < 0.1f;
+            isGoodTrack = Vector3.Distance(track.points[0], track.points[^1]) < 0.1f && track.endRotateStartPoint != 10000;
             n++;
 
             if (n > 20) {
                 Debug.LogError("Could not make a good track in under 20 tries");
+                break;
             }
         }
         Debug.Log($"made good path in {n} tries");
@@ -1163,10 +1161,16 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     [Button]
     void DebugApplySunAndSkyboxEditor(int biome) {
         var currentBiome = biomes[biome];
+        ApplyBiome(currentBiome);
+    }
+
+    void ApplyBiome(Biome currentBiome) {
         for (int i = 0; i < biomes.Length; i++) {
             biomes[i].sun.gameObject.SetActive(false);
         }
         
         currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
+
+        RenderSettings.ambientIntensity = currentBiome.skyboxLightIntensity;
     }
 }

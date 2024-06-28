@@ -27,8 +27,10 @@ public class EnemyWavesController : MonoBehaviour {
 
 	public bool encounterMode = false;
 
+	private EnemyFlockingController _flockingController;
 	private void Start() {
 		Cleanup();
+		_flockingController = GetComponent<EnemyFlockingController>();
 		//AddExistingSwarmsForTesting();
 	}
 	
@@ -74,7 +76,7 @@ public class EnemyWavesController : MonoBehaviour {
 	}
 
 
-	public void MakeSegmentEnemy(float distance, UpgradesController.PathEnemyType enemyType, bool forceDirection = false, bool forcedLeft = false, bool spawnMoving = false) {
+	public void MakeSegmentEnemy(float distance, UpgradesController.PathEnemyType enemyType, bool forceDirection = false, bool forcedLeft = false, bool spawnMoving = false, bool forceNoSpecialGear = false) {
 		var enemyBudget = 1;
 		var uniqueGearBudget = 0;
 		var eliteGearBudget = 0;
@@ -107,6 +109,11 @@ public class EnemyWavesController : MonoBehaviour {
 
 		enemyBudget += DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
 		uniqueGearBudget += DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
+
+		if (forceNoSpecialGear) {
+			uniqueGearBudget = 0;
+			eliteGearBudget = 0;
+		}
 
 		if (enemyBudget == 6) {
 			var isLeft = Random.value < 0.5f;
@@ -365,7 +372,7 @@ public class EnemyWavesController : MonoBehaviour {
 			}
 		}*/
 		
-		GetComponent<EnemyFlockingController>().UpdateEnemyFlocks();
+		_flockingController.UpdateEnemyFlocks();
 	}
 
 	public void RemoveWave(EnemyWave toRemove) {

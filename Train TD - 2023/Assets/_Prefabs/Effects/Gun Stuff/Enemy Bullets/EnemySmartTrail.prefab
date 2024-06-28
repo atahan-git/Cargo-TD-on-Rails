@@ -47,8 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0.15
   minVertexDistance: 0.2
-  points: []
-  pointTimes: []
+  enemyTrail: 1
   doTrail: 1
   railgunMode: 0
   railgunCurPos: {x: 0, y: 0, z: 0}
@@ -160,5 +159,5 @@ LineRenderer:
     textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
-  m_UseWorldSpace: 1
+  m_UseWorldSpace: 0
   m_Loop: 0

@@ -150,10 +150,11 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         }
 
         if (currentBreakPower <= 0) {
+            if (!Mathf.Approximately(targetSpeed, newTargetSpeed)) {
+                OnSpeedChangedBasedOnCartCapacity?.Invoke();
+            }
             targetSpeed = newTargetSpeed;
         }
-
-        OnSpeedChangedBasedOnCartCapacity?.Invoke();
     }
 
     public MiniGUI_SpeedDisplayArea speedDisplayArea;

@@ -240,7 +240,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseHealth: 500
-  maxHealth: 500
   maxHealthReduction: 0
   currentHealth: 500
   damageReductionMultiplier: 1
@@ -252,6 +251,10 @@ MonoBehaviour:
   invincible: 0
   mainCollider: {fileID: 2305579421082905276}
   cartUIBar: {fileID: 0}
+  currentAffectors:
+    maxHealth: 100
+    armor: 1
+    flatArmor: 0
   myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
@@ -259,6 +262,11 @@ MonoBehaviour:
   burnSpeed: 0
   activeBurnEffects: []
   activeMaxHealthReductionPlates: []
+  surfaceColliders:
+  - {fileID: 3123304309905423788}
+  - {fileID: 4737953062172555391}
+  - {fileID: 2305579421082905276}
+  - {fileID: 1507269008584906607}
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -539,11 +547,6 @@ MonoBehaviour:
   myAmmo: {fileID: 0}
   curCooldown: 0
   needAmmo: 1
-  isSniper: 0
-  sniperMultiplier: 0
-  sniperMultiplierGain: 0.2
-  sniperMultiplierLoss: 0.5
-  sniperMaxMultiplier: 5
   hasTarget: 0
   curRocketLockInTime: 0
   rocketLockOnTime: 1

@@ -1,3 +1,4 @@
+using System;
 using FMODUnity;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -46,6 +47,10 @@ public class LaserTurretAnimator : MonoBehaviour
         
         _gunModule.startShootingEvent.AddListener(OnStartShooting);
         _gunModule.stopShootingEvent.AddListener(OnStopShooting);
+    }
+
+    private void Update() {
+        myBeam.SetBeamPower(_gunModule.gatlingAmount/_gunModule.GetMaxGatlingAmount());
     }
 
     void OnStartShooting() {

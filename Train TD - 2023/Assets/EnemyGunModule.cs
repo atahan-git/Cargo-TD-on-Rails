@@ -34,8 +34,7 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
     public int maxGatlingAmount = 4;
     
     [Header("Bullet Info")]
-    public GameObject bulletPrefab;
-    public GameObject muzzleFlashPrefab;
+    public ProjectileProvider.EnemyProjectileTypes myType;
 
     public float GetFireDelay() {
         if (isGigaGatling ) { 
@@ -253,18 +252,18 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
             var actualInaccuracy = Random.Range(0, addAngleInaccuracy);
             actualInaccuracy *= inaccuracyMultiplier;
             
-            var bullet = VisualEffectsController.s.SmartInstantiate(bulletPrefab, position + barrelEnd.forward * projectileSpawnOffset, rotation);
+            var bullet = ProjectileProvider.s.GetEnemyProjectile(myType, position + barrelEnd.forward * projectileSpawnOffset, rotation);
 
             var bulletForward = bullet.transform.forward;
             
             bullet.transform.forward = Vector3.RotateTowards(bulletForward, randomDirection,actualInaccuracy*Mathf.Deg2Rad, 0);
             
-            var muzzleFlash = VisualEffectsController.s.SmartInstantiate(muzzleFlashPrefab, position, rotation);
+            var muzzleFlash = ProjectileProvider.s.GetEnemyMuzzleFlash(myType, position, rotation, transform);
             var rg = GetComponentInParent<Rigidbody>();
             if (rg) {
-                bullet.GetComponent<IEnemyProjectile>().SetUp(rg.gameObject, target, myVelocity);
+                bullet.GetComponent<IEnemyProjectile>().SetUp(rg.gameObject, myVelocity);
             } else {
-                bullet.GetComponent<IEnemyProjectile>().SetUp(gameObject, target, myVelocity);
+                bullet.GetComponent<IEnemyProjectile>().SetUp(gameObject, myVelocity);
             }
 
             if (gunShakeOnShoot)
@@ -401,6 +400,6 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
 
 
 public interface IEnemyProjectile {
-    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity);
+    public void SetUp(GameObject originObject, Vector3 _initialVelocity);
     public Vector3 GetInitialVelocity();
 }

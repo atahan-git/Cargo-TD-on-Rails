@@ -252,7 +252,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
             _meshes = GetComponentsInChildren<MeshRenderer>(true);
 
             for (int i = 0; i < _meshes.Length; i++) {
-                var materials = _meshes[i].sharedMaterials.ToList();
+                var materials = _meshes[i].materials.ToList();
                 materials.Add(cartOverlayMaterial);
                 _meshes[i].materials = materials.ToArray();
             }
@@ -266,7 +266,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
         for (int j = 0; j < _renderers.Length; j++) {
             var rend = _renderers[j];
             if (rend != null) {
-                rend.sharedMaterials[1].SetFloat(BoostAmount, value);
+                rend.materials[1].SetFloat(BoostAmount, value);
             }
         }
     }

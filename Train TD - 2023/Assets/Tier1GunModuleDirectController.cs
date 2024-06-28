@@ -111,8 +111,6 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		isFire.SetActive(myActiveGun.GetBurnDamage() > 0);
 		isExplosive.SetActive(myActiveGun.GetExplosionRange() > 0);
 		isSticky.SetActive(false);
-
-		DirectControlMaster.s.bulletSpeed = myGuns[0].bulletPrefab.GetComponent<Projectile>().speed;
 	}
 
 	public void DisableDirectControl() {
@@ -293,7 +291,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 						myActiveGun.gatlingAmount += Time.deltaTime;
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					} else {
-						myActiveGun.gatlingAmount -= Time.deltaTime;
+						myActiveGun.gatlingAmount -= Time.deltaTime*myActiveGun.gatlingDecayMultiplier;
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					}
 
@@ -311,7 +309,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 						myActiveGun.gatlingAmount += Time.deltaTime;
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					} else {
-						myActiveGun.gatlingAmount -= Time.deltaTime;
+						myActiveGun.gatlingAmount -= Time.deltaTime * myActiveGun.gatlingDecayMultiplier;
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					}
 

@@ -780,7 +780,7 @@ MonoBehaviour:
   gatlingAmount: 0
   maxGatlingAmount: 4
   useProviderBullet: 1
-  myType: 0
+  myType: 9
   bulletPrefab: {fileID: 4908573584345181807, guid: 98bc522f3c4ff4b44a93406dcf01c13c, type: 3}
   muzzleFlashPrefab: {fileID: 980176138545819842, guid: 8f78b5537a14f8e40a70e1e6f66220a5, type: 3}
   fireDelay: 4
@@ -795,6 +795,7 @@ MonoBehaviour:
     efficiency: 1
     flatDamageAdd: 0
     flatAmmoCostAdd: 0
+    ammoMultiplier: 1
     uranium: 0
     fire: 0
     explosionRangeAdd: 0

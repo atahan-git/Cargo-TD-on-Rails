@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class SmartTrail : MonoBehaviour
@@ -9,53 +10,59 @@ public class SmartTrail : MonoBehaviour
     public float minVertexDistance = 0.2f;
 
     private LineRenderer lineRenderer;
-    public List<Vector3> points = new List<Vector3>();
-    public List<float> pointTimes = new List<float>();
+    public CustomArray<Vector3> points = new CustomArray<Vector3>(16);
+    public CustomArray<float> pointTimes = new CustomArray<float>(16);
 
+    public bool enemyTrail = false;
+    
     private IEnemyProjectile _enemyProjectile;
     private Projectile _projectile;
-    private Vector3 velocity;
+    private Vector3 velocity => enemyTrail ? _enemyProjectile.GetInitialVelocity() : _projectile.initialVelocity;
     void Start()
     {
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = points.Count;
-        lineRenderer.SetPositions(points.ToArray());
-
-        _enemyProjectile = GetComponentInParent<IEnemyProjectile>();
-        _projectile = GetComponentInParent<Projectile>();
-        if (_enemyProjectile != null) {
-            velocity = _enemyProjectile.GetInitialVelocity();
-        }else if (_projectile != null) {
-            velocity = _projectile.initialVelocity;
-        }
-        
-        //Debug.Break();
+        Reset();
     }
 
     public bool doTrail = true;
     public void StopTrailing() {
         doTrail = false;
+        if (lineRenderer != null) {
+            points.InsertAtZero(Vector3.zero);
+            pointTimes.InsertAtZero(Time.time);
+            UpdateLineRenderer();
+        }
     }
 
-    void FixedUpdate()
-    {
-        UpdateTrailPositions();
-    }
+    public void Reset() {
+        points.Count = 0;
+        pointTimes.Count = 0;
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = 0;
 
-    private void Update() {
+        doTrail = true;
         
+        if(enemyTrail)
+            _enemyProjectile = GetComponentInParent<IEnemyProjectile>(true);
+        else
+            _projectile = GetComponentInParent<Projectile>(true);
+        /*if (_enemyProjectile != null) {
+            velocity = _enemyProjectile.GetInitialVelocity();
+        }else if (_projectile != null) {
+            velocity = _projectile.initialVelocity;
+        }*/
+    }
+
+    private void LateUpdate() {
+        UpdateTrailPositions();
     }
 
 
     void UpdateTrailPositions() {
-        var rg = GetComponentInParent<Rigidbody>();
-
-
-        if (doTrail && rg != null) {
+        if (doTrail) {
             //Debug.Break();
-            if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], rg.position) >= minVertexDistance) {
-                points.Insert(0, transform.position);
-                pointTimes.Insert(0, Time.time);
+            if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], Vector3.zero) >= minVertexDistance) {
+                points.InsertAtZero(Vector3.zero);
+                pointTimes.InsertAtZero( Time.time);
             }
         }
 
@@ -64,8 +71,8 @@ public class SmartTrail : MonoBehaviour
             tAdd += Time.deltaTime;
             
             if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], railgunCurPos) >= minVertexDistance) {
-                points.Insert(0, railgunCurPos);
-                pointTimes.Insert(0, Time.time+tAdd);
+                points.InsertAtZero(transform.InverseTransformPoint(railgunCurPos));
+                pointTimes.InsertAtZero( Time.time+tAdd);
             }
 
             if (Vector3.Distance(railgunCurPos, railgunTo) <= 0) {
@@ -77,8 +84,8 @@ public class SmartTrail : MonoBehaviour
         if (points.Count > 0) {
             for (int i = points.Count - 1; i >= 0; i--) {
                 if (Time.time - pointTimes[i] > lifetime) {
-                    points.RemoveAt(i);
-                    pointTimes.RemoveAt(i);
+                    points.RemoveAtEnd();
+                    pointTimes.RemoveAtEnd();
                 }
             }
         }
@@ -93,6 +100,7 @@ public class SmartTrail : MonoBehaviour
     public float tAdd;
     public void RailgunOntoPoint(Vector3 from, Vector3 to) {
         railgunMode = true;
+        doTrail = false;
         railgunCurPos = from;
         railgunTo = to;
         tAdd = 0;
@@ -100,10 +108,8 @@ public class SmartTrail : MonoBehaviour
         lifetime = 0.3f;
         //Debug.Break();
         
-        points.Insert(0, from);
-        pointTimes.Insert(0, Time.time);
-
-        velocity = Vector3.zero;
+        points.InsertAtZero( transform.InverseTransformPoint(from));
+        pointTimes.InsertAtZero(Time.time);
 
         /*if (lineRenderer == null) {
             Start();
@@ -113,15 +119,92 @@ public class SmartTrail : MonoBehaviour
     void UpdateLineRenderer()
     {
         lineRenderer.positionCount = points.Count;
-
         lineRenderer.SetPositions(points.ToArray());
 
-        if (points.Count > 0)
+        if (doTrail && points.Count > 0 && !railgunMode)
         {
             //float[] widths = new float[points.Count];
             for (int i = 0; i < points.Count; i++)
             {
-                points[i] += velocity*Time.deltaTime;
+                points[i] += -Vector3.forward*Time.deltaTime*5;
+            }
+        }
+
+        if (!doTrail && points.Count > 0 && !railgunMode) {
+
+            var localizedVectorAdd = transform.InverseTransformDirection(Train.s.GetTrainForward()) * LevelReferences.s.speed*Time.deltaTime;
+            
+            for (int i = 0; i < points.Count; i++)
+            {
+                points[i] += localizedVectorAdd;
+            }
+        }
+    }
+    
+    
+    
+    public class CustomArray<T>
+    {
+        private T[] elements;
+        public int Count;
+
+        public CustomArray(int length) {
+            elements = new T[length];
+            Count = 0;
+        }
+
+        public void InsertAtZero(T element)
+        {
+            if (Count == elements.Length)
+            {
+                ResizeArray(elements.Length * 2);
+            }
+            
+            for (int i = Count; i > 0; i--)
+            {
+                elements[i] = elements[i - 1];
+            }
+
+            elements[0] = element;
+            Count++;
+        }
+
+        public void RemoveAtEnd()
+        {
+            if (Count > 0)
+            {
+                Count--;
+            }
+        }
+        
+        private void ResizeArray(int newSize)
+        {
+            T[] newArray = new T[newSize];
+            elements.CopyTo(newArray, 0);
+            elements = newArray;
+        }
+
+        public T[] ToArray() {
+            return elements;
+        }
+        
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= Count)
+                {
+                    throw new System.IndexOutOfRangeException("Index out of range");
+                }
+                return elements[index];
+            }
+            set
+            {
+                if (index < 0 || index >= Count)
+                {
+                    throw new System.IndexOutOfRangeException("Index out of range");
+                }
+                elements[index] = value;
             }
         }
     }

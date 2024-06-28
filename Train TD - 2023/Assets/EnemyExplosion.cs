@@ -46,11 +46,15 @@ public class EnemyExplosion : MonoBehaviour {
         if (target != null) {
 
             if (explosionDamage > 0) {
-                target.DealDamage(explosionDamage, transform.position);
-                if(explosionDamage > 1)
-                    VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                        .GetComponent<MiniGUI_DamageNumber>()
-                        .SetUp(target.GetUITransform(), (int)explosionDamage, false, false, false);
+                target.DealDamage(explosionDamage, transform.position, Quaternion.AngleAxis(180, transform.up) * transform.rotation);
+                if (explosionDamage > 1) {
+                    var damageNumbers = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
+                        VisualEffectsController.EffectPriority.damageNumbers);
+                    if (damageNumbers != null) {
+                        damageNumbers.GetComponent<MiniGUI_DamageNumber>()
+                            .SetUp(target.GetUITransform(), (int)explosionDamage, false, false, false);
+                    }
+                }
             }
 
             if (explosionBurn > 0) {

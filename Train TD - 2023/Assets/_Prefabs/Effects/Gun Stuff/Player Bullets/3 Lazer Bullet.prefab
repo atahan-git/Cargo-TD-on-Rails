@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4908573584345181807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4908573584345181804}
+  - component: {fileID: 4116503502340708792}
+  - component: {fileID: -9104505785343846112}
+  m_Layer: 12
+  m_Name: 3 Lazer Bullet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4908573584345181804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4908573584345181807}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.14, y: 0.5979, z: 1.4997001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4116503502340708792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4908573584345181807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed22b7720cff2244a8c914a8c7f08ab8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  curSpeed: 0
+  acceleration: 2.5
+  seekAcceleration: 360
+  speed: 1
+  projectileDamage: 20
+  burnDamage: 0
+  explosionRange: 0
+  isHeal: 0
+  hitForceMultiplier: 300
+  lifetime: 1
+  myOriginObject: {fileID: 0}
+  isTargetSeeking: 1
+  seekStrength: 20
+  isPlayerBullet: 0
+  target: {fileID: 0}
+  source: {fileID: 0}
+  ballistaHitEffect: 0
+  myHitType: 3
+  mortarGravity: {x: 0, y: -9.81, z: 0}
+  mortarAimPredictTime: 1
+  mortarVelocityMultiplier: 0.5
+  isPhaseThrough: 0
+  isSlowDamage: 0
+  isHoming: 0
+  initialVelocity: {x: 0, y: 0, z: 0}
+  hitScanLayerMask:
+    serializedVersion: 2
+    m_Bits: 57344
+  hitScanRange: 10
+  isDead: 0
+  instantDestroy: {fileID: 0}
+--- !u!114 &-9104505785343846112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4908573584345181807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f44ad7d0605474409f8c95e869c5d57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myId: -1
+  myPool: {fileID: 0}
+  isActive: 0
+  _lifetime: -1

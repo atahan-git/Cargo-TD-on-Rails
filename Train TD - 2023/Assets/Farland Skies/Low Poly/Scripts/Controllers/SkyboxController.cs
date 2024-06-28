@@ -576,6 +576,7 @@ namespace Borodar.FarlandSkies.LowPoly
                 {
                     _sunLight.gameObject.SetActive(true);
                     _sunFlareComponent = _sunLight.GetComponent<LensFlare>();
+                    RenderSettings.sun = _sunLight;
                 }
                 else
                 {
@@ -646,6 +647,7 @@ namespace Borodar.FarlandSkies.LowPoly
             // Update skybox
 
             RenderSettings.skybox = SkyboxMaterial;
+            DynamicGI.UpdateEnvironment();
             
             if (_adjustFogColor) RenderSettings.fogColor = MiddleColor;
         }

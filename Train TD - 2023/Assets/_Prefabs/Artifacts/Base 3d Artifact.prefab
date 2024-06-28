@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3932598021525471259}
   - component: {fileID: 4270130572125168830}
   - component: {fileID: 1778188923521918398}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Base 3d Artifact
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -282,7 +282,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1467745389761230316}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Crystal decor (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -314,7 +314,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7655982080600700883}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: center
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -460,7 +460,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6911121050491619276}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Crystal decor (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -526,7 +526,7 @@ GameObject:
   - component: {fileID: 8862473355879976489}
   - component: {fileID: 6982010479574458499}
   - component: {fileID: 7051171376208832342}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Prop_Crystal_Purple_01 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -644,7 +644,7 @@ GameObject:
   - component: {fileID: 8239580465704984103}
   - component: {fileID: 7012764207707065920}
   - component: {fileID: 8173557095756644403}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Prop_Crystal_Purple_01 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -9,6 +9,6 @@ PhysicMaterial:
   m_Name: Ultra Bouncy
   dynamicFriction: 10
   staticFriction: 10
-  bounciness: 1
+  bounciness: 0.9
   frictionCombine: 3
   bounceCombine: 3

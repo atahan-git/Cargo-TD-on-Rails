@@ -297,6 +297,9 @@ MonoBehaviour:
   burnSpeed: 0
   activeBurnEffects: []
   activeMaxHealthReductionPlates: []
+  surfaceColliders:
+  - {fileID: 232269251456713494}
+  - {fileID: 4040734832920149361}
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -505,7 +508,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 6
+  rmsCount: 8
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25
@@ -900,6 +903,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
   m_PrefabInstance: {fileID: 1726927203315059577}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &4040734832920149361 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+  m_PrefabInstance: {fileID: 1726927203315059577}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2279936214996989511
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1226,6 +1234,11 @@ PrefabInstance:
       objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+--- !u!64 &232269251456713494 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+  m_PrefabInstance: {fileID: 3233015435865617694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3123038626739557109 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}

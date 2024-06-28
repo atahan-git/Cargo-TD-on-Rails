@@ -25,6 +25,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	
 	
 	public Image validRepairImage => DirectControlMaster.s.validRepairImage;
+	public Image arrowRepairImage => DirectControlMaster.s.arrowRepairImage;
 	public Slider repairingSlider => DirectControlMaster.s.repairingSlider;
 
 
@@ -34,8 +35,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 	public Vector3 currentFlightVelocity;
 
-	public float baseRepairTime = 0.7f;
-	public float AffectedRepairTime = 1f;
 	public float curRepairTime;
 	
 	public void ActivateDirectControl() {
@@ -94,6 +93,10 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 	public LayerMask repairLookMask => DirectControlMaster.s.repairLookMask;
 
+
+	private bool needToUnClick = false;
+	public bool arrowRepairing = false;
+	private RepairableBurnEffect repairTarget;
 	public void UpdateDirectControl() {
 		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed|| myHealth.myCart.isBeingDisabled  || myRepairController == null || myRepairController.carryDraggableMode) {
 			// in case our module gets destroyed
@@ -102,23 +105,72 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		}
 
 		var camTrans = MainCameraReference.s.cam.transform;
-		Ray ray = new Ray(camTrans.position, camTrans.forward);
+		var camPos = camTrans.position;
+		Ray ray = new Ray(camPos, camTrans.forward);
 		RaycastHit hit;
-		RepairableBurnEffect repairTarget = null;
 		var validTarget = false;
 
-		if (Physics.SphereCast(ray, 0.1f, out hit, 0.5f, repairLookMask)) {
-			repairTarget = hit.collider.GetComponentInParent<RepairableBurnEffect>();
-			
-			//print(hit.collider.gameObject.name);
-
-			if (repairTarget != null) {
+		if (arrowRepairing) {
+			if (repairTarget == null) {
+				arrowRepairing = false;
+			} else {
 				validTarget = true;
 			}
-		} 
-		
-		
-		validRepairImage.gameObject.SetActive(validTarget);
+		} else {
+			repairTarget = null;
+		}
+
+		if (!arrowRepairing && !needToUnClick) {
+			var allCast = Physics.SphereCastAll(ray, 0.1f, 0.5f, repairLookMask);
+			RepairableBurnEffect closestArrow = null;
+			float arrowMinDist = float.MaxValue;
+			RepairableBurnEffect closestRegular = null;
+			float regularMinDist = float.MaxValue;
+
+			for (int i = 0; i < allCast.Length; i++) {
+				var target = allCast[i].collider.GetComponentInParent<RepairableBurnEffect>();
+
+				if (target != null) {
+					if(!CanSeeTarget(target, camPos))
+						continue;
+					
+					var dist = Vector3.Distance(camPos, target.transform.position);
+					if (target.hasArrow) {
+						if (dist < arrowMinDist) {
+							closestArrow = target;
+							arrowMinDist = dist;
+						}
+					} else {
+						if (dist < regularMinDist) {
+							closestRegular = target;
+							regularMinDist = dist;
+						}
+					}
+				}
+			}
+
+			if (closestArrow != null && closestRegular != null) {
+
+				if (arrowMinDist < regularMinDist + 0.2f) {
+					repairTarget = closestArrow;
+				} else {
+					repairTarget = closestRegular;
+				}
+				
+			}else if (closestArrow != null) {
+				repairTarget = closestArrow;
+			}else if (closestRegular != null) {
+				repairTarget = closestRegular;
+			}
+			
+			
+			if (repairTarget != null) {
+				initialGrabLocalOffset = Vector3.Distance(camTrans.position, repairTarget.transform.position);
+				validTarget = true;
+			}
+		}
+
+		validRepairImage.gameObject.SetActive(validTarget && !repairTarget.hasArrow);
 
 		var drone = myRepairController.drone;
 		
@@ -131,38 +183,157 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		drone.transform.position += currentFlightVelocity * Time.unscaledDeltaTime;
 
 		var doRepair = shootAction.action.IsPressed() && !enterDirectControlShootLock;
+
+		if (arrowRepairing && !doRepair) {
+			arrowRepairing = false;
+			arrowAnimating = true;
+		}
+
+		if (needToUnClick) {
+			if (!doRepair) {
+				needToUnClick = false;
+			}
+		}
+		
+		UpdateArrowRepairImageState(validTarget, doRepair);
 		
 		drone.GetComponent<RepairDrone>().SetCurrentlyRepairingState(doRepair && validTarget);
 
-		AffectedRepairTime = baseRepairTime / myRepairController.GetEfficiency();
-		if (AffectedRepairTime <= 0.1f) {
-			AffectedRepairTime = 0.1f;
-		}
-
 		if (validTarget) {
 			if (doRepair) {
-				curRepairTime += Time.deltaTime;
-
-				
-				if (curRepairTime > AffectedRepairTime) {
-					myRepairController.DoRepair(repairTarget.GetComponentInParent<ModuleHealth>(), repairTarget);
-					
-					repairingSlider.value = 1;
-					
-					curRepairTime = 0 ;
-					return;
+				if (repairTarget.hasArrow) {
+					arrowRepairing = true;
+					needToUnClick = true;
+					arrowAnimating = false;
+					MakeArrowPullOutMagic();
+				} else {
+					curRepairTime = myRepairController.TryDoRepair(repairTarget, out bool removedArrow, out bool repairSuccess,5f);
+					if (repairSuccess) {
+						repairTarget = null;
+					}
 				}
 			} else {
-				curRepairTime -= Time.deltaTime;
+				curRepairTime -= Time.deltaTime/2f;
 			}
 		} else {
 			curRepairTime -= Time.deltaTime;
 		}
 
-		curRepairTime = Mathf.Clamp(curRepairTime, 0, AffectedRepairTime);
+		repairingSlider.value = curRepairTime;
+	}
 
-		//print($"{validTarget} - {doRepair} - {curRepairTime}");
-		repairingSlider.value = Mathf.Clamp01(curRepairTime / AffectedRepairTime);
+	private void LateUpdate() {
+		var camTransform = MainCameraReference.s.cam.transform;
+		// matchTargetPos
+		if (repairTarget != null) {
+			if (!arrowAnimating) {
+				if (!arrowRepairing) {
+					arrowRepairImage.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
+				} else {
+					var grabPos = (camTransform.position + camTransform.forward * initialGrabLocalOffset);
+					arrowRepairImage.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(grabPos);
+				}
+			}
+
+			validRepairImage.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
+			repairingSlider.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
+		}
+	}
+
+	bool CanSeeTarget(RepairableBurnEffect effect, Vector3 camPos) {
+		if (Physics.Raycast(camPos, effect.transform.position - camPos, out RaycastHit hit, 10, LevelReferences.s.buildingLayer)) {
+			var depth = Vector3.Distance(hit.point, effect.transform.position);
+
+			if (depth > 0.1f) {
+				return false;
+			} else {
+				return true;
+			}
+			
+		} else {
+			return true;
+		}
+	}
+
+	void UpdateArrowRepairImageState(bool validTarget, bool doRepair) {
+		if (validTarget && repairTarget.hasArrow && !arrowAnimating) {
+			arrowRepairImage.color = Color.green;
+			if (doRepair) {
+				arrowRepairImage.transform.localScale = Vector3.Lerp(arrowRepairImage.transform.localScale, Vector3.one, 20*Time.deltaTime);
+			} else {
+				arrowRepairImage.transform.localScale = Vector3.Lerp(arrowRepairImage.transform.localScale, Vector3.one*1.5f, 20*Time.deltaTime);
+			}
+		}
+
+		if (arrowAnimating) {
+			if (arrowRepairSuccess) {
+				arrowRepairImage.transform.localScale = Vector3.MoveTowards(arrowRepairImage.transform.localScale, Vector3.one*10f, 25*Time.deltaTime);
+				var col = arrowRepairImage.color;
+				col.a = Mathf.MoveTowards(col.a, 0, 10 * Time.deltaTime);
+				arrowRepairImage.color = col;
+
+				if (col.a <= 0) {
+					arrowAnimating = false;
+				}
+			} else {
+				arrowRepairImage.transform.localScale = Vector3.MoveTowards(arrowRepairImage.transform.localScale, Vector3.one*10f, 10*Time.deltaTime);
+				var col = arrowRepairImage.color;
+				col.r = 1;
+				col.g = 0;
+				col.a = Mathf.MoveTowards(col.a, 0, 5 * Time.deltaTime);
+				arrowRepairImage.color = col;
+
+				if (col.a <= 0) {
+					arrowAnimating = false;
+				}
+			}
+		}
+		
+		
+		arrowRepairImage.gameObject.SetActive(arrowAnimating || (validTarget && repairTarget.hasArrow));
+	}
+
+	private float initialGrabLocalOffset;
+	private bool arrowRepairSuccess = false;
+	private bool arrowAnimating = false;
+	void MakeArrowPullOutMagic() {
+		curRepairTime = 0;
+		arrowRepairSuccess = false;
+		
+		var camTransform = MainCameraReference.s.cam.transform;
+		var pullOutAmount = repairTarget.requiredPullOutAmount;
+		
+		var pointAPos = repairTarget.transform.position;
+		var pointBPos = repairTarget.transform.position + (repairTarget.transform.forward*pullOutAmount);
+
+		// position based movePercent
+		var grabPos = (camTransform.position + camTransform.forward * initialGrabLocalOffset);
+		var pullVector =  grabPos- pointAPos;
+		var vectorFromAtoB = pointBPos - pointAPos;
+		var pullDot = Vector3.Dot(pullVector, vectorFromAtoB);
+		var distancePercent = pullDot / (0.06f * (pullOutAmount/0.25f));
+		
+		distancePercent = Mathf.Clamp01(distancePercent);
+
+		//repairTarget.removeArrowState = Mathf.MoveTowards(repairTarget.removeArrowState, distancePercent, 2 * Time.deltaTime);
+		repairTarget.removeArrowState = distancePercent;
+		repairTarget.SetRemoveArrowState(repairTarget.removeArrowState);
+
+		if (repairTarget.removeArrowState >= 1) {
+			repairTarget.RemoveArrow();
+			arrowRepairing = false;
+			arrowRepairSuccess = true;
+			arrowAnimating = true;
+		}
+
+		/*var distToA = Vector3.Distance(grabPos, pointAPos);
+		var distToB = Vector3.Distance(grabPos, pointBPos);
+
+		var minDist = Mathf.Min(distToA, distToB);
+
+		if (minDist > 0.5f) {
+			arrowRepairing = false;
+		}*/
 	}
 	
 	public Vector3 CalculateFlightVelocity(Vector3 previousVelocity, Vector3 wasdInput, Transform cameraTransform, bool upInput, bool downInput)

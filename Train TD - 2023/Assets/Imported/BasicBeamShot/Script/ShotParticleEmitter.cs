@@ -17,6 +17,7 @@ public class ShotParticleEmitter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		return;
 		Rld -= 1.0f;
 		if(Rld < 0.0f && ShotPower != 0)
 		{		
@@ -30,11 +31,11 @@ public class ShotParticleEmitter : MonoBehaviour {
 				//RandZ
 				q_rnd *= Quaternion.AngleAxis((Random.value*Disturbance)-Disturbance*0.5f,this.transform.up);
 				
-				q_rnd *= Quaternion.AngleAxis(180f,this.transform.up);
+				//q_rnd *= Quaternion.AngleAxis(180f,this.transform.up);
 
-				GameObject pat = (GameObject)VisualEffectsController.s.SmartInstantiate(ShotParticle,Vector3.zero,q_rnd, VisualEffectsController.EffectPriority.Always);
+				GameObject pat = (GameObject)VisualEffectsController.s.SmartInstantiate(ShotParticle,transform, transform.position,q_rnd, VisualEffectsController.EffectPriority.Always);
                 //pat.GetComponent<LineRenderer>().SetColors(col, col);
-				pat.transform.parent = this.transform.parent;
+				//pat.transform.parent = this.transform.parent;
 				ShotPowerBuf -= 1.0f;
 			}
 		}

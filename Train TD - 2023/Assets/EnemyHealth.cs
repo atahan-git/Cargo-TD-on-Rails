@@ -83,6 +83,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 	}
 
 	void SetBuildingShaderHealth(float value) {
+		return;
 		var _renderers = GetComponentsInChildren<MeshRenderer>();
 		for (int j = 0; j < _renderers.Length; j++) {
 			var rend = _renderers[j];
@@ -91,6 +92,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 	}
 	
 	void SetBuildingShaderBurn(float value) {
+		return;
 		var _renderers = GetComponentsInChildren<MeshRenderer>();
 		value = value.Remap(0, 10, 0, 0.5f);
 		value = Mathf.Clamp(value, 0, 2f);
@@ -153,9 +155,13 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 	private void Update() {
 		var burnDistance = Mathf.Max(burnSpeed / 2f, 1f);
 		if (currentBurn >= burnDistance) {
-			Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-				.GetComponent<MiniGUI_DamageNumber>()
-				.SetUp(uiTransform, burnDistance, false, false, true);
+			var damageNumbers = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
+				VisualEffectsController.EffectPriority.damageNumbers);
+			if (damageNumbers != null) {
+				damageNumbers.GetComponent<MiniGUI_DamageNumber>()
+					.SetUp(uiTransform, burnDistance, false, false, true);
+			}
+
 			DealDamage(burnDistance, null);
 
 			currentBurn -= burnDistance;
@@ -224,7 +230,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 			rewardMoney *= 5;
 
 			if (rewardMoney > 0) {
-				Instantiate(LevelReferences.s.crystalDrop, LevelReferences.s.uiDisplayParent).GetComponent<CrystalDrop>().SetUp(uiTransform.position, rewardMoney);
+				//Instantiate(LevelReferences.s.crystalDrop, LevelReferences.s.uiDisplayParent).GetComponent<CrystalDrop>().SetUp(uiTransform.position, rewardMoney);
 			}
 		}
 

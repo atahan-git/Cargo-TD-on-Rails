@@ -66,7 +66,8 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
     [ShowInInspector]
     public IPlayerHoldable myCarry;
 
-    public float autoRepairTime = 2f;
+    [Tooltip("at 1 multiplier repairing takes 5 secs")]
+    public float repairSpeedMultiplier = 1f;
 
     public Affectors currentAffectors;
     [Serializable]
@@ -180,24 +181,57 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
                     MoveDroneWithVelocity(targetPos, targetRot);
 
                     if (Vector3.Distance(drone.transform.position, targetPos) < 0.15f) {
-                        repairTimer += Time.deltaTime;
                         droneScript.SetCurrentlyRepairingState(true);
 
-
-                        if (repairTimer >= GetRepairTime()) {
-                            DoRepair(health, target);
-                            TryGetNewTarget();
-
-                            repairTimer = 0;
-                        }
+                        TryDoRepair(target, out bool removedArrow, out bool repairSuccess);
                     } else {
                         repairTimer -= Time.deltaTime;
-                        repairTimer = Mathf.Clamp(repairTimer, 0, GetRepairTime());
+                        repairTimer = Mathf.Clamp(repairTimer, 0, 1);
                         droneScript.SetCurrentlyRepairingState(false);
                     }
                 }
             }
         }
+    }
+
+
+    public float TryDoRepair(RepairableBurnEffect target, out bool removedArrow, out bool repairSuccess, float extraMultiplier = 1) {
+        removedArrow = false;
+        repairSuccess = false;
+        if (target.hasArrow) {
+            repairTimer = target.removeArrowState;
+            repairTimer += Time.deltaTime * GetArrowRepairTimeMultiplier()*extraMultiplier;
+            target.SetRemoveArrowState(repairTimer);
+            if (repairTimer > 1) {
+                target.RemoveArrow();
+                removedArrow = true;
+                repairTimer = 0;
+            }
+        } else {
+            repairTimer += Time.deltaTime*GetRepairTimeMultiplier()*extraMultiplier;
+        }
+
+        if (repairTimer >= 1) {
+            DoRepair(target.GetComponentInParent<ModuleHealth>(), target);
+            TryGetNewTarget();
+
+            repairSuccess = true;
+
+            repairTimer = 0;
+        }
+
+        repairTimer = Mathf.Clamp01(repairTimer);
+
+        return repairTimer;
+    }
+
+
+    public float GetArrowRepairTimeMultiplier() {
+        return Mathf.Min(10,0.2f * currentAffectors.efficiency); // at 1 efficiency repair arrow takes 5 sec
+    }
+    
+    public float GetRepairTimeMultiplier() {
+        return Mathf.Min(10,0.2f * currentAffectors.efficiency * repairSpeedMultiplier); // at 1 efficiency regular repair takes 5 sec
     }
 
     private void CatchCarry() {
@@ -328,10 +362,6 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         }
     }
 
-    public float GetRepairTime() {
-        return autoRepairTime * (1f / GetEfficiency());
-    }
-
     public float GetDroneMaxSpeed() {
         return maxVelocity * GetSpeed();
     }
@@ -369,7 +399,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
             curVelocity += 1 * Time.deltaTime;
         }
         
-        curVelocity = Mathf.Clamp(curVelocity, 0.1f, Mathf.Min(_maxVelocity, distance*5));
+        curVelocity = Mathf.Clamp(curVelocity, 0.2f, Mathf.Min(_maxVelocity, distance*5));
         
         drone.transform.position = Vector3.MoveTowards(drone.transform.position, pos, curVelocity*Time.deltaTime);
         drone.transform.rotation = ExtensionMethods.QuaterionSmoothDamp(drone.transform.rotation, rot, ref quatVel, 0.1f);

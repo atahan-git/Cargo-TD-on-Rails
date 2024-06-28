@@ -15,7 +15,6 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
     public float speed = 7.5f;
     public float seekStrength = 20f;
     
-    public GameObject instantDestroy;
 
     [FoldoutGroup("Internal Variables")]
     public GameObject myOriginObject;
@@ -24,13 +23,16 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
     [FoldoutGroup("Internal Variables")]
     public bool isDead = false;
 
-    private void Start() {
+    private void OnEnable() {
+        isDead = false;
+        if (instantDestroy)
+            instantDestroy.SetActive(true);
+        
         Invoke("DestroySelf", lifetime);
     }
 
-    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity) {
+    public void SetUp(GameObject originObject, Vector3 _initialVelocity) {
         myOriginObject = originObject;
-        target = _target;
         initialVelocity = _initialVelocity;
     }
 
@@ -38,9 +40,6 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
         return initialVelocity;
     }
 
-    void DestroySelf() {
-        Destroy(gameObject);
-    }
 
     public Vector3 initialVelocity;
     void FixedUpdate() {
@@ -60,7 +59,11 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
             GetComponent<Rigidbody>().velocity = (transform.forward * speed ) + (initialVelocity);
         }
     }
-
+    
+    public GameObject instantDestroy;
+    void DestroySelf() {
+        GetComponent<PooledObject>().DestroyPooledObject();
+    }
     void SmartDestroySelf() {
         if (!isDead) {
             isDead = true;
@@ -69,25 +72,21 @@ public class EnemySlowBullet : MonoBehaviour,IEnemyProjectile
 
             foreach (var particle in particles) {
                 if (particle.gameObject != instantDestroy) {
-                    particle.transform.SetParent(VisualEffectsController.s.transform);
-                    particle.transform.localScale = Vector3.one;
                     particle.Stop();
-                    Destroy(particle.gameObject, 1f);
                 }
             }
             
             var trail = GetComponentInChildren<SmartTrail>();
             if (trail != null) {
                 trail.StopTrailing();
-                trail.transform.SetParent(VisualEffectsController.s.transform);
-                Destroy(trail.gameObject, 1f);
             }
-
-            if(toSpawnOnDeath != null)
-                Instantiate(toSpawnOnDeath, transform.position, transform.rotation);
             
-            Destroy(instantDestroy);
-            Destroy(gameObject);
+            if(instantDestroy != null)
+                instantDestroy.SetActive(false);
+
+            GetComponent<PooledObject>().lifeTime = ProjectileProvider.bulletAfterDeathLifetime;
+
+            GetComponent<Rigidbody>().detectCollisions = false;
         }
     }
 

@@ -52,6 +52,9 @@ public class Artifact_MiniBomb : MonoBehaviour
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
             VisualEffectsController.s.SmartInstantiate(LevelReferences.s.mortarMiniHitPrefab, closestPoint, Quaternion.identity);
         }
+        
+        
+        MiniGUI_Pick3GemReward.MakeGem(UpgradesController.s.potatoGemName, transform.position, transform.rotation);
 
         Destroy(gameObject);
     }

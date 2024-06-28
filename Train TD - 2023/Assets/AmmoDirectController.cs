@@ -49,6 +49,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     public float perfectMatchDistance = 0.01f;
     
     public InputActionReference activateAction => DirectControlMaster.s.activateAction;
+    public InputActionReference shootAction => DirectControlMaster.s.shootAction;
     public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
     
     public GameObject ammo_perfect=> DirectControlMaster.s.ammo_perfect;
@@ -159,7 +160,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         }
         
         
-        if (!needNewOnes && !dropping && activateAction.action.IsPressed() && !enterDirectControlShootLock) {
+        if (!needNewOnes && !dropping && (activateAction.action.IsPressed() || shootAction.action.IsPressed()) && !enterDirectControlShootLock) {
             SetNewOnesDropping();
             dropping = true;
         }
@@ -390,7 +391,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         newOnes.Clear();
 
         if (failedSpawnEffect != null) {
-            myHealth.DealDamage(50, null);
+            myHealth.DealDamage(50);
             VisualEffectsController.s.SmartInstantiate(failedSpawnEffect, myHealth.GetUITransform().position, Quaternion.identity);
         }
     }

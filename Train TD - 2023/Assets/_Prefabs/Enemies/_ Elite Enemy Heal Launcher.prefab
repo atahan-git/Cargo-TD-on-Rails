@@ -138,6 +138,7 @@ MonoBehaviour:
   maxGatlingAmount: 4
   bulletPrefab: {fileID: 4908573584345181807, guid: 63848ee133d1df24a88c1c9b3be629a4, type: 3}
   muzzleFlashPrefab: {fileID: 980176138545819842, guid: 91d07708a7b424b4fa8523e77356c595, type: 3}
+  myType: 5
   fireDelay: 2
   fireBarrageCount: 1
   fireBarrageDelay: 0.2
@@ -160,11 +161,14 @@ MonoBehaviour:
   projectileSpawnOffset: 0.2
   rangeOrigin: {fileID: 0}
   waitTimer: 0
+  isShooting: 0
   target: {fileID: 0}
   gunActive: 1
   IsBarrelPointingCorrectly: 0
   gotShootCredits: 0
   isEliteNoNeedForShootCredit: 0
+  myVelocity: {x: 0, y: 0, z: 0}
+  lastPos: {x: 0, y: 0, z: 0}
 --- !u!114 &5681084119528593804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,6 +186,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 1
+  delay: 0
 --- !u!114 &4971180238582831025
 MonoBehaviour:
   m_ObjectHideFlags: 0

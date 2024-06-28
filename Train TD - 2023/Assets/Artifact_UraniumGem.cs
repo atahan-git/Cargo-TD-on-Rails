@@ -75,7 +75,7 @@ public class Artifact_UraniumGem : MonoBehaviour, IChangeCartState, IActiveDurin
         if(target == null)
             return;
         
-        target.GetHealthModule().DealDamage(amount, null);
+        target.GetHealthModule().DealDamage(amount);
         VisualEffectsController.s.SmartInstantiate(LevelReferences.s.radiationDamagePrefab, target.uiTargetTransform);
     }
 

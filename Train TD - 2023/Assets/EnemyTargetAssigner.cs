@@ -20,7 +20,6 @@ public class EnemyTargetAssigner : MonoBehaviour {
     public Queue<EnemyGunModule> shootRequesters = new Queue<EnemyGunModule>();
 
     public TMP_Text shootCreditDisplay;
-    
 
     // Update is called once per frame
     void Update() {

@@ -115,13 +115,20 @@ public class AOEDamage : MonoBehaviour {
             } else {
                 target.BurnDamage(burnDamage);
                 target.DealDamage(dmg, transform.position);
-                VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                    .GetComponent<MiniGUI_DamageNumber>()
-                    .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
-                
-                VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                    .GetComponent<MiniGUI_DamageNumber>()
-                    .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);
+                var damageNumbers = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
+                    VisualEffectsController.EffectPriority.damageNumbers);
+                if (damageNumbers != null) {
+                    damageNumbers
+                        .GetComponent<MiniGUI_DamageNumber>()
+                        .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
+                }
+
+                var damageNumbers2 = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
+                    VisualEffectsController.EffectPriority.damageNumbers);
+                if (damageNumbers2 != null) {
+                    damageNumbers2.GetComponent<MiniGUI_DamageNumber>()
+                        .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);
+                }
             }
         }
     }

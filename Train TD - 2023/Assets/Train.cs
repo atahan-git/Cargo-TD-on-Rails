@@ -369,6 +369,7 @@ public class Train : MonoBehaviour {
         trainMiddle.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
         trainMiddle.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
         
+        //Physics.SyncTransforms();
         
         DoShake();
     }

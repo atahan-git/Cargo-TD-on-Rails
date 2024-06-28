@@ -724,16 +724,22 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
     public bool screenIsFlipped = false;
     public Ray GetRay() {
+        var forwardMoveAdjustment = Train.s.GetTrainForward() * LevelReferences.s.speed * Time.deltaTime;
+        //var forwardMoveAdjustment = Vector3.zero;
+        Ray ray;
         if (SettingsController.GamepadMode()) {
-            return GamepadControlsHelper.s.GetRay();
+            ray= GamepadControlsHelper.s.GetRay();
         } else {
             var pos = GetMousePos();
             if (screenIsFlipped) {
                 pos.x = Screen.width - pos.x;
             }
 
-            return LevelReferences.s.mainCam.ScreenPointToRay(pos);
+            ray= LevelReferences.s.mainCam.ScreenPointToRay(pos);
         }
+
+        ray.origin -= forwardMoveAdjustment;
+        return ray;
     }
 
     

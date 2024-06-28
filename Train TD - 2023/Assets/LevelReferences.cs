@@ -196,10 +196,11 @@ public class LevelReferences : MonoBehaviour {
     private void Update() {
         targetValuesCount = allTargets.Count;
         if (targetValuesCount > allTargetValues.Length) {
-            allTargetValues = new TargetValues[allTargetValues.Length*2];
+            allTargetValues = new TargetValues[Mathf.Max(64, allTargetValues.Length*2)];
             for (int i = 0; i < allTargetValues.Length; i++) {
                 allTargetValues[i] = new TargetValues();
             }
+            Debug.Log($"target values array expanded to {allTargetValues.Length}");
         }
 
         for (int i = 0; i < targetValuesCount; i++) {

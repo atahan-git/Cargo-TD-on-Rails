@@ -39,6 +39,8 @@ public class PossibleTarget : MonoBehaviour {
         myCart = GetComponent<Cart>();
         _outline = GetComponent<HighlightEffect>();
         isCartTarget = myCart != null;
+
+        CacheHealths();
     }
 
     private void OnDestroy() {
@@ -46,26 +48,30 @@ public class PossibleTarget : MonoBehaviour {
         LevelReferences.s.targetsDirty = true;
     }
 
-    public float GetHealth() {
-        var cartHealth = GetComponent<ModuleHealth>();
-        if(cartHealth != null)
-            return cartHealth.GetHealth();
 
-        var enemyHealth = GetComponent<EnemyHealth>();
-        if (enemyHealth != null)
-            return enemyHealth.GetHealth();
+    private ModuleHealth _moduleHealth;
+    private EnemyHealth _enemyHealth;
+    void CacheHealths() {
+        _moduleHealth = GetComponent<ModuleHealth>();
+        _enemyHealth = GetComponent<EnemyHealth>();
+    }
+
+    public float GetHealth() {
+        if(_moduleHealth != null)
+            return _moduleHealth.GetHealth();
+
+        if (_enemyHealth != null)
+            return _enemyHealth.GetHealth();
 
         return 0;
     }
     
     public float GetHealthPercent() {
-        var cartHealth = GetComponent<ModuleHealth>();
-        if(cartHealth != null)
-            return cartHealth.GetHealthPercent();
+        if(_moduleHealth != null)
+            return _moduleHealth.GetHealthPercent();
 
-        var enemyHealth = GetComponent<EnemyHealth>();
-        if (enemyHealth != null)
-            return enemyHealth.GetHealthPercent();
+        if (_enemyHealth != null)
+            return _enemyHealth.GetHealthPercent();
 
         return 0;
     }

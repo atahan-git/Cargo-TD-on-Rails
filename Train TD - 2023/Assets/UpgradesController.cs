@@ -21,6 +21,10 @@ public class UpgradesController : MonoBehaviour {
 	
 	public float noRewardChance = 0.2f;
 
+
+	[ValueDropdown("GetAllRewardNames")] 
+	public string potatoGemName;
+	
 	public List<string> recentGemRewards = new List<string>();
 	public List<string> recentBigGemRewards = new List<string>();
 	public List<string> recentCartRewards = new List<string>();
@@ -126,5 +130,15 @@ public class UpgradesController : MonoBehaviour {
 		}
 
 		return makeElite;
+	}
+	
+	private static IEnumerable GetAllRewardNames() {
+		var buildingNames = GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
+		var artifactNames = GameObject.FindObjectOfType<DataHolder>().GetAllPossibleArtifactNames();
+		
+		buildingNames.Remove("");
+		buildingNames.AddRange(artifactNames);
+		
+		return buildingNames;
 	}
 }

@@ -74,7 +74,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Side_Texture:
-        m_Texture: {fileID: 2800000, guid: d63d11f6d83b4fc4ea1831cfa721010a, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0647ec436b88c25428bd4b56ee27bf90, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Side_normal:
@@ -94,7 +94,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_Texture:
-        m_Texture: {fileID: 2800000, guid: 3eb439fd44e4be248a5095c2e20c76fe, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0647ec436b88c25428bd4b56ee27bf90, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_normal:
@@ -153,8 +153,10 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Main_Color: {r: 0.21067438, g: 0.75471693, b: 0.13171947, a: 1}
+    - _SideColor: {r: 0.773, g: 0.773, b: 0.773, a: 1}
     - _Side_Color: {r: 1, g: 1, b: 1, a: 1}
     - _SparkleColor: {r: 0, g: 3.9215686, b: 4, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _TopColor: {r: 0.5651206, g: 0.4862745, b: 0.8352941, a: 1}
     - _Top_Color: {r: 0.72300005, g: 0.72300005, b: 0.72300005, a: 1}
   m_BuildTextureStacks: []

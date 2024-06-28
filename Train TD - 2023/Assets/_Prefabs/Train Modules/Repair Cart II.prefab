@@ -10248,6 +10248,9 @@ MonoBehaviour:
   burnSpeed: 0
   activeBurnEffects: []
   activeMaxHealthReductionPlates: []
+  surfaceColliders:
+  - {fileID: 232269251456713494}
+  - {fileID: 5079137766063600652}
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15408,7 +15411,7 @@ MonoBehaviour:
   carryDraggableMode: 0
   caughtCarry: 0
   catchPosition: {x: 0, y: 0, z: 0}
-  autoRepairTime: 3.5
+  repairSpeedMultiplier: 1.5
   currentAffectors:
     power: 1
     speed: 1
@@ -15416,6 +15419,10 @@ MonoBehaviour:
     uranium: 0
     fire: 0
     iron: 0
+    vampiric: 0
+    ancientDisabled: 0
+    lizardOverride: 0
+  vampiricHealthStorage: 0
   maxVelocity: 10
   curVelocity: 0
 --- !u!114 &6250066281536095168
@@ -15432,8 +15439,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myHealth: {fileID: 0}
   currentFlightVelocity: {x: 0, y: 0, z: 0}
-  baseRepairTime: 0.35
-  AffectedRepairTime: 1
   curRepairTime: 0
 --- !u!1 &5905390858274606978
 GameObject:
@@ -16287,6 +16292,11 @@ PrefabInstance:
       objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+--- !u!64 &232269251456713494 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+  m_PrefabInstance: {fileID: 3233015435865617694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3123038626739557109 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}

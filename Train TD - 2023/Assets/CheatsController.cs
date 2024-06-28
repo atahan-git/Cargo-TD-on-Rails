@@ -168,7 +168,7 @@ public class CheatsController : MonoBehaviour {
             var targetHP = modHealth.GetMaxHealth() / 4f;
 
             if (modHealth.currentHealth > targetHP) {
-                modHealth.DealDamage(modHealth.currentHealth-targetHP, null);
+                modHealth.DealDamage(modHealth.currentHealth-targetHP);
             }
         }
     }
@@ -195,4 +195,9 @@ public class CheatsController : MonoBehaviour {
         Application.targetFrameRate = target;
     }
 
+[Button]
+    public void SetAct(int act) {
+        DataSaver.s.GetCurrentSave().currentRun.currentAct = act;
+        DataSaver.s.SaveActiveGame();
+    }
 }

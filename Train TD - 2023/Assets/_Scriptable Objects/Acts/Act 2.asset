@@ -27,6 +27,7 @@ MonoBehaviour:
   enemyGuns:
   - {fileID: 593209492897996642, guid: 531bbf658c2a02842871eeffb7e055b8, type: 3}
   - {fileID: 7773282509180063289, guid: d3ad56a9df714514faf5322cc93820e1, type: 3}
+  - {fileID: 8403724979800901239, guid: 63385a804e8ae474abd5d34cc99d6c3a, type: 3}
   uniqueEquipment:
   - {fileID: 6245074994292636220, guid: d734ebf253790494d80540c9dd406668, type: 3}
   - {fileID: 1989762587238246160, guid: e4e84a701bba43c4d9a890d0d94e7882, type: 3}
@@ -39,5 +40,5 @@ MonoBehaviour:
     bossMainPrefab: {fileID: 1982649860289487492, guid: b55136b907843ad4080b5a0ee808a097, type: 3}
     bossesToSpawn: 9
     bossNeededKillCount: 9
-  segmentLengthsMin: {x: 125, y: 155}
+  segmentLengthsMin: {x: 150, y: 200}
   segmentLengthsRange: {x: 50, y: 55}

@@ -70,7 +70,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatEntered.AddListener(PlayerWorldInteractionController.s.OnEnterCombat);
         OnCombatEntered.AddListener(ShopStateController.s.OnCombatStart);
         OnCombatEntered.AddListener(CrystalsAndWarpController.s.OnCombatStart);
-        OnShopEntered.AddListener(Act2DemoEndController.s.OnStartCombat);
+        OnCombatEntered.AddListener(Act2DemoEndController.s.OnStartCombat);
         
         OnCombatFinished.AddListener(WorldDifficultyController.s.OnCombatEnd);
         OnCombatFinished.AddListener(TimeController.s.OnCombatEnd);
@@ -105,6 +105,10 @@ public class PlayStateMaster : MonoBehaviour {
         get {
             return _gameState;
         }
+    }
+
+    public void DebugSetGameState(GameState state) {
+        _gameState = state;
     }
 
     public bool isCombatStarted() {

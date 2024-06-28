@@ -19,7 +19,7 @@ public class GeroBeam : MonoBehaviour {
 
     public LayerMask laserLayerMask;
     // Use this for initialization
-    void Start () {
+    void Awake () {
 		BP = GetComponent<BeamParam>();
 		LR = this.GetComponent<LineRenderer>();
 		HitObj = this.transform.Find("GeroBeamHit").GetComponent<GeroBeamHit>();
@@ -41,6 +41,10 @@ public class GeroBeam : MonoBehaviour {
 	    SHP_Emitter.ShotPower = 1;
     }
 
+    public void SetBeamPower( float power) {
+	    Width = power;
+    }
+
     [Button]
     public void DisableBeam() {
 	    BP.bEnd = true;
@@ -48,18 +52,13 @@ public class GeroBeam : MonoBehaviour {
 	
 	void Update () {
         if (BP.bEnd) {
-	        Width -= 1f * Time.deltaTime;
 			SHP_Emitter.ShotPower = 0.0f;
 			if (Width < 0.01f) {
-	            BP.bGero = false;
-	            Width = 0;
-	            
+				BP.bGero = false;
 	            gameObject.SetActive(false);
-	            
-            }
+			}
 		}else if (!BP.bEnd && !BP.bGero) {
 	        if (Width < 1f) {
-		        Width += 1f * Time.deltaTime;
 		        SHP_Emitter.ShotPower = 1;
 	        } else {
 		        BP.bGero = true;
@@ -84,7 +83,7 @@ public class GeroBeam : MonoBehaviour {
 			        LR.SetPosition(1, transform.InverseTransformPoint(hit.point));
 			        HitObj.transform.position = hit.point;
 			        HitObj.transform.rotation = Quaternion.LookRotation(hit.normal);
-			        //HitObj.transform.localScale = HitObjSize * Width * BP.Scale * 10.0f;
+			        HitObj.transform.localScale = HitObjSize * Width * BP.Scale * 10.0f;
 			        bHitNow = true;
 		        }
 		        
@@ -93,7 +92,7 @@ public class GeroBeam : MonoBehaviour {
 	        float ShotFlashScale = FlashSize * Width * 5.0f * BP.Scale;
 	        var scaleVec = new Vector3(ShotFlashScale, ShotFlashScale, ShotFlashScale);
 	        Flash.GetComponent<ScaleWiggle>().DefScale = scaleVec;
-	        HitObj.SetViewPat(bHitNow && !BP.bEnd, scaleVec);
+	        HitObj.SetViewPat(bHitNow && !BP.bEnd, scaleVec*2);
 
 	        //this.gameObject.GetComponent<Renderer>().material.SetFloat("_AddTex", Time.frameCount * -0.05f * BP.AnimationSpd * 10);
 	        GetComponent<Renderer>().material.mainTextureOffset = new Vector2(BP.AnimationSpd * Time.time,0 );

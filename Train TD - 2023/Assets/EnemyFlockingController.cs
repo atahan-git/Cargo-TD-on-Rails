@@ -54,8 +54,13 @@ public class EnemyFlockingController : MonoBehaviour {
 		flock.unsquished = true;
 	}
 
+	private List<EnemyInSwarm> allEnemies = new List<EnemyInSwarm>(); 
 	public void UpdateEnemyFlocks() {
-		var allEnemies = new List<EnemyInSwarm>();
+		if (LevelReferences.s.speed < 0.2f) {
+			return;
+		}
+		
+		allEnemies.Clear();
 		
 		for (int i = 0; i < enemySwarmMakers.Count; i++) {
 			var swarm = enemySwarmMakers[i];
@@ -64,13 +69,17 @@ public class EnemyFlockingController : MonoBehaviour {
 			
 			allEnemies.AddRange(swarm.activeEnemies);
 		}
+
+		for (int i = 0; i < allEnemies.Count; i++) {
+			allEnemies[i].boidPosition = allEnemies[i].transform.position;
+		}
 		
 		for (int j = 0; j < allEnemies.Count; j++) {
 			var enemy = allEnemies[j];
 				
 			FlyTowardsCenter(enemy);
 			MatchVelocity(enemy);
-			AvoidOthers(enemy, allEnemies);
+			AvoidOthers(enemy);
 			NormalizeSpeed(enemy);
 			KeepWithinBounds(enemy);
 			MoveWithVelocity(enemy);
@@ -106,7 +115,7 @@ public class EnemyFlockingController : MonoBehaviour {
 		boid.boidTargetDelta += centerDirection * centeringFactor;
 	}
 	
-	void AvoidOthers(EnemyInSwarm boid, List<EnemyInSwarm> allEnemies) {
+	void AvoidOthers(EnemyInSwarm boid) {
 		float minDistance = 0.6f; // we willd add boid radius to this.
 		float avoidFactor = 60f * Time.deltaTime;
 
@@ -117,13 +126,15 @@ public class EnemyFlockingController : MonoBehaviour {
 			if(boid == otherBoid)
 				continue;
 			
-			var closestPointOnMe = boid.mainCollider.ClosestPoint(otherBoid.transform.position);
-			var closestPointOnOtherBoid = otherBoid.mainCollider.ClosestPoint((boid.transform.position));
+			var closestPointOnMe = boid.mainCollider.ClosestPoint(otherBoid.boidPosition);
+			var closestPointOnOtherBoid = otherBoid.mainCollider.ClosestPoint(boid.boidPosition);
+			//var closestPointOnMe = boid.boidPosition;
+			//var closestPointOnOtherBoid = otherBoid.boidPosition;
 			var otherBoidToOurBoidVector =  closestPointOnMe - closestPointOnOtherBoid;
 			otherBoidToOurBoidVector.y = 0;
 			var distance = otherBoidToOurBoidVector.magnitude;
 			
-			otherBoidToOurBoidVector =  boid.transform.position - otherBoid.transform.position ;
+			otherBoidToOurBoidVector =  boid.boidPosition - otherBoid.boidPosition ;
 
 			if (distance < minDistance) {
 				// make shorter distance more important

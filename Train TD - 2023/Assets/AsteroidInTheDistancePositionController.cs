@@ -23,7 +23,7 @@ public class AsteroidInTheDistancePositionController : MonoBehaviour {
 
 
             var depthCloseness = depthPercent.Remap(0, 1, 0, 100);
-            var actCloseness = (DataSaver.s.GetCurrentSave().currentRun.currentAct - 1) * 100;
+            var actCloseness = (DataSaver.s.GetCurrentSave().currentRun.currentAct - 1) * 50;
 
             var asteroidGetCloserAmount = Mathf.Clamp(depthCloseness + actCloseness, 0, 300);
             var actualDistance = (300 - asteroidGetCloserAmount);

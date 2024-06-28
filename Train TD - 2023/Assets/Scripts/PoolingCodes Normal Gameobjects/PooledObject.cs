@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,8 +18,8 @@ public class PooledObject : MonoBehaviour {
 		}
 		set{
 			if (_lifetime != value) {
-				LifetimeChangeCheck ();
 				_lifetime = value;
+				LifetimeChangeCheck ();
 			}
 		}
 	}
@@ -33,16 +34,16 @@ public class PooledObject : MonoBehaviour {
 		isActive = true;
 		if (lifeTime > 0f)
 			Invoke ("DisableObject", lifeTime);
-
 		myPool.ActiveObjects += 1;
 	}
 
 
-	void LifetimeChangeCheck (){
+	void LifetimeChangeCheck () {
 		if (IsInvoking ("DisableObject")) {
 			CancelInvoke ("DisableObject");
-			Invoke ("DisableObject", lifeTime);
 		};
+		if(lifeTime > 0)
+			Invoke ("DisableObject", lifeTime);
 	}
 
 
@@ -54,6 +55,7 @@ public class PooledObject : MonoBehaviour {
 		gameObject.SetActive (false);
 		isActive = false;
 		myPool.ActiveObjects -= 1;
+		CancelInvoke ("DisableObject");
 	}
 
 	public void DestroyPooledObject (){
@@ -63,15 +65,21 @@ public class PooledObject : MonoBehaviour {
 		myPool.DestroyPooledObject (myId);
 	}
 
-	void ResetValues (){
-		if (GetComponentInChildren<TrailRenderer> () != null) {
-			GetComponentInChildren<TrailRenderer> ().Clear ();
+	void ResetValues () {
+		var trail = GetComponentInChildren<SmartTrail>();
+		if (trail != null) {
+			trail.Reset();
 		}
 		foreach (ParticleSystem prt in GetComponentsInChildren<ParticleSystem>()) {
 			if (prt != null) {
 				prt.Clear ();
 				prt.Play ();
 			}
+		}
+
+		var moveWithGlobe = GetComponent<MoveWithGlobalMovement>();
+		if (moveWithGlobe) {
+			moveWithGlobe.currentSpeedPercent = 0;
 		}
 
 		if (GetComponent<Rigidbody> () != null) {

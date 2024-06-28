@@ -15,7 +15,8 @@ public class VisualEffectsController : MonoBehaviour {
 		Always,
 		High,
 		Medium,
-		Low
+		Low,
+		damageNumbers
 	}
 
 	
@@ -26,6 +27,8 @@ public class VisualEffectsController : MonoBehaviour {
 
 	private float mediumEffectCount = 0;
 	public GameObject SmartInstantiate(GameObject myObj, Vector3 position, Quaternion rotation, EffectPriority priority = EffectPriority.Always) {
+		if (priority == EffectPriority.Low || priority==EffectPriority.damageNumbers)
+			return null;
 		if (priority == EffectPriority.Medium) {
 			mediumEffectCount += 1;
 			if (mediumEffectCount > 5) {
@@ -33,23 +36,46 @@ public class VisualEffectsController : MonoBehaviour {
 			}
 		}
 		
-		var obj = Instantiate(myObj, transform);
-		obj.transform.position = position;
-		obj.transform.rotation = rotation;
+		var obj = Instantiate(myObj, position, rotation, transform);
+		PostProcessingOnEffects(obj);
+		return obj;
+	}
+	
+	public GameObject SmartInstantiate(GameObject myObj, Vector3 position, Quaternion rotation,Vector3 scale, EffectPriority priority = EffectPriority.Always) {
+		if (priority == EffectPriority.Low || priority==EffectPriority.damageNumbers)
+			return null;
+		if (priority == EffectPriority.Medium) {
+			mediumEffectCount += 1;
+			if (mediumEffectCount > 5) {
+				return null;
+			}
+		}
+		
+		var obj = Instantiate(myObj, position, rotation, transform);
+		PostProcessingOnEffects(obj);
 		return obj;
 	}
 	
 	public GameObject SmartInstantiate(GameObject myObj, Transform parent, EffectPriority priority = EffectPriority.Always) {
-		var obj = Instantiate(myObj, parent);
-		obj.transform.localPosition = Vector3.zero;
-		obj.transform.localRotation = Quaternion.identity;
+		if (priority == EffectPriority.Low || priority==EffectPriority.damageNumbers)
+			return null;
+		
+		var obj = Instantiate(myObj, parent.position, parent.rotation, parent);
+		PostProcessingOnEffects(obj);
 		return obj;
 	}
 	
 	public GameObject SmartInstantiate(GameObject myObj, Transform parent, Vector3 position, Quaternion rotation, EffectPriority priority = EffectPriority.Always) {
-		var obj = Instantiate(myObj, parent);
-		obj.transform.position = position;
-		obj.transform.rotation =rotation;
+		var obj = Instantiate(myObj,position, rotation, parent);
+		PostProcessingOnEffects(obj);
 		return obj;
+	}
+
+
+	void PostProcessingOnEffects(GameObject effect) {
+		/*var lights = effect.GetComponentsInChildren<Light>();
+		foreach (var light in lights) {
+			light.gameObject.SetActive(false);
+		}*/
 	}
 }

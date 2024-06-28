@@ -350,6 +350,7 @@ MonoBehaviour:
   maxGatlingAmount: 4
   bulletPrefab: {fileID: 7110668419382630654, guid: 146350eae53527f44abcd0da35b64838, type: 3}
   muzzleFlashPrefab: {fileID: 9155879028066676231, guid: 35c71a4c5105a0e4e99bc4419ba1a8bf, type: 3}
+  myType: 2
   fireDelay: 8
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
@@ -409,4 +410,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   range: 7
+  dontCareAboutAvoids: 0
   delay: 0

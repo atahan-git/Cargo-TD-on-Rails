@@ -274,7 +274,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseHealth: 1000
-  maxHealth: 500
   maxHealthReduction: 0
   currentHealth: 1000
   damageReductionMultiplier: 1
@@ -286,6 +285,10 @@ MonoBehaviour:
   invincible: 0
   mainCollider: {fileID: 5079137766063600652}
   cartUIBar: {fileID: 0}
+  currentAffectors:
+    maxHealth: 100
+    armor: 1
+    flatArmor: 0
   myProtector: {fileID: 0}
   explosionDamages: 640000003200000019000000
   burnResistant: 0
@@ -293,6 +296,9 @@ MonoBehaviour:
   burnSpeed: 0
   activeBurnEffects: []
   activeMaxHealthReductionPlates: []
+  surfaceColliders:
+  - {fileID: 5079137766063600652}
+  - {fileID: 232269251456713494}
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -570,11 +576,6 @@ MonoBehaviour:
   myAmmo: {fileID: 0}
   curCooldown: 0
   needAmmo: 1
-  isSniper: 0
-  sniperMultiplier: 0
-  sniperMultiplierGain: 0.2
-  sniperMultiplierLoss: 0.5
-  sniperMaxMultiplier: 5
   hasTarget: 0
   curRocketLockInTime: 0
   rocketLockOnTime: 1
@@ -1151,6 +1152,11 @@ PrefabInstance:
       objectReference: {fileID: 13400000, guid: 27039c77226adc042b77488292db68cc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+--- !u!64 &232269251456713494 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 3451118302482216456, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}
+  m_PrefabInstance: {fileID: 3233015435865617694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3123038626739557109 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ebb594a34b200cb4d9b95c710d9ea941, type: 3}

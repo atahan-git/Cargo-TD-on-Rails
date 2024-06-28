@@ -316,6 +316,10 @@ MonoBehaviour:
   burnSpeed: 0
   activeBurnEffects: []
   activeMaxHealthReductionPlates: []
+  surfaceColliders:
+  - {fileID: 2305579421082905276}
+  - {fileID: 5678798534158846818}
+  - {fileID: 6404356716970093266}
 --- !u!114 &7427781900297684245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -609,7 +613,7 @@ MonoBehaviour:
   carryDraggableMode: 0
   caughtCarry: 0
   catchPosition: {x: 0, y: 0, z: 0}
-  autoRepairTime: 5
+  repairSpeedMultiplier: 1
   currentAffectors:
     power: 1
     speed: 1
@@ -617,6 +621,10 @@ MonoBehaviour:
     uranium: 0
     fire: 0
     iron: 0
+    vampiric: 0
+    ancientDisabled: 0
+    lizardOverride: 0
+  vampiricHealthStorage: 0
   maxVelocity: 10
   curVelocity: 0
 --- !u!114 &4864364574015463401
@@ -633,8 +641,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myHealth: {fileID: 0}
   currentFlightVelocity: {x: 0, y: 0, z: 0}
-  baseRepairTime: 0.7
-  AffectedRepairTime: 1
   curRepairTime: 0
 --- !u!1 &3594827500495483965
 GameObject:

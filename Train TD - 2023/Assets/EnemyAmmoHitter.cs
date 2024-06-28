@@ -20,22 +20,23 @@ public class EnemyAmmoHitter : MonoBehaviour, IEnemyProjectile
     [FoldoutGroup("Internal Variables")]
     public bool isDead = false;
 
-    private void Start() {
+    private void OnEnable() {
         Invoke("DestroySelf", lifetime);
+
+        isDead = false;
+        
+        if (actuallyDestroy != null) {
+            Destroy(actuallyDestroy);
+        }
     }
     
-    public void SetUp(GameObject originObject, Transform _target, Vector3 _initialVelocity) {
+    public void SetUp(GameObject originObject, Vector3 _initialVelocity) {
         myOriginObject = originObject;
-        target = _target;
         initialVelocity = _initialVelocity;
     }
 
     public Vector3 GetInitialVelocity() {
         return initialVelocity;
-    }
-
-    void DestroySelf() {
-        Destroy(gameObject);
     }
 
     public Vector3 initialVelocity;
@@ -58,31 +59,20 @@ public class EnemyAmmoHitter : MonoBehaviour, IEnemyProjectile
         }
     }
 
+    private GameObject actuallyDestroy;
+    void DestroySelf() {
+        GetComponent<PooledObject>().DestroyPooledObject();
+    }
     void SmartDestroySelf() {
         if (!isDead) {
             isDead = true;
-
-            var particles = GetComponentsInChildren<ParticleSystem>();
-
-            foreach (var particle in particles) {
-                particle.transform.SetParent(VisualEffectsController.s.transform);
-                particle.transform.localScale = Vector3.one;
-                particle.Stop();
-                Destroy(particle.gameObject, 1f);
-            }
-
+            
             var trail = GetComponentInChildren<SmartTrail>();
             if (trail != null) {
                 trail.StopTrailing();
-                trail.transform.SetParent(VisualEffectsController.s.transform);
-                Destroy(trail.gameObject, 1f);
             }
 
-            if(toSpawnOnDeath != null)
-                Instantiate(toSpawnOnDeath, transform.position, transform.rotation);
-            
-            
-            Destroy(gameObject);
+            GetComponent<PooledObject>().lifeTime = ProjectileProvider.bulletAfterDeathLifetime;
         }
     }
 
@@ -114,13 +104,13 @@ public class EnemyAmmoHitter : MonoBehaviour, IEnemyProjectile
                 var ammoBar = ammo.GetComponentInParent<PhysicalAmmoBar>();
                 if ( ammoBar != null) {
                     ammoBar.RemoveChunk(ammo.gameObject);
-                    
                     ammo.transform.SetParent(transform);
-                    gameObject.AddComponent<RubbleFollowFloor>();
+                    actuallyDestroy = ammo.gameObject;
                     CancelInvoke();
                     Invoke(nameof(DestroySelf), 15);
                     isDead = true;
                     target = null;
+                    GetComponent<Rigidbody>().velocity = (transform.forward * speed ) + (initialVelocity);
                 }
             }
         }

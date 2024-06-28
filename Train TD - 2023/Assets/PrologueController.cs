@@ -64,7 +64,7 @@ public class PrologueController : MonoBehaviour {
     public void PrologueLoadComplete() {
         Train.s.DrawTrain(prologueTrain);
         var engineHealth = Train.s.carts[0].GetHealthModule();
-        engineHealth.DealDamage(engineHealth.GetMaxHealth(), null);
+        engineHealth.DealDamage(engineHealth.GetMaxHealth());
 
         var repairModule = Train.s.carts[1].GetComponentInChildren<DroneRepairController>();
         repairModule.DisableAutoDrone();

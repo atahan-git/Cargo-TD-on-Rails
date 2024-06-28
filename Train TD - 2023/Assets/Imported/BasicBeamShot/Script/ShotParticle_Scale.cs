@@ -20,22 +20,28 @@ public class ShotParticle_Scale : MonoBehaviour {
 		time = 0.0f;
 		forward = transform.forward;
 
-		Quaternion ParentQua = transform.parent.rotation;
-		Vector3 V = ParentQua * forward;
+		var parent = transform.parent;
+		Quaternion ParentQua = parent.rotation;
+		//Vector3 V = ParentQua * forward;
+		Vector3 V = parent.forward;
 
-		LR.SetPosition(0,transform.parent.position);
-		LR.SetPosition(1,transform.parent.position+V*transform.parent.localScale.z * length);
-		LR.SetWidth(transform.parent.localScale.x * width,transform.parent.localScale.x * width);
+		LR.SetPosition(0, Vector3.zero);
+		var otherPos = parent.position + V * parent.localScale.z * length;
+		LR.SetPosition(1, parent.InverseTransformPoint(otherPos));
+		LR.SetWidth(parent.localScale.x * width,parent.localScale.x * width);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		Quaternion ParentQua = transform.parent.rotation;
-		Vector3 V = ParentQua * forward;
+		//Vector3 V = ParentQua * forward;
+		var parent = transform.parent;
+		Vector3 V = parent.forward;
 		
-		LR.SetPosition(0,transform.parent.position);
-		LR.SetPosition(1,transform.parent.position+V*transform.parent.localScale.z * length);
-		LR.SetWidth(transform.parent.localScale.x * width,transform.parent.localScale.x * width);
+		LR.SetPosition(0, Vector3.zero);
+		var otherPos = parent.position + V * parent.localScale.z * length;
+		LR.SetPosition(1, parent.InverseTransformPoint(otherPos));
+		LR.SetWidth(parent.localScale.x * width,parent.localScale.x * width);
 
 		width = Mathf.Lerp(width,0,time*time);
 		length += 1.5f * Time.deltaTime * scale;

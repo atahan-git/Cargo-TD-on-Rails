@@ -73,7 +73,7 @@ MonoBehaviour:
   outlineGradientInLocalSpace: 0
   outlineBlurPasses: 2
   outlineWidth: 0.45
-  outlineQuality: 2
+  outlineQuality: 1
   outlineEdgeMode: 0
   outlineEdgeThreshold: 0.995
   outlineSharpness: 1

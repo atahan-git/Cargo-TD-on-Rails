@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3932598021525471259}
   - component: {fileID: 4270130572125168830}
   - component: {fileID: 569070930724104168}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Base Artifact
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +456,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7655982080600700883}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: center
   m_TagString: Untagged
   m_Icon: {fileID: 0}

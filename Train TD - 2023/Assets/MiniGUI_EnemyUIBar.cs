@@ -33,8 +33,12 @@ public class MiniGUI_EnemyUIBar : MonoBehaviour{
         shieldFill.material = new Material(shieldFill.material);
 
         GetComponent<UIElementFollowWorldTarget>().SetUp(health.uiTransform);
+        lastHealthPercent = -1;
+        lastShieldPercent = -1;
     }
 
+    private float lastHealthPercent;
+    private float lastShieldPercent;
     private void Update() {
         SetHealthBarValue();
         SetShieldBarValue();
@@ -45,6 +49,10 @@ public class MiniGUI_EnemyUIBar : MonoBehaviour{
 
     void SetShieldBarValue() {
         var percent = myHealth.GetShieldPercent();
+        if (Mathf.Approximately(percent, lastShieldPercent)) {
+            return;
+        }
+        lastShieldPercent = percent;
         
         if (myHealth.maxShields <= 0) {
             shieldBar.gameObject.SetActive(false);
@@ -65,6 +73,11 @@ public class MiniGUI_EnemyUIBar : MonoBehaviour{
         var percent = myHealth.GetHealthPercent();
         percent = Mathf.Clamp(percent, 0, 1f);
         percent = percent.Remap(0, 1, 0.1f, 1f);
+        
+        if (Mathf.Approximately(percent, lastHealthPercent)) {
+            return;
+        }
+        lastHealthPercent = percent;
 
         var totalLength = mainRect.sizeDelta.x;
         

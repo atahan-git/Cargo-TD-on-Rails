@@ -7,7 +7,7 @@ public class ObjectPool : MonoBehaviour {
 
 	public bool autoExpand = true; //dont change this at runtime
 	public GameObject myObject;
-	public int poolSize = 50;
+	public int poolSize = 32;
 	[Space]
 	public int ExistingObjects;
 	public int ActiveObjects;
@@ -27,7 +27,7 @@ public class ObjectPool : MonoBehaviour {
 			myObject.AddComponent<PooledObject> ();
 
 		myObject.GetComponent<PooledObject> ().myPool = this;
-		
+
 		setUpAtLeastOnce = true;
 		
 		for (int i = transform.childCount-1; i >=0 ; i--) {

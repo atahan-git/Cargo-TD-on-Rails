@@ -44,7 +44,7 @@ public class EncounterReward : MonoBehaviour {
 
             for (int i = 0; i < healths.Length; i++) {
                 if (Random.value > damageChance) {
-                    healths[i].DealDamage(healths[i].GetMaxHealth() * damagePercent, null);
+                    healths[i].DealDamage(healths[i].GetMaxHealth() * damagePercent);
                     var prefab = LevelReferences.s.mediumDamagePrefab;
                     if (damageTrain == 1)
                         prefab = LevelReferences.s.smallDamagePrefab;

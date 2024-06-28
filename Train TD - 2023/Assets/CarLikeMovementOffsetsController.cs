@@ -52,6 +52,14 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
     public bool stickToGround = false;
 
     private void UpdatePosition() {
+        
+        var trainSpeedMultiplier = LevelReferences.s.speed / 5f;
+        trainSpeedMultiplier = Mathf.Clamp01(trainSpeedMultiplier);
+
+        if (trainSpeedMultiplier < 0.1f) {
+            return;
+        }
+        
         target.y = transform.localPosition.y;
         if (stickToGround) {
             if (Physics.Raycast(transform.position + Vector3.up * 20, Vector3.down, out RaycastHit hit, 100, LevelReferences.s.groundLayer)) {
@@ -61,9 +69,7 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
         }
 
 
-        var trainSpeedMultiplier = LevelReferences.s.speed / 5f;
-        trainSpeedMultiplier = Mathf.Clamp01(trainSpeedMultiplier);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, target, lerpSpeed*trainSpeedMultiplier * Time.deltaTime);
+        transform.localPosition =  Vector3.Lerp(transform.localPosition, target, lerpSpeed*trainSpeedMultiplier * Time.deltaTime);
 
         targetTargetPosition.y = target.y;
         target = Vector3.MoveTowards(target, targetTargetPosition, targetMoveSpeed * Time.deltaTime * GetRealMoveSpeed());

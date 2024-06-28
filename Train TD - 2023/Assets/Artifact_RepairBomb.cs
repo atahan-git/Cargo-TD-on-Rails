@@ -33,6 +33,9 @@ public class Artifact_RepairBomb : MonoBehaviour {
         for (int i = 0; i < Train.s.carts.Count; i++) {
             Train.s.carts[i].GetHealthModule().RepairChunk(1000);
         }
+        
+        
+        MiniGUI_Pick3GemReward.MakeGem(UpgradesController.s.potatoGemName, transform.position, transform.rotation);
 
         Destroy(gameObject);
     }

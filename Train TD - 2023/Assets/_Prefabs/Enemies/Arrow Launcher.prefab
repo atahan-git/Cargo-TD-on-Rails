@@ -157,6 +157,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4970712264933800792}
   - component: {fileID: 73813622706752243}
+  - component: {fileID: -2255787340827644309}
+  - component: {fileID: 8170246250112412506}
   m_Layer: 14
   m_Name: Arrow Launcher
   m_TagString: Untagged
@@ -172,7 +174,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8403724979800901239}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00070009235, y: 0.25612, z: 0.057800002}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -197,8 +199,7 @@ MonoBehaviour:
   maxFireRateReduction: 0.9
   gatlingAmount: 0
   maxGatlingAmount: 4
-  bulletPrefab: {fileID: 4908573584345181807, guid: 54bbbf3fcb56b3a44a941dfa10d45d26, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 78b564a528069ec4798d987dbc12c51c, type: 3}
+  myType: 8
   fireDelay: 2
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
@@ -229,3 +230,33 @@ MonoBehaviour:
   isEliteNoNeedForShootCredit: 0
   myVelocity: {x: 0, y: 0, z: 0}
   lastPos: {x: 0, y: 0, z: 0}
+--- !u!114 &-2255787340827644309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403724979800901239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f09c4ac49a32744a903f51f49c958be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 5
+  dontCareAboutAvoids: 0
+  delay: 0
+--- !u!114 &8170246250112412506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403724979800901239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip:
+    text: Leaves back arrows that make repairing more difficult
+  info: Arrow Launcher

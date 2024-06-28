@@ -34,8 +34,13 @@ public class MiniGUI_Pick3GemReward : MonoBehaviour {
     }
 
     void MakeGem() {
-	    var gem = Instantiate(DataHolder.s.GetArtifact(myItemUniqueName).gameObject, StopAndPick3RewardUIController.s.GetRewardPos(), StopAndPick3RewardUIController.s.GetRewardRotation());
-	    Instantiate(LevelReferences.s.goodItemSpawnEffectPrefab, StopAndPick3RewardUIController.s.GetRewardPos(), StopAndPick3RewardUIController.s.GetRewardRotation());
+	    MakeGem(myItemUniqueName, StopAndPick3RewardUIController.s.GetRewardPos(), StopAndPick3RewardUIController.s.GetRewardRotation());
+    }
+    
+    
+    public  static void MakeGem(string gemName, Vector3 position, Quaternion rotation) {
+	    var gem = Instantiate(DataHolder.s.GetArtifact(gemName).gameObject, position, rotation);
+	    Instantiate(LevelReferences.s.goodItemSpawnEffectPrefab, position, rotation);
        
 	    var rg = gem.GetComponent<Rigidbody>();
 	    rg.isKinematic = false;

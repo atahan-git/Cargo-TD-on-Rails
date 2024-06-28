@@ -86,21 +86,25 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     public ShieldGeneratorModule myProtector;
 
     private float invincibilityTime = 0;
+
     [Button]
-    public void DealDamage(float damage, Vector3? hitPoint) {
+    public GameObject DealDamage(float damage) {
+       return DealDamage(damage, null, null);
+    }
+    public GameObject DealDamage(float damage, Vector3? hitPoint, Quaternion? hitRotation) {
         Assert.IsTrue(damage > 0);
         if(debugImmune || invincible)
-            return;
+            return null;
         
         if (invincibilityTime > 0) {
-            return;
+            return null;
         }
 
 
         myCart = GetComponent<Cart>();
         if (myProtector != null) {
             myProtector.ProtectFromDamage(damage);
-            return;
+            return null;
         }
         
         damage *= damageReductionMultiplier;
@@ -133,10 +137,16 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
             GetDestroyed();
         }
 
-        UpdateHpState(hitPoint);
+        GameObject newlyMadeChunk = null;
+        if (hitPoint.HasValue) {
+            newlyMadeChunk = SetBuildingRepairableBurnChunks(hitPoint.Value, hitRotation.Value);
+        }
+
+        UpdateHpState();
+        return newlyMadeChunk;
     }
 
-    public void UpdateHpState(Vector3? hitPoint = null) {
+    public void UpdateHpState() {
         currentHealth = Mathf.Clamp(currentHealth, 0, GetMaxHealth());
         if (!PlayStateMaster.s.isCombatInProgress()) {
             currentHealth = GetMaxHealth();
@@ -145,7 +155,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         Train.s.HealthModified();
         UpdateHPCriticalIndicators();
         SetBuildingShaderHealth();
-        SetBuildingRepairableBurnChunks(hitPoint);
+        SetBuildingRepairableBurnChunks();
         SetBuildingMaxHealthReductionChunks();
     }
     
@@ -337,7 +347,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 
         var hp = building.GetComponent<ModuleHealth>();
         if (hp != null) {
-            hp.DealDamage(damage, null);
+            hp.DealDamage(damage);
             Instantiate(prefab, hp.transform.position, Quaternion.identity);
         }
     }
@@ -359,10 +369,14 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     private void Update() {
         var burnDistance = Mathf.Max(burnSpeed / 2f, 1f);
         if (currentBurn >= burnDistance) {
-            Instantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
-                .GetComponent<MiniGUI_DamageNumber>()
-                .SetUp(GetGameObject().transform, burnDistance, true, false, true);
-            DealDamage(burnDistance, null);
+            var damageNumbers = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
+                VisualEffectsController.EffectPriority.damageNumbers);
+            if (damageNumbers != null) {
+                damageNumbers.GetComponent<MiniGUI_DamageNumber>()
+                    .SetUp(GetGameObject().transform, burnDistance, true, false, true);
+            }
+
+            DealDamage(burnDistance);
 
             currentBurn -= burnDistance;
         }
@@ -399,7 +413,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         var myModule = GetComponent<Cart>();
 
 
-        DealDamage(amount, null);
+        DealDamage(amount);
         var prefab = LevelReferences.s.smallDamagePrefab;
         Instantiate(prefab, transform.position, Quaternion.identity);
 
@@ -476,8 +490,8 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         var _renderers = myCart._meshes;
         for (int j = 0; j < _renderers.Length; j++) {
             var rend = _renderers[j];
-            if (rend != null && rend.sharedMaterials.Length > 1) {
-                rend.sharedMaterials[1].SetFloat(Health, hpPercent);
+            if (rend != null && rend.materials.Length > 1) {
+                rend.materials[1].SetFloat(Health, hpPercent);
             }
         }
     }
@@ -488,8 +502,8 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         value = Mathf.Clamp(value, 0, 2f);
         for (int j = 0; j < _renderers.Length; j++) {
             var rend = _renderers[j];
-            if (rend != null && rend.sharedMaterials.Length > 1) {
-                rend.sharedMaterials[1].SetFloat(Burn, value);
+            if (rend != null && rend.materials.Length > 1) {
+                rend.materials[1].SetFloat(Burn, value);
             }
         }
     }
@@ -499,8 +513,8 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         var value = isAlive ? 1f : 0.611f;
         for (int j = 0; j < _renderers.Length; j++) {
             var rend = _renderers[j];
-            if (rend != null && rend.sharedMaterials.Length > 1) {
-                rend.sharedMaterials[1].SetFloat(Alive, value);
+            if (rend != null && rend.materials.Length > 1) {
+                rend.materials[1].SetFloat(Alive, value);
             }
         }
     }
@@ -508,10 +522,56 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     public List<RepairableBurnEffect> activeBurnEffects = new List<RepairableBurnEffect>();
     public List<GameObject> activeMaxHealthReductionPlates = new List<GameObject>();
 
-    void SetBuildingRepairableBurnChunks() {
-        SetBuildingRepairableBurnChunks(null);
+    GameObject SetBuildingRepairableBurnChunks(Vector3 sourcePoint, Quaternion sourceRotation) {
+        var missingHealth = GetMaxHealth() - currentHealth;
+        var targetBurnEffectCount = Mathf.CeilToInt(missingHealth / repairChunkSize);
+        targetBurnEffectCount = Mathf.Clamp(targetBurnEffectCount, 0, Mathf.CeilToInt(GetMaxHealth(false) / repairChunkSize + 1));
+        if (activeBurnEffects.Count < targetBurnEffectCount) {
+            //sourcePoint=GetClosestPointOnCollider(sourcePoint);
+            
+            var overlapWithAnother = false;
+            for (int i = 0; i < activeBurnEffects.Count; i++) {
+                if (activeBurnEffects[i]!= null && Vector3.Distance(activeBurnEffects[i].transform.position, sourcePoint) < 0.045f) {
+                    overlapWithAnother = true;
+                    break;
+                }
+            }
+            
+            if (!overlapWithAnother) {
+                var burnEffect = Instantiate(LevelReferences.s.cartRepairableDamageEffect, sourcePoint, sourceRotation);
+                burnEffect.transform.SetParent(myCart.genericParticlesParent);
+                activeBurnEffects.Add(burnEffect.GetComponent<RepairableBurnEffect>());
+                return burnEffect;
+            }
+        }
+        return null;
     }
-    void SetBuildingRepairableBurnChunks(Vector3? sourcePoint) {
+
+    public Collider[] surfaceColliders;
+    Vector3 GetClosestPointOnCollider(Vector3 point) {
+        var colliders = surfaceColliders;
+        var closestPoint = point;
+        var closestDistance = float.MaxValue;
+        var foundPoint = false;
+        for (int i = 0; i < colliders.Length; i++) {
+            var col = colliders[i];
+            var newPoint = col.ClosestPoint(point);
+            var newDistance = Vector3.Distance(newPoint, point);
+            if (newDistance < closestDistance) {
+                closestPoint = newPoint;
+                closestDistance = newDistance;
+                foundPoint = true;
+            }
+        }
+
+        if (!foundPoint) {
+            Debug.Log($"cannot find point");
+        }
+
+        return closestPoint;
+    }
+    
+    void SetBuildingRepairableBurnChunks() {
         var missingHealth = GetMaxHealth() - currentHealth;
         var targetBurnEffectCount = Mathf.CeilToInt(missingHealth / repairChunkSize);
         targetBurnEffectCount = Mathf.Clamp(targetBurnEffectCount, 0, Mathf.CeilToInt(GetMaxHealth(false) / repairChunkSize + 1));
@@ -528,7 +588,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
                     }
                 }
                 activeBurnEffects.RemoveAt(index);
-                SetBuildingMaxHealthReductionChunks(decommissioned.transform.position, decommissioned.transform.rotation);
+                SetBuildingMaxHealthReductionChunks(decommissioned.transform);
                 decommissioned.GetComponent<RepairableBurnEffect>().Repair();
             }
 			
@@ -537,12 +597,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
             var n = 10;
             while (activeBurnEffects.Count < targetBurnEffectCount && n > 0) {
                 Vector3 raySourceDirection;
-                if (sourcePoint != null) {
-                    raySourceDirection = (Vector3)sourcePoint - GetUITransform().position;
-                    raySourceDirection += Random.insideUnitSphere * (10-n) * 0.1f;
-                } else {
-                    raySourceDirection = Random.insideUnitSphere;
-                }
+                raySourceDirection = Random.insideUnitSphere;
 
                 if (raySourceDirection.y < 0) {
                     raySourceDirection.y = 0;
@@ -555,8 +610,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
                 var ray = new Ray(rayOrigin, rayDirection);
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, 5, LevelReferences.s.buildingLayer)) {
-                    if (hit.collider.GetComponentInParent<RepairableBurnEffect>()
-                        || activeMaxHealthReductionPlates.Contains(hit.collider.gameObject)) { // dont spawn over another effect
+                    if (hit.collider.GetComponentInParent<RepairableBurnEffect>()) { // dont spawn over another effect
                         continue;
                     }
                     var hitBuilding = hit.collider.GetComponentInParent<ModuleHealth>();
@@ -626,6 +680,23 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         plate.transform.SetParent(myCart.genericParticlesParent);
         activeMaxHealthReductionPlates.Add(plate);
     }
+    
+    void SetBuildingMaxHealthReductionChunks(Transform decomissioned) {
+        var raySourceDirection = decomissioned.forward;
+            
+        var rayOrigin = decomissioned.position + raySourceDirection * repairEffectSpawnDistance;
+            
+        var rayDirection =  -decomissioned.forward;
+        var ray = new Ray(rayOrigin, rayDirection);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 5, LevelReferences.s.buildingLayer)) {
+            
+            var hitBuilding = hit.collider.GetComponentInParent<ModuleHealth>();
+            if (hitBuilding == this) {
+                SetBuildingMaxHealthReductionChunks(hit.point, Quaternion.LookRotation(hit.normal));
+            }
+        }
+    }
 
     public const int repairChunkSize = 50;
     public const int maxHealthReductionChunkSize = 5;
@@ -641,7 +712,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
             toRepair.Repair();
             activeBurnEffects.Remove(toRepair);
             
-            SetBuildingMaxHealthReductionChunks(toRepair.transform.position, toRepair.transform.rotation);
+            SetBuildingMaxHealthReductionChunks(toRepair.transform);
         }
         
         Repair(repairChunkSize, false);

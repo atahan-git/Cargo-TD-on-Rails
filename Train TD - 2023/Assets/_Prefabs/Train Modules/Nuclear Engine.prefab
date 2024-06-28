@@ -5030,6 +5030,8 @@ MonoBehaviour:
   burnSpeed: 0
   activeBurnEffects: []
   activeMaxHealthReductionPlates: []
+  surfaceColliders:
+  - {fileID: 653344855891342781}
 --- !u!114 &4764124627092903387
 MonoBehaviour:
   m_ObjectHideFlags: 0

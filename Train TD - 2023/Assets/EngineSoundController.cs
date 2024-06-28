@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum EnemyType
 {
-    army, ballista, biker, buggy, teleporter, disabler, drone, gatling, healer, nuker, slower, supplier, truck,
+    unset, army, ballista, biker, buggy, teleporter, disabler, drone, gatling, healer, nuker, slower, supplier, truck,
     undefined
 }
 
@@ -14,44 +14,46 @@ public class EngineSoundController : MonoBehaviour {
     private ISpeedForEngineSoundsProvider _provider;
 
     #region Manage Enemy Engine SFX
-    private EnemyType _enemyType;
+    private EnemyType _enemyType = EnemyType.unset;
     [ShowInInspector]
     public EnemyType enemyType
     {
         get
         {
-            string name = transform.parent.parent.gameObject.name;
-            if (name.Contains("Army"))
-                _enemyType = EnemyType.army;
-            else if (name.Contains("Ballista"))
-                _enemyType = EnemyType.ballista;
-            else if (name.Contains("Biker"))
-                _enemyType = EnemyType.biker;
-            else if (name.Contains("Buggy"))
-                _enemyType = EnemyType.buggy;
-            else if (name.Contains("Teleporter"))
-                _enemyType = EnemyType.teleporter;
-            else if (name.Contains("Disabler"))
-                _enemyType = EnemyType.disabler;
-            else if (name.Contains("Drone"))
-                _enemyType = EnemyType.drone;
-            else if (name.Contains("Gatling"))
-                _enemyType = EnemyType.gatling;
-            else if (name.Contains("Healer"))
-                _enemyType = EnemyType.healer;
-            else if (name.Contains("Nuker"))
-                _enemyType = EnemyType.nuker;
-            else if (name.Contains("Slower"))
-                _enemyType = EnemyType.slower;
-            else if (name.Contains("Supplier"))
-                _enemyType = EnemyType.supplier;
-            else if (name.Contains("Truck"))
-                _enemyType = EnemyType.truck;
-            else
-                _enemyType = EnemyType.undefined;
-
             return _enemyType;
         }
+    }
+
+    void CacheEnemyType() {
+        string name = transform.parent.parent.gameObject.name;
+        if (name.Contains("Army"))
+            _enemyType = EnemyType.army;
+        else if (name.Contains("Ballista"))
+            _enemyType = EnemyType.ballista;
+        else if (name.Contains("Biker"))
+            _enemyType = EnemyType.biker;
+        else if (name.Contains("Buggy"))
+            _enemyType = EnemyType.buggy;
+        else if (name.Contains("Teleporter"))
+            _enemyType = EnemyType.teleporter;
+        else if (name.Contains("Disabler"))
+            _enemyType = EnemyType.disabler;
+        else if (name.Contains("Drone"))
+            _enemyType = EnemyType.drone;
+        else if (name.Contains("Gatling"))
+            _enemyType = EnemyType.gatling;
+        else if (name.Contains("Healer"))
+            _enemyType = EnemyType.healer;
+        else if (name.Contains("Nuker"))
+            _enemyType = EnemyType.nuker;
+        else if (name.Contains("Slower"))
+            _enemyType = EnemyType.slower;
+        else if (name.Contains("Supplier"))
+            _enemyType = EnemyType.supplier;
+        else if (name.Contains("Truck"))
+            _enemyType = EnemyType.truck;
+        else
+            _enemyType = EnemyType.undefined;
     }
 
     private float originVolume;
@@ -86,6 +88,8 @@ public class EngineSoundController : MonoBehaviour {
         Invoke(nameof(RandomPitchChange), Random.Range(3f,10f));
         LoadEnemyEngineSfx();
         originVolume = _source.volume;
+        
+        CacheEnemyType();
     }
 
 

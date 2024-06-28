@@ -67,7 +67,6 @@ public class DirectControlMaster : MonoBehaviour {
 	}
 
 	public TMP_Text sniperAmount;
-	public float bulletSpeed = 0;
 	
 	[Header("Ammo")]
 	public GameObject ammo_perfect;
@@ -77,6 +76,7 @@ public class DirectControlMaster : MonoBehaviour {
 
 	[Header("Repair")]
 	public Image validRepairImage;
+	public Image arrowRepairImage;
 	public Slider repairingSlider;
 	public LayerMask repairLookMask;
 
