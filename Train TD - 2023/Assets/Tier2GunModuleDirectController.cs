@@ -348,11 +348,11 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 		//print(range);
 		if (doShake) {
 			CameraShakeController.s.ShakeCamera(
-				Mathf.Lerp(0.1f, 0.7f, range),
-				Mathf.Lerp(0.005f, 0.045f, range),
-				Mathf.Lerp(2, 10, range),
+				Mathf.Lerp(0.05f, 0.7f, range),
+				Mathf.Lerp(0f, 0.045f, range),
+				Mathf.Lerp(0f, 10, range),
 				Mathf.Lerp(0.1f, 0.5f, range),
-				true
+				Mathf.Lerp(0f, 1, range)
 			);
 			if (!SettingsController.GamepadMode()) {
 				range /= myGun.directControlShakeMultiplier;

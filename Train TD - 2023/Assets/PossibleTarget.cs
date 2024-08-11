@@ -82,6 +82,7 @@ public class PossibleTarget : MonoBehaviour {
     void Update() {
         if (Time.deltaTime > 0) {
             var newVelocity = ((transform.position - previous)) / Time.deltaTime;
+            newVelocity -= Train.s.GetTrainForward() * LevelReferences.s.speed;
             velocity = Vector3.Lerp(velocity, newVelocity, 1 * Time.deltaTime);
             previous = transform.position;
         }

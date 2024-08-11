@@ -9785,7 +9785,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2623319806355196704}
   - component: {fileID: 7329630234951541076}
-  - component: {fileID: 1599031291993196772}
+  - component: {fileID: -6764287107938496780}
   m_Layer: 0
   m_Name: Mortar Mini Explosion
   m_TagString: Untagged
@@ -9823,7 +9823,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slowBuildupSpeedPercentPerSecond: 0.2
   currentSpeedPercent: 0.5
---- !u!114 &1599031291993196772
+--- !u!114 &-6764287107938496780
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9832,8 +9832,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7956492780776730189}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cf7fc7d3b010d147b53c1bf9f58a6a4, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f44ad7d0605474409f8c95e869c5d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeout: 10
-  onlyDisable: 0
+  myId: -1
+  myPool: {fileID: 0}
+  isActive: 0
+  _lifetime: 5

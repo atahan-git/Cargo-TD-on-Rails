@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4823831419910563292}
   - component: {fileID: 229197271496953768}
-  - component: {fileID: 8117368984934966808}
+  - component: {fileID: -7382424991612769054}
   m_Layer: 0
   m_Name: Damage small
   m_TagString: Untagged
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slowBuildupSpeedPercentPerSecond: 0.2
   currentSpeedPercent: 0
---- !u!114 &8117368984934966808
+--- !u!114 &-7382424991612769054
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,11 +58,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 647799738284327089}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cf7fc7d3b010d147b53c1bf9f58a6a4, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f44ad7d0605474409f8c95e869c5d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeout: 10
-  onlyDisable: 0
+  myId: -1
+  myPool: {fileID: 0}
+  isActive: 0
+  _lifetime: 5
 --- !u!1 &4082859257291071125
 GameObject:
   m_ObjectHideFlags: 0

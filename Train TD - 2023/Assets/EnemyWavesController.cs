@@ -110,15 +110,20 @@ public class EnemyWavesController : MonoBehaviour {
 		enemyBudget += DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
 		uniqueGearBudget += DataSaver.s.GetCurrentSave().currentRun.currentAct - 1;
 
+		enemyBudget = Mathf.RoundToInt(enemyBudget * TweakablesMaster.s.GetEnemyBudgetMultiplier());
+		enemyBudget = Mathf.Clamp(enemyBudget, 1, 12);
+		uniqueGearBudget += TweakablesMaster.s.GetExtraUniqueGearBudget();
+		uniqueGearBudget = Mathf.Clamp(uniqueGearBudget, 0, 1000);
+
 		if (forceNoSpecialGear) {
 			uniqueGearBudget = 0;
 			eliteGearBudget = 0;
 		}
 
-		if (enemyBudget == 6) {
+		if (enemyBudget >= 6) {
 			var isLeft = Random.value < 0.5f;
-			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, 4, spawnMoving,isLeft);
-			MakeEnemyBattalion(distance, 0, 0, 0, 3, spawnMoving, !isLeft);
+			MakeEnemyBattalion(distance, megaEnemyBudget, eliteGearBudget, uniqueGearBudget, 5, spawnMoving,isLeft);
+			MakeEnemyBattalion(distance, 0, 0, 0, enemyBudget-5, spawnMoving, !isLeft);
 		} else {
 			var direction = Random.value < 0.5f;
 
@@ -140,6 +145,7 @@ public class EnemyWavesController : MonoBehaviour {
 
 		var slots = wave.GetComponentsInChildren<EnemySwarmMaker>();
 		
+		print($"Unique gear count of battalion {uniqueGearBudget}");
 		// make mega enemy
 		for (int i = 0; i < megaEnemyBudget; i++) {
 			var slot = GetSlot(slots);
@@ -291,12 +297,25 @@ public class EnemyWavesController : MonoBehaviour {
 	public int maxConcurrentWaves = 6;
 
 	public EnemyWave SpawnEnemy(GameObject enemyPrefab, float distance, bool startMoving, bool isLeft, bool isDynamic = false) {
+		return SpawnEnemy(enemyPrefab, null, distance, startMoving, isLeft, isDynamic);
+	}
+	
+	public EnemyWave SpawnEnemy(GameObject enemyPrefab, GameObject gear, float distance, bool startMoving, bool isLeft, bool isDynamic = false) {
 		var playerDistance = SpeedController.s.currentDistance;
 		var wave = Instantiate(enemyPrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
 		wave.transform.SetParent(transform);
 		wave.SetUp(distance, startMoving, isLeft);
 		waves.Add(wave);
-		
+
+
+		if (gear != null) {
+			var gunSlots = wave.GetComponentsInChildren<EnemyGunSlot>();
+			for (int k = 0; k < gunSlots.Length; k++) {
+				Instantiate(gear, gunSlots[k].transform);
+				break;
+			}
+		}
+
 		if(isDynamic)
 			dynamicWaves.Add(wave);
 
@@ -343,9 +362,8 @@ public class EnemyWavesController : MonoBehaviour {
 				waves[i].UpdateBasedOnDistance(playerDistance);
 			}
 
-			var isDynamicSpawnSuppressed = debugNoRegularSpawns || act2DemoEndNoSpawn || !spawnDynamicEnemies || encounterMode;
 
-			if (isDynamicSpawnSuppressed)
+			if (!DynamicSpawnsActive())
 				return;
 
 			if (waves.Count < maxConcurrentWaves) {
@@ -373,6 +391,13 @@ public class EnemyWavesController : MonoBehaviour {
 		}*/
 		
 		_flockingController.UpdateEnemyFlocks();
+	}
+
+	public bool DynamicSpawnsActive() {
+		//var firstRunAfterTutorial = DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial <= 0;
+		var difficultyEasy = DataSaver.s.GetCurrentSave().currentRun.difficulty == 0;
+		var isDynamicSpawnSuppressed = debugNoRegularSpawns || act2DemoEndNoSpawn || !spawnDynamicEnemies || encounterMode || difficultyEasy;
+		return !isDynamicSpawnSuppressed && PlayStateMaster.s.isCombatInProgress();
 	}
 
 	public void RemoveWave(EnemyWave toRemove) {

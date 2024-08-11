@@ -5,6 +5,7 @@ using UnityEngine;
 public class Artifact_MiniBomb : MonoBehaviour
 {
     public bool isArmed = false;
+    public bool isExploded = false;
     void Update()
     {
         if (PlayerWorldInteractionController.s.currentSelectedThingMonoBehaviour == GetComponent<Artifact>()) {
@@ -13,23 +14,20 @@ public class Artifact_MiniBomb : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision collision) {
-        if (isArmed && PlayStateMaster.s.isCombatInProgress()) {
+        if (isArmed && !isExploded && PlayStateMaster.s.isCombatInProgress() && !GetComponent<Artifact>().isAttached) {
             var playerIsHoldingMe = PlayerWorldInteractionController.s.currentSelectedThingMonoBehaviour == GetComponent<Artifact>();
-            var myHolderDrone = GetComponent<Artifact>().GetHoldingDrone();
+            //var myHolderDrone = GetComponent<Artifact>().GetHoldingDrone();
             var droneIsHoldingMe = false;
-            if (myHolderDrone != null) {
-                if (myHolderDrone.caughtCarry) {
-                    droneIsHoldingMe = true;
-                }
-            }
+        
             if (!playerIsHoldingMe && !droneIsHoldingMe) {
+                isExploded = true;
                 Explode();
             }
         }
     }
 
     public void Explode() {
-        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.megaDamagePrefab, transform.position, transform.rotation);
+        CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.megaDamage, transform.position, transform.rotation, VisualEffectsController.EffectPriority.Always);
 
         var targets = Physics.OverlapSphere(transform.position, 1.25f, LevelReferences.s.enemyLayer);
 
@@ -50,10 +48,13 @@ public class Artifact_MiniBomb : MonoBehaviour
             health.DealDamage(750, null);
             ApplyHitForceToObject(health);
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            VisualEffectsController.s.SmartInstantiate(LevelReferences.s.mortarMiniHitPrefab, closestPoint, Quaternion.identity);
+            CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.mortarMiniHit, closestPoint, Quaternion.identity, VisualEffectsController.EffectPriority.Low);
         }
         
-        
+        if (LevelReferences.s.combatHoldableThings.Contains(GetComponent<Artifact>())) {
+            LevelReferences.s.combatHoldableThings.Remove(GetComponent<Artifact>());
+        }
+
         MiniGUI_Pick3GemReward.MakeGem(UpgradesController.s.potatoGemName, transform.position, transform.rotation);
 
         Destroy(gameObject);

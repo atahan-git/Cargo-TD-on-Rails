@@ -23,9 +23,10 @@ public class EnemyTargetAssigner : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        shootCredit += shootCreditPerSecond * Time.deltaTime;
-        if (shootCredit > maxShootCredit) {
-            shootCredit = maxShootCredit;
+        shootCredit += shootCreditPerSecond * Time.deltaTime * TweakablesMaster.s.GetShootCreditsAddMultiplier();
+        var _maxShootCredit = maxShootCredit + TweakablesMaster.s.GetMaxShootCreditsAdd();
+        if (shootCredit > _maxShootCredit) {
+            shootCredit = _maxShootCredit;
         }
 
         if (shootCredit > 0 && shootRequesters.Count > 0) {

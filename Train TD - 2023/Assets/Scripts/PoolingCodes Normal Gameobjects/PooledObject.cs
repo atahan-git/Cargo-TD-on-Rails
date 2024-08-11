@@ -79,12 +79,16 @@ public class PooledObject : MonoBehaviour {
 
 		var moveWithGlobe = GetComponent<MoveWithGlobalMovement>();
 		if (moveWithGlobe) {
-			moveWithGlobe.currentSpeedPercent = 0;
+			moveWithGlobe.currentSpeedPercent = moveWithGlobe.startSpeedPercent;
 		}
 
 		if (GetComponent<Rigidbody> () != null) {
 			GetComponent<Rigidbody> ().velocity = Vector3.zero;
 			GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+		}
+
+		if (GetComponent<RandomPitchAtStart>() != null) {
+			GetComponent<RandomPitchAtStart>().Play();
 		}
 	}
 }

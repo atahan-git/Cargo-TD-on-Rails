@@ -29,6 +29,7 @@ public class RubbleFollowFloor : MonoBehaviour {
 
 
     void DestroyNow() {
+        //print($"destroying due to rubble {gameObject.name}");
         Destroy(gameObject);
     }
 
@@ -82,6 +83,8 @@ public class RubbleFollowFloor : MonoBehaviour {
 
     public bool canAttachToFloor = true;
     public void UnAttachFromFloor() {
+        StopDeathTimer();
+        
         if (!isAttachedToFloor) {
             return;
         }
@@ -93,7 +96,5 @@ public class RubbleFollowFloor : MonoBehaviour {
         transform.SetParent(VisualEffectsController.s.transform);
 
         isAttachedToFloor = false;
-        
-        StopDeathTimer();
     }
 }

@@ -153,7 +153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: notAttachedDescription
-      value: Repairs the entire train if dropped
+      value: Repairs the entire train if dropped then becomes a potato gem
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}

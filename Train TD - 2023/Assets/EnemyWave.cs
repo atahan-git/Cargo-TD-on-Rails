@@ -38,7 +38,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     }
     
     private void Start() {
-        Instantiate(LevelReferences.s.enemyWaveMovingArrow, transform);
+        //Instantiate(LevelReferences.s.enemyWaveMovingArrow, transform);
         //lineRenderer = GetComponentInChildren<LineRenderer>();
     }
 
@@ -284,6 +284,7 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
     const float lineDistance = 2f;
     private const float lineHeight = 0.5f;
     void CreateRouteDisplay() {
+        return;
         if (waveDisplay == null) {
             waveDisplay = Instantiate(LevelReferences.s.waveDisplayPrefab, LevelReferences.s.uiDisplayParent).GetComponent<MiniGUI_IncomingWave>();
             waveDisplay.SetUp(this);

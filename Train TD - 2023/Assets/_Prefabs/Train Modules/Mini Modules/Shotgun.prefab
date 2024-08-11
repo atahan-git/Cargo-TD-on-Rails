@@ -494,15 +494,15 @@ MonoBehaviour:
   gunUniqueName: shotgun
   gunSprite: {fileID: 21300000, guid: 8445c017ed6362a4381194ee86773dda, type: 3}
   isGigaGatling: 0
+  isLazer: 0
+  lazerMinDamageMultiplier: 0.1
+  gatlingDecayMultiplier: 1
   maxFireRateReduction: 0.875
   gatlingAmount: 0
   maxGatlingAmount: 8
-  useProviderBullet: 1
   myType: 8
-  bulletPrefab: {fileID: 4908573584345181807, guid: 3690077eb46ed4b488ed16149aedc46c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3819cb1af423dac46ba712e39e10fbc5, type: 3}
   fireDelay: 2
-  fireBarrageCount: 12
+  fireBarrageCount: 8
   fireBarrageDelay: 0
   projectileDamage: 6
   burnDamage: 0
@@ -513,6 +513,7 @@ MonoBehaviour:
     efficiency: 1
     flatDamageAdd: 0
     flatAmmoCostAdd: 0
+    ammoMultiplier: 1
     uranium: 0
     fire: 0
     explosionRangeAdd: 0
@@ -523,13 +524,12 @@ MonoBehaviour:
     lizardOverride: 0
   isLockOn: 0
   rotateSpeed: 10
-  isHeal: 0
   directControlShakeMultiplier: 1
   mortarRotation: 0
   isHitScan: 0
   ammoPerBarrage: 1
   explosionRange: 0
-  inaccuracyMultiplier: 1.5
+  inaccuracyMultiplier: 2
   gunShakeOnShoot: 1
   gunShakeMagnitudeMultiplier: 2
   gunRotateUpOnShoot: 3

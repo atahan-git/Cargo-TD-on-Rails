@@ -307,15 +307,6 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
     public bool IsAttachedToTrain() {
         return GetComponentInParent<Train>() != null;
     }
-    
-    private DroneRepairController holdingDrone;
-    public DroneRepairController GetHoldingDrone() {
-        return holdingDrone;
-    }
-
-    public void SetHoldingDrone(DroneRepairController holder) {
-        holdingDrone = holder;
-    }
 }
 
 

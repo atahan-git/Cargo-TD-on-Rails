@@ -21,11 +21,11 @@ TagManager:
   - Not in Reflection
   - 
   - Cart
-  - PlayerBullet
+  - bullet
   - ground
   - enemy
   - castle
-  - EnemyBullet
+  - -unused-
   - cartSnap
   - castleGate
   - artifact

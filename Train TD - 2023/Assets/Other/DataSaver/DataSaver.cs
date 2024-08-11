@@ -219,13 +219,18 @@ public class DataSaver {
 		public bool instantRestart = false;
 
 		public int castlesTraveled = 0;
+		public int runsMade = 0;
 		public int money = 0;
+
+		public int lastDifficultySelected = 0;
 		
 		public TutorialProgress tutorialProgress = new TutorialProgress();
 	}
 	
 	[Serializable]
 	public class  RunState {
+		public int difficulty = 0;
+		
 		public CharacterData character = new CharacterData();
 
 		public TrainState myTrain = new TrainState();
@@ -262,12 +267,16 @@ public class DataSaver {
 	[Serializable]
 	public class TutorialProgress {
 		public bool prologueDone = false;
+		public int runsMadeAfterTutorial = 0;
 		public bool showTutorials = true;
 	}
 
 	[Serializable]
 	public class TrainState {
 		public List<CartState> myCarts = new List<CartState>();
+
+		public List<CartState> myHoldingCarts = new List<CartState>();
+		public List<ArtifactState> myHoldingArtifacts = new List<ArtifactState>();
 
 		[Serializable]
 		public class CartState {

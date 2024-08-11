@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3940496496989868953}
   - component: {fileID: 3940496496989868952}
   - component: {fileID: 3940496496989868955}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: vfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4903,7 +4903,7 @@ GameObject:
   - component: {fileID: 3940496497142343021}
   - component: {fileID: 3940496497142343027}
   - component: {fileID: 3940496497142343026}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Glow(Explosion)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9786,7 +9786,7 @@ GameObject:
   - component: {fileID: 3061543063259921690}
   - component: {fileID: 9134260232741162202}
   - component: {fileID: 3532466757449247687}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9948,7 +9948,7 @@ GameObject:
   - component: {fileID: 71477758505617051}
   - component: {fileID: 3874361452549681498}
   - component: {fileID: 1718833553021477524}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: 2 Enemy rocket muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

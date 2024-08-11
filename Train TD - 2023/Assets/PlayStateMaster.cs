@@ -50,7 +50,6 @@ public class PlayStateMaster : MonoBehaviour {
         OnShopEntered.AddListener(MainMenu.s.ExitMainMenu);
         OnShopEntered.AddListener(Pauser.s.Unpause);
         OnShopEntered.AddListener(PlayerWorldInteractionController.s.OnEnterShopScreen);
-        OnShopEntered.AddListener(FirstTimeTutorialController.s.OnEnterShop);
         OnShopEntered.AddListener(Train.s.OnEnterShopArea);
         OnShopEntered.AddListener(WorldDifficultyController.s.OnShopEntered);
         OnShopEntered.AddListener(VignetteController.s.ResetVignette);
@@ -65,7 +64,6 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatEntered.AddListener(SpeedController.s.SetUpOnMissionStart);
         OnCombatEntered.AddListener(PathAndTerrainGenerator.s.MakeLevelTerrain);
         OnCombatEntered.AddListener(PathSelectorController.s.SetUpPath);
-        OnCombatEntered.AddListener(FirstTimeTutorialController.s.OnEnterCombat);
         OnCombatEntered.AddListener(TimeController.s.OnCombatStart);
         OnCombatEntered.AddListener(PlayerWorldInteractionController.s.OnEnterCombat);
         OnCombatEntered.AddListener(ShopStateController.s.OnCombatStart);
@@ -74,7 +72,6 @@ public class PlayStateMaster : MonoBehaviour {
         
         OnCombatFinished.AddListener(WorldDifficultyController.s.OnCombatEnd);
         OnCombatFinished.AddListener(TimeController.s.OnCombatEnd);
-        OnCombatFinished.AddListener(FirstTimeTutorialController.s.OnFinishCombat);
         OnCombatFinished.AddListener(EncounterController.s.ResetEncounter);
         OnCombatFinished.AddListener(PlayerWorldInteractionController.s.OnLeaveCombat);
         
@@ -179,9 +176,8 @@ public class PlayStateMaster : MonoBehaviour {
         if (enterShopOnLoad) {
             enterShopOnLoad = false;
             MainMenu.s.OpenProfileMenu(); // we need this to disable a couple of things
-            MainMenu.s.StartGame();
+            MainMenu.s.QuickStartGame();
         } else {
-            FirstTimeTutorialController.s.RemoveAllTutorialStuff();
             _gameState = GameState.mainMenu;
             MainMenu.s.OpenProfileMenu();
             if (!DataSaver.s.GetCurrentSave().tutorialProgress.prologueDone) {

@@ -791,6 +791,7 @@ public class CameraController : MonoBehaviour {
     }
     
     public void ActivateDirectControl(Transform target, bool allowFreeLook) {
+        //UnSnap();
         directControlTransform = target;
         directControlActive = true;
         rotTarget = new Vector2(target.rotation.eulerAngles.y, -target.rotation.eulerAngles.x);

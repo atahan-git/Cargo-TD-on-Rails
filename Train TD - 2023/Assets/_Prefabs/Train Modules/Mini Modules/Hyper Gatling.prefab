@@ -776,13 +776,13 @@ MonoBehaviour:
   gunUniqueName: hyper-gatling
   gunSprite: {fileID: 21300000, guid: 60b74295dc0f58144a253ad95f441d97, type: 3}
   isGigaGatling: 1
+  isLazer: 0
+  lazerMinDamageMultiplier: 0.1
+  gatlingDecayMultiplier: 1
   maxFireRateReduction: 0.92
   gatlingAmount: 0
   maxGatlingAmount: 4
-  useProviderBullet: 1
   myType: 9
-  bulletPrefab: {fileID: 4908573584345181807, guid: 98bc522f3c4ff4b44a93406dcf01c13c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 8f78b5537a14f8e40a70e1e6f66220a5, type: 3}
   fireDelay: 4
   fireBarrageCount: 3
   fireBarrageDelay: 0
@@ -807,14 +807,14 @@ MonoBehaviour:
   isLockOn: 0
   rotateSpeed: 10
   isHeal: 0
-  directControlShakeMultiplier: 0.5
+  directControlShakeMultiplier: 1
   mortarRotation: 0
   isHitScan: 0
   ammoPerBarrage: 0.2
   explosionRange: 0
   inaccuracyMultiplier: 2
   gunShakeOnShoot: 1
-  gunShakeMagnitudeMultiplier: 1
+  gunShakeMagnitudeMultiplier: 0.1
   gunRotateUpOnShoot: 2
   rotateTransforms: []
   rotateTransform:

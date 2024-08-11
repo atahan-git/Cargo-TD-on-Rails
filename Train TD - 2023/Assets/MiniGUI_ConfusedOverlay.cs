@@ -7,11 +7,11 @@ using UnityEngine;
 public class MiniGUI_ConfusedOverlay : MonoBehaviour {
 
     public static MiniGUI_ConfusedOverlay s;
-    private TMP_Text myText;
+    public TMP_Text myText;
+    public TMP_Text timeRemaining;
 
     private void Awake() {
         s = this;
-        myText = GetComponentInChildren<TMP_Text>();
     }
 
     public bool isConfused = false;
@@ -34,5 +34,9 @@ public class MiniGUI_ConfusedOverlay : MonoBehaviour {
     public void SetConfused(bool _isConfused, string confusedText) {
         isConfused = _isConfused;
         myText.text = "Confused!\n" + confusedText;
+    }
+
+    public void SetConfusedTime(float time) {
+        timeRemaining.text = ExtensionMethods.FormatTimeSeconds(time);
     }
 }

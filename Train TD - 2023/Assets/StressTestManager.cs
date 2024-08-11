@@ -62,28 +62,34 @@ public class StressTestManager : MonoBehaviour {
         Invoke(nameof(SpawnEnemies),2f);
     }
 
+    public bool spawnOneWave = true;
+    public bool spawnMultipleWaves = true;
     void SpawnEnemies() {
-        for (int i = 0; i < stressTestMultiplier; i++) {
-            EnemyWavesController.s.MakeSegmentEnemy(60,new UpgradesController.PathEnemyType(){myType =  UpgradesController.PathEnemyType.PathType.regular},true, true, true, true);
-            EnemyWavesController.s.MakeSegmentEnemy(60,new UpgradesController.PathEnemyType(){myType =  UpgradesController.PathEnemyType.PathType.regular},true, false, true, true);
+        if (spawnOneWave) {
+            for (int i = 0; i < stressTestMultiplier; i++) {
+                EnemyWavesController.s.MakeSegmentEnemy(60, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular }, true, true, true, true);
+                EnemyWavesController.s.MakeSegmentEnemy(60, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular }, true, false, true, true);
+            }
         }
     }
 
     void SetTrainPressure() {
         var engine = Train.s.GetComponentInChildren<EngineModule>();
-        engine.currentPressure = 0;
+        //engine.currentPressure = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (stressTestActive) {
-            /*if (EnemyWavesController.s.GetActiveEnemyCount() <= 5*stressTestMultiplier) {
-                EnemyWavesController.s.MakeSegmentEnemy(SpeedController.s.currentDistance, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular },
-                    true, true, true, true);
-                EnemyWavesController.s.MakeSegmentEnemy(SpeedController.s.currentDistance, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular },
-                    true, false, true, true);
-            }*/
+            if (spawnMultipleWaves) {
+                if (EnemyWavesController.s.GetActiveEnemyCount() <= 5*stressTestMultiplier) {
+                    EnemyWavesController.s.MakeSegmentEnemy(SpeedController.s.currentDistance, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular },
+                        true, true, true, true);
+                    EnemyWavesController.s.MakeSegmentEnemy(SpeedController.s.currentDistance, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular },
+                        true, false, true, true);
+                }
+            }
 
             if (Train.s.GetComponent<AmmoTracker>().ammoProviders[0].AvailableAmmo() < 2) {
                 (Train.s.GetComponent<AmmoTracker>().ammoProviders[0] as ModuleAmmo).Reload(20);

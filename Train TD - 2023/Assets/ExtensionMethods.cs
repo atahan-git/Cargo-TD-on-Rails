@@ -21,6 +21,10 @@ public static class ExtensionMethods {
         return string.Format("{0:00}:{1:00}", minutes, seconds);
     }
     
+    public static string FormatTimeSeconds(float time) {
+        return time.ToString("F2");
+    }
+    
     public static void ResetTransformation(this Transform trans) {
         trans.localPosition = Vector3.zero;
         trans.localRotation = Quaternion.identity;

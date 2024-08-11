@@ -129,6 +129,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public void SetBiomes() {
         SetBiomes(-1);
     }
+
+    private int currentBiomeIndex;
     public void SetBiomes(int _biomeOverride, bool repopulateTerrain = true) {
         Biome currentBiome;
         var actualBiomeOverride = -1;
@@ -146,10 +148,11 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
 
             Debug.Log($"Biome set {targetBiome}");
-            currentBiome = biomes[targetBiome];
-        } else {
-            currentBiome = biomes[actualBiomeOverride];
+            actualBiomeOverride = targetBiome;
         }
+
+        currentBiomeIndex = actualBiomeOverride;
+        currentBiome = biomes[currentBiomeIndex];
 
         ApplyBiome(currentBiome);
 
@@ -1160,10 +1163,14 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     [Button]
     void DebugApplySunAndSkyboxEditor(int biome) {
-        var currentBiome = biomes[biome];
+        currentBiomeIndex = biome;
+        var currentBiome = biomes[currentBiomeIndex];
         ApplyBiome(currentBiome);
     }
 
+    public int GetCurrentBiomeIndex() {
+        return currentBiomeIndex;
+    }
     void ApplyBiome(Biome currentBiome) {
         for (int i = 0; i < biomes.Length; i++) {
             biomes[i].sun.gameObject.SetActive(false);
@@ -1172,5 +1179,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
 
         RenderSettings.ambientIntensity = currentBiome.skyboxLightIntensity;
+        
     }
 }

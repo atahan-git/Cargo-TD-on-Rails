@@ -16,6 +16,31 @@ public class Artifact_ExplosiveGem: MonoBehaviour, IChangeCartState,IArtifactDes
                 currentDescription = "Cannot affect this gun";
             }
         }
+        
+        
+        foreach (var repairModule in target.GetComponentsInChildren<DroneRepairController>()) {
+            if (repairModule.currentAffectors.explosionRange <= 0) {
+                currentDescription = "Adds a repair explosion";
+                repairModule.currentAffectors.explosionRange += 0.35f;
+            } else {
+                currentDescription = "Increases repair explosion range";
+                repairModule.currentAffectors.explosionRange += 0.15f;
+            }
+            
+            didApply = true;
+            
+        }
+        
+        foreach (var ammoModule in target.GetComponentsInChildren<ModuleAmmo>()) {
+            if (ammoModule.currentAffectors.explosionResistance == 0) {
+                currentDescription = "Ammo doesn't disappear if cart explodes";
+            } else {
+                currentDescription = "No extra effect";
+            }
+            
+            ammoModule.currentAffectors.explosionResistance += 1;
+            didApply = true;
+        }
 
         if (!didApply) {
             currentDescription = "Cannot affect this cart yet";

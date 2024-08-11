@@ -93,6 +93,11 @@ public class ProjectileProvider : MonoBehaviour {
 		    bulletPool.gameObject.name = "enemy " + curProjectiles.myType+ " bullet";
 	    }
     }
+    
+    private void LateUpdate() {
+	    transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
+	    transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
+    }
 
     public GameObject GetProjectile(ProjectileTypes myType, float fire, Vector3 position, Quaternion rotation) {
 	    var combo = projectiles[0];

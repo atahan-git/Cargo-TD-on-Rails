@@ -141,7 +141,7 @@ public class TerrainGenerator : MonoBehaviour
         //terrainInformation.bounds.SetMinMax(terrainInformation.topLeftPos, terrainInformation.topLeftPos + new Vector3(terrainWidth,10,terrainWidth));
 
         
-        terrainInformation.biome = DataSaver.s.GetCurrentSave().currentRun.currentAct-1;
+        terrainInformation.biome = PathAndTerrainGenerator.s.GetCurrentBiomeIndex();
 
         //var stopwatch = new System.Diagnostics.Stopwatch();
         //stopwatch.Start();
@@ -334,6 +334,7 @@ public class TerrainGenerator : MonoBehaviour
                 for (int i = 0; i < treeDatas.Count; i++) {
                     var myData = treeDatas[i];
                     var density = GetTreeDensity(myData, posX, posY, distance, i * 500);
+                    
                     if (NextFloat(random) < density*myData.treeChanceAtMaxDensity) {
                         TreeInstance treeTemp = new TreeInstance();
                         treeTemp.position = new Vector3((float)x/treeGridSize,0, (float)y/treeGridSize) + new Vector3(NextFloat(random, -maxRandomOffset,maxRandomOffset), 0, NextFloat(random,-maxRandomOffset,maxRandomOffset));
@@ -1002,14 +1003,21 @@ public class TerrainGenerator : MonoBehaviour
         //StartCoroutine(UpdateTerrainHeights(terrainData, Transpose(information.heightmap), 64));
 
         terrain.terrainData = terrainData;
-        terrain.GetComponent<TerrainCollider>().terrainData = terrainData;
+        var terrainCollider = terrain.GetComponent<TerrainCollider>();
         
         // TERRAIN DETAILS DISABLED HERE
 
         if (information.minDistanceToTracks > 15) {
             terrain.drawTreesAndFoliage = false;
+
+            terrainCollider.enabled = false;
+
         } else {
             terrain.drawTreesAndFoliage = true;
+            
+            terrainCollider.terrainData = terrainData;
+            terrainCollider.enabled = true;
+            
             information.terrain.terrainData.SetDetailLayer(0, 0, 0, Transpose(information.detailmap0));
             information.terrain.terrainData.SetDetailLayer(0, 0, 1, Transpose(information.detailmap1));
             information.terrain.terrainData.SetDetailLayer(0, 0, 2, Transpose(information.pebbleMap));

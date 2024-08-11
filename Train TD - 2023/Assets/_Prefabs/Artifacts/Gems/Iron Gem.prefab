@@ -105,7 +105,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: notAttachedDescription
-      value: Makes things bigger but slower
+      value: Makes things bigger but ammo hungry
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 196a9628965f8844d89169a7403b898d, type: 3}
@@ -126,11 +126,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2045f984f0b409c46971674152518279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseDamageMultiplier: 2
-  damageMultiplierIncreasePerLevel: 1
-  curDamageMultiplier: 2
-  baseFirerateReduction: 1
-  baseEngineHpIncrease: 500
-  engineHpIncreasePerLevel: 500
-  curEngineHpIncrease: 500
-  trainSlowAmount: -0.1
+  currentDescription: 

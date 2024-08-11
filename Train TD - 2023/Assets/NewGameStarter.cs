@@ -16,6 +16,7 @@ public class NewGameStarter : MonoBehaviour {
         if (!DataSaver.s.GetCurrentSave().isInARun) {
             DataSaver.s.GetCurrentSave().currentRun = new DataSaver.RunState(VersionDisplay.s.GetVersionNumber());
             DataSaver.s.GetCurrentSave().currentRun.SetCharacter(defaultChars[Random.Range(0,defaultChars.Length)].myCharacter);
+            DataSaver.s.GetCurrentSave().currentRun.difficulty = DataSaver.s.GetCurrentSave().lastDifficultySelected;
             DataSaver.s.GetCurrentSave().isInARun = true;
             DataSaver.s.SaveActiveGame();
         }

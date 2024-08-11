@@ -85,6 +85,22 @@ public class Train : MonoBehaviour {
         }
 
         UpdateCartPositions(true);
+
+
+        var holdingThings = GetComponentInChildren<ItemHolderModule>();
+        for (int i = 0; i < trainState.myHoldingCarts.Count; i++) {
+            var cartState = trainState.myHoldingCarts[i];
+            var cart = Instantiate(DataHolder.s.GetCart(cartState.uniqueName).gameObject, transform.position, transform.rotation).GetComponent<Cart>();
+            ApplyStateToCart(cart, cartState);
+            holdingThings.BeginHolding(cart);
+        }
+        for (int i = 0; i < trainState.myHoldingArtifacts.Count; i++) {
+            var artifactState = trainState.myHoldingArtifacts[i];
+            var artifact = Instantiate( DataHolder.s.GetArtifact(artifactState.uniqueName).gameObject, transform.position, transform.rotation).GetComponent<Artifact>();
+            ApplyStateToArtifact(artifact, artifactState);
+            holdingThings.BeginHolding(artifact);
+        }
+        
         
         isTrainDrawn = true;
         
@@ -124,6 +140,20 @@ public class Train : MonoBehaviour {
         for (int i = 0; i < carts.Count; i++) {
             var cartScript = carts[i].GetComponent<Cart>();
             trainState.myCarts.Add(GetStateFromCart(cartScript));
+        }
+
+        var holdingThings = GetComponentInChildren<ItemHolderModule>();
+        for (int i = 0; i < holdingThings.currentlyHolding.Count; i++) {
+            var thing = holdingThings.currentlyHolding[i].item;
+            if (thing != null) {
+                if (thing is Cart cart) {
+                    trainState.myHoldingCarts.Add(GetStateFromCart(cart));
+                }
+
+                if (thing is Artifact artifact) {
+                    trainState.myHoldingArtifacts.Add(GetStateFromArtifact(artifact));
+                }
+            }
         }
 
         return trainState;
@@ -428,21 +458,31 @@ public class Train : MonoBehaviour {
         if (index > -1) {
             RemoveCart(cart);
         } 
-
-        CheckHealth();
         
         // draw train already calls this
         //trainUpdatedThroughNonBuildingActions?.Invoke();
     }
 
     void CheckHealth() {
+        if (!PlayStateMaster.s.isCombatInProgress()) {
+            return;
+        }
+        
         var health = 0f;
+        var maxHealth = 0f;
         for (int i = 0; i < carts.Count; i++) {
             var _cart = carts[i].GetHealthModule();
-            if (!_cart.invincible) {
+            if (!_cart.invincible  && !_cart.myCart.isDestroyed) {
                 health += _cart.currentHealth;
             }
+            
+            maxHealth += _cart.GetMaxHealth();
         }
+
+        if (maxHealth <= 0) {
+            return;
+        }
+
 
         //print(health);
         if (health <= 0) {
@@ -454,7 +494,7 @@ public class Train : MonoBehaviour {
             MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.everyCartExploded);
         }
     }
-    
+
     public Affectors currentAffectors = new Affectors();
     [Serializable]
     public class Affectors {

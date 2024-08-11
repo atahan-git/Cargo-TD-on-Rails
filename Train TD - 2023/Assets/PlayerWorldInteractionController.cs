@@ -41,6 +41,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public InputActionReference alternateClick; 
     public InputActionReference cycleAction; 
     public InputActionReference showDetailClick; // detail click is its own button on gamepad
+    public InputActionReference hideTutorial; 
     
 
     [SerializeField]
@@ -60,6 +61,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         clickCart.action.canceled += DragClickMaybeEnd;
         cycleAction.action.Enable();
         cycleAction.action.performed += CycleSelected;
+        hideTutorial.action.Enable();
     }
 
     public int selectOffset = 0;
@@ -108,6 +110,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         clickCart.action.performed -= DragClickMaybeEnd;
         cycleAction.action.Disable();
         cycleAction.action.performed -= CycleSelected;
+        hideTutorial.action.Disable();
     }
 
     public Color cantActColor = Color.white;
@@ -322,8 +325,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         isComboDragStarted = true;
         
         isSnapping = false;
-        
-        currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
 
         displacedArtifact = null;
         currentSnapLoc = null;
@@ -620,7 +621,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 Destroy(currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>());
             }
 
-            currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
             if (currentSelectedThing is Cart || currentSelectedThing is Artifact) {
                 var rigid = (currentSelectedThingMonoBehaviour).GetComponent<Rigidbody>();
                 rigid.isKinematic = true;
@@ -638,10 +638,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }else{
             currentSelectedThing.SetHoldingState(false);
             
-            if (currentSelectedThing.GetHoldingDrone() != null) {
-                currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
-                currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
-            }
 
             if (PlayStateMaster.s.isCombatInProgress()) {
                 if (currentSelectedThingMonoBehaviour is Cart || currentSelectedThingMonoBehaviour is Artifact)
@@ -1234,8 +1230,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 public interface IPlayerHoldable {
     public Transform GetUITargetTransform();
     public void SetHoldingState(bool state);
-    public DroneRepairController GetHoldingDrone();
-    public void SetHoldingDrone(DroneRepairController holder);
 }
 
 

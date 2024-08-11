@@ -334,18 +334,18 @@ MonoBehaviour:
   gunUniqueName: flames
   gunSprite: {fileID: 21300000, guid: aba5e5016c4c6674eb61199621225374, type: 3}
   isGigaGatling: 0
+  isLazer: 0
+  lazerMinDamageMultiplier: 0.1
+  gatlingDecayMultiplier: 1
   maxFireRateReduction: 0.875
   gatlingAmount: 0
   maxGatlingAmount: 8
-  useProviderBullet: 1
   myType: 4
-  bulletPrefab: {fileID: 4908573584345181807, guid: 60e9917752faf82449ada92968bd6508, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: d13b04fe45d03c24fab8310c0c9450fb, type: 3}
-  fireDelay: 0.5
-  fireBarrageCount: 5
+  fireDelay: 0.1
+  fireBarrageCount: 1
   fireBarrageDelay: 0.1
   projectileDamage: 0
-  burnDamage: 0.4
+  burnDamage: 0.05
   dontGetAffectByMultipliers: 0
   currentAffectors:
     power: 1
@@ -353,6 +353,7 @@ MonoBehaviour:
     efficiency: 1
     flatDamageAdd: 0
     flatAmmoCostAdd: 0
+    ammoMultiplier: 1
     uranium: 0
     fire: 0
     explosionRangeAdd: 0
@@ -363,13 +364,12 @@ MonoBehaviour:
     lizardOverride: 0
   isLockOn: 0
   rotateSpeed: 10
-  isHeal: 0
   directControlShakeMultiplier: 1
   mortarRotation: 0
   isHitScan: 0
-  ammoPerBarrage: 0.5
+  ammoPerBarrage: 0.1
   explosionRange: 0
-  inaccuracyMultiplier: 1
+  inaccuracyMultiplier: 0.1
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   gunRotateUpOnShoot: 2
@@ -425,6 +425,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 0
+  targetFarthest: 1
   delay: 0
 --- !u!1 &4532553131099445004
 GameObject:

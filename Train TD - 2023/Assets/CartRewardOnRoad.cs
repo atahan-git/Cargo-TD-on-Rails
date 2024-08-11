@@ -34,8 +34,8 @@ public class CartRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
 
     public GameObject toSpawnOnDeath;
     public bool awardGiven = false;
-    public void OnCollisionEnter(Collision collision) {
-        if (!awardGiven && collision.collider.GetComponentInParent<Train>()) {
+    public void OnTriggerEnterCollision(Collider other) {
+        if (!awardGiven && other.GetComponentInParent<Train>()) {
             awardGiven = true;
             GiveReward();
             CameraController.s.UnSnap();
@@ -43,10 +43,15 @@ public class CartRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
         }
     }
 
-    private void OnTriggerEnter(Collider other) {
-        if (!awardGiven && other.GetComponentInParent<Train>()) {
+    private bool pulledOut = false;
+    public void OnTriggerEnterCameraSwitch(Collider other) {
+        if (!awardGiven &&!pulledOut&& other.GetComponentInParent<Train>()) {
+            pulledOut = true;
             DirectControlMaster.s.DisableDirectControl();
             CameraController.s.SnapToTransform(Train.s.carts[0].transform);
+            
+            LevelReferences.s.speed = 5;
+            //Train.s.GetComponentInChildren<EngineModule>().currentPressure = 0.5f;
         }
     }
 

@@ -90,6 +90,11 @@ public class EnemyConfusionComponent : MonoBehaviour,IComponentWithTarget,IEnemy
         
         
         curTime = Mathf.Clamp(curTime, 0, chargeTime + activeTime);
+
+        var curActiveTime = curTime - chargeTime;
+        curActiveTime = Mathf.Clamp(curActiveTime, 0, chargeTime);
+        curActiveTime = chargeTime - curActiveTime;
+        MiniGUI_ConfusedOverlay.s.SetConfusedTime(curActiveTime);
     }
 
     public bool isCharging = false;

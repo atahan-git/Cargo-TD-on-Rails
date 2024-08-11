@@ -30,7 +30,7 @@ public class DirectControlMaster : MonoBehaviour {
 	public InputActionReference flyUpAction;
 	public InputActionReference flyDownAction;
 	
-	public InputActionReference activateAction;
+	public InputActionReference alternativeActiveAction;
 	
 	public IDirectControllable currentDirectControllable;
 
@@ -51,7 +51,6 @@ public class DirectControlMaster : MonoBehaviour {
 	public GameObject isFire;
 	public GameObject isExplosive;
 	public GameObject isSticky;
-	
 	
 	public LayerMask gunLookMask;
 
@@ -79,10 +78,15 @@ public class DirectControlMaster : MonoBehaviour {
 	public Image arrowRepairImage;
 	public Slider repairingSlider;
 	public LayerMask repairLookMask;
+	
+	public GameObject exitToRecharge;
+	public MiniGUI_ShowRepairDroneChargePercent chargePercentUI;
 
 	[Header("Engine Control")] 
 	public SpeedometerScript pressureGauge;
 	public TMP_Text pressureInfo;
+	public TMP_Text engineOverdrive;
+	public GameObject brakingIndicators;
 	
 	[Header("UI")]
 	public GameObject masterDirectControlUI;
@@ -110,7 +114,7 @@ public class DirectControlMaster : MonoBehaviour {
 		flyUpAction.action.Enable();
 		flyDownAction.action.Enable();
 		
-		activateAction.action.Enable();
+		alternativeActiveAction.action.Enable();
 	}
 
 	private void OnDisable() {
@@ -123,7 +127,7 @@ public class DirectControlMaster : MonoBehaviour {
 		flyUpAction.action.Disable();
 		flyDownAction.action.Disable();
 		
-		activateAction.action.Disable();
+		alternativeActiveAction.action.Disable();
 	}
 	
 	[HideInInspector]

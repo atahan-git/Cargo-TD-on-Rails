@@ -94,6 +94,10 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         }
     }
 
+    public bool IsBraking() {
+        return currentBreakPower > 0;
+    }
+
 
     public bool isWarping = false;
 
@@ -148,6 +152,8 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
         } else {
             acceleration = ((float)Mathf.Clamp(excessCarts, 0, 5)).Remap(0, 5, 0.2f, 0.01f);
         }
+        
+        //newTargetSpeed *= TweakablesMaster.s.GetTrainSpeedMultiplier();
 
         if (currentBreakPower <= 0) {
             if (!Mathf.Approximately(targetSpeed, newTargetSpeed)) {
@@ -219,6 +225,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
                     LevelReferences.s.speed = debugSpeedOverride;
                 }
 
+                slowAmount = Mathf.MoveTowards(slowAmount, 0, slowDecay * Time.deltaTime);
                 slowAmount = Mathf.Lerp(slowAmount, 0, slowDecay * Time.deltaTime);
                 slowAmount = Mathf.Clamp(slowAmount, 0, 5);
                 if (slowAmount <= 0.2f) {

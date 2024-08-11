@@ -26,6 +26,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         public float maxAmmoMultiplier = 1;
         public float reloadEfficiency = 1;
         public float reloadOverTime = 0;
+        public int explosionResistance = 0;
     }
 
     public bool dontLoseAmmoInThisDisable = false;
@@ -56,7 +57,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     }
 
     public void UseAmmo(float usedAmount) {
-        curAmmo -= usedAmount;
+        curAmmo -= usedAmount*TweakablesMaster.s.GetPlayerAmmoUseMultiplier();
         
         curAmmo = Mathf.Clamp(curAmmo, 0, maxAmmo*2);
         UpdateModuleState();
@@ -161,7 +162,8 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
         if (dontLoseAmmoInThisDisable) {
             dontLoseAmmoInThisDisable = false;
         } else {
-            curAmmo = 0;
+            if(currentAffectors.explosionResistance <= 0)
+                curAmmo = 0;
         }
 
         UpdateModuleState();

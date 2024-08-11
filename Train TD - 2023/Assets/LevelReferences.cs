@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,26 +21,16 @@ public class LevelReferences : MonoBehaviour {
     public GameObject cartRepairableDamageEffect;
     public GameObject repairDoneEffect;
     public GameObject maxHealthReductionPlatePrefab;
+    public GameObject repairExplosionEffect;
     
     [Space]
 
-    public GameObject metalBulletHitEffectPrefab;
-    public GameObject dirtBulletHitEffectPrefab;
-    public GameObject enemyRegularHitEffectPrefab;
-    public GameObject enemyCantPenetrateHitEffectPrefab;
-    public GameObject rocketExplosionEffectPrefab;
-    public GameObject laserHitPrefab;
-    public GameObject mortarExplosionEffectPrefab;
-    public GameObject mortarMiniHitPrefab;
     public GameObject waveDisplayPrefab;
     public GameObject enemyHealthPrefab;
     public GameObject cartHealthPrefab;
     public GameObject bulletHealthPrefab;
     public GameObject damageNumbersPrefab;
     public Transform uiDisplayParent;
-
-    [Space]
-    public GameObject scrapsItemPrefab;
 
     [Space]
     
@@ -50,14 +41,11 @@ public class LevelReferences : MonoBehaviour {
     
     [Space]
     
-    public GameObject reloadEffect_regular;
+    public EventReference droneFullyChargedSound;
     
     [Space]
-
-    public GameObject smallDamagePrefab;
-    public GameObject mediumDamagePrefab;
-    public GameObject bigDamagePrefab;
-    public GameObject megaDamagePrefab;
+    
+    public GameObject reloadEffect_regular;
     
     [Space]
 
@@ -123,6 +111,7 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask groundLayer;
     public LayerMask enemyLayer;
     public LayerMask buildingLayer;
+    public LayerMask cartRepairableSectionLayer;
     public LayerMask cartSnapLocationsLayer;
     public LayerMask gateMask;
     public LayerMask artifactLayer;

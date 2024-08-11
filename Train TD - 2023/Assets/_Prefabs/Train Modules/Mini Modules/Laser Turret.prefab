@@ -293,7 +293,7 @@ MonoBehaviour:
   fireDelay: 0.2
   fireBarrageCount: 1
   fireBarrageDelay: 0.2
-  projectileDamage: 4
+  projectileDamage: 2
   burnDamage: 4
   dontGetAffectByMultipliers: 0
   currentAffectors:
@@ -313,7 +313,6 @@ MonoBehaviour:
     lizardOverride: 0
   isLockOn: 0
   rotateSpeed: 5
-  isHeal: 0
   directControlShakeMultiplier: 1
   mortarRotation: 0
   isHitScan: 0

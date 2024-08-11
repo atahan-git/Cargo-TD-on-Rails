@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4908573584345181804}
-  - component: {fileID: -6062515655222848923}
+  - component: {fileID: 2431895519123045836}
   - component: {fileID: -7941794275200595506}
-  m_Layer: 16
+  m_Layer: 12
   m_Name: 8 arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35,7 +35,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-6062515655222848923
+--- !u!114 &2431895519123045836
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,24 +44,69 @@ MonoBehaviour:
   m_GameObject: {fileID: 4908573584345181807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09c75f9a5985ab248a1ac772996d316d, type: 3}
+  m_Script: {fileID: 11500000, guid: ed22b7720cff2244a8c914a8c7f08ab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileDamage: 20
-  burnDamage: 0
-  slowDamage: 0
-  toSpawnOnDeath: {fileID: 0}
+  currentData:
+    isTargetingPlayer: 0
+    didHitTarget: 0
+    acceleration: 2.5
+    seekAcceleration: 100
+    speed: 7.5
+    explosionRange: 0
+    isPhaseThrough: 0
+    isHoming: 0
+    isAmmoHitter: 0
+    isSlowDamage: 0
+    slowDamage: 2.5
+    isHeal: 0
+    healChunkCount: 2
+    isTargetSeeking: 1
+    seekStrength: 20
+    projectileDamage: 20
+    burnDamage: 0
+    leaveArrow: 0
+    leaveArrowChance: 0.5
+    curSpeed: 0
+    curSeekStrength: 0
+    originObject: {fileID: 0}
+    target: {fileID: 0}
+    targetEnemyHealth: {fileID: 0}
+    targetPlayerHealth: {fileID: 0}
+    targetPoint: {x: 0, y: 0, z: 0}
+    initialVelocity: {x: 0, y: 0, z: 0}
+  defaultData:
+    isTargetingPlayer: 1
+    didHitTarget: 0
+    acceleration: 2.5
+    seekAcceleration: 100
+    speed: 5
+    explosionRange: 0
+    isPhaseThrough: 0
+    isHoming: 0
+    isAmmoHitter: 0
+    isSlowDamage: 0
+    slowDamage: 2.5
+    isHeal: 0
+    healChunkCount: 2
+    isTargetSeeking: 1
+    seekStrength: 20
+    projectileDamage: 20
+    burnDamage: 0
+    leaveArrow: 1
+    leaveArrowChance: 0.5
+    curSpeed: 0
+    curSeekStrength: 0
+    originObject: {fileID: 0}
+    target: {fileID: 0}
+    targetEnemyHealth: {fileID: 0}
+    targetPlayerHealth: {fileID: 0}
+    targetPoint: {x: 0, y: 0, z: 0}
+    initialVelocity: {x: 0, y: 0, z: 0}
+  hitForceMultiplier: 20
   lifetime: 20
-  speed: 5
-  seekStrength: 20
-  isArrow: 1
-  arrowLeaveChance: 0.5
-  arrowObject: {fileID: 7663804221682584334}
-  myOriginObject: {fileID: 0}
-  target: {fileID: 0}
+  myHitType: 0
   isDead: 0
-  targetPoint: {x: 0, y: 0, z: 0}
-  initialVelocity: {x: 0, y: 0, z: 0}
   instantDestroy: {fileID: 7663804221682584334}
 --- !u!114 &-7941794275200595506
 MonoBehaviour:
@@ -91,7 +136,7 @@ GameObject:
   - component: {fileID: 1525271842867969272}
   - component: {fileID: 7947548484331654187}
   - component: {fileID: 1619370924054991537}
-  m_Layer: 16
+  m_Layer: 12
   m_Name: Harpoon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,7 +176,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1

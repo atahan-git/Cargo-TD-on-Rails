@@ -48,7 +48,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     public float acceptableMatchDistance = 0.05f;
     public float perfectMatchDistance = 0.01f;
     
-    public InputActionReference activateAction => DirectControlMaster.s.activateAction;
     public InputActionReference shootAction => DirectControlMaster.s.shootAction;
     public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
     
@@ -105,7 +104,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         ammoFull = false;
         DirectControlMaster.s.ammoMinigameUI.SetActive(true);
         
-        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControlActivate);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shoot);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
 
         SetNewCurPos(true);
@@ -123,7 +122,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
 
         RemoveNewOnes();
         
-        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControlActivate);
+        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControlAlternativeActivate);
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
     }
 
@@ -160,7 +159,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         }
         
         
-        if (!needNewOnes && !dropping && (activateAction.action.IsPressed() || shootAction.action.IsPressed()) && !enterDirectControlShootLock) {
+        if (!needNewOnes && !dropping && shootAction.action.IsPressed() && !enterDirectControlShootLock) {
             SetNewOnesDropping();
             dropping = true;
         }
@@ -233,7 +232,8 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
             }
         }
 
-        var speedMultiplier = currentAffectors.speed;
+        //var speedMultiplier = currentAffectors.speed;
+        var speedMultiplier = 1;
         if (!dropping && !needNewOnes) {
             if (moveForward) {
                 curPos += moveSpeed * Time.deltaTime * speedMultiplier;

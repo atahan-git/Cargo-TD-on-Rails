@@ -250,6 +250,10 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5874716716262006708, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
+      propertyPath: CollisionModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5874716716262006708, guid: 1c4588a647e79774489c06bf83d7b03f, type: 3}
       propertyPath: VelocityModule.radial.scalar
       value: 5
       objectReference: {fileID: 0}

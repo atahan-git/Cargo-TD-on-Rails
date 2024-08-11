@@ -49,6 +49,8 @@ public class MissionWinFinisher : MonoBehaviour {
 		//EnemyHealth.winSelfDestruct?.Invoke(false);
 
 		DataSaver.s.GetCurrentSave().tutorialProgress.prologueDone = true;
+		DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial += 1;
+		DataSaver.s.GetCurrentSave().runsMade += 1;
 
 
 		for (int i = 0; i < scriptsToDisable.Length; i++) {

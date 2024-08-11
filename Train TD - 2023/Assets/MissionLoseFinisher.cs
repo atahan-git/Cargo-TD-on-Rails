@@ -37,6 +37,12 @@ public class MissionLoseFinisher : MonoBehaviour {
         DataSaver.s.GetCurrentSave().tutorialProgress.prologueDone = true;
         DataSaver.s.GetCurrentSave().showWakeUp = true;
         DataSaver.s.GetCurrentSave().isInARun = false;
+        if (PrologueController.s.isPrologueActive) {
+            PrologueController.s.PrologueDone(); 
+        } else {
+            DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial += 1;
+            DataSaver.s.GetCurrentSave().runsMade += 1;
+        }
 
         tipText.text = loseTips[Random.Range(0, loseTips.Length)];
 
@@ -85,7 +91,7 @@ public class MissionLoseFinisher : MonoBehaviour {
         DataSaver.s.SaveActiveGame();
         
         
-        AnalyticsResult analyticsResult = Analytics.CustomEvent(
+        /*AnalyticsResult analyticsResult = Analytics.CustomEvent(
             "LevelLost",
             new Dictionary<string, object> {
                 { "Level", PlayStateMaster.s.currentLevel.levelName },
@@ -93,10 +99,10 @@ public class MissionLoseFinisher : MonoBehaviour {
                 { "time", Mathf.RoundToInt(WorldDifficultyController.s.GetMissionTime()/10) * 10},
 
             }
-        );
+        );*/
         
         
-        Debug.Log("Mission Lost Analytics: " + analyticsResult);
+        //Debug.Log("Mission Lost Analytics: " + analyticsResult);
 
         FMODMusicPlayer.s.PauseMusic();
         DirectControlMaster.s.DisableDirectControl();

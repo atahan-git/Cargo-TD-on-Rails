@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState {
@@ -57,15 +58,9 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
     private Quaternion quatVel = Quaternion.identity;
 
     public float selfRepairSpeed = 1;
-    private float repairCharge = 0;
-
-    public bool carryDraggableMode;
-    public bool caughtCarry;
-    private Vector3 targetVelocity;
-    public Vector3 catchPosition;
-    [ShowInInspector]
-    public IPlayerHoldable myCarry;
-
+    public Image selfRepairImage;
+    private float curSelfRepair = 0;
+    
     [Tooltip("at 1 multiplier repairing takes 5 secs")]
     public float repairSpeedMultiplier = 1f;
 
@@ -79,6 +74,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         public float uranium = 0f;
         public int fire = 0;
         public int iron = 0;
+        public float explosionRange = 0;
         
         public bool vampiric = false;
         public bool ancientDisabled = false;
@@ -89,118 +85,84 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
     }
 
     private bool canPickNewTargets = true;
+
+    public float chargeTime = 30f;
+    public float repairChargeFullUseTime = 60f;
     
     private void LateUpdate() {
         if (MissionLoseFinisher.s.isMissionLost) {
             return;
         }
-
+        
         if (myHealth.myCart.isDestroyed) {
-            repairCharge += selfRepairSpeed* Time.deltaTime;
-            if (repairCharge > 1) {
-                repairCharge -= 1;
-                myHealth.RepairChunk(1);
+            curSelfRepair += selfRepairSpeed* Time.deltaTime;
+            curSelfRepair = Mathf.Clamp01(curSelfRepair);
+            selfRepairImage.fillAmount = curSelfRepair / 1f;
+            if (curSelfRepair >= 1) {
+                curSelfRepair = 0;
+                myHealth.RepairChunk(100);
             }
         }
+        
+        if (!beingDirectControlled) {
+            if (target == null || target.gameObject == null) {
+                // docked?
+                droneScript.SetCurrentlyRepairingState(false);
+                if (!gettingNewTarget) {
+                    MoveDroneWithVelocity(droneDockedPosition.transform.position + Vector3.up*dockOffset, droneDockedPosition.transform.rotation);
+                }
 
-        if (!carryDraggableMode &&LevelReferences.s.combatHoldableThings.Count > 0 && currentAffectors.IsActive()) {
-            for (int i = 0; i < LevelReferences.s.combatHoldableThings.Count; i++) {
-                var holdable = LevelReferences.s.combatHoldableThings[i];
-                if (holdable != null && ((MonoBehaviour)holdable) != null) {
-                    if (holdable.GetHoldingDrone() == null && holdable != PlayerWorldInteractionController.s.currentSelectedThing) {
-                        myCarry = holdable;
-                        holdable.SetHoldingDrone(this);
+                if (Vector3.Distance(drone.transform.position, droneDockedPosition.transform.position) < 0.05f) {
+                    droneScript.currentChargePercent += (1f / chargeTime) * Time.deltaTime;
+                    droneScript.currentChargePercent = Mathf.Clamp01(droneScript.currentChargePercent);
 
-                        carryDraggableMode = true;
-                        caughtCarry = false;
+                    if (droneScript.currentChargePercent >= 1f) {
+                        droneScript.needToFullyCharge = false;
+                        TryGetNewTarget();
                     }
                 }
-            }
-        }
-
-        if (carryDraggableMode) {
-            if (myCarry.GetUITargetTransform() == null) {
-                StopHoldingThing();
-                return;
-            }
-
-            droneScript.SetCurrentlyRepairingState(false);
-
-            var carryMono = (MonoBehaviour)myCarry;
-
-            var playerIsCarrying = myCarry == PlayerWorldInteractionController.s.currentSelectedThing && PlayerWorldInteractionController.s.isDragging();
-            
-            if (caughtCarry && !playerIsCarrying) {
-                BringCarryCloser(carryMono);
-            }
-            
-
-            var targetPos = myCarry.GetUITargetTransform().position + Vector3.up/6 + Vector3.forward/4;
-            
-            var targetRot = Quaternion.LookRotation(carryMono.transform.position - drone.transform.position);
-
-            if (!caughtCarry && 
-                (Vector3.Distance(drone.transform.position, targetPos) < 0.15f || 
-                 Vector3.Distance(drone.transform.position, Train.s.trainMiddle.transform.position) > 10)) {
-                CatchCarry();
-            }
-
-            if (!caughtCarry) {
-                MoveDroneWithVelocity(targetPos, targetRot);
             } else {
-                drone.transform.position = targetPos;
-                drone.transform.rotation =  targetRot;
-            }
+                var targetPos = target.transform.position;
+                var forward = PathAndTerrainGenerator.s.GetDirectionVectorOnActivePath(health.myCart.cartPosOffset);
+                var right = Quaternion.Euler(0, 90, 0) * forward;
+                var center = PathAndTerrainGenerator.s.GetPointOnActivePath(health.myCart.cartPosOffset);
+                var toTheRight = IsToTheRight(targetPos, center, forward);
 
-
-        } else {
-            if (!beingDirectControlled) {
-                if (target == null) {
-                    droneScript.SetCurrentlyRepairingState(false);
-                    if (!gettingNewTarget) {
-                        if(droneDockedPosition != null)
-                            MoveDroneWithVelocity(droneDockedPosition.transform.position + Vector3.up*dockOffset, droneDockedPosition.transform.rotation);
-                    }
+                if (toTheRight) {
+                    targetPos += right * 0.2f;
                 } else {
-                    var targetPos = target.transform.position;
-                    var forward = PathAndTerrainGenerator.s.GetDirectionVectorOnActivePath(health.myCart.cartPosOffset);
-                    var right = Quaternion.Euler(0, 90, 0) * forward;
-                    var center = PathAndTerrainGenerator.s.GetPointOnActivePath(health.myCart.cartPosOffset);
-                    var toTheRight = IsToTheRight(targetPos, center, forward);
+                    targetPos -= right * 0.2f;
+                }
 
-                    if (toTheRight) {
-                        targetPos += right * 0.2f;
-                    } else {
-                        targetPos -= right * 0.2f;
-                    }
+                targetPos += Vector3.up * 0.2f;
 
-                    targetPos += Vector3.up * 0.2f;
+                var targetRot = Quaternion.LookRotation(target.transform.position - drone.transform.position);
 
-                    var targetRot = Quaternion.LookRotation(target.transform.position - drone.transform.position);
+                MoveDroneWithVelocity(targetPos, targetRot);
 
-                    MoveDroneWithVelocity(targetPos, targetRot);
+                if (Vector3.Distance(drone.transform.position, targetPos) < 0.15f) {
+                    droneScript.SetCurrentlyRepairingState(true);
 
-                    if (Vector3.Distance(drone.transform.position, targetPos) < 0.15f) {
-                        droneScript.SetCurrentlyRepairingState(true);
-
-                        TryDoRepair(target, out bool removedArrow, out bool repairSuccess);
-                    } else {
-                        repairTimer -= Time.deltaTime;
-                        repairTimer = Mathf.Clamp(repairTimer, 0, 1);
-                        droneScript.SetCurrentlyRepairingState(false);
-                    }
+                    droneScript.currentChargePercent -= (1f / repairChargeFullUseTime) * Time.deltaTime;
+                    
+                    TryDoRepair(target, out bool removedArrow, out bool repairSuccess, Time.deltaTime);
+                } else {
+                    repairTimer -= Time.deltaTime;
+                    repairTimer = Mathf.Clamp(repairTimer, 0, 1);
+                    droneScript.SetCurrentlyRepairingState(false);
                 }
             }
         }
+        
     }
 
 
-    public float TryDoRepair(RepairableBurnEffect target, out bool removedArrow, out bool repairSuccess, float extraMultiplier = 1) {
+    public float TryDoRepair(RepairableBurnEffect target, out bool removedArrow, out bool repairSuccess,float deltaTime, float extraMultiplier = 1) {
         removedArrow = false;
         repairSuccess = false;
         if (target.hasArrow) {
             repairTimer = target.removeArrowState;
-            repairTimer += Time.deltaTime * GetArrowRepairTimeMultiplier()*extraMultiplier;
+            repairTimer += deltaTime * GetArrowRepairTimeMultiplier()*extraMultiplier;
             target.SetRemoveArrowState(repairTimer);
             if (repairTimer > 1) {
                 target.RemoveArrow();
@@ -208,11 +170,12 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
                 repairTimer = 0;
             }
         } else {
-            repairTimer += Time.deltaTime*GetRepairTimeMultiplier()*extraMultiplier;
+            repairTimer += deltaTime*GetRepairTimeMultiplier()*extraMultiplier;
         }
 
         if (repairTimer >= 1) {
             DoRepair(target.GetComponentInParent<ModuleHealth>(), target);
+            
             TryGetNewTarget();
 
             repairSuccess = true;
@@ -227,58 +190,43 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
 
 
     public float GetArrowRepairTimeMultiplier() {
-        return Mathf.Min(10,0.2f * currentAffectors.efficiency); // at 1 efficiency repair arrow takes 5 sec
+        var multiplier = 0.2f * GetEfficiency();
+        multiplier /= TweakablesMaster.s.GetPlayerRepairTimeMultiplier();
+        return Mathf.Min(20,multiplier); // at 1 efficiency repair arrow takes 5 sec, at 2 it takes 2.5 and so on
     }
     
     public float GetRepairTimeMultiplier() {
-        return Mathf.Min(10,0.2f * currentAffectors.efficiency * repairSpeedMultiplier); // at 1 efficiency regular repair takes 5 sec
+        var multiplier = 0.2f * GetEfficiency() * repairSpeedMultiplier;
+        multiplier /= TweakablesMaster.s.GetPlayerRepairTimeMultiplier();
+        return Mathf.Min(20,multiplier); // at 1 efficiency regular repair takes 5 sec, at 2 it takes 2.5 and so on
     }
-
-    private void CatchCarry() {
-        var rigid = ((MonoBehaviour)myCarry).GetComponent<Rigidbody>();
-
-        //targetVelocity = rigid.velocity;
-        targetVelocity = Vector3.zero;
-        catchPosition = rigid.transform.position;
-        catchPosition.y = 0;
-
-        rigid.isKinematic = true;
-        rigid.useGravity = false;
-        caughtCarry = true;
-
-        var rubbleFollowFloor = ((MonoBehaviour)myCarry).GetComponent<RubbleFollowFloor>();
-        if (rubbleFollowFloor) {
-            rubbleFollowFloor.UnAttachFromFloor();
-            rubbleFollowFloor.canAttachToFloor = false;
-        }
-    }
-    
-    private void BringCarryCloser(MonoBehaviour carryMono) {
-
-        var trainMiddlePos = Train.s.trainMiddle.position;
-        catchPosition += Train.s.GetTrainForward() * LevelReferences.s.speed*Time.deltaTime;
-        if (Vector3.Distance(catchPosition, trainMiddlePos) >2) {
-            catchPosition = Vector3.Lerp(catchPosition, trainMiddlePos, 0.5f*Time.deltaTime);
-        } else {
-        }
-        
-        Debug.DrawLine(catchPosition, catchPosition+Vector3.up*5,Color.yellow);
-        Debug.DrawLine(trainMiddlePos, trainMiddlePos+Vector3.up*5,Color.yellow);
-
-        var targetHoldPos = catchPosition;
-        targetHoldPos.y = 1f + Mathf.Sin(Time.time * 0.4f) * 0.2f;
-        targetHoldPos.x += Mathf.Sin(Time.time * 0.22f) * 0.2f;
-        targetHoldPos.z += Mathf.Sin(Time.time * 0.2f) * 0.2f;
-
-        carryMono.transform.position = Vector3.SmoothDamp(carryMono.transform.position, targetHoldPos, ref targetVelocity, 0.1f);
-        carryMono.transform.rotation = Quaternion.Slerp(carryMono.transform.rotation, Quaternion.identity, 1 * Time.deltaTime);
-    }
-
-
 
     public float vampiricHealthStorage;
     public void DoRepair(ModuleHealth targetHealth, RepairableBurnEffect chunk) {
         targetHealth.RepairChunk(chunk);
+
+        if (currentAffectors.explosionRange > 0) {
+            //print("repair explosion");
+            var otherRepairChunksInRange = Physics.OverlapSphere(chunk.transform.position, currentAffectors.explosionRange/2f, LevelReferences.s.cartRepairableSectionLayer);
+            /*Debug.DrawLine(chunk.transform.position, chunk.transform.position+Vector3.up*currentAffectors.explosionRange, Color.green,5);
+            Debug.DrawLine(chunk.transform.position, chunk.transform.position+Vector3.left*currentAffectors.explosionRange, Color.green,5);
+            Debug.DrawLine(chunk.transform.position, chunk.transform.position+Vector3.right*currentAffectors.explosionRange, Color.green,5);
+            Debug.DrawLine(chunk.transform.position, chunk.transform.position+Vector3.forward*currentAffectors.explosionRange, Color.green,5);
+            Debug.DrawLine(chunk.transform.position, chunk.transform.position+Vector3.back*currentAffectors.explosionRange, Color.green,5);
+            Debug.DrawLine(chunk.transform.position, chunk.transform.position+Vector3.down*currentAffectors.explosionRange, Color.green,5);
+            Debug.Break();*/
+
+            VisualEffectsController.s.SmartInstantiate(LevelReferences.s.repairExplosionEffect, chunk.transform.position, chunk.transform.rotation, Vector3.one * currentAffectors.explosionRange, 
+                targetHealth.myCart.genericParticlesParent, VisualEffectsController.EffectPriority.Always);
+
+            for (int i = 0; i < otherRepairChunksInRange.Length; i++) {
+                var repairable = otherRepairChunksInRange[i].gameObject.GetComponentInParent<RepairableBurnEffect>();
+                if (repairable != null) {
+                    repairable.GetComponentInParent<ModuleHealth>().RepairChunk(repairable);
+                }
+            }
+        }
+        
 
         if (currentAffectors.uranium > 0) {
             UseAmmo();
@@ -331,7 +279,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
 
 
     float AmmoUse() {
-        return 0.5f;
+        return 1f;
     }
     
     bool HasAmmo() {
@@ -392,50 +340,10 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         curVelocity += acceleration * Time.deltaTime;
 
         var distance = Vector3.Distance( drone.transform.position,pos);
-        if (carryDraggableMode) {
-            distance = 10000;
-            _maxVelocity = 10000;
-            
-            curVelocity += 1 * Time.deltaTime;
-        }
-        
         curVelocity = Mathf.Clamp(curVelocity, 0.2f, Mathf.Min(_maxVelocity, distance*5));
         
         drone.transform.position = Vector3.MoveTowards(drone.transform.position, pos, curVelocity*Time.deltaTime);
         drone.transform.rotation = ExtensionMethods.QuaterionSmoothDamp(drone.transform.rotation, rot, ref quatVel, 0.1f);
-    }
-
-
-    public void StopHoldingThing() {
-        if (myCarry != null && myCarry.GetUITargetTransform() != null) {
-            myCarry.SetHoldingDrone(null);
-            var rigid = ((MonoBehaviour)myCarry).GetComponent<Rigidbody>();
-            if (!rigid.GetComponentInParent<Train>()) {
-                rigid.isKinematic = false;
-                rigid.useGravity = true;
-            }
-
-            var rubbleFollowFloor = ((MonoBehaviour)myCarry).GetComponent<RubbleFollowFloor>();
-            if (rubbleFollowFloor) {
-                rubbleFollowFloor.canAttachToFloor = true;
-            }
-        }
-
-        if (myCarry != null) {
-            
-            if (LevelReferences.s.combatHoldableThings.Contains(myCarry)) {
-                LevelReferences.s.combatHoldableThings.Remove(myCarry);
-            }
-            myCarry = null;
-        }
-        
-        caughtCarry = false;
-        
-        UnsetTarget();
-        TryGetNewTarget();
-
-        carryDraggableMode = false;
-        
     }
 
     void OnTrainChanged() {
@@ -445,8 +353,15 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
     }
 
     void TryGetNewTarget() {
-        if(!droneActive || !canPickNewTargets || !currentAffectors.IsActive())
+        if (droneScript.currentChargePercent <= 0.05f) {
+            droneScript.needToFullyCharge = true;
+        }
+        
+        if (!droneActive || !canPickNewTargets || !currentAffectors.IsActive() || droneScript.needToFullyCharge) {
+            UnsetTarget();
+            gettingNewTarget = false;
             return;
+        }
 
         if (!gettingNewTarget) {
             gettingNewTarget = true;
@@ -526,10 +441,20 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         }
         droneScript.SetCurrentlyRepairingState(false);
         UnsetTarget();
+        
+        selfRepairImage.transform.parent.gameObject.SetActive(true);
+        curSelfRepair = 0;
     }
 
     public void CartEnabled() {
         canPickNewTargets = true;
         drone.SetActive(true);
+        if(droneScript)
+            droneScript.SetCurrentlyRepairingState(false);
+        selfRepairImage.transform.parent.gameObject.SetActive(false);
+
+        if (droneScript) {
+            droneScript.currentChargePercent = 1f;
+        }
     }
 }

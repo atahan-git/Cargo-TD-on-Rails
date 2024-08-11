@@ -45,35 +45,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed22b7720cff2244a8c914a8c7f08ab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  curSpeed: 0
-  acceleration: 2.5
-  seekAcceleration: 360
-  speed: 1
-  projectileDamage: 20
-  burnDamage: 0
-  explosionRange: 0
-  isHeal: 0
+  currentData:
+    isTargetingPlayer: 0
+    acceleration: 5
+    seekAcceleration: 200
+    speed: 5
+    explosionRange: 0
+    isPhaseThrough: 0
+    isSlowDamage: 0
+    isHoming: 0
+    isTargetSeeking: 1
+    seekStrength: 180
+    projectileDamage: 20
+    burnDamage: 0
+    curSpeed: 0
+    curSeekStrength: 0
+    originObject: {fileID: 0}
+    target: {fileID: 0}
+    targetEnemyHealth: {fileID: 0}
+    targetPlayerHealth: {fileID: 0}
+    targetPoint: {x: 0, y: 0, z: 0}
+    initialVelocity: {x: 0, y: 0, z: 0}
+  defaultData:
+    isTargetingPlayer: 0
+    acceleration: 5
+    seekAcceleration: 360
+    speed: 1
+    explosionRange: 0
+    isPhaseThrough: 0
+    isSlowDamage: 0
+    isHoming: 0
+    isTargetSeeking: 1
+    seekStrength: 180
+    projectileDamage: 20
+    burnDamage: 0
+    curSpeed: 0
+    curSeekStrength: 0
+    originObject: {fileID: 0}
+    target: {fileID: 0}
+    targetEnemyHealth: {fileID: 0}
+    targetPlayerHealth: {fileID: 0}
+    targetPoint: {x: 0, y: 0, z: 0}
+    initialVelocity: {x: 0, y: 0, z: 0}
   hitForceMultiplier: 300
   lifetime: 1
-  myOriginObject: {fileID: 0}
   isTargetSeeking: 1
   seekStrength: 20
-  isPlayerBullet: 0
-  target: {fileID: 0}
-  source: {fileID: 0}
-  ballistaHitEffect: 0
   myHitType: 3
-  mortarGravity: {x: 0, y: -9.81, z: 0}
-  mortarAimPredictTime: 1
-  mortarVelocityMultiplier: 0.5
-  isPhaseThrough: 0
-  isSlowDamage: 0
-  isHoming: 0
-  initialVelocity: {x: 0, y: 0, z: 0}
-  hitScanLayerMask:
-    serializedVersion: 2
-    m_Bits: 57344
-  hitScanRange: 10
   isDead: 0
   instantDestroy: {fileID: 0}
 --- !u!114 &-9104505785343846112

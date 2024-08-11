@@ -17,12 +17,15 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
     public EngineModule myEngineModule;
     public Transform[] directControlCamPositions;
 
-    public InputActionReference activateAction => DirectControlMaster.s.activateAction;
+    public InputActionReference shootAction => DirectControlMaster.s.shootAction;
+    public InputActionReference alternativeActivate => DirectControlMaster.s.alternativeActiveAction;
     public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
     
     
     public SpeedometerScript pressureGauge =>DirectControlMaster.s.pressureGauge;
     public TMP_Text pressureInfo =>DirectControlMaster.s.pressureInfo;
+    public TMP_Text engineOverdrive =>DirectControlMaster.s.engineOverdrive;
+    public GameObject brakeIndicators =>DirectControlMaster.s.brakingIndicators;
     
     public Affectors currentAffectors;
 
@@ -50,7 +53,8 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
         
         DirectControlMaster.s.trainEngineControlUI.SetActive(true);
         
-        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControlActivate);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControlAlternativeActivate);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.shoot);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.engineControlSwitch);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
     }
@@ -63,7 +67,8 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
             return;
         }
 
-        var click = activateAction.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
+        var click = shootAction.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
+        var brakeAction = alternativeActivate.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
 
         if (click) {
             if (crystalStored <= 0) {
@@ -82,12 +87,22 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
 
             DoAdd();
         }
+
+        if (brakeAction) {
+            SpeedController.s.SetBrakingStatus(!SpeedController.s.IsBraking());
+            print("yete");
+        }
+
+        var isBraking = SpeedController.s.IsBraking();
         
-        pressureGauge.SetSpeed(myEngineModule.currentPressure);
+        brakeIndicators.SetActive(isBraking);
+        
+        pressureGauge.SetSpeed(myEngineModule.GetCurrentPressure());
         pressureInfo.text = $"Pull Strength: {myEngineModule.GetEffectivePressure():0.0}\n" +
                             $"Pressure Use: {myEngineModule.GetPressureUse()}/s\n" +
                             $"Self Damage: {myEngineModule.GetSelfDamageMultiplier()}";
 
+        engineOverdrive.gameObject.SetActive(myEngineModule.GetSelfDamageMultiplier()>0);
 
     }
 
@@ -108,7 +123,7 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
         CameraController.s.DisableDirectControl();
         DirectControlMaster.s.trainEngineControlUI.SetActive(false);
 
-        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControlActivate);
+        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControlAlternativeActivate);
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.engineControlSwitch);
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
     }

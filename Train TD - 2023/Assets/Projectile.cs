@@ -2,79 +2,169 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Projectile : MonoBehaviour {
-    public float curSpeed = 0;
-    private float curSeekStrength = 0;
-    public float acceleration = 5f;
-    public float seekAcceleration = 200f;
-    public float speed = 5f;
-    public float projectileDamage = 20f;
-    public float burnDamage = 0;
-    public float explosionRange = 0; // 0.5f for rockets
+    public ActiveData currentData;
+    public ActiveData defaultData;
 
-    public bool isHeal = false;
-    
     public float hitForceMultiplier = 20f;
 
     public float lifetime = 20f;
-    
-    public GameObject myOriginObject;
 
-    public bool isTargetSeeking = true;
-    public float seekStrength = 180f;
-
-    public bool isPlayerBullet = false;
-
-    public Transform target;
-    
-    public GunModule source;
-
-    public GenericCallback onHitCallback;
-    public GenericCallback onMissCallback;
-
-    public bool ballistaHitEffect = false;
-    
     public enum HitType {
-        Bullet, Rocket, Mortar, Laser, Railgun
+        Bullet=0, Rocket=1, Mortar=2, Laser=3, Railgun=4
     }
 
     public HitType myHitType = HitType.Bullet;
+    
+    [Serializable]
+    public class ActiveData {
+        public bool isTargetingPlayer = false;
+        public bool didHitTarget = false;
 
-    public Vector3 mortarGravity = new Vector3(0, -9.81f, 0f);
-    private Vector3 mortarVelocity;
-    public float mortarAimPredictTime = 1f;
-    public float mortarVelocityMultiplier = 0.5f;
+        [Space]
+        public float acceleration = 2.5f;
+        public float seekAcceleration = 100f;
+        public float speed = 7.5f;
+        public float explosionRange = 0;
+        
+        [Space]
+        public bool isPhaseThrough = false;
+        [ShowIf("isPhaseThrough")]
+        public Vector3 phaseDamageHalfExtends;
+        public bool isHoming = false;
+        public bool isAmmoHitter = false;
+        
+        [Space]
+        public bool isSlowDamage = false;
+        [ShowIf("isSlowDamage")]
+        public float slowDamage = 2.5f;
+        
+        [Space]
+        public bool isHeal = false;
+        [ShowIf("isHeal")]
+        public int healChunkCount = 2;
+        
+        [Space]
+        public bool isTargetSeeking = true;
+        [ShowIf("isTargetSeeking")]
+        public float seekStrength = 20f;
+        
+        [Space]
+        public float projectileDamage = 20f;
+        public float burnDamage = 0;
+        [Space]
+        public bool leaveArrow = false;
+        [ShowIf("leaveArrow")]
+        public float leaveArrowChance = 0.5f;
+        
+        
+        [Space]
+        public bool scaleUpOverTime = false;
+        [ShowIf("scaleUpOverTime")]
+        public float scaleUpSpeed = 2f;
+        [ShowIf("scaleUpOverTime")]
+        public Vector3 baseScale = Vector3.one;
 
-    public bool isPhaseThrough = false;
-    public bool isSlowDamage = false;
-    public bool isHoming = false;
+        [FoldoutGroup("Internal Variables")]
+        public float curSpeed = 0;
+        [FoldoutGroup("Internal Variables")]
+        public float curSeekStrength = 0;
+        
+        [Space]
+        [FoldoutGroup("Internal Variables")]
+        public GameObject originObject;
+        [FoldoutGroup("Internal Variables")]
+        public Transform target;
+        [FoldoutGroup("Internal Variables")]
+        public EnemyHealth targetEnemyHealth;
+        [FoldoutGroup("Internal Variables")]
+        public ModuleHealth targetPlayerHealth;
+        
+        [Space]
+        [FoldoutGroup("Internal Variables")]
+        public Vector3 targetPoint;
 
-    private Rigidbody rg;
-    private void OnEnable() {
-        Invoke("DestroySelf", lifetime);
+        [FoldoutGroup("Internal Variables")]
+        public Vector3 initialVelocity;
+
+        [Space]
+        [FoldoutGroup("Internal Variables")]
+        public GenericCallback onHitCallback;
+        [FoldoutGroup("Internal Variables")]
+        public GenericCallback onMissCallback;
+
+        [Space] 
+        [FoldoutGroup("Internal Variables")]
+        public Vector3 hitPoint;
+        [FoldoutGroup("Internal Variables")] 
+        public Vector3 hitNormal;
+        public void CopyTo (ActiveData copy) {
+            copy.isTargetingPlayer = isTargetingPlayer;
+            
+            copy.curSpeed = curSpeed;
+            copy.curSeekStrength = curSeekStrength;
+            copy.acceleration = acceleration;
+            copy.seekAcceleration = seekAcceleration;
+            copy.speed = speed;
+            copy.projectileDamage = projectileDamage;
+            copy.burnDamage = burnDamage;
+            copy.explosionRange = explosionRange;
+            
+            
+            copy.isPhaseThrough = isPhaseThrough;
+            copy.phaseDamageHalfExtends = phaseDamageHalfExtends;
+            copy.isHoming = isHoming;
+            copy.isAmmoHitter = isAmmoHitter;
+            
+            copy.isSlowDamage = isSlowDamage;
+            copy.slowDamage = slowDamage;
+            
+            copy.isHeal = isHeal;
+            copy.healChunkCount = healChunkCount;
+            
+            copy.isTargetSeeking = isTargetSeeking;
+            copy.seekStrength = seekStrength;
+            
+            
+            copy.scaleUpOverTime = scaleUpOverTime;
+            copy.scaleUpSpeed = scaleUpSpeed;
+            copy.baseScale = baseScale;
+            
+            
+            copy.leaveArrow = leaveArrow;
+            copy.leaveArrowChance = leaveArrowChance;
+        }
+    }
+    
+    public void SetUp(ActiveData data) {
+        currentData = data;
+        currentData.didHitTarget = false;
+        
+        GetComponent<PooledObject>().lifeTime = lifetime;
 
         isDead = false;
 
         if (instantDestroy)
             instantDestroy.SetActive(true);
 
-        rg = GetComponent<Rigidbody>();
+        if (currentData.isHoming) {
+            currentData.seekStrength *= 5;
+            currentData.isTargetSeeking = true;
+        }
         
-        if(rg)
-            rg.detectCollisions = true;
-
-        if (isHoming) {
-            seekStrength *= 5;
+        if (currentData.scaleUpOverTime) {
+            transform.localScale = currentData.baseScale;
         }
         
         switch (myHitType) {
             case HitType.Bullet:
-                curSpeed = speed;
-                curSeekStrength = seekStrength;
+                currentData.curSpeed = currentData.speed;
+                currentData.curSeekStrength =  currentData.seekStrength;
                 break;
             
             case HitType.Rocket:
@@ -82,162 +172,75 @@ public class Projectile : MonoBehaviour {
                 //curSeekStrength = 0;
                 break;
             
-            case HitType.Mortar:
-                curSpeed = speed;
-                curSeekStrength = seekStrength;
-                var targetPos = target.position;
-                
-                var enemyWave = target.GetComponentInParent<EnemyWave>();
-
-                
-                if (enemyWave != null) {
-                    targetPos +=  Vector3.forward * enemyWave.currentSpeed * mortarAimPredictTime;
-                }
-
-                var randomOffset = Random.insideUnitSphere * explosionRange;
-                randomOffset.y = 0;
-                targetPos += randomOffset;
-                
-                float angle = 90- Vector3.Angle(Vector3.up, transform.forward);
-                if (angle <= 0) {
-                    angle = 0.1f;
-                }
-
-                //print(transform.forward);
-                var predictedDirection = targetPos - transform.position;
-                predictedDirection = new Vector3(predictedDirection.x, 0, predictedDirection.z);
-                var rotAxis = Vector3.Cross(predictedDirection, Vector3.up);
-                predictedDirection = Quaternion.AngleAxis(angle, rotAxis) * predictedDirection;
-                transform.rotation = Quaternion.LookRotation(predictedDirection);
-                //print(transform.forward);
-
-                float gx = mortarGravity.y * Vector3.Distance(transform.position, targetPos);
-                float sinVal = 0.5f* Mathf.Sin(angle);
-                float velocity = Mathf.Sqrt(Mathf.Abs(gx / sinVal));
-
-
-                mortarVelocity = transform.forward.normalized * velocity;
-                mortarVelocity *= mortarVelocityMultiplier;
-                break;
-            
             case HitType.Laser:
                 HitScan();
                 break;
             
             case HitType.Railgun:
+                if (raycastResultsArray == null || raycastResultsArray.Length <= 0) {
+                    raycastResultsArray = new RaycastHit[64];
+                }
                 RailgunScan();
                 break;
         }
-    }
 
-    public Vector3 initialVelocity;
-    
-    public void SetIsPlayer(bool isPlayer) {
-        if (isHeal)
-            isPlayer = !isPlayer;
-        
-        isPlayerBullet = isPlayer;
-
-        var layer = gameObject.layer;
-        if (isPlayer) {
-            layer = LevelReferences.s.playerBulletLayer.LayerIndex;
-        } else {
-            layer = LevelReferences.s.enemyBulletLayer.LayerIndex;
+        if (currentData.isPhaseThrough) {
+            if (raycastResultsArray == null || raycastResultsArray.Length <= 0) {
+                raycastResultsArray = new RaycastHit[64];
+            }
         }
 
-        var children = GetComponentsInChildren<Transform>(includeInactive: true);
-        foreach (var child in children) {
-            child.gameObject.layer = layer;
-        }
-    }
-
-    public LayerMask hitScanLayerMask;
-    public int hitScanRange = 10;
-
-    void HitScan() {
-        var hitPrefab = LevelReferences.s.laserHitPrefab;
-
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, hitScanRange, hitScanLayerMask)) {
-            if (!hit.rigidbody)
-                return;
-            if (hit.rigidbody.gameObject != myOriginObject) {
-                var otherProjectile = hit.transform.root.GetComponent<Projectile>();
-                if (otherProjectile != null) {
-                    if (otherProjectile.isPlayerBullet == isPlayerBullet) {
-                        // we don't want projectiles from the same faction collide with each other
-                        return;
-                    }
-                }
-
-                var train = hit.transform.root.GetComponent<Train>();
-
-                if (train != null && isPlayerBullet) {
-                    // make player bullets dont hit the player
-                    return;
-                }
-
-                var enemy = hit.transform.root.GetComponent<EnemyWavesController>();
-
-                if (enemy != null && !isPlayerBullet) {
-                    // make enemy projectiles not hit the player projectiles
-                    return;
-                }
-                
-                
-                var health = hit.transform.GetComponentInParent<EnemyHealth>();
-        
-                DealDamage(health);
-                
-                var pos = hit.point;
-                var rotation = Quaternion.LookRotation(hit.normal);
-
-                VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation);
-
-                GetComponent<PooledObject>().DisableObject();
-                //SmartDestroySelf();
+        if (currentData.explosionRange > 0) {
+            if (explosiveOverlapArray == null || explosiveOverlapArray.Length <= 0) {
+                explosiveOverlapArray = new Collider[64];
             }
         }
     }
-    
-    void RailgunScan() {
-        var hitPrefab = LevelReferences.s.mortarMiniHitPrefab;
+
+    private int hitScanRange = 50;
+
+    void HitScan() {
+        var hitType = CommonEffectsProvider.CommonEffectType.lazerHit;
+        var hitScanLayerMask = currentData.isTargetingPlayer ? LevelReferences.s.buildingLayer : LevelReferences.s.enemyLayer;
         
-        foreach( var hit in Physics.RaycastAll(transform.position, transform.forward, hitScanRange, hitScanLayerMask)) {
-            if (!hit.rigidbody)
-                return;
-            
-            if (hit.rigidbody.gameObject != myOriginObject) {
-                var otherProjectile = hit.transform.root.GetComponent<Projectile>();
-                if (otherProjectile != null) {
-                    if (otherProjectile.isPlayerBullet == isPlayerBullet) {
-                        // we don't want projectiles from the same faction collide with each other
-                        return;
-                    }
-                }
-
-                var train = hit.transform.root.GetComponent<Train>();
-
-                if (train != null && isPlayerBullet) {
-                    // make player bullets dont hit the player
-                    return;
-                }
-
-                var enemy = hit.transform.root.GetComponent<EnemyWavesController>();
-
-                if (enemy != null && !isPlayerBullet) {
-                    // make enemy projectiles not hit the player projectiles
-                    return;
-                }
-                
-                
+        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, hitScanRange, hitScanLayerMask)) {
+            if (hit.rigidbody && hit.rigidbody.gameObject != currentData.originObject) {
                 var health = hit.transform.GetComponentInParent<EnemyHealth>();
-        
-                DealDamage(health);
-                
+
+                currentData.didHitTarget = true;
+                DealDamageToEnemy(health);
+            
                 var pos = hit.point;
                 var rotation = Quaternion.LookRotation(hit.normal);
 
-                VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation);
+                CommonEffectsProvider.s.SpawnEffect(hitType, pos, rotation);
+            }
+        }
+        
+        DestroySelf();
+    }
+
+    private RaycastHit[] raycastResultsArray;
+    private Collider[] explosiveOverlapArray;
+    void RailgunScan() {
+        var hitType = CommonEffectsProvider.CommonEffectType.mortarMiniHit;
+        var hitScanLayerMask = currentData.isTargetingPlayer ? LevelReferences.s.buildingLayer : LevelReferences.s.enemyLayer;
+        var count = Physics.RaycastNonAlloc(transform.position, transform.forward, raycastResultsArray, hitScanRange, hitScanLayerMask);
+        for(int i = 0; i < count; i ++) {
+            var hit = raycastResultsArray[i];
+            if (!hit.rigidbody)
+                return;
+            
+            if (hit.rigidbody.gameObject != currentData.originObject) {
+                var health = hit.transform.GetComponentInParent<EnemyHealth>();
+    
+                currentData.didHitTarget = true;
+                DealDamageToEnemy(health);
+            
+                var pos = hit.point;
+                var rotation = Quaternion.LookRotation(hit.normal);
+
+                CommonEffectsProvider.s.SpawnEffect(hitType, pos, rotation);
             }
         }
         
@@ -256,56 +259,175 @@ public class Projectile : MonoBehaviour {
         SmartDestroySelf();
     }
 
-    private bool didHit = false;
-    void DestroySelf() {
-        GetComponent<PooledObject>().DestroyPooledObject();
-        if(!didHit)
-            onMissCallback?.Invoke();
-    }
-
     void FixedUpdate() {
         if (!isDead) {
-            if (isTargetSeeking) {
-                if (target != null) {
-                    var targetLook = Quaternion.LookRotation(target.position - transform.position);
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetLook, curSeekStrength * Time.fixedDeltaTime);
+            if ( currentData.isTargetSeeking) {
+                if (currentData.target != null) {
+                    var targetLook = Quaternion.LookRotation(currentData.target.position - transform.position);
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetLook, currentData.curSeekStrength * Time.fixedDeltaTime);
                 } else {
-                    isTargetSeeking = false;
+                    currentData.isTargetSeeking = false;
                 }
             }
 
             if (myHitType == HitType.Rocket) {
-                curSpeed = Mathf.MoveTowards(curSpeed, speed, acceleration * Time.fixedDeltaTime);
-                curSeekStrength = Mathf.MoveTowards(curSeekStrength, seekStrength, seekAcceleration * Time.fixedDeltaTime);
+                currentData.curSpeed = Mathf.MoveTowards(currentData.curSpeed, currentData.speed, currentData.acceleration * Time.fixedDeltaTime);
+                currentData.curSeekStrength = Mathf.MoveTowards(currentData.curSeekStrength,  currentData.seekStrength, currentData.seekAcceleration * Time.fixedDeltaTime);
             }
-
-            if (target != null) {
-                if (Vector3.Distance(transform.position, target.position) < (curSpeed + 0.1f) * Time.fixedDeltaTime) {
-                    if (!isPhaseThrough) {
-                        DestroyFlying();
-                    }
-                }
-            }
-
+            
+            
             switch (myHitType) {
                 case HitType.Bullet:
                 case HitType.Rocket:
-                    rg.velocity = (transform.forward * curSpeed) + (initialVelocity);
-                    break;
-                case HitType.Mortar:
-                    /*GetComponent<Rigidbody>().MovePosition(transform.position + mortarVelocity * Time.fixedDeltaTime);
-                    mortarVelocity += mortarGravity * Time.fixedDeltaTime;
+                    var doMove = true;
+                    if (currentData.isPhaseThrough) {
+                        PhaseThroughWhileDamaging();
+                    }else if (RaycastCollisionCheck()) {
+                        transform.position = currentData.targetPoint;
 
-                    transform.rotation = Quaternion.LookRotation(mortarVelocity);*/
+                        if (currentData.explosionRange <= 0) {
+                            ContactDamage();
+                        }else {
+                            ExplosiveDamage();
+                        }
+
+                        doMove = false;
+                        SmartDestroySelf();
+                    }
+                
+                    if(doMove){
+                        //transform.position += currentData.initialVelocity * Time.deltaTime;
+                        transform.position += transform.forward * currentData.speed * Time.deltaTime;
+
+                    }
+                    
                     break;
             }
+
+            if (currentData.scaleUpOverTime) {
+                transform.localScale = transform.localScale + Vector3.one*currentData.scaleUpSpeed*Time.deltaTime;
+            }
         }
+    }
+
+    void PhaseThroughWhileDamaging() {
+        var halfExtends = currentData.phaseDamageHalfExtends * transform.localScale.x;
+       var count=  Physics.BoxCastNonAlloc(transform.position, halfExtends, transform.forward, raycastResultsArray, transform.rotation, currentData.speed * Time.deltaTime,
+            LevelReferences.s.enemyLayer);
+       
+       //BoxCastDebug.DrawBoxCastBox(transform.position, halfExtends,transform.rotation, transform.forward, currentData.speed*Time.deltaTime, Color.red);
+
+       List<EnemyHealth> toDmg = new List<EnemyHealth>();
+       for (int i = 0; i < count; i++) {
+           var hit = raycastResultsArray[count];
+           if (hit.collider != null) {
+               var enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
+               if (!toDmg.Contains(enemyHealth)) {
+                   toDmg.Add(enemyHealth);
+               }
+           }
+       }
+
+       for (int i = 0; i < toDmg.Count; i++) {
+           DealDamageToEnemy(toDmg[i]);
+       }
+    }
+    
+    bool RaycastCollisionCheck() {
+        float minDistance = float.MaxValue;
+        bool foundCollision = false;
+        var ray = new Ray(transform.position, transform.forward);
+        var hitInfo = new RaycastHit();
+
+        if (currentData.target != null) {
+            if (currentData.isTargetingPlayer) {
+                if (currentData.targetPlayerHealth) {
+                    for (int i = 0; i < currentData.targetPlayerHealth.surfaceColliders.Length; i++) {
+                        var collider = currentData.targetPlayerHealth.surfaceColliders[i];
+                        if (collider.Raycast(ray, out hitInfo, currentData.speed * Time.deltaTime * 1.2f)) {
+                            var dist = Vector3.Distance(transform.position, hitInfo.point);
+                            if (dist < minDistance) {
+                                currentData.targetPoint = hitInfo.point;
+                                minDistance = dist;
+                                currentData.hitPoint = hitInfo.point;
+                                currentData.hitNormal = hitInfo.normal;
+                            }
+
+                            currentData.didHitTarget = true;
+                            foundCollision = true;
+
+                            //Debug.DrawLine(transform.position, currentData.targetPoint, Color.green, 1f);
+                            //Debug.DrawLine(currentData.targetPoint, currentData.targetPoint + Vector3.up, Color.green, 1f);
+                        }
+                    }
+                }
+
+
+            } 
+        }
+
+        if (!currentData.isTargetingPlayer) {
+            if (Physics.Raycast(ray, out hitInfo, currentData.speed * Time.deltaTime * 1.2f, LevelReferences.s.enemyLayer)) {
+                var targetHealth = hitInfo.collider.GetComponentInParent<EnemyHealth>();
+                currentData.targetEnemyHealth = targetHealth;
+                
+                currentData.targetPoint = hitInfo.point;
+                currentData.hitPoint = hitInfo.point;
+                currentData.hitNormal = hitInfo.normal;
+                
+                currentData.didHitTarget = true;
+                foundCollision = true;
+
+                //Debug.DrawLine(transform.position, currentData.targetPoint, Color.magenta, 1f);
+                //Debug.DrawLine(currentData.targetPoint, currentData.targetPoint + Vector3.up, Color.magenta, 1f);
+            }
+        }
+
+
+        if (foundCollision) {
+            currentData.didHitTarget = true;
+        } else {
+            // check collision with terrain if we didnt collide with our target
+
+            if (currentData.isTargetingPlayer) {
+                return false; // enemies never miss
+            }
+
+
+            if (Physics.Raycast(ray, out hitInfo, currentData.speed * Time.deltaTime * 1.2f, LevelReferences.s.groundLayer)) {
+                currentData.targetPoint = hitInfo.point;
+                currentData.hitPoint = hitInfo.point;
+                currentData.hitNormal = hitInfo.normal;
+                
+                currentData.didHitTarget = false;
+                foundCollision = true;
+                
+                
+                //Debug.DrawLine(transform.position, currentData.targetPoint, Color.yellow, 1f);
+                //Debug.DrawLine(currentData.targetPoint, currentData.targetPoint + Vector3.up, Color.yellow, 1f);
+            }
+        }
+
+        return foundCollision;
     }
 
     public bool isDead = false;
 
     public GameObject instantDestroy;
 
+
+    void DestroySelf() {
+        if (!isDead) {
+            isDead = true;
+            GetComponent<PooledObject>().DestroyPooledObject();
+            if (currentData.didHitTarget) {
+                currentData.onHitCallback?.Invoke();
+            } else {
+                currentData.onMissCallback?.Invoke();
+            }
+        }
+    }
+    
     void SmartDestroySelf() {
         if (!isDead) {
             isDead = true;
@@ -317,151 +439,31 @@ public class Projectile : MonoBehaviour {
                     particle.Stop();
                 }
             }
-            
+
             var trail = GetComponentInChildren<SmartTrail>();
             if (trail != null) {
                 trail.StopTrailing();
             }
-            
-            if(instantDestroy != null)
+
+            if (instantDestroy != null)
                 instantDestroy.SetActive(false);
 
             GetComponent<PooledObject>().lifeTime = ProjectileProvider.bulletAfterDeathLifetime;
 
-            if (rg) {
-                rg.detectCollisions = false;
-            }
-
-            if(!didHit)
-                onMissCallback?.Invoke();
-        }
-    }
-
-    private void DestroyFlying() {
-        if (!isDead) {
-            if (target == null) {
-                SmartDestroySelf();
-                return;
-            }
-            //print("destroyflying");
-            GameObject hitPrefab = null;
-            switch (myHitType) {
-                case HitType.Bullet:
-                    hitPrefab = LevelReferences.s.metalBulletHitEffectPrefab;
-                    break;
-                case HitType.Rocket:
-                    hitPrefab = LevelReferences.s.rocketExplosionEffectPrefab;
-                    break;
-                case HitType.Mortar:
-                    hitPrefab = null;
-                    break;
-            }
-
-            if (myHitType != HitType.Mortar) {
-                var health = target.GetComponentInParent<EnemyHealth>();
-
-                if (health != null) {
-                    DealDamage(health);
-                }
+            if (currentData.didHitTarget) {
+                currentData.onHitCallback?.Invoke();
             } else {
-                MortarDamage(null);
-            }
-
-            if (hitPrefab != null) {
-                VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, transform.rotation, VisualEffectsController.EffectPriority.Low);
-            }
-
-            SmartDestroySelf();
-        }
-    }
-
-
-    private void OnCollisionEnter(Collision other) {
-        if (!isDead) {
-            var health = other.gameObject.GetComponentInParent<EnemyHealth>();
-
-            if (health != null) {
-                if (isPlayerBullet && health.IsPlayer()) {
-                    // make player bullets dont hit the player
-                    return;
-                }
-
-                if (!isPlayerBullet && !health.IsPlayer()) {
-                    // make enemy projectiles not hit other enemies
-                    return;
-                }
-            }
-
-
-            if (!isPlayerBullet) {
-                var moduleHealth = other.gameObject.GetComponentInParent<ModuleHealth>();
-                if (moduleHealth != null) {
-                    /*if (moduleHealth.reflectiveShields && moduleHealth.currentShields > 0) {
-                        var copy = Instantiate(gameObject).GetComponent<Projectile>();
-                        copy.transform.rotation = Quaternion.Inverse(copy.transform.rotation);
-                        copy.target = copy.source.transform;
-                        copy.isPlayerBullet = true;
-                    }*/
-                }
-            }
-            
-            switch (myHitType) {
-                case HitType.Bullet:
-                    if (explosionRange > 0) {
-                        ExplosiveDamage(other);
-                    } else {
-                        ContactDamage(other);
-                    }
-                    break;
-                case HitType.Rocket:
-                    ExplosiveDamage(other);
-                    break;
-                case HitType.Mortar:
-                    MortarDamage(other);
-                    break;
-            }
-
-            SmartDestroySelf();
-        }
-    }
-
-    private void OnTriggerEnter(Collider other) {
-        if (!isDead) {
-            if (other.attachedRigidbody != null && other.attachedRigidbody.gameObject != myOriginObject) {
-                var otherProjectile = other.transform.root.GetComponent<Projectile>();
-                if (otherProjectile != null) {
-                    if (otherProjectile.isPlayerBullet == isPlayerBullet) {
-                        // we don't want projectiles from the same faction collide with each other
-                        return;
-                    }
-                }
-
-                var train = other.transform.root.GetComponent<Train>();
-
-                if (train != null && isPlayerBullet) {
-                    // make player bullets dont hit the player
-                    return;
-                }
-
-                var enemy = other.transform.root.GetComponent<EnemyWavesController>();
-                
-                if (enemy != null && !isPlayerBullet) {
-                    // make enemy projectiles not hit the player projectiles
-                    return;
-                }
-                
-                PhaseDamage(other);
-
-                //SmartDestroySelf();
+                currentData.onMissCallback?.Invoke();
             }
         }
     }
 
+    
     void PhaseDamage(Collider other) {
         var health = other.gameObject.GetComponentInParent<EnemyHealth>();
 
         if (health != null) {
-            DealDamage(health);
+            DealDamageToEnemy(health);
             
             /*GameObject miniHitPrefab = LevelReferences.s.mortarMiniHitPrefab;
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
@@ -469,134 +471,73 @@ public class Projectile : MonoBehaviour {
         }
     }
 
-    private void MortarDamage(Collision other) {
-        GameObject hitPrefab = LevelReferences.s.mortarExplosionEffectPrefab;
-        GameObject miniHitPrefab = LevelReferences.s.mortarMiniHitPrefab;
+    private void ExplosiveDamage() {
+        var effectiveRange = Mathf.Sqrt(currentData.explosionRange);
 
-        var targets = Physics.OverlapSphere(transform.position, explosionRange);
+        var layerMask = currentData.isTargetingPlayer ? LevelReferences.s.buildingLayer : LevelReferences.s.enemyLayer;
+        
+        var count = Physics.OverlapSphereNonAlloc(transform.position, effectiveRange, explosiveOverlapArray, layerMask);
 
-        var healthsInRange = new List<EnemyHealth>();
-
-        if (other != null) {
-            var contactHealth = other.gameObject.GetComponentInParent<EnemyHealth>();
-            if (isPlayerBullet) {
-                if (contactHealth != null && !contactHealth.IsPlayer()) {
-                    healthsInRange.Add(contactHealth);
-                }
-            } else {
-                if (contactHealth != null && contactHealth.IsPlayer()) {
-                    healthsInRange.Add(contactHealth);
-                }
-            }
-        }
-
-        for (int i = 0; i < targets.Length; i++) {
-            var target = targets[i];
-            
-            var health = target.gameObject.GetComponentInParent<EnemyHealth>();
-            if (isPlayerBullet) {
-                if (health != null && !health.IsPlayer()) {
-                    if (!healthsInRange.Contains(health)) {
-                        healthsInRange.Add(health);
-                    }
-                }
-            } else {
-                if (health != null && health.IsPlayer()) {
+        if (currentData.isTargetingPlayer) {
+            var healthsInRange = new List<ModuleHealth>();
+            for (int i = 0; i < count; i++) {
+                var health = explosiveOverlapArray[i].gameObject.GetComponentInParent<ModuleHealth>();
+                if (health != null) {
                     if (!healthsInRange.Contains(health)) {
                         healthsInRange.Add(health);
                     }
                 }
             }
-        }
-
-        foreach (var health in healthsInRange) {
-            DealDamage(health);
-            ApplyHitForceToObject(health);
-            var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            VisualEffectsController.s.SmartInstantiate(miniHitPrefab, closestPoint, Quaternion.identity);
-        }
-
-        VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, Quaternion.identity, VisualEffectsController.EffectPriority.Medium);
-    }
-
-    private void ExplosiveDamage(Collision other) {
-        GameObject hitPrefab = LevelReferences.s.rocketExplosionEffectPrefab;
-        GameObject miniHitPrefab = LevelReferences.s.mortarMiniHitPrefab;
-
-        var effectiveRange = Mathf.Sqrt(explosionRange);
-        var targets = Physics.OverlapSphere(transform.position, effectiveRange);
-
-
-        var healthsInRange = new List<EnemyHealth>();
-        for (int i = 0; i < targets.Length; i++) {
-            var target = targets[i];
             
-            var health = target.gameObject.GetComponentInParent<EnemyHealth>();
-            if (health != null && (
-                (!health.IsPlayer() && isPlayerBullet) ||
-                (health.IsPlayer() && !isPlayerBullet)
-                )) {
-                if (!healthsInRange.Contains(health)) {
-                    healthsInRange.Add(health);
+            foreach (var health in healthsInRange) {
+                DealDamageToPlayer(health);
+            }
+
+        } else {
+            var healthsInRange = new List<EnemyHealth>();
+            for (int i = 0; i < count; i++) {
+                var health = explosiveOverlapArray[i].gameObject.GetComponentInParent<EnemyHealth>();
+                if (health != null) {
+                    if (!healthsInRange.Contains(health)) {
+                        healthsInRange.Add(health);
+                    }
                 }
             }
-        }
-
-        var contactTarget = other.collider.GetComponentInParent<EnemyHealth>();
-        if (contactTarget != null) {
-            if (!healthsInRange.Contains(contactTarget)) {
-                healthsInRange.Add(contactTarget);
-            }
-        }
-
-        foreach (var health in healthsInRange) {
-            DealDamage(health);
-            ApplyHitForceToObject(health);
-            var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            //VisualEffectsController.s.SmartInstantiate(miniHitPrefab, closestPoint, Quaternion.identity);
-        }
-
-        VisualEffectsController.s.SmartInstantiate(hitPrefab, transform.position, Quaternion.identity, Vector3.one*effectiveRange, VisualEffectsController.EffectPriority.Medium);
-    }
-
-    private void ContactDamage(Collision other) {
-        var health = other.collider.gameObject.GetComponentInParent<EnemyHealth>();
-        
-        DealDamage(health);
-        
-        GameObject hitPrefab;
-        
-        var contact = other.GetContact(0);
-        var pos = contact.point;
-        var rotation = Quaternion.LookRotation(contact.normal);
-
-
-        if (health == null) { // we didnt hit the player or the enemies
-            hitPrefab = LevelReferences.s.dirtBulletHitEffectPrefab;
             
-        }else{
-            if (health is ModuleHealth) {
-                if (ballistaHitEffect) {
-                    hitPrefab = LevelReferences.s.rocketExplosionEffectPrefab;
-                } else {
-                    hitPrefab = LevelReferences.s.metalBulletHitEffectPrefab;
-                }
-            } else {
+            foreach (var health in healthsInRange) {
                 ApplyHitForceToObject(health);
-
-
-                /*if (health.HasArmor() && !canPenetrateArmor) {
-                    // if enemy has armor and we cannot penetrate it, show it through an effect
-                    hitPrefab = LevelReferences.s.enemyCantPenetrateHitEffectPrefab;
-                } else {
-                    
-                }*/
-                hitPrefab = LevelReferences.s.enemyRegularHitEffectPrefab;
+                DealDamageToEnemy(health);
             }
         }
+        
+        CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.rocketExplosion, transform.position,Quaternion.identity,VisualEffectsController.EffectPriority.High);
+    }
 
+    private void ContactDamage() {
+        if (currentData.isAmmoHitter) {
+            KnockAmmoOff(currentData.target);
+        }
 
-        VisualEffectsController.s.SmartInstantiate(hitPrefab, pos, rotation, VisualEffectsController.EffectPriority.Low);
+        if (currentData.projectileDamage == 0 && currentData.burnDamage == 0 && !currentData.isSlowDamage) {
+            return;
+        }
+
+        var pos = currentData.hitPoint;
+        var rotation = Quaternion.LookRotation(currentData.hitNormal);
+        
+        if (currentData.didHitTarget) {
+            if (currentData.isTargetingPlayer) {
+                DealDamageToPlayer(currentData.targetPlayerHealth);
+                CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.trainHit, pos, rotation, VisualEffectsController.EffectPriority.Low);
+            } else {
+                ApplyHitForceToObject(currentData.targetEnemyHealth);
+                DealDamageToEnemy(currentData.targetEnemyHealth);
+                CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.enemyHit, pos, rotation, VisualEffectsController.EffectPriority.Low);
+            }
+            
+        } else {
+            CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.dirtHit, pos, rotation, VisualEffectsController.EffectPriority.Low);
+        }
     }
 
 
@@ -616,28 +557,20 @@ public class Projectile : MonoBehaviour {
         //var force = collider.transform.position - transform.position;
         var force = transform.forward;
         //var force = GetComponent<Rigidbody>().velocity;
-        force = (projectileDamage * hitForceMultiplier/2f)*force.normalized;
+        force = (currentData.projectileDamage * hitForceMultiplier/2f)*force.normalized;
         
         rigidbody.AddForceAtPosition(force, closestPoint);
     }
 
 
-    void DealDamage(EnemyHealth target) {
+    void DealDamageToEnemy(EnemyHealth target) {
         if (target != null) {
-            var dmg = projectileDamage;
-            var armorProtected = false;
+            var dmg = currentData.projectileDamage;
+            var burnDmg = currentData.burnDamage;
 
-            if (isSlowDamage) {
-                if (target.IsPlayer()) {
-                    SpeedController.s.AddSlow(projectileDamage);
-                } else {
-                    target.GetGameObject().GetComponentInParent<EnemyWave>().AddSlow(projectileDamage);
-                }
-            } else if (isHeal) {
-                for (int i = 0; i < dmg/ModuleHealth.repairChunkSize; i++) {
-                    target.RepairChunk();
-                }
-            } else {
+            if (currentData.isSlowDamage) {
+                target.gameObject.GetComponentInParent<EnemyWave>().AddSlow(currentData.slowDamage);
+            } else  {
                 if (dmg > 0) {
                     target.DealDamage(dmg, transform.position);
                     if (dmg > 1) {
@@ -645,22 +578,95 @@ public class Projectile : MonoBehaviour {
                             VisualEffectsController.EffectPriority.damageNumbers);
                         if (damageNumbers != null) {
                             damageNumbers.GetComponent<MiniGUI_DamageNumber>()
-                                .SetUp(target.GetUITransform(), (int)dmg, isPlayerBullet, armorProtected, false);
+                                .SetUp(target.GetUITransform(), (int)dmg, true, false, false);
                         }
                     }
                 }
 
-                if (burnDamage > 0) {
-                    target.BurnDamage(burnDamage);
-                    /*if(burnDamage > 1)
-                        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                if (burnDmg > 0) {
+                    target.BurnDamage(burnDmg);
+                    //if(burnDamage > 1)
+                        /*VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                             .GetComponent<MiniGUI_DamageNumber>()
-                            .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);*/
+                            .SetUp(target.GetUITransform(), (int)burnDmg, true, false, true);*/
+                }
+            }
+        }
+    }
+
+    void DealDamageToPlayer(ModuleHealth target) {
+        if (target != null) {
+            var dmg = currentData.projectileDamage*TweakablesMaster.s.GetEnemyDamageMultiplier();
+            var burnDmg = currentData.burnDamage * TweakablesMaster.s.GetEnemyDamageMultiplier();
+
+            if (dmg > 0) {
+                var burnChunk = target.DealDamage(dmg, transform.position, Quaternion.AngleAxis(180, transform.up) * transform.rotation);
+                DealWithArrowness(burnChunk);
+                if (dmg > 1) {
+                    var damageNumbers = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
+                        VisualEffectsController.EffectPriority.damageNumbers);
+                    if (damageNumbers != null) {
+                        damageNumbers.GetComponent<MiniGUI_DamageNumber>()
+                            .SetUp(target.GetUITransform(), (int)dmg, false, false, false);
+                    }
                 }
             }
 
-            didHit = true;
-            onHitCallback?.Invoke();
+            if (burnDmg > 0) {
+                target.BurnDamage(burnDmg);
+                /*if(burnDamage > 1)
+                    VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
+                        .GetComponent<MiniGUI_DamageNumber>()
+                        .SetUp(target.GetUITransform(), (int)burnDamage, isPlayerBullet, armorProtected, true);*/
+            }
+
+            if (currentData.isSlowDamage) {
+                SpeedController.s.AddSlow(currentData.slowDamage);
+            }
+        }
+    }
+
+    void DealWithArrowness(GameObject burnChunk) {
+        if (currentData.leaveArrow && burnChunk != null) {
+            var arrowMadeIt = Random.value <= currentData.leaveArrowChance;
+
+            if (arrowMadeIt) {
+                var targetTransform = burnChunk.transform;
+                var repairable = burnChunk.GetComponent<RepairableBurnEffect>();
+                var rotatedRotation = Quaternion.AngleAxis(180, targetTransform.up) * targetTransform.rotation;
+                repairable.arrow =  Instantiate(instantDestroy, targetTransform.position, rotatedRotation, targetTransform);
+                repairable.hasArrow = true;
+                //Debug.Log(burnChunk.GetComponentInParent<Cart>().gameObject.name);
+                //Debug.Break();
+            } else {
+                var arrowObj = VisualEffectsController.s.SmartInstantiate(instantDestroy, instantDestroy.transform.position, instantDestroy.transform.rotation, VisualEffectsController.EffectPriority.Medium);
+                if (arrowObj != null) {
+                    arrowObj.AddComponent<Rigidbody>();
+                    arrowObj.AddComponent<RubbleFollowFloor>();
+                    arrowObj.GetComponent<Rigidbody>().AddForce(SmitheryController.GetRandomYeetForce() / 10);
+                }
+            }
+        }
+    }
+    
+    void KnockAmmoOff(Transform ammo) {
+        if (ammo != null) {
+            if (ammo.name.Contains("ammo")) {
+                var ammoBar = ammo.GetComponentInParent<PhysicalAmmoBar>();
+                if ( ammoBar != null) {
+                    ammoBar.RemoveChunk(ammo.gameObject);
+                    ammo.transform.SetParent(VisualEffectsController.s.transform);
+                    Instantiate(instantDestroy, instantDestroy.transform.position, instantDestroy.transform.rotation,ammo.transform);
+
+                    ammo.gameObject.AddComponent<RubbleFollowFloor>();
+                    
+                    var ammoRg = ammo.gameObject.AddComponent<Rigidbody>();
+                    ammoRg.mass = 20;
+                    
+                    isDead = true;
+                    ammoRg.velocity = (transform.forward * currentData.speed ) + (currentData.initialVelocity);
+                }
+            }
         }
     }
 }

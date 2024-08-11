@@ -21,13 +21,6 @@ public class ComponentRewardInEndCity : MonoBehaviour, IGenericClickable, IReset
 		// do nothing
 	}
 
-	public DroneRepairController GetHoldingDrone() {
-		return null;
-	}
-
-	public void SetHoldingDrone(DroneRepairController holder) {
-		// do nothing
-	}
 
 	public void Click() {
 		StopAndPick3RewardUIController.s.ShowComponentReward();

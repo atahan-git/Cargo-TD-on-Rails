@@ -249,7 +249,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "DirectControlActivate",
+                    "name": "DirectControlAlternativeAction",
                     "type": "Button",
                     "id": "d09894b6-08be-4353-92d5-bd3d4d6133f2",
                     "expectedControlType": "Button",
@@ -270,6 +270,15 @@
                     "name": "CycleSelectedThing",
                     "type": "Button",
                     "id": "8f558545-36fe-452f-b161-0b206d36306b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TutorialClose",
+                    "type": "Button",
+                    "id": "05f3e2a8-cd3b-473c-bcef-1ad2779d6e97",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -867,7 +876,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
-                    "action": "DirectControlActivate",
+                    "action": "DirectControlAlternativeAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -878,18 +887,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "DirectControlActivate",
+                    "action": "DirectControlAlternativeAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "5bd4bdec-cefd-4621-b39d-b65f63aa67b1",
-                    "path": "<Mouse>/leftButton",
+                    "id": "ad1e2619-a028-46fb-899c-bcbfbbc3031c",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "DirectControlActivate",
+                    "groups": "Gamepad",
+                    "action": "TutorialClose",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "62fb1ae9-2f79-40cb-9b0f-773aa88b7674",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "TutorialClose",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

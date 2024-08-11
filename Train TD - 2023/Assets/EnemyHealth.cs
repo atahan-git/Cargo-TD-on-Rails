@@ -61,7 +61,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 		
 		currentHealth -= damage;
 
-		if ((currentHealth <= 0 || currentHealth < maxHealth*0.05f) && isAlive) {
+		if ((currentHealth <= 0 || currentHealth < maxHealth*0.08f) && isAlive) {
 			Die();
 		}
 
@@ -92,6 +92,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 	}
 	
 	void SetBuildingShaderBurn(float value) {
+		SetBurnEffects();
 		return;
 		var _renderers = GetComponentsInChildren<MeshRenderer>();
 		value = value.Remap(0, 10, 0, 0.5f);
@@ -173,7 +174,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 
 		burnSpeed = Mathf.Lerp(burnSpeed,0,burnReduction*Time.deltaTime);
 
-		if (Mathf.Abs(lastBurn - burnSpeed) > 1 || (lastBurn > 0 && burnSpeed <= 0)) {
+		if (Mathf.Abs(lastBurn - burnSpeed) > 1f || (lastBurn > 0 && burnSpeed <= 0)) {
 			SetBuildingShaderBurn(burnSpeed);
 			lastBurn = burnSpeed;
 		}
@@ -255,18 +256,6 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 			mySwarm.mySwarm.EnemyDeath(this);
 	}
 
-	public bool IsPlayer() {
-		return false;
-	}
-
-	public bool IsAlive() {
-		return isAlive;
-	}
-	
-	public GameObject GetGameObject() {
-		return gameObject;
-	}
-
 	public Collider GetMainCollider() {
 		return GetComponentInChildren<BoxCollider>();
 	}
@@ -333,12 +322,4 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 		// do nothing. Enemy health is not holdable
 	}
 
-	private DroneRepairController holdingDrone;
-	public DroneRepairController GetHoldingDrone() {
-		return holdingDrone;
-	}
-
-	public void SetHoldingDrone(DroneRepairController holder) {
-		holdingDrone = holder;
-	}
 }

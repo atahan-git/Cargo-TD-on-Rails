@@ -35,6 +35,8 @@ public class MiniGUI_PursuersCard : MonoBehaviour {
     }
 
     private void Update() {
+	    isActive = EnemyWavesController.s.DynamicSpawnsActive();
+	    gfx.SetActive(isActive);
 	    if (isActive) {
 		    followTarget.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(-8);
 		    timeText.text = ExtensionMethods.FormatTime(EnemyWavesController.s.curMiniWaveTime);

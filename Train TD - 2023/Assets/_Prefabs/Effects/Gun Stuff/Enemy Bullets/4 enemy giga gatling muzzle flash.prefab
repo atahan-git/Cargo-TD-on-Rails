@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8248218279107827806}
   - component: {fileID: -6972728909168202287}
   - component: {fileID: 5982566391982215944}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: 4 enemy giga gatling muzzle flash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 8929307148132796578}
   - component: {fileID: 1174610716837117230}
   - component: {fileID: 2276473403559770615}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Glow(Explosion)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4959,7 +4959,7 @@ GameObject:
   - component: {fileID: 2408458211836293667}
   - component: {fileID: 3460876797354104597}
   - component: {fileID: 1222895576788844506}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: vfx (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9851,7 +9851,7 @@ GameObject:
   - component: {fileID: 969873452180694583}
   - component: {fileID: 1352495097178414470}
   - component: {fileID: 2586562297145488545}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Glow(Explosion)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14733,7 +14733,7 @@ GameObject:
   - component: {fileID: 5356566775086004708}
   - component: {fileID: 3706512634244614562}
   - component: {fileID: 3441828486621740736}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: vfx (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19668,6 +19668,10 @@ PrefabInstance:
     - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Name
       value: Sound (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7599830860624045365, guid: b8efcec949564d542be472d1728bed81, type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8841153327740739137, guid: b8efcec949564d542be472d1728bed81, type: 3}
       propertyPath: m_Pitch

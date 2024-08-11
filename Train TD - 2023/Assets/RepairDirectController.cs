@@ -27,6 +27,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	public Image validRepairImage => DirectControlMaster.s.validRepairImage;
 	public Image arrowRepairImage => DirectControlMaster.s.arrowRepairImage;
 	public Slider repairingSlider => DirectControlMaster.s.repairingSlider;
+	
+	public GameObject exitToRecharge => DirectControlMaster.s.exitToRecharge;
+	public MiniGUI_ShowRepairDroneChargePercent chargePercentUI => DirectControlMaster.s.chargePercentUI;
 
 
 	public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
@@ -57,7 +60,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 		DepthOfFieldController.s.SetDepthOfField(false);
 
-
 		SetRepairControllerStatus(myRepairController, true);
 	}
 
@@ -83,8 +85,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		if (isDirectControl) {
 			repairController.DisableAutoDrone();
 			repairController.beingDirectControlled = true;
-			
-			repairController.StopHoldingThing();
+			repairController.droneScript.needToFullyCharge = false;
 		} else {
 			repairController.beingDirectControlled = false;
 			repairController.ActivateAutoDrone();
@@ -97,12 +98,18 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	private bool needToUnClick = false;
 	public bool arrowRepairing = false;
 	private RepairableBurnEffect repairTarget;
+	public float keepClickTimer = 0;
 	public void UpdateDirectControl() {
-		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed|| myHealth.myCart.isBeingDisabled  || myRepairController == null || myRepairController.carryDraggableMode) {
+		if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed|| myHealth.myCart.isBeingDisabled  || myRepairController == null) {
 			// in case our module gets destroyed
 			DirectControlMaster.s.DisableDirectControl();
 			return;
 		}
+		
+		
+		var droneCharge = myRepairController.droneScript.currentChargePercent;
+		var enoughCharge = droneCharge >= 0f;
+		
 
 		var camTrans = MainCameraReference.s.cam.transform;
 		var camPos = camTrans.position;
@@ -170,7 +177,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			}
 		}
 
-		validRepairImage.gameObject.SetActive(validTarget && !repairTarget.hasArrow);
+		validRepairImage.gameObject.SetActive(validTarget && !repairTarget.hasArrow && enoughCharge);
 
 		var drone = myRepairController.drone;
 		
@@ -183,6 +190,18 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		drone.transform.position += currentFlightVelocity * Time.unscaledDeltaTime;
 
 		var doRepair = shootAction.action.IsPressed() && !enterDirectControlShootLock;
+		/*var repairClick = shootAction.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
+
+		if (keepClickTimer > 0) {
+			keepClickTimer -= Time.deltaTime;
+			doRepair = true;
+		}*/
+		
+		
+
+		if (!enoughCharge) {
+			doRepair = false;
+		}
 
 		if (arrowRepairing && !doRepair) {
 			arrowRepairing = false;
@@ -195,9 +214,17 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			}
 		}
 		
-		UpdateArrowRepairImageState(validTarget, doRepair);
-		
-		drone.GetComponent<RepairDrone>().SetCurrentlyRepairingState(doRepair && validTarget);
+		UpdateArrowRepairImageState(validTarget && enoughCharge, doRepair);
+
+		var isRepairing = doRepair && validTarget;
+		drone.GetComponent<RepairDrone>().SetCurrentlyRepairingState(isRepairing);
+
+		var directControlRepairSpeedMultiplier = 5f;
+		if (isRepairing) {
+			myRepairController.droneScript.currentChargePercent -= (1f / myRepairController.repairChargeFullUseTime) * Time.deltaTime * directControlRepairSpeedMultiplier;
+		}
+
+		myRepairController.droneScript.currentChargePercent -= (1f / 180f) * Time.deltaTime; // just direct controlling also use energy
 
 		if (validTarget) {
 			if (doRepair) {
@@ -207,7 +234,13 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 					arrowAnimating = false;
 					MakeArrowPullOutMagic();
 				} else {
-					curRepairTime = myRepairController.TryDoRepair(repairTarget, out bool removedArrow, out bool repairSuccess,5f);
+					curRepairTime = myRepairController.TryDoRepair(repairTarget, out bool removedArrow, out bool repairSuccess, Time.deltaTime,directControlRepairSpeedMultiplier);
+
+					/*if (repairClick) {
+						curRepairTime = myRepairController.TryDoRepair(repairTarget, out removedArrow, out repairSuccess, 0.1f, 5f);
+						keepClickTimer = 0.3f;
+					}*/
+					
 					if (repairSuccess) {
 						repairTarget = null;
 					}
@@ -220,6 +253,8 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		}
 
 		repairingSlider.value = curRepairTime;
+		chargePercentUI.SetPercent(droneCharge, 0f);
+		exitToRecharge.SetActive(droneCharge <= 0f);
 	}
 
 	private void LateUpdate() {
@@ -374,9 +409,21 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 		previousVelocity.y = verticalSpeed;
 
-		var vectorToTrainCenter = Train.s.trainMiddle.position - myRepairController.drone.transform.position;
-		if (vectorToTrainCenter.magnitude > 20) {
-			previousVelocity = vectorToTrainCenter.normalized * 1.5f;
+		var repairDronePos = myRepairController.drone.transform.position;
+		var minDistance = float.MaxValue;
+		var minDistanceMoveVector = Vector3.zero;
+		for (int i = 0; i < Train.s.carts.Count; i++) {
+			var pos = Train.s.carts[i].uiTargetTransform.position;
+			var towardsVector = pos - repairDronePos;
+			if (towardsVector.magnitude < minDistance) {
+				minDistance = towardsVector.magnitude;
+				minDistanceMoveVector = towardsVector;
+			}
+		}
+		
+		
+		if (minDistance > 5) {
+			previousVelocity = minDistanceMoveVector.normalized * 1.5f;
 		}
 
 		return previousVelocity;

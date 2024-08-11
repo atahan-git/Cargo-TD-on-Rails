@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: g_Railgun
   m_EditorClassIdentifier: 
   source1: cannon
-  source2: cannon
+  source2: ___AnyArtifact
   result: railgun_cart

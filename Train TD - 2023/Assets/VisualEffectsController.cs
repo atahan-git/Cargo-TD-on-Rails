@@ -25,6 +25,11 @@ public class VisualEffectsController : MonoBehaviour {
 		mediumEffectCount = Mathf.Clamp(mediumEffectCount, 0, 5);
 	}
 
+	private void LateUpdate() {
+		transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
+		transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
+	}
+
 	private float mediumEffectCount = 0;
 	public GameObject SmartInstantiate(GameObject myObj, Vector3 position, Quaternion rotation, EffectPriority priority = EffectPriority.Always) {
 		if (priority == EffectPriority.Low || priority==EffectPriority.damageNumbers)
@@ -41,7 +46,7 @@ public class VisualEffectsController : MonoBehaviour {
 		return obj;
 	}
 	
-	public GameObject SmartInstantiate(GameObject myObj, Vector3 position, Quaternion rotation,Vector3 scale, EffectPriority priority = EffectPriority.Always) {
+	public GameObject SmartInstantiate(GameObject myObj, Vector3 position, Quaternion rotation, Vector3 scale, Transform parent, EffectPriority priority = EffectPriority.Always) {
 		if (priority == EffectPriority.Low || priority==EffectPriority.damageNumbers)
 			return null;
 		if (priority == EffectPriority.Medium) {
@@ -51,7 +56,8 @@ public class VisualEffectsController : MonoBehaviour {
 			}
 		}
 		
-		var obj = Instantiate(myObj, position, rotation, transform);
+		var obj = Instantiate(myObj, position, rotation, parent);
+		obj.transform.localScale = scale;
 		PostProcessingOnEffects(obj);
 		return obj;
 	}

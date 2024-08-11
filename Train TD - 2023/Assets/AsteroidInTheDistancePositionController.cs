@@ -28,11 +28,12 @@ public class AsteroidInTheDistancePositionController : MonoBehaviour {
             var asteroidGetCloserAmount = Mathf.Clamp(depthCloseness + actCloseness, 0, 300);
             var actualDistance = (300 - asteroidGetCloserAmount);
             actualDistance *= 0.5f;
-            actualDistance += 20;
+            actualDistance += 75;
 
             var targetPos = Train.s.trainMiddle.position + Train.s.GetTrainForward() * actualDistance;
             transform.position += Train.s.GetTrainForward() * LevelReferences.s.speed * Time.deltaTime;
             transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref smoothDamp, 10, 50f);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(-Train.s.GetTrainForward(), Vector3.up), 20*Time.deltaTime);
         } else {
             transform.position = PathAndTerrainGenerator.CircleTerrainCenter();
         }

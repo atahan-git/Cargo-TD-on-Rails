@@ -9,9 +9,13 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public float extraSpeedAdd = 1;
    public int enginePower = 10;
    public int extraEnginePower = 0;
-
    public float GetSpeedAdd() {
-      return (speedAdd + extraSpeedAdd) * GetEffectivePressure();
+      var curSpeedAdd = (speedAdd + extraSpeedAdd) * GetEffectivePressure();
+      if (!IsBoosting()) {
+         curSpeedAdd *= TweakablesMaster.s.GetTrainSpeedMultiplier(); // boosting speed doesn't change between difficulties
+      }
+   
+      return curSpeedAdd;
    }
 
    public float GetEnginePower() {
@@ -19,6 +23,10 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    }
 
    public float GetEffectivePressure() {
+      if (SpeedController.s.IsBraking()) {
+         return 0;
+      }
+      
       if (currentPressure > greenZone[0] && currentPressure < greenZone[1]) {
          return 1;
       } else {
@@ -26,7 +34,19 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
       }
    }
 
+   public bool IsBoosting() {
+      if (currentPressure > greenZone[1]) {
+         return true;
+      }
+
+      return false;
+   }
+
    public float GetPressureUse() {
+      if (SpeedController.s.IsBraking()) {
+         return 0;
+      }
+      
       if (CheatsController.s.trainDoesntLoseSteam) {
          return 0;
       }
@@ -51,6 +71,10 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    }
 
    public float GetSelfDamageMultiplier() {
+      if (SpeedController.s.IsBraking()) {
+         return 0;
+      }
+      
       var damageAmount = 0f;
       if (currentPressure > damageZones[0]) {
          damageAmount = damageAmounts[0];
@@ -87,6 +111,10 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public float curDamageInterval = 0;
 
    public bool lizardControlled = true;
+
+   public float GetCurrentPressure() {
+      return SpeedController.s.IsBraking() ? 0 : currentPressure;
+   }
    
    private void OnEnable() {
       SpeedController.s.AddEngine(this);
@@ -101,8 +129,12 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    }
 
    private void Update() {
+      if (SpeedController.s.IsBraking()) {
+         return;
+      }
+      
       if (currentPressure > 0 && !SpeedController.s.isWarping) {
-         currentPressure -= GetPressureUse() * Time.deltaTime * 0.75f;
+         currentPressure -= GetPressureUse() * Time.deltaTime * 0.5f;
 
          currentPressure = Mathf.Clamp(currentPressure, 0, 3);
 
@@ -117,7 +149,11 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
             if (curDamageInterval <= 0) {
                var health = GetComponentInParent<ModuleHealth>();
                health.SelfDamage(damage*damageAmount);
-               VisualEffectsController.s.SmartInstantiate(LevelReferences.s.mediumDamagePrefab, health.GetUITransform().position, Quaternion.identity);
+               if (currentPressure < damageZones[1]) {
+                  CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.mediumDamage, health.GetUITransform().position, Quaternion.identity);
+               } else {
+                  CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.bigDamage, health.GetUITransform().position, Quaternion.identity);
+               }
                curDamageInterval = damageInterval;
             }
 

@@ -47,8 +47,6 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
             }
         }
 
-
-
         var maxSize = GetComponent<RectTransform>().rect.width;
         var idealSize = maxHealth / 7000 * maxSize;
         if (idealSize > maxSize) {
@@ -57,7 +55,7 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
             idealSize = maxSize + excess;
         }
 
-        idealSize = Mathf.Clamp(idealSize, 0, 1000);
+        idealSize = Mathf.Clamp(idealSize, 130, 1000);
 
         mainRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, idealSize);
         Update();
@@ -76,7 +74,7 @@ public class MiniGUI_TrainOverallHealthBar : MonoBehaviour {
         maxHealthReduction = 0;
         for (int i = 0; i < Train.s.carts.Count; i++) {
             var cart = Train.s.carts[i].GetHealthModule();
-            if (!cart.invincible) {
+            if (!cart.invincible && !cart.myCart.isDestroyed) {
                 newhealth += cart.currentHealth;
                 maxHealthReduction += cart.maxHealthReduction;
             }

@@ -169,6 +169,7 @@ namespace Com.TheFallenGames.DBD.AutoOpenCSharpProject
 		static void RunOnceAtEditorLaunch()
 		{
 			GameObject.FindObjectOfType<CheatsController>().ResetDebugOptions();
+			GameObject.FindObjectOfType<StressTestManager>().doStressTest = false;
 			EditorApplication.update -= RunOnceAtEditorLaunch;
 			if (EditorPrefs.GetBool(PREF_AUTO_LAUNCH_SCRIPT_EDITOR, false))
 			{

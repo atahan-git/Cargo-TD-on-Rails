@@ -46,6 +46,7 @@ public class MainMenu : MonoBehaviour {
     private void Awake() {
         s = this;
         deleteSaveUI.SetActive(false);
+        difficultySelect.SetDisplayStatus(false);
     }
 
     public void OpenProfileMenu() {
@@ -92,16 +93,26 @@ public class MainMenu : MonoBehaviour {
 
         if (DataSaver.s.GetCurrentSave().instantRestart) {
             DataSaver.s.GetCurrentSave().instantRestart = false;
-            StartGame();
+            QuickStartGame();
         }
     }
 
     public void StartGame() {
+        if (DataSaver.s.GetCurrentSave().isInARun) {
+            QuickStartGame();
+        } else {
+            difficultySelect.SetDisplayStatus(true);
+        }
+    }
+
+    public void StartGameAfterDifficultySelectScreen() {
         NewGameStarter.s.CheckStartNewGame();
         PlayStateMaster.s.EnterShopState();
     }
 
+    public MiniGUI_DifficultySelect difficultySelect;
     public void QuickStartGame() {
+        difficultySelect.InitDiff();
         NewGameStarter.s.CheckStartNewGame();
         PlayStateMaster.s.EnterShopState();
     }

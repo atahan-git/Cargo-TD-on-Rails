@@ -22,11 +22,6 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     public GameObject explodePrefab;
     public bool isDead = false;
 
-    public bool damageNearCartsOnDeath = false;
-    public bool selfDamage = false;
-    [ShowIf("selfDamage")] 
-    private float selfDamageTimer;
-    public int[] selfDamageAmounts = new[] { 20, 10 };
 
     [NonSerialized]
     public Cart myCart;
@@ -128,8 +123,8 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         
         currentHealth -= damage;
         
-        if (currentHealth <= 10 && prologueIndestructable) {
-            currentHealth = 10;
+        if (prologueIndestructable && currentHealth <= 0 ) {
+            currentHealth = GetMaxHealth()*0.10f;
         }
 
         if(currentHealth <= 0) {
@@ -160,6 +155,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
     }
     
     void UpdateHPCriticalIndicators() {
+        return;
         var hpPercent = currentHealth / GetMaxHealth(false);
         if(isDead)
             return;
@@ -387,18 +383,6 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         
         burnSpeed = Mathf.Lerp(burnSpeed,0,burnReduction*Time.deltaTime);
 
-
-        if (PlayStateMaster.s.isCombatInProgress()) {
-            if (selfDamage) {
-                selfDamageTimer -= Time.deltaTime;
-                if (selfDamageTimer <= 0) {
-                    selfDamageTimer = 10;
-
-                    SelfDamage(selfDamageAmounts[0], true, selfDamageAmounts[1]);
-                }
-            }
-        }
-        
         if (Mathf.Abs(lastBurn - burnSpeed) > 1 || (lastBurn > 0 && burnSpeed <= 0)) {
             SetBuildingShaderBurn(burnSpeed);
             lastBurn = burnSpeed;
@@ -409,18 +393,18 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         }
     }
 
-    public void SelfDamage(float amount, bool damageNear = false, float damageNearAmount = 0f) {
+    public void SelfDamage(float amount) {
         var myModule = GetComponent<Cart>();
 
 
         DealDamage(amount);
-        var prefab = LevelReferences.s.smallDamagePrefab;
-        Instantiate(prefab, transform.position, Quaternion.identity);
+        /*var prefab = LevelReferences.s.smallDamagePrefab;
+        Instantiate(prefab, transform.position, Quaternion.identity);*/
 
-        if (damageNear) {
+        /*if (damageNear) {
             DealDamageToBuilding(Train.s.GetNextBuilding(1, myModule), prefab,  damageNearAmount);
             DealDamageToBuilding(Train.s.GetNextBuilding(-1, myModule), prefab, damageNearAmount);
-        }
+        }*/
     }
 
 
@@ -469,10 +453,6 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 
         Instantiate(explodePrefab, transform.position, transform.rotation);
         SoundscapeController.s.PlayModuleExplode();
-        
-        if (damageNearCartsOnDeath) {
-            DamageNearCartsOnDeath();
-        }
 
         burnSpeed = 0;
     }
@@ -610,12 +590,13 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
                 var ray = new Ray(rayOrigin, rayDirection);
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, 5, LevelReferences.s.buildingLayer)) {
-                    if (hit.collider.GetComponentInParent<RepairableBurnEffect>()) { // dont spawn over another effect
+                    /*if (hit.collider.GetComponentInParent<RepairableBurnEffect>()) { // dont spawn over another effect
                         continue;
-                    }
+                    }*/
                     var hitBuilding = hit.collider.GetComponentInParent<ModuleHealth>();
                     if (hitBuilding == this) {
-                        var burnEffect = Instantiate(LevelReferences.s.cartRepairableDamageEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                        var point = hit.point + Train.s.GetTrainForward() * LevelReferences.s.speed * Time.deltaTime;
+                        var burnEffect = Instantiate(LevelReferences.s.cartRepairableDamageEffect, point, Quaternion.LookRotation(hit.normal));
                         burnEffect.transform.SetParent(myCart.genericParticlesParent);
                         activeBurnEffects.Add(burnEffect.GetComponent<RepairableBurnEffect>());
                     }

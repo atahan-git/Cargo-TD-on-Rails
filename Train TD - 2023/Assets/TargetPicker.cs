@@ -18,6 +18,7 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
 
     public bool canHitFlying = false;
     public bool checkForHealing;
+    public bool targetFarthest = false;
     
     private void Start() {
         targeter = GetComponent<IComponentWithTarget>();
@@ -54,6 +55,9 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
     }
 
     private Transform ClosestTarget(bool doAvoidCheck) {
+        if (targetFarthest)
+            return FarthestTarget(doAvoidCheck);
+        
         if (LevelReferences.s.targetsDirty) {
             return null;
         }
@@ -94,6 +98,49 @@ public class TargetPicker : MonoBehaviour, IActiveDuringCombat, IDisabledState {
         }
 
         return closestTarget;
+    }
+
+    Transform FarthestTarget(bool doAvoidCheck) {
+        if (LevelReferences.s.targetsDirty) {
+            return null;
+        }
+        
+        var farthestTargetDistance  = 0f;
+        Transform farthestTarget = null;
+        var allTargets = LevelReferences.s.allTargetValues;
+        var allTargetsReal = LevelReferences.s.allTargets;
+        var targetCount = LevelReferences.s.targetValuesCount;
+        var myId = -1;
+        if (mySelfTarget != null) {
+            myId = mySelfTarget.myId;
+        }
+
+        //var myDamage = targeter.GetDamage();
+        var myPosition = origin.position;
+        var myForward = origin.forward;
+
+        for (int i = 0; i < targetCount; i++) {
+            if (i != myId) {
+                var target = allTargets[i];
+                var targetActive = target.active;
+                var canTarget = myPossibleTargets.Contains(target.type);
+                //var targetHasEnoughHealth = !doHealthCheck || (allTargets[i].health >= myDamage);
+                var targetNotAvoided = !target.avoid || !doAvoidCheck;
+                var canHitBecauseFlying = canHitFlying || !target.flying;
+                var healCheck = !checkForHealing || target.healthPercent < 1f;
+
+                if (targetActive && canTarget && targetNotAvoided && canHitBecauseFlying && healCheck) {
+                    if (IsPointInsideCone(allTargets[i].position, myPosition, myForward, rotationSpan, range, out float distance)) {
+                        if (distance > farthestTargetDistance) {
+                            farthestTarget = allTargetsReal[i].targetTransform;
+                            farthestTargetDistance = distance;
+                        }
+                    }
+                }
+            }
+        }
+
+        return farthestTarget;
     }
 
 

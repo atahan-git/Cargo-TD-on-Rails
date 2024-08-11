@@ -668,41 +668,42 @@ public class PathGenerator : MonoBehaviour {
     }
     
     public static Quaternion GetDirectionOnTheLine(TrainPath trainPath, float distance) {
-        var path = trainPath.points;
-        var target = distance / trainPath.stepLength;
-
-        if (target <= 0) {
-            target = trainPath.stepLength/2f;
-        }
-
-        if (target >= path.Length-1) {
-            target = path.Length-1 -  (trainPath.stepLength/ 2f);
-        }
-
-        var direction = path[Mathf.FloorToInt(target) + 1] - path[Mathf.FloorToInt(target)];
-
-        //Debug.DrawLine(path[Mathf.FloorToInt(target)]+Vector3.up*5f,path[Mathf.FloorToInt(target)]+direction.normalized*5 + Vector3.up*5f, Color.blue, 1f);
-        if (direction.magnitude == 0) {
-            print($"something is wrong {trainPath}, {distance}, {trainPath.length}, {trainPath.points.Length}");
-        }
-        return Quaternion.LookRotation(direction);
+        return Quaternion.LookRotation(GetDirectionVectorOnTheLine(trainPath,distance));
     }
     
     public static Vector3 GetDirectionVectorOnTheLine(TrainPath trainPath, float distance) {
         var path = trainPath.points;
         var target = distance / trainPath.stepLength;
+        //var delta = ((distance%1)/trainPath.stepLength) % 1;
+        var delta = target % 1;
+        //print($"{delta} - {target%1}");
 
-        if (target <= 0) {
-            target = trainPath.stepLength/2f;
+        if (target <= 1) {
+            target = trainPath.stepLength/2f+1;
         }
 
         if (target >= path.Length-1) {
             target = path.Length-1 -  (trainPath.stepLength/ 2f);
         }
 
-        var direction = path[Mathf.FloorToInt(target) + 1] - path[Mathf.FloorToInt(target)];
+        var direction1 = path[Mathf.FloorToInt(target) ] - path[Mathf.FloorToInt(target-1)];
+        var direction2 = path[Mathf.FloorToInt(target) + 1] - path[Mathf.FloorToInt(target)];
 
-        //Debug.DrawLine(path[Mathf.FloorToInt(target)],path[Mathf.FloorToInt(target)]+direction.normalized*5, Color.blue, 1f);
-        return direction.normalized;
+        var direction = Vector3.Lerp(direction1, direction2, delta);
+
+        /*{
+            var stayTime = 0.1f;
+            Debug.DrawLine(path[Mathf.FloorToInt(target) ], path[Mathf.FloorToInt(target) ]+direction1, Color.green,stayTime);
+            Debug.DrawLine(path[Mathf.FloorToInt(target) ], path[Mathf.FloorToInt(target) ]+direction2, Color.red,stayTime);
+            Debug.DrawLine(path[Mathf.FloorToInt(target) ], path[Mathf.FloorToInt(target) ]+direction, Color.yellow,stayTime);
+        }*/
+
+        
+        if (direction.magnitude == 0) {
+            print($"something is wrong {trainPath}, {distance}, {trainPath.length}, {trainPath.points.Length}");
+        }
+
+        direction.Normalize();
+        return direction;
     }
 }

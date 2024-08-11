@@ -97,7 +97,6 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     [Header("Gun Type Vars")]
     public bool isLockOn = false;
     public float rotateSpeed = 10f;
-    public bool isHeal = false;
     public float directControlShakeMultiplier = 1f;
     public bool mortarRotation = false;
     public bool isHitScan = false;
@@ -135,8 +134,6 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     
     [FoldoutGroup("Internal Variables")]
     public float waitTimer;
-    [FoldoutGroup("Internal Variables")]
-    private IEnumerator ActiveShootCycle;
     [FoldoutGroup("Internal Variables")]
     private bool isShooting = false;
     [FoldoutGroup("Internal Variables")]
@@ -231,7 +228,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public Quaternion lastRot;
     [FoldoutGroup("Internal Variables")]
     public bool hadTargetLastFrame;
-    private void Update() {
+    private void LateUpdate() {
         if (gunActive) {
             Quaternion deltaRotation = transform.rotation * Quaternion.Inverse(lastRot);
             realRotation = deltaRotation * realRotation;
@@ -297,8 +294,21 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         }
 
 
-        myVelocity = (transform.position - lastPos) / Time.deltaTime;
+        if (Time.deltaTime > 0) {
+            myVelocity = Vector3.Lerp(myVelocity,(transform.position - lastPos) /Time.deltaTime, 5*Time.deltaTime);
+        }
         lastPos = transform.position;
+
+
+        if (gunActive && isShooting) {
+            if (!IsBarrelPointingCorrectly || !HasAmmo() || waitTimer > 0) {
+                waitTimer -= Time.deltaTime;
+                //print(IsBarrelPointingCorrectly);
+            } else {
+                StartCoroutine(_ShootBarrage());
+                waitTimer = GetFireDelay();
+            }
+        }
     }
 
     public void LookAtLocation(Vector3 location) {
@@ -371,7 +381,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     float GetAttackSpeedMultiplier() {
         var boost = 1f / currentAffectors.speed;
         
-        boost /= TweakablesMaster.s.myTweakables.playerFirerateBoost;
+        boost /= TweakablesMaster.s.GetPlayerFirerateBoost();
         
         if (beingDirectControlled) {
             boost /= directControlFirerateMultiplier;
@@ -381,7 +391,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
 
     float GetDamageMultiplier() {
-        var dmgMul = TweakablesMaster.s.myTweakables.playerDamageMultiplier;
+        var dmgMul = TweakablesMaster.s.GetPlayerDamageMultiplier();
         
         if (beingDirectControlled) {
             dmgMul *= directControlDamageMultiplier;
@@ -398,7 +408,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     }
     
     float GetBurnDamageMultiplier() {
-        var dmgMul = TweakablesMaster.s.myTweakables.playerDamageMultiplier;
+        var dmgMul = TweakablesMaster.s.GetPlayerDamageMultiplier();
             
         if (beingDirectControlled) {
             dmgMul *= directControlDamageMultiplier;
@@ -413,31 +423,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         if (beingDirectControlled)
             ammoUse *= directControlAmmoUseMultiplier;
 
-        ammoUse *= TweakablesMaster.s.myTweakables.playerAmmoUseMultiplier;
-
         ammoUse *= currentAffectors.ammoMultiplier;
 
         return ammoUse;
     }
-
-
-    IEnumerator ShootCycle() {
-        while (true) {
-            while (!IsBarrelPointingCorrectly || !HasAmmo() || waitTimer > 0) {
-                waitTimer -= Time.deltaTime;
-                //print(IsBarrelPointingCorrectly);
-                yield return null;
-            }
-            
-            if (isShooting) {
-                StartCoroutine(_ShootBarrage());
-            } else {
-                break;
-            }
-
-            waitTimer = GetFireDelay();
-        }
-    }
+    
 
     void StopShootingFindingHelperThingy() {
         stopShootingEvent?.Invoke();
@@ -501,6 +491,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         }
 
         for (int i = 0; i < fireBarrageCount; i++) {
+            
             var barrelEnd = GetShootTransform().transform;
             var position = barrelEnd.position;
             var rotation = barrelEnd.rotation;
@@ -525,27 +516,37 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             }
 
             var projectile = bullet.GetComponent<Projectile>();
-            projectile.myOriginObject = this.GetComponentInParent<Rigidbody>().gameObject;
-            projectile.projectileDamage = GetDamage();
-            projectile.burnDamage = GetBurnDamage();
-            projectile.target = target;
-            projectile.isHeal = isHeal;
-            projectile.explosionRange = GetExplosionRange();
-            if (beingDirectControlled) {
-                projectile.speed *= 3;
-                projectile.acceleration *= 3;
-                projectile.seekAcceleration *= 3;
-            } else {
-                projectile.isHoming = currentAffectors.isHoming;
+            projectile.defaultData.CopyTo(projectile.currentData);
+            var data = projectile.currentData;
+            data.isTargetingPlayer = false;
+            data.originObject = GetComponentInParent<Rigidbody>().gameObject;
+            data.projectileDamage = GetDamage();
+            data.burnDamage = GetBurnDamage();
+            if (target != null) {
+                data.targetEnemyHealth = target.GetComponent<EnemyHealth>();
+                if (data.targetEnemyHealth != null) {
+                    data.target = data.targetEnemyHealth.uiTransform;
+                } else {
+                    data.target = target;
+                }
             }
 
-            projectile.SetIsPlayer(true);
-            projectile.source = this;
-            projectile.initialVelocity = myVelocity;
+            data.explosionRange = GetExplosionRange();
+            if (beingDirectControlled && !data.isPhaseThrough) {
+                data.speed *= 3;
+                data.acceleration *= 3;
+                data.seekAcceleration *= 3;
+            } else {
+                data.isHoming = currentAffectors.isHoming;
+            }
+            
+            data.initialVelocity = myVelocity;
 
-            projectile.onHitCallback += onHitCallback;
-            projectile.onHitCallback += OnHit;
-            projectile.onMissCallback = onMissCallback;
+            data.onHitCallback += onHitCallback;
+            data.onHitCallback += OnHit;
+            data.onMissCallback = onMissCallback;
+            
+            projectile.SetUp(data);
 
             LogShotData(GetDamage());
 
@@ -578,7 +579,6 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             realMagnitude *= CameraShakeController.s.overallShakeAmount;
         }
         
-        
         rotateTransform.anchor.localPosition = Random.insideUnitSphere * realMagnitude * range + (-rotateTransform.centerBarrelEnd.forward * realMagnitude * range * 2);
         rotateTransform.xAxis.Rotate(-gunRotateUpOnShoot,0,0);
 
@@ -592,27 +592,6 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         StartCoroutine(_ShootBarrage(true));
     }
 
-    [Button]
-    public void ShootBarrageContinuousDebug() {
-        if (Application.isPlaying) {
-            gunShakeOnShoot = false;
-            StartCoroutine(DebugShootingCycle());
-        }
-    }
-
-    IEnumerator DebugShootingCycle() {
-        while (true) {
-            while (waitTimer > 0) {
-                waitTimer -= Time.deltaTime;
-                yield return null;
-            }
-            
-            StartCoroutine(_ShootBarrage(true));
-
-            waitTimer = GetFireDelay();
-        }
-    }
-    
     public void ShootBarrage(bool isFree, GenericCallback shotCallback, GenericCallback onHitCallback, GenericCallback onMissCallback) {
         StartCoroutine(_ShootBarrage(isFree, shotCallback, onHitCallback, onMissCallback));
     }
@@ -675,24 +654,13 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
     void StopShooting() {
         if (isShooting) {
-            if(ActiveShootCycle != null)
-                StopCoroutine(ActiveShootCycle);
-            ActiveShootCycle = null;
             isShooting = false;
             stopShootingEvent?.Invoke();
         }
     }
 
     void StartShooting() {
-        if (gunActive && target != null) {
-            if (!isShooting) {
-                StopAllCoroutines();
-
-                ActiveShootCycle = ShootCycle();
-                isShooting = true;
-                StartCoroutine(ActiveShootCycle);
-            }
-        }
+        isShooting = true;
     }
 
 

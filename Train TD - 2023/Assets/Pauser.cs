@@ -114,7 +114,6 @@ public class Pauser : MonoBehaviour {
         );
         
         Unpause();
-        FirstTimeTutorialController.s.RemoveAllTutorialStuff();
         MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.abandon);
     }
 }

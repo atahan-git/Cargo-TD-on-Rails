@@ -377,19 +377,30 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		var range = Mathf.Clamp01(myActiveGun.projectileDamage / 10f) ;
 		range /= 8f;
 		range *= myActiveGun.directControlShakeMultiplier;
+
+		var fastShootMultiplier = 1f;
+
+		if (myActiveGun.GetFireDelay() < 1f) {
+			fastShootMultiplier = myActiveGun.GetFireDelay();
+			fastShootMultiplier.Remap(0.25f, 1f, 0, 1f);
+			fastShootMultiplier = Mathf.Clamp01(fastShootMultiplier);
+		}
 		
 		//print(range);
 		if (doShake) {
 			CameraShakeController.s.ShakeCamera(
 				Mathf.Lerp(0.1f, 0.7f, range),
-				Mathf.Lerp(0.005f, 0.045f, range),
-				Mathf.Lerp(2, 10, range),
+				Mathf.Lerp(0.005f, 0.045f, range)*fastShootMultiplier,
+				Mathf.Lerp(2, 10, range)*fastShootMultiplier,
 				Mathf.Lerp(0.1f, 0.5f, range),
-				true
+				Mathf.Lerp(0f, 1, range)
 			);
 			if (!SettingsController.GamepadMode()) {
-				range /= myActiveGun.directControlShakeMultiplier;
+				if (myActiveGun.directControlShakeMultiplier > 0) {
+					range /= myActiveGun.directControlShakeMultiplier;
+				}
 				range *= 2;
+				range *= fastShootMultiplier;
 				CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range * 2, range * 2), range * 5));
 			}
 		} else {

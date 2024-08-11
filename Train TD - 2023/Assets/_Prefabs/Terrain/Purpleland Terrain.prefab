@@ -63,6 +63,7 @@ MonoBehaviour:
     pathAndTerrainGenerator: {fileID: 0}
     needToBePurged: 0
     beingProcessed: 0
+    minDistanceToTracks: -1
     biome: 1
   isInitialized: 0
 --- !u!218 &2040300268567586271

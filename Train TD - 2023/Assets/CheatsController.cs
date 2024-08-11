@@ -175,8 +175,8 @@ public class CheatsController : MonoBehaviour {
 
 
     [Button]
-    public void DebugSpawnEnemy(GameObject enemy) {
-        EnemyWavesController.s.SpawnEnemy(enemy, SpeedController.s.currentDistance, false, false);
+    public void DebugSpawnEnemy(GameObject enemy, GameObject gear) {
+        EnemyWavesController.s.SpawnEnemy(enemy,gear, SpeedController.s.currentDistance, false, false);
     }
 
 

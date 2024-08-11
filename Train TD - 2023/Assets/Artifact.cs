@@ -95,15 +95,6 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
         }
     }
 
-    private DroneRepairController holdingDrone;
-    public DroneRepairController GetHoldingDrone() {
-        return holdingDrone;
-    }
-
-    public void SetHoldingDrone(DroneRepairController holder) {
-        holdingDrone = holder;
-    }
-
     public string GetDescription() {
         if (isComponent) {
             return notAttachedDescription;

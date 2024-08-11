@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 1420605931140971378}
   - component: {fileID: 138550163663105109}
   - component: {fileID: 7144405948224066470}
-  - component: {fileID: 1390563648910464253}
-  m_Layer: 16
+  m_Layer: 12
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +51,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -84,20 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &1390563648910464253
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3057685980899833166}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4908573584345181807
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,10 +92,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4908573584345181804}
-  - component: {fileID: 2992869153701016027}
-  - component: {fileID: 4360051384763493055}
+  - component: {fileID: 6605930549934209463}
   - component: {fileID: 5358558507556633348}
-  m_Layer: 16
+  m_Layer: 12
   m_Name: 1 enemy cannon bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +118,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2992869153701016027
+--- !u!114 &6605930549934209463
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,40 +127,70 @@ MonoBehaviour:
   m_GameObject: {fileID: 4908573584345181807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09c75f9a5985ab248a1ac772996d316d, type: 3}
+  m_Script: {fileID: 11500000, guid: ed22b7720cff2244a8c914a8c7f08ab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileDamage: 100
-  burnDamage: 0
-  slowDamage: 0
-  toSpawnOnDeath: {fileID: 0}
+  currentData:
+    isTargetingPlayer: 0
+    didHitTarget: 0
+    acceleration: 2.5
+    seekAcceleration: 100
+    speed: 7.5
+    explosionRange: 0
+    isPhaseThrough: 0
+    isHoming: 0
+    isAmmoHitter: 0
+    isSlowDamage: 0
+    slowDamage: 2.5
+    isHeal: 0
+    healChunkCount: 2
+    isTargetSeeking: 1
+    seekStrength: 20
+    projectileDamage: 20
+    burnDamage: 0
+    leaveArrow: 0
+    leaveArrowChance: 0.5
+    curSpeed: 0
+    curSeekStrength: 0
+    originObject: {fileID: 0}
+    target: {fileID: 0}
+    targetEnemyHealth: {fileID: 0}
+    targetPlayerHealth: {fileID: 0}
+    targetPoint: {x: 0, y: 0, z: 0}
+    initialVelocity: {x: 0, y: 0, z: 0}
+  defaultData:
+    isTargetingPlayer: 1
+    didHitTarget: 0
+    acceleration: 2.5
+    seekAcceleration: 100
+    speed: 7.5
+    explosionRange: 0
+    isPhaseThrough: 0
+    isHoming: 0
+    isAmmoHitter: 0
+    isSlowDamage: 0
+    slowDamage: 2.5
+    isHeal: 0
+    healChunkCount: 2
+    isTargetSeeking: 1
+    seekStrength: 20
+    projectileDamage: 100
+    burnDamage: 0
+    leaveArrow: 0
+    leaveArrowChance: 0.5
+    curSpeed: 0
+    curSeekStrength: 0
+    originObject: {fileID: 0}
+    target: {fileID: 0}
+    targetEnemyHealth: {fileID: 0}
+    targetPlayerHealth: {fileID: 0}
+    targetPoint: {x: 0, y: 0, z: 0}
+    initialVelocity: {x: 0, y: 0, z: 0}
+  hitForceMultiplier: 20
   lifetime: 20
-  speed: 7.5
-  seekStrength: 20
-  instantDestroy: {fileID: 8721564496387738161}
-  isArrow: 0
-  arrowLeaveChance: 1
-  arrowObject: {fileID: 0}
-  myOriginObject: {fileID: 0}
-  target: {fileID: 0}
+  myHitType: 0
   isDead: 0
-  initialVelocity: {x: 0, y: 0, z: 0}
---- !u!54 &4360051384763493055
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4908573584345181807}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  instantDestroy: {fileID: 8721564496387738161}
 --- !u!114 &5358558507556633348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,8 +218,7 @@ GameObject:
   - component: {fileID: 3532497082203355788}
   - component: {fileID: 7685918079321197219}
   - component: {fileID: 7255616136107517871}
-  - component: {fileID: 4009426287837902834}
-  m_Layer: 16
+  m_Layer: 12
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -246,7 +259,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -278,20 +291,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &4009426287837902834
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8721564496387738161}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1001 &2276678484982049957
 PrefabInstance:
   m_ObjectHideFlags: 0

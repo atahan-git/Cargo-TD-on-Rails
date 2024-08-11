@@ -14667,7 +14667,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 246200154310219893}
-  - component: {fileID: 2373745328979270749}
+  - component: {fileID: 1492466548014554461}
+  - component: {fileID: -2892894170429558807}
   m_Layer: 0
   m_Name: Dirt Hit Dust
   m_TagString: Untagged
@@ -14691,7 +14692,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!114 &2373745328979270749
+--- !u!114 &1492466548014554461
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14700,8 +14701,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8973257810519519465}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cf7fc7d3b010d147b53c1bf9f58a6a4, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f44ad7d0605474409f8c95e869c5d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeout: 2
-  onlyDisable: 0
+  myId: -1
+  myPool: {fileID: 0}
+  isActive: 0
+  _lifetime: 2
+--- !u!114 &-2892894170429558807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8973257810519519465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48aa0400ea065384fbe3c1f6ead3d367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slowBuildupSpeedPercentPerSecond: 0.2
+  currentSpeedPercent: 0
+  startSpeedPercent: 1

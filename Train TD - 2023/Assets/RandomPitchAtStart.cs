@@ -12,8 +12,12 @@ public class RandomPitchAtStart : MonoBehaviour {
 
 
     public void Play() {
-        GetComponent<AudioSource>().pitch = GetComponent<AudioSource>().pitch * (1f +  Random.Range(-pitchRange, pitchRange));
-        GetComponent<AudioSource>().Play();
+        GetComponent<AudioSource>().pitch = GetComponent<AudioSource>().pitch * (1f + Random.Range(-pitchRange, pitchRange));
+        if (GetComponent<FMODOneShotSource>()) {
+            GetComponent<FMODOneShotSource>().Play();
+        } else {
+            GetComponent<AudioSource>().Play();
+        }
     }
 
 }

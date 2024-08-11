@@ -18,7 +18,8 @@ public class GamepadControlsHelper : MonoBehaviour {
     
     public enum PossibleActions {
         move=0, reloadControl=1, repairControl=2, gunControl=3, openMap=4, pause=5, fastForward=6, showDetails=7, shoot=8, exitDirectControl=9, rotateCamera=10, cutsceneSkip=11, clickGate=12, changeTrack=13, engineControl=14,
-        encounterButtons=15, shieldControl=19, repairDroneMove=21, repairDroneUp=22, repairDroneDown=23, engineControlSwitch=24, cycleSelectedItem=25, directControlActivate=26, zoomCamera=27, moveCamera=28
+        encounterButtons=15, shieldControl=19, repairDroneMove=21, repairDroneUp=22, repairDroneDown=23, engineControlSwitch=24, cycleSelectedItem=25, directControlAlternativeActivate=26, zoomCamera=27, moveCamera=28,
+        tutorialClose=29
     }
 
     public GameObject gamepadSelector;
@@ -61,6 +62,7 @@ public class GamepadControlsHelper : MonoBehaviour {
         currentlyLegalActions.Add(PossibleActions.changeTrack);
         currentlyLegalActions.Add(PossibleActions.zoomCamera);
         currentlyLegalActions.Add(PossibleActions.moveCamera);
+        currentlyLegalActions.Add(PossibleActions.tutorialClose);
         UpdateButtonPrompts();
     }
 

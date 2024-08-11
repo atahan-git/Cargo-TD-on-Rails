@@ -81,8 +81,6 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
     [FoldoutGroup("Internal Variables")]
     public float waitTimer;
     [FoldoutGroup("Internal Variables")]
-    private IEnumerator ActiveShootCycle;
-    [FoldoutGroup("Internal Variables")]
     public bool isShooting = false;
     [FoldoutGroup("Internal Variables")]
     public Transform target;
@@ -139,6 +137,18 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
         
         myVelocity = (transform.position - lastPos) / Time.deltaTime;
         lastPos = transform.position;
+
+
+        if (gunActive && isShooting) {
+            if (!IsBarrelPointingCorrectly || waitTimer > 0) {
+                waitTimer -= Time.deltaTime;
+                //print(IsBarrelPointingCorrectly);
+                
+            } else {
+                StartCoroutine(_ShootBarrage());
+                waitTimer = GetFireDelay();
+            }
+        }
     }
 
     public void LookAtLocation(Vector3 location) {
@@ -203,28 +213,14 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
     }
 
     float GetAttackSpeedMultiplier() {
-        return 1f/TweakablesMaster.s.myTweakables.enemyFirerateBoost;
+        return 1f/TweakablesMaster.s.GetEnemyFirerateBoost();
     }
     
-    IEnumerator ShootCycle() {
-        while (true) {
-            while (!IsBarrelPointingCorrectly || waitTimer > 0) {
-                waitTimer -= Time.deltaTime;
-                //print(IsBarrelPointingCorrectly);
-                yield return null;
-            }
-            
-            if (isShooting) {
-                StartCoroutine(_ShootBarrage());
-            } else {
-                break;
-            }
-
-            waitTimer = GetFireDelay();
-        }
-    }
 
     IEnumerator _ShootBarrage() {
+        if (target == null) {
+            yield break;
+        }
        
         if (NeedShootCredit()) {
             EnemyTargetAssigner.s.TryToGetShootCredits(this);
@@ -240,6 +236,11 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
                 gotShootCredits = false;
             }
         }
+        
+        if (target == null) {
+            yield break;
+        }
+        
         for (int i = 0; i < fireBarrageCount; i++) {
             var barrelEnd = GetShootTransform().transform;
             var position = barrelEnd.position;
@@ -260,12 +261,34 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
             
             var muzzleFlash = ProjectileProvider.s.GetEnemyMuzzleFlash(myType, position, rotation, transform);
             var rg = GetComponentInParent<Rigidbody>();
-            if (rg) {
-                bullet.GetComponent<IEnemyProjectile>().SetUp(rg.gameObject, myVelocity);
-            } else {
-                bullet.GetComponent<IEnemyProjectile>().SetUp(gameObject, myVelocity);
+            
+            var projectile = bullet.GetComponent<Projectile>();
+            if (!projectile) {
+                yield break;
             }
-
+            
+            projectile.defaultData.CopyTo(projectile.currentData);
+            var data = projectile.currentData;
+            data.isTargetingPlayer = true;
+            GameObject originObject = gameObject;
+            if (rg) {
+                originObject = rg.gameObject;
+            }
+            data.originObject = originObject;
+            if (target == null) {
+                Debug.Break();
+            }
+            data.targetPlayerHealth = target.GetComponentInParent<ModuleHealth>();
+            if (data.targetPlayerHealth == null) {
+                print($"{target.gameObject.name}");
+            }
+            data.target = data.targetPlayerHealth.GetUITransform();
+            
+            data.initialVelocity = myVelocity;
+            
+            projectile.SetUp(data);
+            
+            
             if (gunShakeOnShoot)
                 StartCoroutine(ShakeGun());
 
@@ -345,25 +368,12 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
 
     [Button]
     public void StopShooting() {
-        if (isShooting) {
-            if(ActiveShootCycle != null)
-                StopCoroutine(ActiveShootCycle);
-            ActiveShootCycle = null;
-            isShooting = false;
-        }
+        isShooting = false;
     }
 
     [Button]
     public void StartShooting() {
-        if (gunActive && target != null) {
-            if (!isShooting) {
-                StopAllCoroutines();
-
-                ActiveShootCycle = ShootCycle();
-                isShooting = true;
-                StartCoroutine(ActiveShootCycle);
-            }
-        }
+        isShooting = true;
     }
     
     public void UnsetTarget() {
@@ -396,10 +406,4 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
     public string GetDescription() {
         return GetComponent<ClickableEntityInfo>().tooltip.text;
     }
-}
-
-
-public interface IEnemyProjectile {
-    public void SetUp(GameObject originObject, Vector3 _initialVelocity);
-    public Vector3 GetInitialVelocity();
 }

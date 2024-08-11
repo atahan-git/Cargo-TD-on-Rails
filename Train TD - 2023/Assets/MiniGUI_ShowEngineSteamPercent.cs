@@ -23,7 +23,7 @@ public class MiniGUI_ShowEngineSteamPercent : MonoBehaviour {
             return;
         }
 
-        var pressure = engineModule.currentPressure;
+        var pressure = engineModule.GetCurrentPressure();
         var pressurePercent = pressure / 3f;
 
         if (pressurePercent > 0.05f) {

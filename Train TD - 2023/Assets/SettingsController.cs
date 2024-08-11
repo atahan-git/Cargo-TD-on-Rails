@@ -124,8 +124,8 @@ public class SettingsController : MonoBehaviour {
     void _ResetRunAndReplayTutorial() {
         MenuToggle.HideAllToggleMenus();
         Pauser.s.Unpause();
-        
-        FirstTimeTutorialController.s.ReDoTutorial();
+
+        DataSaver.s.GetCurrentSave().tutorialProgress = new DataSaver.TutorialProgress();
         //ResetRun();
 
         //SFX

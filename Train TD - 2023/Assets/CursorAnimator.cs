@@ -39,17 +39,17 @@ public class CursorAnimator : MonoBehaviour {
 	    if (Physics.Raycast(ray, out hit, 100f)) {
 		    var pos = hit.point;
 		    var rot = Quaternion.LookRotation(hit.normal);
-		    var prefab = LevelReferences.s.dirtBulletHitEffectPrefab;
+		    var type = CommonEffectsProvider.CommonEffectType.dirtHit;
 		    
 		    var cart = hit.collider.gameObject.GetComponentInParent<ModuleHealth>();
 		    if (cart != null) {
-			    prefab = LevelReferences.s.metalBulletHitEffectPrefab;
+			    type = CommonEffectsProvider.CommonEffectType.trainHit;
 		    }
 		    var enemy = hit.collider.gameObject.GetComponentInParent<EnemyHealth>();
 		    if (enemy != null) {
-			    prefab = LevelReferences.s.metalBulletHitEffectPrefab;
+			    type = CommonEffectsProvider.CommonEffectType.enemyHit;
 		    }
-		    VisualEffectsController.s.SmartInstantiate(prefab, pos, rot);
+		    CommonEffectsProvider.s.SpawnEffect(type, pos,rot, VisualEffectsController.EffectPriority.Always);
 	    }
     }
     

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: g_Hyper Gatling
   m_EditorClassIdentifier: 
   source1: gatling
-  source2: gatling
+  source2: ___AnyArtifact
   result: hyper-gatling

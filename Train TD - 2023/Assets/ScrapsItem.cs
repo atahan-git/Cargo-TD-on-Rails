@@ -59,13 +59,4 @@ public class ScrapsItem : MonoBehaviour, IPlayerHoldable {
             GetComponent<Rigidbody>().useGravity = true;
         }
     }
-
-    private DroneRepairController holdingDrone;
-    public DroneRepairController GetHoldingDrone() {
-        return holdingDrone;
-    }
-
-    public void SetHoldingDrone(DroneRepairController holder) {
-        holdingDrone = holder;
-    }
 }

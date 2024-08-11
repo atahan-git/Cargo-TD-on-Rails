@@ -37,7 +37,7 @@ public class Act2DemoEndController : MonoBehaviour {
         engine.GetHealthModule().currentHealth = 0;
         engine.GetHealthModule().GetDestroyed();
         engine.GetHealthModule().UpdateHpState();
-        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.megaDamagePrefab, collisionPoint, Quaternion.identity, VisualEffectsController.EffectPriority.Always);
+        CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.megaDamage, collisionPoint, Quaternion.identity, VisualEffectsController.EffectPriority.Always);
         MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.endOfDemo);
     }
 }

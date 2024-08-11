@@ -90,7 +90,7 @@ public class TimeController : MonoBehaviour {
         }
         
         if (fastForwardKey.action.IsPressed() && canFastForward && !DirectControlMaster.s.directControlInProgress && !debugDisableAbilityToFastForward) {
-            currentTimeScale = 2f;
+            currentTimeScale = 4f;
             if (!isPaused) {
                 Time.timeScale = currentTimeScale;
             }

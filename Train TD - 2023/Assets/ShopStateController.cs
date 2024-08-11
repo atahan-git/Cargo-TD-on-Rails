@@ -30,7 +30,6 @@ public class ShopStateController : MonoBehaviour {
 	}
 
 	void UpdateBackToProfileOrAbandonButton() {
-		
 		backToProfileOrAbandonText.text = "Back to Main Menu";
 	}
 	public void BackToMainMenuOrAbandon() {
