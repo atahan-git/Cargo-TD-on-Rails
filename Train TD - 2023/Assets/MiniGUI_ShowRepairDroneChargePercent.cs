@@ -17,6 +17,8 @@ public class MiniGUI_ShowRepairDroneChargePercent : MonoBehaviour
 
     //private float flashPercent;
     public void SetPercent(float chargePercent, float noChargePercent = 0.05f) {
+        if(myImg == null)
+            return;
         if (chargePercent > noChargePercent) {
             myImg.fillAmount = Mathf.MoveTowards(myImg.fillAmount, chargePercent, 1*Time.deltaTime);
 

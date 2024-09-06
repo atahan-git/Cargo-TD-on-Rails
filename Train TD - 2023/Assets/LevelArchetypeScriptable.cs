@@ -85,15 +85,11 @@ public class LevelArchetypeScriptable : ScriptableObject {
 public class BossData {
     public string bossName = "unset";
     public GameObject bossMainPrefab;
-    public int bossesToSpawn = 1;
-    public int bossNeededKillCount = 1;
 
     public BossData Copy() {
         return new BossData() {
             bossName = bossName,
             bossMainPrefab = bossMainPrefab,
-            bossesToSpawn = bossesToSpawn,
-            bossNeededKillCount = bossNeededKillCount,
         };
     }
 }

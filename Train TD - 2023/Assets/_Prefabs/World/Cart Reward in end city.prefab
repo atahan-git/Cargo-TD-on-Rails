@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4942704900227075166}
   - component: {fileID: 289469624572984939}
   - component: {fileID: 9222670734273426598}
-  m_Layer: 28
+  m_Layer: 18
   m_Name: Cart Reward in end city
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7996045869647977512, guid: 4b2e196b00430dc4e911702f69897552, type: 3}
       propertyPath: m_Layer
-      value: 28
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b2e196b00430dc4e911702f69897552, type: 3}

@@ -20,4 +20,7 @@ public class MergeItem : MonoBehaviour, IPlayerHoldable {
 		}
 	}
 
+	public bool CanDrag() {
+		return true;
+	}
 }

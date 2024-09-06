@@ -29,7 +29,7 @@ public class Artifact_RepairBomb : MonoBehaviour {
 
     public void Explode() {
         for (int i = 0; i < Train.s.carts.Count; i++) {
-            Train.s.carts[i].GetHealthModule().RepairChunk(1000);
+            Train.s.carts[i].FullyRepair();
         }
 
         if (LevelReferences.s.combatHoldableThings.Contains(GetComponent<Artifact>())) {

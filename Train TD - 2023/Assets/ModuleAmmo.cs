@@ -74,7 +74,9 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
             amount *= reloadEfficiency;
             if (curAmmo < maxAmmo) {
                 if (amount < 0) {
-                    amount = maxAmmo;
+                    amount = 0;
+                    if(curAmmo < maxAmmo)
+                        amount = maxAmmo-curAmmo;
                 }
 
                 if (showEffect)
@@ -139,7 +141,6 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     }
 
     public void ActivateForShopping() {
-        
         ActivateForCombat();
     }
 

@@ -10,7 +10,7 @@ public class Artifact_LizardTail : MonoBehaviour, IChangeStateToEntireTrain
 
 	public void TailUp() {
 		for (int i = 0; i < Train.s.carts.Count; i++) {
-			Train.s.carts[i].GetHealthModule().RepairChunk(1000);
+			Train.s.carts[i].FullyRepair();
 		}
 
 		Train.s.currentAffectors.lizardTail = null;

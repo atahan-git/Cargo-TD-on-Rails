@@ -158,6 +158,7 @@ public class RoboRepairModule : MonoBehaviour, IActiveDuringCombat, IResetState,
     public void ActivateForCombat() {
         myTrain = GetComponentInParent<Train>();
         myCart = GetComponent<Cart>();
+        
         this.enabled = true;
     }
 

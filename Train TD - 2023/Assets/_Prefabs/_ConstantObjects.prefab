@@ -804,13 +804,18 @@ MonoBehaviour:
       runGameVersion: 
       isInARun: 0
       currentRun:
+        difficulty: 0
         character:
           uniqueName: unset
           description: 
           starterTrain:
             myCarts: []
+            myHoldingCarts: []
+            myHoldingArtifacts: []
         myTrain:
           myCarts: []
+          myHoldingCarts: []
+          myHoldingArtifacts: []
         currentAct: 1
         playtime: 0
         shopInitialized: 0
@@ -821,9 +826,12 @@ MonoBehaviour:
       showWakeUp: 0
       instantRestart: 0
       castlesTraveled: 0
+      runsMade: 0
       money: 0
+      lastDifficultySelected: 0
       tutorialProgress:
         prologueDone: 0
+        runsMadeAfterTutorial: 0
         showTutorials: 0
     - saveName: unnamed
       isActiveSave: 0
@@ -832,13 +840,18 @@ MonoBehaviour:
       runGameVersion: 
       isInARun: 0
       currentRun:
+        difficulty: 0
         character:
           uniqueName: unset
           description: 
           starterTrain:
             myCarts: []
+            myHoldingCarts: []
+            myHoldingArtifacts: []
         myTrain:
           myCarts: []
+          myHoldingCarts: []
+          myHoldingArtifacts: []
         currentAct: 1
         playtime: 0
         shopInitialized: 0
@@ -849,9 +862,12 @@ MonoBehaviour:
       showWakeUp: 0
       instantRestart: 0
       castlesTraveled: 0
+      runsMade: 0
       money: 0
+      lastDifficultySelected: 0
       tutorialProgress:
         prologueDone: 0
+        runsMadeAfterTutorial: 0
         showTutorials: 0
     - saveName: unnamed
       isActiveSave: 0
@@ -860,13 +876,18 @@ MonoBehaviour:
       runGameVersion: 
       isInARun: 0
       currentRun:
+        difficulty: 0
         character:
           uniqueName: unset
           description: 
           starterTrain:
             myCarts: []
+            myHoldingCarts: []
+            myHoldingArtifacts: []
         myTrain:
           myCarts: []
+          myHoldingCarts: []
+          myHoldingArtifacts: []
         currentAct: 1
         playtime: 0
         shopInitialized: 0
@@ -877,9 +898,12 @@ MonoBehaviour:
       showWakeUp: 0
       instantRestart: 0
       castlesTraveled: 0
+      runsMade: 0
       money: 0
+      lastDifficultySelected: 0
       tutorialProgress:
         prologueDone: 0
+        runsMadeAfterTutorial: 0
         showTutorials: 0
     loadingComplete: 0
     dontSave: 0
@@ -1247,7 +1271,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 536869687
+    m_Bits: 1073740599
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1256,7 +1280,7 @@ Camera:
   m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!114 &3080095868928592926

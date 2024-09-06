@@ -95,6 +95,10 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
         }
     }
 
+    public bool CanDrag() {
+        return canDrag;
+    }
+
     public string GetDescription() {
         if (isComponent) {
             return notAttachedDescription;

@@ -19,6 +19,10 @@ public class StarterShopButton : MonoBehaviour, IClickableWorldItem
 		_outline.enabled = false;
 	}
 
+    public bool CanClick() {
+        return !PlayStateMaster.s.isCombatInProgress();
+    }
+
     public void _OnMouseEnter() {
         _outline.enabled = true;
         Invoke(nameof(ShowTooltip), TooltipsMaster.tooltipShowTime);

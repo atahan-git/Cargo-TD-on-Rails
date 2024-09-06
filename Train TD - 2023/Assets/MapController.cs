@@ -16,7 +16,7 @@ public class MapController : MonoBehaviour {
 	}
 
 	private void OnEnable() {
-		allMap.SetActive(true);
+		//allMap.SetActive(true);
 	}
 
 	private void OnDisable() {

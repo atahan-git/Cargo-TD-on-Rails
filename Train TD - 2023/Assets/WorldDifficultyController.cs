@@ -57,7 +57,7 @@ public class WorldDifficultyController : MonoBehaviour {
         if (PlayStateMaster.s.isCombatInProgress() && !overrideDifficulty) {
             /*var curCombatTime = GetMissionTime();
             var newLevel = Mathf.FloorToInt(curCombatTime / damageIncreaseInterval);*/
-            var newLevel = PathAndTerrainGenerator.s.currentPathTree.myDepth;
+            var newLevel = PathAndTerrainGenerator.s.GetDepthForEnemyDifficultyPurposes();
 
             if (newLevel > curLevel) {
                 curLevel = newLevel;

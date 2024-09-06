@@ -65,6 +65,8 @@ public class CameraController : MonoBehaviour {
     public float currentZoom = 0;
     public float realZoom = 0f;
     public Vector2 zoomLimit = new Vector2(-2, 2);
+    public Vector2 regularZoomLimits = new Vector2(-2, 2);
+    public Vector2 mapViewZoomLimits = new Vector2(-2, 2);
 
     public float snapZoomCutoff = 2f;
 
@@ -456,35 +458,27 @@ public class CameraController : MonoBehaviour {
     public Transform mapCameraCornerTopRight;
     public Vector3 mapStartPos = new Vector3(100, 0, -100);
     public Vector3 mapPos;
+    public Transform mapCameraSnapPos;
     private Vector3 regularPos;
-    private float mapZoom;
+    public float mapZoom;
     private float regularZoom;
     public float mapAngle = 50;
     public float regularAngle;
 
-    public void ResetMapPos() {
-        mapPos = mapStartPos;
-        mapAngle = 50;
-        mapZoom = 0;
-    }
-
-    public void SetMapPos(Vector3 position) {
-        position.y = 0;
-        mapPos = position;
-    }
-
     public void EnterMapMode() {
         isSnappedToMap = true;
         regularPos = cameraCenter.localPosition;
-        cameraCenter.localPosition = mapPos;
+        cameraCenter.transform.position = mapCameraSnapPos.transform.position;
         regularZoom = currentZoom;
         currentZoom = mapZoom;
         regularAngle = rotationAngleTarget;
         rotationAngleTarget = mapAngle;
+        zoomLimit = mapViewZoomLimits;
         /*if (!isRight) {
             FlipCamera(new InputAction.CallbackContext());
         }*/
         
+        DepthOfFieldController.s.SetDepthOfField(false);
         SetMainCamPos();
     }
 
@@ -496,10 +490,12 @@ public class CameraController : MonoBehaviour {
         currentZoom = regularZoom;
         mapAngle = rotationAngleTarget;
         rotationAngleTarget = regularAngle;
+        zoomLimit = regularZoomLimits;
         /*if (!isRight) {
             FlipCamera(new InputAction.CallbackContext());
         }*/
         
+        DepthOfFieldController.s.SetDepthOfField(true);
         SetMainCamPos();
     }
 

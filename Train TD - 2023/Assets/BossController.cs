@@ -22,8 +22,6 @@ public class BossController : MonoBehaviour {
     private float bossUIFadeInTimer;
 
     public BossData myBoss => PlayStateMaster.s.currentLevel.bossData;
-    public int bossSpawned = 0;
-    public int bossesKilled = 0;
 
     private void Start() {
         bossFightUI.SetActive(false);
@@ -36,10 +34,8 @@ public class BossController : MonoBehaviour {
             bossStarted = true;
         }
 
-        if (bossSpawned < myBoss.bossesToSpawn) {
-            var distance = Random.Range(segmentLength / 10f, segmentLength / 3f);
-            EnemyWavesController.s.SpawnEnemy(myBoss.bossMainPrefab, segmentStartDistance + distance, false, Random.value < 0.5f);
-        }
+        var distance = Random.Range(segmentLength / 10f, segmentLength / 3f);
+        EnemyWavesController.s.SpawnEnemy(myBoss.bossMainPrefab, segmentStartDistance + distance, false, Random.value < 0.5f);
         
         continueButton.SetActive(false);
         continueButton.GetComponent<CanvasGroup>().alpha = 0;
@@ -64,30 +60,11 @@ public class BossController : MonoBehaviour {
         }
     }
 
-    public void IncrementBossesSpawned() {
-        bossSpawned += 1;
-    }
-    
-    public void IncrementBossesKilled() {
-        if (bossStarted) {
-            bossesKilled += 1;
-            if (bossesKilled >= myBoss.bossNeededKillCount) {
-                EnemyWavesController.s.StopSpawningNewDynamicEnemies();
-            }
-        }
-    }
-
-    public bool CanSpawnBoss() {
-        return bossSpawned < myBoss.bossNeededKillCount;
-    }
-
     void UpdateBossKilledTextAndContinueButton() {
-        if (bossesKilled < myBoss.bossNeededKillCount) {
-            bossKilledText.text = $"Destroy the obstacles: {bossesKilled}/{myBoss.bossNeededKillCount}";
-        }else if (EnemyWavesController.s.GetActiveEnemyCount() > 0) {
-            bossKilledText.text = $"Destroy remaining stragglers";
+        if (EnemyWavesController.s.GetActiveEnemyCount() > 0) {
+            bossKilledText.text = $"Defeat the boss";
         } else {
-            bossKilledText.text = $"No more obstacles";
+            bossKilledText.text = $"Congrats!";
             continueButton.SetActive(true);
             continueButton.GetComponent<CanvasGroup>().alpha = Mathf.MoveTowards(continueButton.GetComponent<CanvasGroup>().alpha, 1, 1 * Time.deltaTime);
         }

@@ -40,6 +40,10 @@ public class GateScript : MonoBehaviour, IClickableWorldItem {
         SetCanGoStatus(canGo, new Tooltip(){text = "Click the gate to start your run."});
     }
 
+    public bool CanClick() {
+        return !PlayStateMaster.s.isCombatInProgress();
+    }
+
     public void _OnMouseEnter() {
         if(!mouseOverAble)
             return;
@@ -119,6 +123,7 @@ public class GateScript : MonoBehaviour, IClickableWorldItem {
 }
 
 public interface IClickableWorldItem {
+    public bool CanClick();
 
     public void _OnMouseEnter();
 

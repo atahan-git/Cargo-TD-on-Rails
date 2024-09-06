@@ -91,7 +91,6 @@ MonoBehaviour:
   enemyDieSounds:
   - {fileID: 8300000, guid: a7307a066ee2e504480fc0dd242610e8, type: 3}
   isTeleporting: 0
-  teleportTiming: {x: 10, y: 30}
   isStealing: 0
   isNuker: 0
   nukingTime: 20
@@ -100,8 +99,11 @@ MonoBehaviour:
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
+  boidPosition: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
   myWave: {fileID: 0}
+  teleportInProgress: 0
+  teleportCooldown: 2
 --- !u!114 &3038431739623073051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,9 +116,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7eab1db79f56c47b0647f898b7c2c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseHealth: 400
+  baseHealth: 800
   maxHealth: 400
-  currentHealth: 400
+  currentHealth: 800
   deathPrefab: {fileID: 2226602934599951851, guid: 3194e3df78498b049bf0fc925a059cce, type: 3}
   aliveObject: {fileID: 3038431740301894644}
   isAlive: 1
@@ -268,7 +270,7 @@ MonoBehaviour:
   outlineGradientInLocalSpace: 0
   outlineWidth: 0.45
   outlineBlurPasses: 2
-  outlineQuality: 2
+  outlineQuality: 1
   outlineEdgeMode: 0
   outlineEdgeThreshold: 0.995
   outlineSharpness: 1

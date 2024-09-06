@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 768837492338626818}
   - component: {fileID: 4240752638192703333}
   - component: {fileID: 4693818652644138408}
-  m_Layer: 28
+  m_Layer: 18
   m_Name: Component Reward in end city
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -259,7 +259,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2785237821935908334, guid: 721c20612b7f9644b812ad3158434abb, type: 3}
       propertyPath: m_Layer
-      value: 28
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2785237821936331214, guid: 721c20612b7f9644b812ad3158434abb, type: 3}
       propertyPath: m_RootOrder

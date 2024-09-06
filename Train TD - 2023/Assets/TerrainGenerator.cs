@@ -64,7 +64,7 @@ public class TerrainGenerator : MonoBehaviour
         public bool beingProcessed = false;
         public float minDistanceToTracks = -1;
 
-        public int biome = 1;
+        public TerrainGenerationSettings biome;
 
         public TreeInstance[] treeInstances;
 
@@ -141,7 +141,7 @@ public class TerrainGenerator : MonoBehaviour
         //terrainInformation.bounds.SetMinMax(terrainInformation.topLeftPos, terrainInformation.topLeftPos + new Vector3(terrainWidth,10,terrainWidth));
 
         
-        terrainInformation.biome = PathAndTerrainGenerator.s.GetCurrentBiomeIndex();
+        terrainInformation.biome = BiomeController.s.GetCurrentBiome().genSettings;
 
         //var stopwatch = new System.Diagnostics.Stopwatch();
         //stopwatch.Start();
@@ -270,6 +270,9 @@ public class TerrainGenerator : MonoBehaviour
         }
 
         // detailmap0 grass stuff
+        var grassData0 = information.biome.grass0;
+        var grassData1 = information.biome.grass1;
+        
         System.Random random = new System.Random();
         for (var y = 0; y < detailGridSize; y++)
         {
@@ -288,17 +291,6 @@ public class TerrainGenerator : MonoBehaviour
                 var incline = InclineAtPos(distanceX, distanceY, information.heightmap);
                 //print(incline);
 
-                var grassData0 = biome0grass0;
-                var grassData1 = biome0grass1;
-
-                if (information.biome == 1) {
-                    grassData0 = biome1grass0;
-                    grassData1 = biome1grass1;
-                }else if (information.biome == 2) {
-                    grassData0 = biome2mushrooms0;
-                    grassData1 = biome2grass1;
-                }
-
                 information.detailmap0[x, y] = GetGrassDensity(posX, posY, grassData0.grassFrequency, grassData0.grassThreshold, grassData0.grassMaxDensity, distance, incline);
                 information.detailmap1[x, y] = GetGrassDensity(posX + 500, posY + 500, grassData1.grassFrequency, grassData1.grassThreshold, grassData1.grassMaxDensity, distance, incline);
 
@@ -314,15 +306,7 @@ public class TerrainGenerator : MonoBehaviour
         List<TreeInstance> treeInstances = new List<TreeInstance>();
         var maxRandomOffset = (1f / treeGridSize) / 2f;
         
-        var treeDatas = new List<TreeData>();
-        if (information.biome == 0) {
-            treeDatas.Add(biome0Trees);
-        }else if (information.biome == 1) {
-            treeDatas.Add(biome1Trees);
-            treeDatas.Add(biome1Gems);
-        }else if (information.biome == 2) {
-            treeDatas.Add(biome1Gems);
-        }
+        var treeDatas = information.biome.treeDatas;
         
         for (int x = 0; x < treeGridSize; x++) {
             for (int y = 0; y < treeGridSize; y++) {
@@ -331,7 +315,7 @@ public class TerrainGenerator : MonoBehaviour
                 var posX = information.GetPos_X(distanceX, distanceY);
                 var posY = information.GetPos_Y(distanceX, distanceY);
                 var distance = information.distanceMap[distanceX, distanceY];
-                for (int i = 0; i < treeDatas.Count; i++) {
+                for (int i = 0; i < treeDatas.Length; i++) {
                     var myData = treeDatas[i];
                     var density = GetTreeDensity(myData, posX, posY, distance, i * 500);
                     
@@ -391,7 +375,7 @@ public class TerrainGenerator : MonoBehaviour
         public float minDensity = 0.8f;
     }
 
-    float GetTreeDensity(TreeData data, float x, float y, float distance, float offset) {
+    float GetTreeDensity(TerrainGenerationSettings.TreeData data, float x, float y, float distance, float offset) {
         var value = GetNoise(seed.x + x * data.treeFrequency * scale + offset, seed.y + y * data.treeFrequency * scale + offset);
         if (value > data.treeThreshold && distance > treeMinDistance) {
             value = value - data.treeThreshold;

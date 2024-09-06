@@ -229,6 +229,10 @@ public class Train : MonoBehaviour {
                 cartState.ammo = -1;
             }
         }#1#*/
+        
+        var ammo = cart.GetComponentInChildren<ModuleAmmo>();
+        if (ammo != null) 
+            ammo.SetAmmo(ammo.maxAmmo);
 
         for (int i = 0; i < cartState.attachedArtifacts.Count; i++) {
             var attachedArtifact = cartState.attachedArtifacts[i];
@@ -257,6 +261,18 @@ public class Train : MonoBehaviour {
     }
 
     public static void ApplyStateToArtifact(Artifact artifact, DataSaver.TrainState.ArtifactState artifactState) {
+    }
+
+    public static Cart InstantiateCartFromState(DataSaver.TrainState.CartState state, Vector3 position, Quaternion rotation) {
+        var cart = Instantiate(DataHolder.s.GetCart(state.uniqueName).gameObject, position, rotation).GetComponent<Cart>();
+        ApplyStateToCart(cart, state);
+        return cart;
+    }
+    
+    public static Artifact InstantiateArtifactFromState(DataSaver.TrainState.ArtifactState state, Vector3 position, Quaternion rotation) {
+        var artifact = Instantiate(DataHolder.s.GetArtifact(state.uniqueName).gameObject, position, rotation).GetComponent<Artifact>();
+        ApplyStateToArtifact(artifact, state);
+        return artifact;
     }
 
     public void RightBeforeLeaveMissionRewardArea() {

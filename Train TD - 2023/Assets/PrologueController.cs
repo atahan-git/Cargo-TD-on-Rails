@@ -478,7 +478,7 @@ public class PrologueController : MonoBehaviour {
     }
 
     public void DrawPrologueWorld() {
-        PathAndTerrainGenerator.s.SetBiomes(0);
+        BiomeController.s.SetParticularBiome(0,0);
         PathAndTerrainGenerator.s.MakeCircleTerrainForPrologue();
         PathSelectorController.s.trainStationStart.SetActive(false);
     }
@@ -747,7 +747,7 @@ public class PrologueController : MonoBehaviour {
             }
         }
         
-        PathAndTerrainGenerator.s.SetBiomes(biome, false);
+        BiomeController.s.SetParticularBiome(0,biome,false);
     }
 
 

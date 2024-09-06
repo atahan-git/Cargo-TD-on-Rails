@@ -718,6 +718,12 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         }
     }
 
+    public void FullyRepair() {
+        while (currentHealth < GetMaxHealth()) {
+            Repair(repairChunkSize, false);
+        }
+    }
+
     public bool IsPlayer() {
         return true;
     }

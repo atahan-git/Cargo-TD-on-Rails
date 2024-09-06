@@ -69,6 +69,9 @@ public class PhysicalAmmoBar : MonoBehaviour {
     }
 
     public void OnReload(bool showEffect, float curAmmo) {
+        if (!ammoChunk)
+            return;
+        
         var delta = Vector3.zero;
         while ( allAmmoChunks.Count < curAmmo) {
             var newOne = Instantiate(ammoChunk, reloadSpawnPos);

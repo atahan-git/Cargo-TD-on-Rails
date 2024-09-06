@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myDistance: 0
-  autoStart: 1
+  autoStart: 0
   isBigGem: 1
   toSpawnOnDeath: {fileID: 1046195756885079355, guid: 1389dc05241dbe94d8035f3b3f718758, type: 3}
   awardGiven: 0

@@ -152,6 +152,10 @@ public class Meeple : MonoBehaviour, IPlayerHoldable {
         }
     }
 
+    public bool CanDrag() {
+        return PlayStateMaster.s.isShopOrEndGame();
+    }
+
     private void OnCollisionEnter(Collision collision) {
         if (stopBeingHandledWhenHitGround) {
             CancelInvoke();

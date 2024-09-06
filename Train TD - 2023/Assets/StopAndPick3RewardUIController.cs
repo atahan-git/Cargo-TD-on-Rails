@@ -67,6 +67,7 @@ public class StopAndPick3RewardUIController : MonoBehaviour {
 
 	public GameObject gemRewardOnRoadPrefab;
 	public GameObject bigGemRewardOnRoadPrefab;
+	public GameObject cartRewardOnRoadPrefab;
 
 	void SpawnGemRewardNextIntersection() {
 		switch (MapController.s.GetSwitchRewardAtDepth(PathAndTerrainGenerator.s.currentPathTree.myDepth+1)) {
@@ -80,6 +81,26 @@ public class StopAndPick3RewardUIController : MonoBehaviour {
 				Instantiate(bigGemRewardOnRoadPrefab);
 				break;
 		}
+	}
+
+	public void SpawnMiniGemRewardAtDistance(float position) {
+		Instantiate(gemRewardOnRoadPrefab).GetComponent<GemRewardOnRoad>().SetUp(position);
+	}
+	public void SpawnBigGemRewardAtDistance(float position) {
+		Instantiate(bigGemRewardOnRoadPrefab).GetComponent<GemRewardOnRoad>().SetUp(position);
+	}
+	public void SpawnCartRewardAtDistance(float position) {
+		Instantiate(cartRewardOnRoadPrefab).GetComponent<CartRewardOnRoad>().SetUp(position);
+	}
+	
+	public void SpawnMiniGemRewardAtDistance(float position, DataSaver.TrainState.ArtifactState state) {
+		Instantiate(gemRewardOnRoadPrefab).GetComponent<GemRewardOnRoad>().SetUp(position, state);
+	}
+	public void SpawnBigGemRewardAtDistance(float position, DataSaver.TrainState.ArtifactState state) {
+		Instantiate(bigGemRewardOnRoadPrefab).GetComponent<GemRewardOnRoad>().SetUp(position, state);
+	}
+	public void SpawnCartRewardAtDistance(float position, DataSaver.TrainState.CartState state) {
+		Instantiate(cartRewardOnRoadPrefab).GetComponent<CartRewardOnRoad>().SetUp(position, state);
 	}
 
 

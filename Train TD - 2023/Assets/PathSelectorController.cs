@@ -38,7 +38,7 @@ public class PathSelectorController : MonoBehaviour {
 	private void OnEnable() {
 		trackSwitchAction.action.Enable();
 		trackSwitchAction.action.performed += TrackSwitch;
-		radarAndTrackPicker.SetActive(true);
+		//radarAndTrackPicker.SetActive(true);
 	}
 
     private void Start()
@@ -132,18 +132,20 @@ public class PathSelectorController : MonoBehaviour {
 			topMergeStar.enabled = currentPathTree.leftPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.elite;
 			topBoss.enabled = currentPathTree.leftPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.boss;
 			topGoodThing.enabled = currentPathTree.leftPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.pitStop;
-			bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
-			SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.enemyType.myType);
-			bottomMergeStar.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.elite;
-			bottomBoss.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.boss;
-			bottomGoodThing.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.pitStop;
 			topTrack.SetActiveState(mainLever.topSelected);
-			bottomTrack.SetActiveState(!mainLever.topSelected);
-
-			leftCastleCity.SetActive(currentPathTree.startPath);
 			topCastleCity.SetActive(currentPathTree.leftPathTree.endPath);
-			bottomCastleCity.SetActive(currentPathTree.rightPathTree.endPath);
+			if (currentPathTree.rightPathTree != null) {
+				bottomTrack.SetUpTrack(currentPathTree.rightPathTree.myPath.length);
+				SetImageBasedOnPathType(bottomTrackType, currentPathTree.rightPathTree.enemyType.myType);
+				bottomMergeStar.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.elite;
+				bottomBoss.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.boss;
+				bottomGoodThing.enabled = currentPathTree.rightPathTree.enemyType.myType == UpgradesController.PathEnemyType.PathType.pitStop;
+				bottomTrack.SetActiveState(!mainLever.topSelected);
+				bottomCastleCity.SetActive(currentPathTree.rightPathTree.endPath);
+			}
 			
+			
+			leftCastleCity.SetActive(currentPathTree.startPath);
 			//trainStationStart.SetActive(currentPathTree.startPath);
 			
 			
@@ -228,7 +230,7 @@ public class PathSelectorController : MonoBehaviour {
 		if (PlayStateMaster.s.isCombatInProgress()) {
 			if (SpeedController.s.currentDistance + trackSwitchWarningDistance > nextSegmentChangeDistance && !isPlayingTrackSwitchWarning) {
 				//trainCrossingAudioSource.Play();
-				trainCrossingSpeaker.Play();
+				//trainCrossingSpeaker.Play();
 
 				isPlayingTrackSwitchWarning = true;
 				mainLever.SetTrackSwitchWarningState(true);
@@ -236,41 +238,30 @@ public class PathSelectorController : MonoBehaviour {
 
 
 			if (nextSegmentChangeDistance > 0 && SpeedController.s.currentDistance > nextSegmentChangeDistance) {
-				//trainCrossingAudioSource.Stop();
 				trainCrossingSpeaker.Stop();
 
 				isPlayingTrackSwitchWarning = false;
 
-				var upcomingPath = mainLever.topSelected ? PathAndTerrainGenerator.s.currentPathTree.leftPathTree : PathAndTerrainGenerator.s.currentPathTree.rightPathTree;
+				//var upcomingPath = mainLever.topSelected ? PathAndTerrainGenerator.s.currentPathTree.leftPathTree : PathAndTerrainGenerator.s.currentPathTree.rightPathTree;
+				var upcomingPath = PathAndTerrainGenerator.s.currentPathTree.leftPathTree;
 				
-				//mainLever.LockTrackState();
 				mainLever.SetTrackSwitchWarningState(false);
 				mainLever.SetTrackState(Random.value < 0.5f);
 				
 				
-				//EnemyWavesController.s.PhaseOutExistingEnemies();
-				/*if (upcomingSegment.isEncounter) {
-					EncounterController.s.EngageEncounter(upcomingSegment.levelName);
-				} else {*/
-				//}
-				EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length, upcomingPath.enemyType);
+				//EnemyWavesController.s.SpawnEnemiesOnSegment(nextSegmentChangeDistance, upcomingPath.myPath.length, upcomingPath.enemyType);
 				MapController.s.UpdateTrainPosition();
 				
-				StopAndPick3RewardUIController.s.TryShowGemReward();
+				//StopAndPick3RewardUIController.s.TryShowGemReward();
 
 				nextSegmentChangeDistance += upcomingPath.myPath.length;
-				/*if (!upcomingPath.endPath) {
-					nextSegmentChangeDistance += upcomingPath.myPath.length;
-				} else {
-					nextSegmentChangeDistance += 10000000;
-				}*/
 
 				PathAndTerrainGenerator.s.currentPathTreeOffset += PathAndTerrainGenerator.s.currentPathTree.myPath.length;
 				PathAndTerrainGenerator.s.currentPathTree = upcomingPath;
 				PathAndTerrainGenerator.s.PruneAndExtendPaths();
 				ReAdjustTracks();
 				
-				SpeedController.s.PlayEngineStartEffects();
+				//SpeedController.s.PlayEngineStartEffects();
 			}
 		}
 	}

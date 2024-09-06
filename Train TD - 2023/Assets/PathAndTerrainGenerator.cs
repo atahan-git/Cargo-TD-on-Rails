@@ -20,9 +20,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         currentTerrainGenCount = 0;
     }
 
-    private void Start() {
-        SetBiomes();
-    }
 
     public List<PathGenerator.TrainPath> myPaths = new List<PathGenerator.TrainPath>();
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
@@ -124,42 +121,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public UnityEvent OnNewTerrainStabilized = new UnityEvent();
     public bool initialTerrainMade = false;
-
-
-    public void SetBiomes() {
-        SetBiomes(-1);
-    }
-
-    private int currentBiomeIndex;
-    public void SetBiomes(int _biomeOverride, bool repopulateTerrain = true) {
-        Biome currentBiome;
-        var actualBiomeOverride = -1;
-        if (biomeOverride >= 0) {
-            actualBiomeOverride = biomeOverride;
-        }
-        if (_biomeOverride >= 0) {
-            actualBiomeOverride = _biomeOverride;
-        }
-        if (actualBiomeOverride < 0) {
-            var targetBiome = DataSaver.s.GetCurrentSave().currentRun.currentAct-1;
-            if (targetBiome < 0 || targetBiome > biomes.Length) {
-                Debug.LogError($"Illegal biome {targetBiome}");
-                targetBiome = 0;
-            }
-
-            Debug.Log($"Biome set {targetBiome}");
-            actualBiomeOverride = targetBiome;
-        }
-
-        currentBiomeIndex = actualBiomeOverride;
-        currentBiome = biomes[currentBiomeIndex];
-
-        ApplyBiome(currentBiome);
-
-        if(repopulateTerrain)
-            terrainPool.RePopulateWithNewObject(currentBiome.terrainPrefab);
-    }
-
 
     /*public void MakeFakePathForMissionRewards() {
         terrainGenerationProgress = 0;
@@ -303,6 +264,41 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         
         StartCoroutine(ReDrawTerrainAroundCenter(true));
     }
+    
+    public void RemakeLevelTerrain() {
+        terrainGenerationProgress = 0;
+        needReflectionProbe = true;
+        ClearTerrains();
+        ClearAllMyPaths();
+        cityStampPaths.Clear();
+        terrainViewRange = mapTerrainViewRange;
+
+        var backTrackDistance = 100;
+        var starterPath = _pathGenerator.MakeTrainPath(-Vector3.forward * backTrackDistance, Vector3.forward, Vector3.forward, backTrackDistance*2);
+        AddToMyPaths(starterPath);
+        isComboListDirty = true;
+        
+        currentPathTree = new PathTree() {
+            startPath = true,
+            myPath = starterPath,
+        };
+
+        initialTerrainMade = false;
+
+        currentPathTreeOffset = backTrackDistance;
+        SpeedController.s.currentDistance = backTrackDistance*2;
+        PathSelectorController.s.trainStationStart.SetActive(false);
+
+        stopDrawEarly = true;
+        StartCoroutine(ReDrawTerrainAroundCenter(true));
+        
+        StartCoroutine(RemakeLevelTerrain_DrawThings());
+    }
+
+    IEnumerator RemakeLevelTerrain_DrawThings() {
+        yield return new WaitUntil(() => reDrawing);
+        MakeLevelTerrain();
+    }
 
 
     [Button]
@@ -354,46 +350,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             GetComponent<TerrainGenerator>().ReprocessTerrainChanges(myTerrains[i]);
         }
     }
-    
-    [Button]
-    public void DebugMakeTracks() {
-        /*var viewBound = new Bounds(Vector3.zero, Vector3.one * terrainViewRange);
 
-        /*for (int i =  myTracks.Count-1; i >=0; i--) {
-            myTracks[i].GetComponent<PooledObject>().DestroyPooledObject();
-        }
-        myTracks.Clear();#1#
 
-        var deleteList = new List<Vector3>();
-        foreach (var keyValuePair in myTracks) {
-            if (!viewBound.Contains(keyValuePair.Key+center)) {
-                keyValuePair.Value.GetComponent<PooledObject>().DestroyPooledObject();
-                deleteList.Add(keyValuePair.Key);
-            }
-        }
-
-        foreach (var key in deleteList) {
-            myTracks.Remove(key);
-        }
-
-        for (int i = 0; i < myPaths.Count; i++) {
-            if (myPaths[i].bounds.Intersects(viewBound)) {
-                
-                var trainPath = myPaths[i];
-                var distance = 0f;
-                while (distance < trainPath.length) {
-                    var point = PathGenerator.GetPointOnLine(trainPath, distance);
-                    if (viewBound.Contains(point) && !myTracks.ContainsKey(point - center)) {
-                        var newTrack = trackPool.Spawn(point, PathGenerator.GetDirectionOnTheLine(trainPath, distance));
-                        myTracks[point-center] = newTrack;
-                    }
-                    distance += trackDistance;
-                }
-            }
-        }*/
-    }
-
-    
     private ConstructedLevel activeLevel => PlayStateMaster.s.currentLevel;
     public void MakeLevelTerrain() {
         if (activeLevel == null) {
@@ -410,7 +368,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         
         // extend
         ForkPath(currentPathTree, 0, pathGenerateDistance);
-
+        
         // prune
         PrunePath(currentPathTree, 0, pathGenerateDistance,0,3, new List<PathTree>());
     }
@@ -456,7 +414,6 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         PrunePath(pathTree.rightPathTree, curDistance, maxDistance, curDepth, minDepth,processedList);
     }
 
-
     /*private int minCastleDepth = 2;
     private float endStationChance = 0.25f;
     private bool forceEndStation = false;*/
@@ -469,7 +426,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         var startPoint = pathTree.myPath.points[^1];
         var startDirection = PathGenerator.GetDirectionVectorOnTheLine(pathTree.myPath, pathTree.myPath.length);
 
-        var pathType = PathTree.PathType.regular;
+        //var pathType = PathTree.PathType.regular;
+        var pathType = PathTree.PathType.infinite;
+        pathTree.myType = pathType;
         /*if (makeInfiniteBossPath) {
             pathType = PathGenerator.TrainPath.PathType.infinite;
         }*/
@@ -498,16 +457,14 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 }
             }
                 break;
-            /*case PathGenerator.TrainPath.PathType.infinite: {
+            case PathTree.PathType.infinite: {
                 // left fork - infinite path doesn't fork so there is only the left path
                 if (pathTree.leftPathTree == null) {
-                    generatedPathDepth += 1;
                     var leftSegmentDirection = startDirection;
-                    pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, pathType, startPoint, startDirection, leftSegmentDirection, segmentDistance);
-                    pathTree.leftPathTree.myPath.pathRewardUniqueName = "";
+                    pathTree.leftPathTree = _MakeForkedPath(pathTree, curDistance, maxDistance, pathType, startPoint, startDirection, leftSegmentDirection, leftSegmentDistance,leftEnemy,newPathDepth);
                 }
             }
-                break;*/
+                break;
         }
     }
 
@@ -552,13 +509,15 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             
                 return newPathTree;
             }
-            /*case PathGenerator.TrainPath.PathType.infinite: {
+            case PathTree.PathType.infinite: {
                 var newPath = _pathGenerator.MakeTrainPath(startPoint, startDirection, segmentDirection, segmentDistance, true);
                 AddToMyPaths(newPath);
                 isComboListDirty = true;
                 var newPathTree = new PathTree() {
                     prevPathTree = pathTree,
-                    myPath = newPath
+                    myPath = newPath,
+                    enemyType = enemyType,
+                    myDepth = depth,
                 };
 
                 curDistance += newPath.length;
@@ -568,7 +527,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 }
             
                 return newPathTree;
-            }*/
+            }
             default:
                 throw new Exception($"Unsupported train path type {pathType}");
         }
@@ -626,10 +585,12 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public float terrainViewRange = 10;
     public bool reDrawing = false;
+    public bool stopDrawEarly = false;
     IEnumerator ReDrawTerrainAroundCenter(bool instant = false) {
         while (reDrawing) {
             yield return null;
         }
+        stopDrawEarly = false;
 
         //Debug.Break();
         reDrawing = true;
@@ -652,6 +613,9 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         terrainGenerationProgress -= 0.1f;
         
         for (int i = 0; i < terrainCount; i++) {
+            if(stopDrawEarly)
+                break;
+            
             var offset = GetSpiralNumber(i);
             if (offset.magnitude > viewCount/2f) {
                 continue;
@@ -696,6 +660,10 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
         }
         reDrawing = false;
+        if (stopDrawEarly) {
+            stopDrawEarly = false;
+            yield break;
+        }
 
         while (currentTerrainGenCount > 0) {
             yield return null;
@@ -1160,25 +1128,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         return travelPathTree.myPath;
     }
 
-
-    [Button]
-    void DebugApplySunAndSkyboxEditor(int biome) {
-        currentBiomeIndex = biome;
-        var currentBiome = biomes[currentBiomeIndex];
-        ApplyBiome(currentBiome);
-    }
-
-    public int GetCurrentBiomeIndex() {
-        return currentBiomeIndex;
-    }
-    void ApplyBiome(Biome currentBiome) {
-        for (int i = 0; i < biomes.Length; i++) {
-            biomes[i].sun.gameObject.SetActive(false);
-        }
-        
-        currentBiome.skybox.SetActiveSkybox(currentBiome.sun, null);
-
-        RenderSettings.ambientIntensity = currentBiome.skyboxLightIntensity;
-        
+    public int GetDepthForEnemyDifficultyPurposes() {
+        return InfiniteMapController.s.depth;
     }
 }

@@ -151,9 +151,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         
         if (PlayStateMaster.s.isCombatInProgress()) {
             CheckAndDoCombatClick();
-        } else {
-            CheckGate();
-        }
+        } 
+        CheckGate();
     }
 
     public void SetCannotSelect(bool __canSelect) {
@@ -189,8 +188,18 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     void CheckGate() {
         RaycastHit hit;
         Ray ray = GetRay();
+        if (IsGateNull(lastGate)) {
+            lastGate = null;
+        }
+        
         if (Physics.Raycast(ray, out hit, 100f, LevelReferences.s.gateMask)) {
             var gate = hit.collider.GetComponentInParent<IClickableWorldItem>();
+            if (gate == null)
+                return;
+            
+            if (!gate.CanClick()) {
+                return;
+            }
 
             if (gate != lastGate) {
                 if (lastGate != null) {
@@ -198,10 +207,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     OnSelectGate?.Invoke(lastGate, false);
                 }
                 
+                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.clickGate);
                 lastGate = gate;
                 lastGate._OnMouseEnter();
                 OnSelectGate?.Invoke(lastGate, true);
-                GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.clickGate);
             }
 
             if (clickCart.action.WasPressedThisFrame()) {
@@ -214,16 +223,20 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
             
         } else {
-            if (lastGate != null) {
+            if (!IsGateNull(lastGate)) {
                 lastGate._OnMouseExit();
                 OnSelectGate?.Invoke(lastGate, false);
                 GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.clickGate);
-                
-                lastGate = null;
-                
+
                 clickedOnGate = false;
             }
+
+            lastGate = null;
         }
+    }
+
+    bool IsGateNull(IClickableWorldItem gate) {
+        return gate == null || (gate as MonoBehaviour == null) || ((MonoBehaviour)gate).gameObject == null;
     }
 
     public bool isDragging() {
@@ -263,7 +276,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (PlayStateMaster.s.isCombatInProgress() && isDragging()) {
             var selectedCart = currentSelectedThing as Cart;
             if (selectedCart != null) {
-                if (CanDragCart(selectedCart)) {
+                if (CanDragThing(selectedCart)) {
                     if (isForward) {
                         if (selectedCart.trainIndex > 1) {
                             Train.s.RemoveCart(selectedCart);
@@ -278,37 +291,11 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
     }
 
-    bool CanDragArtifact(Artifact artifact) {
-        return artifact.canDrag; 
-    }
-    bool CanDragCart(Cart cart) {
-        return (!cart.isMainEngine && cart.canPlayerDrag) && (PlayStateMaster.s.isShopOrEndGame() || !cart.IsAttachedToTrain());
-    }
-    
-    bool CanDragMeeple(Meeple meeple) {
-        return PlayStateMaster.s.isShopOrEndGame();
-    }
-    
-    bool CanDragGenericClickable(IGenericClickable genericClickable) {
-        return true;
-    }
-
     bool CanDragThing(IPlayerHoldable thing) {
-        if (thing is Artifact artifact) {
-            return CanDragArtifact(artifact);
-        }else if ( thing is Cart cart) {
-            return CanDragCart(cart);
-        }else if (thing is EnemyHealth) {
+        if (thing == null)
             return false;
-        }else if (thing is Meeple meeple) {
-            return CanDragMeeple(meeple);
-        } else if (thing is ScrapsItem scrapsItem) {
-            return scrapsItem.CanDrag();
-        }else if (thing is IGenericClickable genericClickable) {
-            return CanDragGenericClickable(genericClickable);
-        }
         
-        return false;
+        return thing.CanDrag();
     }
 
     public bool isComboDragStarted = false;
@@ -319,6 +306,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             return;
         }
         CastRayToOutline();
+
         if (!CanDragThing(currentSelectedThing)) {
             return;
         }
@@ -359,11 +347,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     artifactSlot.SetVisualizeState(artifactSlot.CanSnap(currentSelectedThing));
                 }
             }
-        }
-
-        if (currentSelectedThing is IGenericClickable genericClickable) {
-            genericClickable.Click();
-            Deselect();
         }
 
         if (LevelReferences.s.combatHoldableThings.Contains(currentSelectedThing)) {
@@ -842,13 +825,9 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, maxDistance, LevelReferences.s.meepleLayer)) {
             return hit.collider.GetComponentInParent<Meeple>();
         }
-
+        
         if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, maxDistance, LevelReferences.s.scrapsItemLayer)) {
             return hit.collider.gameObject.GetComponentInParent<ScrapsItem>();
-        }
-        
-        if (Physics.SphereCast(ray, GetSphereCastRadius(), out hit, maxDistance, LevelReferences.s.genericClickableLayer)) {
-            return hit.collider.gameObject.GetComponentInParent<IGenericClickable>();
         }
 
         return null;
@@ -912,9 +891,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }else if (currentSelectedThing is Meeple meeple) {
                 meeple.GetClicked();
                 infoCardActive = false;
-            } else if (currentSelectedThing is IGenericClickable genericClickable) {
-                genericClickable.Click();
-            }else {
+            } else {
                 infoCardActive = false;
             }
 
@@ -980,7 +957,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         Color myColor = moveColor;
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
-        if (!CanDragArtifact(artifact)) {
+        if (!CanDragThing(artifact)) {
             myColor = cantActColor;
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
         }
@@ -1004,13 +981,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         return meepleColor;
     }
     void DeselectMeeple(Meeple meeple) { }
-    
-    Color SelectGenericClickable(IGenericClickable clickable) {
-        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.clickGate);
-        GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
-        return clickableColor;
-    }
-    void DeselectGenericClickable(IGenericClickable clickable) { }
 
     Color SelectScrapsItem(ScrapsItem scrapsItem) {
         return scrapsItem.GetSelectColor();
@@ -1044,8 +1014,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 myColor = SelectMeeple(meeple);
             }else if (newSelectableThing is ScrapsItem scrapsItem) {
                 myColor = SelectScrapsItem(scrapsItem);
-            }else if (newSelectableThing is IGenericClickable genericClickable) {
-                myColor = SelectGenericClickable(genericClickable);
             }
 
             if (outline != null) {
@@ -1085,7 +1053,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.move);
         
 
-        if (!CanDragCart(selectedCart)) {
+        if (!CanDragThing(selectedCart)) {
             myColor = cantActColor;
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
         }
@@ -1100,27 +1068,6 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                     myColor = directControllable.GetHighlightColor();
                     GamepadControlsHelper.s.AddPossibleActions(directControllable.GetActionKey());
                 }
-
-                /*switch (currentSelectMode) {
-                    case SelectMode.cart:
-                        // do nothing. This will do the default action button
-                        break;
-                    case SelectMode.directControl:
-                        myColor = directControlColor;
-                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.directControl);
-                        break;
-                    case SelectMode.reload:
-                        myColor = reloadColor;
-                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.reload);
-                        break;
-                    case SelectMode.engineBoost:
-                        myColor = engineBoostColor;
-                        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.engineBoost);
-                        break;
-                    case SelectMode.emptyCart:
-                        myColor = cantActColor;
-                        break;
-                }*/
             }
         }
 
@@ -1230,9 +1177,5 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 public interface IPlayerHoldable {
     public Transform GetUITargetTransform();
     public void SetHoldingState(bool state);
-}
-
-
-public interface IGenericClickable : IPlayerHoldable {
-    public void Click();
+    public bool CanDrag();
 }

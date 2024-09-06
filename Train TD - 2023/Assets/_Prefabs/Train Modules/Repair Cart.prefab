@@ -622,7 +622,7 @@ MonoBehaviour:
     ancientDisabled: 0
     lizardOverride: 0
   chargeTime: 30
-  repairChargeFullUseTime: 60
+  repairChargeFullUseTime: 90
   vampiricHealthStorage: 0
   maxVelocity: 10
   curVelocity: 0
@@ -763,7 +763,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dce6cb78a816a647b253648b8a5a7d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  repairDrone: {fileID: 0}
   myImg: {fileID: 0}
 --- !u!1 &4198526680960227776
 GameObject:

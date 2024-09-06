@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using HighlightPlus;
 using UnityEngine;
 
-public class CartRewardInEndCity : MonoBehaviour, IGenericClickable, IResetShopBuilding
+public class CartRewardInEndCity : MonoBehaviour, IClickableWorldItem, IResetShopBuilding
 {
     public void CheckIfShouldEnableSelf() {
         if (DataSaver.s.GetCurrentSave().currentRun.currentAct == 1) {
@@ -11,17 +12,20 @@ public class CartRewardInEndCity : MonoBehaviour, IGenericClickable, IResetShopB
             gameObject.SetActive(true);
         }
     }
-
-    public Transform GetUITargetTransform() {
-        return transform;
+    
+    public bool CanClick() {
+        return !PlayStateMaster.s.isCombatInProgress();
     }
 
-    public void SetHoldingState(bool state) {
-        // do nothing
+    public void _OnMouseEnter() {
+        GetComponent<HighlightEffect>().enabled = true;
     }
 
+    public void _OnMouseExit() {
+        GetComponent<HighlightEffect>().enabled = false;
+    }
 
-    public void Click() {
+    public void _OnMouseUpAsButton() {
         StopAndPick3RewardUIController.s.ShowCartReward();
         Destroy(gameObject);
     }

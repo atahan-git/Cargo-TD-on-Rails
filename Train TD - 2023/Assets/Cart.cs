@@ -193,6 +193,10 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
         }
     }
 
+    public bool CanDrag() {
+        return (!isMainEngine && canPlayerDrag) && (PlayStateMaster.s.isShopOrEndGame() || !IsAttachedToTrain());
+    }
+
     public void SetComponentCombatShopMode() {
         var duringCombat = GetComponentsInChildren<IActiveDuringCombat>();
         var duringShopping = GetComponentsInChildren<IActiveDuringShopping>();
@@ -293,15 +297,19 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
     }
 
     public float GetCurrentHealth() {
-        return GetComponent<ModuleHealth>().currentHealth;
+        return GetHealthModule().currentHealth;
     }
     
     public float GetCurrentHealthReduction() {
-        return GetComponent<ModuleHealth>().maxHealthReduction;
+        return GetHealthModule().maxHealthReduction;
     }
 
-    public void SetCurrentHealth(float health, float maxHealthReduction) {
-        GetComponent<ModuleHealth>().SetHealth(health, maxHealthReduction);
+    public void SetCurrentHealth(float health, float maxHealthReduction = -1) {
+        GetHealthModule().SetHealth(health, maxHealthReduction);
+    }
+    
+    public void FullyRepair() {
+        GetHealthModule().FullyRepair();
     }
 
     public bool IsAttachedToTrain() {

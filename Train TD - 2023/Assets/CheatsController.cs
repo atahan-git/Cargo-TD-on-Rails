@@ -138,7 +138,7 @@ public class CheatsController : MonoBehaviour {
     }
 
     private void EngageCheat(InputAction.CallbackContext obj) {
-
+        InfiniteMapController.s.DebugRemakeMap();
         /*if (!PlayStateMaster.s.isCombatStarted()) {
             if (PlayStateMaster.s.isMainMenu())
                 MainMenu.s.StartGame();
@@ -162,7 +162,7 @@ public class CheatsController : MonoBehaviour {
             }#1#
         } */
 
-        for (int i = 0; i < Train.s.carts.Count; i++) {
+        /*for (int i = 0; i < Train.s.carts.Count; i++) {
             var modHealth = Train.s.carts[i].GetComponent<ModuleHealth>();
 
             var targetHP = modHealth.GetMaxHealth() / 4f;
@@ -170,7 +170,7 @@ public class CheatsController : MonoBehaviour {
             if (modHealth.currentHealth > targetHP) {
                 modHealth.DealDamage(modHealth.currentHealth-targetHP);
             }
-        }
+        }*/
     }
 
 

@@ -24,6 +24,13 @@ public class CartRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
         Update();
         DistanceAndEnemyRadarController.s.RegisterUnit(this);
     }
+    
+    public void SetUp(float distance, DataSaver.TrainState.CartState targetReward) {
+        customReward = true;
+        customRewardCart = targetReward;
+        
+        SetUp(distance);
+    }
 
 
     private void Update() {

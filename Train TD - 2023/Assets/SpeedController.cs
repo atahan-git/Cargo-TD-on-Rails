@@ -198,8 +198,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
         speedDisplayArea.UpdateValues(targetSpeed,  LevelReferences.s.speed);
         speedDisplayAreaShop.UpdateValues(targetSpeed, LevelReferences.s.speed);
-
-
+        
         if (!encounterOverride) {
             if (PlayStateMaster.s.isCombatInProgress()) {
                 var realAcc = acceleration;
@@ -230,6 +229,10 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
                 slowAmount = Mathf.Clamp(slowAmount, 0, 5);
                 if (slowAmount <= 0.2f) {
                     ToggleSlowedEffect(false);
+                }
+
+                if (CameraController.s.isSnappedToMap) {
+                    LevelReferences.s.speed = 0;
                 }
 
                 if(!CheatsController.s.stopMoving)

@@ -117,7 +117,6 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask artifactLayer;
     public LayerMask meepleLayer;
     public LayerMask scrapsItemLayer;
-    public LayerMask genericClickableLayer;
     public LayerMask allSelectablesLayer;
 
     [Space]

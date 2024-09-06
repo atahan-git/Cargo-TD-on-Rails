@@ -37,7 +37,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnCharacterSelected.AddListener(FirstTimeTutorialController.s.NewCharacterCutsceneReset);
         OnCharacterSelected.AddListener(MoneyUIDisplay.totalMoney.OnCharLoad);*/
         
-        OnDrawWorld.AddListener(PathAndTerrainGenerator.s.SetBiomes);
+        OnDrawWorld.AddListener(BiomeController.s.SetDefaultBiome);
         OnDrawWorld.AddListener(PathAndTerrainGenerator.s.MakeStarterAreaTerrain);
         
         OnNewWorldCreation.AddListener(OnDrawWorld.Invoke);

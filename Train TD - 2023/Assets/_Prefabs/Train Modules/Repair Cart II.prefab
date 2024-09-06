@@ -10628,7 +10628,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dce6cb78a816a647b253648b8a5a7d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  repairDrone: {fileID: 0}
   myImg: {fileID: 0}
 --- !u!1 &3594827500495483965
 GameObject:
@@ -15575,7 +15574,7 @@ MonoBehaviour:
   myHealth: {fileID: 0}
   selfRepairSpeed: 0.07
   selfRepairImage: {fileID: 8838326449024689860}
-  repairSpeedMultiplier: 1.5
+  repairSpeedMultiplier: 1.25
   currentAffectors:
     power: 1
     speed: 1

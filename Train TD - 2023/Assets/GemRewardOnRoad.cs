@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
     public float myDistance = 0;
@@ -9,7 +10,12 @@ public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
     public bool autoStart = true;
 
     public bool isBigGem = false;
+    
+    public bool customReward = false;
+    public DataSaver.TrainState.ArtifactState customGemReward;
 
+    [HideInInspector]
+    public UnityEvent<GameObject> OnCustomRewardSpawned = new UnityEvent<GameObject>();
     private void Start() {
         if (autoStart) {
             SetUp(PathSelectorController.s.nextSegmentChangeDistance);
@@ -20,6 +26,13 @@ public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
         myDistance = distance;
         Update();
         DistanceAndEnemyRadarController.s.RegisterUnit(this);
+    }
+    
+    public void SetUp(float distance, DataSaver.TrainState.ArtifactState targetReward) {
+        customReward = true;
+        customGemReward = targetReward;
+        
+        SetUp(distance);
     }
 
 
@@ -53,7 +66,26 @@ public class GemRewardOnRoad : MonoBehaviour, IShowOnDistanceRadar {
 
     void GiveReward() {
         var deathEffect = VisualEffectsController.s.SmartInstantiate(toSpawnOnDeath, transform.position, transform.rotation, VisualEffectsController.EffectPriority.Always);
-        StopAndPick3RewardUIController.s.ShowGemReward( isBigGem);
+        if (!customReward) {
+            StopAndPick3RewardUIController.s.ShowGemReward(isBigGem);
+        } else {
+            SpawnCustomReward();
+        }
+    }
+    
+    void SpawnCustomReward() {
+        var artifact = Train.InstantiateArtifactFromState(customGemReward, transform.position + Vector3.up / 2f, transform.rotation);
+        VisualEffectsController.s.SmartInstantiate(LevelReferences.s.goodItemSpawnEffectPrefab,  transform.position+Vector3.up/2f, transform.rotation);
+
+        var rg = artifact.GetComponent<Rigidbody>();
+        rg.isKinematic = false;
+        rg.useGravity = true;
+        rg.velocity = Train.s.GetTrainForward() * LevelReferences.s.speed;
+        rg.AddForce(StopAndPick3RewardUIController.s.GetUpForce());
+        
+        LevelReferences.s.combatHoldableThings.Add(artifact);
+        
+        OnCustomRewardSpawned.Invoke(artifact.gameObject);
     }
 
     public Sprite radarIcon;

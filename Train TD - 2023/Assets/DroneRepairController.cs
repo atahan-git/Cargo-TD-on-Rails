@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState {
+public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState, IActiveDuringCombat {
 
     public Transform droneDockedPosition;
     public int dockOffset;
@@ -100,7 +100,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
             selfRepairImage.fillAmount = curSelfRepair / 1f;
             if (curSelfRepair >= 1) {
                 curSelfRepair = 0;
-                myHealth.RepairChunk(100);
+                myHealth.FullyRepair();
             }
         }
         
@@ -241,10 +241,10 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         }
 
         if (currentAffectors.iron > 0) {
-            targetHealth.RepairChunk(100);
+            targetHealth.FullyRepair();
             for (int i = 1; i < currentAffectors.iron; i++) {
-                Train.s.GetNextBuilding(i, targetHealth.myCart)?.GetHealthModule().RepairChunk(100);
-                Train.s.GetNextBuilding(-i, targetHealth.myCart)?.GetHealthModule().RepairChunk(100);
+                Train.s.GetNextBuilding(i, targetHealth.myCart)?.FullyRepair();
+                Train.s.GetNextBuilding(-i, targetHealth.myCart)?.FullyRepair();
             }
         } else {
             if (currentAffectors.power > 1) {
@@ -457,4 +457,28 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
             droneScript.currentChargePercent = 1f;
         }
     }
+
+    public void ActivateForCombat() {
+        //this.enabled = true;
+
+        if (droneScript) {
+            droneScript.currentChargePercent = 1f;
+        }
+    }
+
+    public void Disable() {
+        //this.enabled = false;
+    }
+
+    public class DroneStateData {
+        public IPlayerHoldable currentlyHeld;
+    }
+
+    public interface IDroneState {
+        public void EnterState();
+        public void UpdateState();
+        public void ExistState();
+    }
 }
+
+

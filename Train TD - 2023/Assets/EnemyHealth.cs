@@ -322,4 +322,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 		// do nothing. Enemy health is not holdable
 	}
 
+	public bool CanDrag() {
+		return false;
+	}
 }

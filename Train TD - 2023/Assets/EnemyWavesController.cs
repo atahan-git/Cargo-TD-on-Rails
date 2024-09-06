@@ -81,16 +81,16 @@ public class EnemyWavesController : MonoBehaviour {
 		var uniqueGearBudget = 0;
 		var eliteGearBudget = 0;
 		var megaEnemyBudget = 0;
+		var depth = PathAndTerrainGenerator.s.GetDepthForEnemyDifficultyPurposes();
 		switch (enemyType.myType) {
 			case UpgradesController.PathEnemyType.PathType.easy:
-				var depth = PathAndTerrainGenerator.s.currentPathTree.myDepth;
 				var difficulty = Mathf.Clamp(depth+2, 3, 5);
 				enemyBudget = difficulty;
 				uniqueGearBudget = 0;
 				megaEnemyBudget = 0;
 				break;
 			case UpgradesController.PathEnemyType.PathType.regular:
-				if (PathAndTerrainGenerator.s.currentPathTree.myDepth >= MapController.s.currentMap.pitStopDepth) {
+				if (depth >= MapController.s.currentMap.pitStopDepth) {
 					enemyBudget = Random.Range(4, 6);
 					uniqueGearBudget = Random.Range(1,2);
 				} else {
@@ -394,6 +394,8 @@ public class EnemyWavesController : MonoBehaviour {
 	}
 
 	public bool DynamicSpawnsActive() {
+
+		return false;
 		//var firstRunAfterTutorial = DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial <= 0;
 		var difficultyEasy = DataSaver.s.GetCurrentSave().currentRun.difficulty == 0;
 		var isDynamicSpawnSuppressed = debugNoRegularSpawns || act2DemoEndNoSpawn || !spawnDynamicEnemies || encounterMode || difficultyEasy;
