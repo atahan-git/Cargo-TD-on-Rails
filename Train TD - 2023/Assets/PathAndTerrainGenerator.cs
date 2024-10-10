@@ -24,6 +24,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public List<PathGenerator.TrainPath> myPaths = new List<PathGenerator.TrainPath>();
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
     public Dictionary<int, List<GameObject>> myTracks = new Dictionary<int, List<GameObject>>();
+    //public Dictionary<PathGenerator.TrainPath, PathGenerator.TrainPath> pathToBossPath = new Dictionary<PathGenerator.TrainPath, PathGenerator.TrainPath>();
     public List<PathGenerator.TrainPath> cityStampPaths = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> _comboList = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> comboList {
@@ -51,6 +52,17 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             toAdd.trackObjectsId = lastId;
         }
         myPaths.Add(toAdd);
+
+        /*if (BossController.s.isBoss) {
+            var bossPath = _pathGenerator.MakeBossPath(toAdd);
+            
+            if (bossPath.trackObjectsId <= 0) {
+                lastId += 1;
+                bossPath.trackObjectsId = lastId;
+            }
+            myPaths.Add(bossPath);
+            pathToBossPath[toAdd] = bossPath;
+        }*/
     }
 
     void RemoveFromMyPaths(PathGenerator.TrainPath toRemove) {
@@ -62,6 +74,18 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
         }
         myTracks.Remove(toRemove.trackObjectsId);
+
+        /*if (BossController.s.isBoss) {
+            toRemove = pathToBossPath[toRemove];
+            myPaths.Remove(toRemove);
+            if (myTracks.ContainsKey(toRemove.trackObjectsId)) {
+                var listOfTracks = myTracks[toRemove.trackObjectsId];
+                for (int i = 0; i < listOfTracks.Count; i++) {
+                    listOfTracks[i].GetComponent<PooledObject>().DestroyPooledObject();
+                }
+            }
+            myTracks.Remove(toRemove.trackObjectsId);
+        }*/
     }
 
     void ClearAllMyPaths() {
@@ -577,7 +601,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     }*/
 
     [Button]
-    void DebugReDrawTerrainAroundCenter() {
+    public void DebugReDrawTerrainAroundCenter() {
         if (Application.isPlaying) {
             StartCoroutine(ReDrawTerrainAroundCenter());
         }
@@ -936,6 +960,8 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                     Gizmos.color = Color.green;*/
 
                 Gizmos.DrawLine(path[k]+Vector3.up, path[k+1]+Vector3.up);    
+                
+                //Gizmos.DrawSphere(path[k]+Vector3.up*0.3f, 0.1f);
             }
             
             Gizmos.color = Color.magenta;
@@ -1042,6 +1068,15 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             prevDrawCenter = drawCenter;
             StartCoroutine(ReDrawTerrainAroundCenter());
         }
+        
+        
+        var currentDistance = GetCurrentDistance(0);
+        var correctPathTree = GetCorrectPathTree(ref currentDistance);
+        if (correctPathTree != currentPathTree) {
+            currentPathTreeOffset += currentPathTree.myPath.length;
+            currentPathTree = correctPathTree;
+            PruneAndExtendPaths();
+        }
     }
 
 
@@ -1082,10 +1117,11 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         return currentDistance;
     }
     PathGenerator.TrainPath GetCorrectPath(ref float currentDistance) {
+        return GetCorrectPathTree(ref currentDistance).myPath;
+    }
+    
+    PathTree GetCorrectPathTree(ref float currentDistance) {
         if (currentPathTree == null) {
-            if (myPaths.Count > 0) {
-                return myPaths[0];
-            }
             return null;
         }
 
@@ -1093,7 +1129,14 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         if (currentDistance > 0) {
             while (currentDistance > travelPathTree.myPath.length) {
                 currentDistance -= travelPathTree.myPath.length;
-                if (PathSelectorController.s.mainLever.topSelected) {
+                var selectedLeftPath = PathSelectorController.s.mainLever.topSelected;
+                if (selectedLeftPath && travelPathTree.leftPathTree == null) {
+                    selectedLeftPath = false;
+                }else if (!selectedLeftPath && travelPathTree.rightPathTree == null) {
+                    selectedLeftPath = true;
+                }
+                
+                if (selectedLeftPath) {
                     if (travelPathTree.leftPathTree != null) {
                         travelPathTree = travelPathTree.leftPathTree;
                     } else {
@@ -1125,7 +1168,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
         }
 
-        return travelPathTree.myPath;
+        return travelPathTree;
     }
 
     public int GetDepthForEnemyDifficultyPurposes() {

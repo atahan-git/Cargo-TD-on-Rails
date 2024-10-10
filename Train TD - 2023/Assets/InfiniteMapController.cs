@@ -140,6 +140,8 @@ public class InfiniteMapController : MonoBehaviour {
         yield return new WaitUntil(() => MiniGUI_MapTransitionAnimator.s.transitionProgress >= 1f);
         
         //loadingBar
+        var isBoss = holder.myPiece.myEnemyType.myType == UpgradesController.PathEnemyType.PathType.boss;
+        BossController.s.SetBossComing(isBoss);
         
         BiomeController.s.SetBiome(holder.myPiece.dioramaType);
         PathAndTerrainGenerator.s.RemakeLevelTerrain();
@@ -157,20 +159,8 @@ public class InfiniteMapController : MonoBehaviour {
 
         loadingSlider.value = 1f;
 
-        for (int i = 0; i < Train.s.carts.Count; i++) {
-            var cart = Train.s.carts[i];
-            cart.FullyRepair();
-        }
-        
-        var combatModules = Train.s.GetComponentsInChildren<IActiveDuringCombat>();
+        //RepairAndReloadTrain();
 
-        for (int i = 0; i < combatModules.Length; i++) {
-            combatModules[i].ActivateForCombat();
-            if (combatModules[i] is ModuleAmmo ammo) {
-                ammo.Reload(-1,false);
-            }
-        }
-        
         //loadingSliderThing.SetActive(false);
         NextSectionStarted(holder);
 
@@ -184,6 +174,22 @@ public class InfiniteMapController : MonoBehaviour {
         
         
         PlayerWorldInteractionController.s.canSelect = true;
+    }
+
+    private static void RepairAndReloadTrain() {
+        for (int i = 0; i < Train.s.carts.Count; i++) {
+            var cart = Train.s.carts[i];
+            cart.FullyRepair();
+        }
+
+        var combatModules = Train.s.GetComponentsInChildren<IActiveDuringCombat>();
+
+        for (int i = 0; i < combatModules.Length; i++) {
+            combatModules[i].ActivateForCombat();
+            if (combatModules[i] is ModuleAmmo ammo) {
+                ammo.Reload(-1, false);
+            }
+        }
     }
 
     void PruneOtherPaths(DioramaHolder holder) {
@@ -278,10 +284,11 @@ public class InfiniteMapController : MonoBehaviour {
     }
 
     void MakeSplit(DioramaHolder root) {
-        var nextLayerCount = Random.Range(2, 4);
+        var nextLayerCount = 3;
         var topDownOffset = dioramaOffsetTouching + 0.4f;
         var offsetFromCurrentPos = dioramaOffsetTouching + 0.3f;
         var nextLayerTopPieceOffset = new Vector3(-((nextLayerCount-1) / 2f * topDownOffset), 0, offsetFromCurrentPos) + root.myOffsetFromRoot;
+        
         for (int i = 0; i < nextLayerCount; i++) {
             MakeSection(root, nextLayerTopPieceOffset + (Vector3.right * i * topDownOffset));
         }
@@ -290,15 +297,21 @@ public class InfiniteMapController : MonoBehaviour {
     const float dioramaOffsetTouching = 1.6f;
 
     DioramaHolder MakeSection(DioramaHolder root, Vector3 offset) {
+        bool isFirstSection = (root.myDepth < 3);
+        
+        
+        var rewards = MakeRewardSection(isFirstSection);
+        
         var pos = offset;
-        var piece = MakePieceWithRandomReward(pos, root);
+        var piece = MakePieceWithReward(pos, root, rewards[0]);
+        rewards.RemoveAt(0);
         root.connectedPieces.Add(piece);
         piece.myParent = root;
 
-        var sectionDepth = Random.Range(2, 4);
-        for (int i = 0; i < sectionDepth; i++) {
+        while (rewards.Count > 0) {
             pos += Vector3.forward*1.6f;
-            var nextPiece = MakePieceWithRandomReward(pos, piece);
+            var nextPiece = MakePieceWithReward(pos, piece, rewards[0]);
+            rewards.RemoveAt(0);
             piece.connectedPieces.Add(nextPiece);
             nextPiece.myParent = piece;
             piece = nextPiece;
@@ -307,34 +320,28 @@ public class InfiniteMapController : MonoBehaviour {
         return piece;
     }
 
-    DioramaHolder MakePieceWithRandomReward(Vector3 offset, DioramaHolder prevPiece) {
+    List<RewardTypes> MakeRewardSection(bool firstSection) {
+        List<RewardTypes> rewards = new List<RewardTypes>();
+        
+        rewards.Add(Random.value < 0.6f ? RewardTypes.gem : RewardTypes.randomGem);
+        rewards.Add(Random.value < 0.6f ? RewardTypes.gem : RewardTypes.randomGem);
+        rewards.Add(Random.value < 0.6f ? RewardTypes.bigGem : RewardTypes.randomBigGem);
+        if (firstSection) {
+            rewards.Add(Random.value < 0.6f ? RewardTypes.gem : RewardTypes.randomGem);
+        } else {
+            rewards.Add(Random.value < 0.6f ? RewardTypes.cart : RewardTypes.randomCart);
+        }
+        
+        rewards = ExtensionMethods.Shuffle(rewards);
+
+        return rewards;
+    }
+
+    DioramaHolder MakePieceWithReward(Vector3 offset, DioramaHolder prevPiece, RewardTypes reward) {
         var piece = new DioramaHolder() { myOffsetFromRoot = offset };
         piece.myDepth = prevPiece.myDepth+1;
-        
-        
-        // try 50 times max
-        for (int i = 0; i < 50; i++) {
-            piece.myPiece.myRewardType = RewardTypesWithWeights.WeightedRandomRoll(myRewards);
+        piece.myPiece.myRewardType = reward;
 
-            if (IsRewardTypeElite(prevPiece.myPiece.myRewardType) && IsRewardTypeElite(piece.myPiece.myRewardType)) {
-                continue;
-            }
-            
-            if (piece.myDepth < 4) {
-                if (IsRewardTypeElite(piece.myPiece.myRewardType)) {
-                    continue;
-                }        
-            }
-
-            if (piece.myPiece.myRewardType == RewardTypes.randomGem && prevPiece.myPiece.myRewardType == RewardTypes.randomGem) {
-                continue;
-            }
-            
-            break;
-        }
-
-        
-        
         switch (piece.myPiece.myRewardType) {
             case RewardTypes.cart:
                 piece.myPiece.rewardUniqueName = UpgradesController.s.GetCartReward();
@@ -347,23 +354,16 @@ public class InfiniteMapController : MonoBehaviour {
                 break;
         }
 
-        
-        
-        switch (piece.myPiece.myRewardType) {
-            case RewardTypes.cart:
-            case RewardTypes.randomCart:
-                piece.myPiece.myEnemyType = new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.elite };
-                break;
-            default:
-                piece.myPiece.myEnemyType = new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular };
-                break;
+        if (IsRewardTypeElite(piece.myPiece.myRewardType)) {
+            piece.myPiece.myEnemyType = new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.elite };
+        } else {
+            piece.myPiece.myEnemyType = new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular };
+            
+            if (piece.myDepth < 3) {
+                piece.myPiece.myEnemyType.myType = UpgradesController.PathEnemyType.PathType.easy;
+            }
         }
-
-        if (piece.myDepth < 3) {
-            piece.myPiece.myEnemyType.myType = UpgradesController.PathEnemyType.PathType.easy;
-        }
-
-
+        
         piece.myPiece.dioramaType = BiomeController.s.GetRandomBiomeVariantForCurrentAct();
 
         myMap.allPieces.Add(piece);

@@ -23,4 +23,12 @@ public class MergeItem : MonoBehaviour, IPlayerHoldable {
 	public bool CanDrag() {
 		return true;
 	}
+	private DroneRepairController _holder;
+	public DroneRepairController GetHoldingDrone() {
+		return _holder;
+	}
+
+	public void SetHoldingDrone(DroneRepairController holder) {
+		_holder = holder;
+	}
 }

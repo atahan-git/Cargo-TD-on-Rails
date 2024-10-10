@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e47823205abe5f4598d2fa827f1ad65, type: 3}
+  m_Name: Prologue 2 - repair drone auto repair
+  m_EditorClassIdentifier: 
+  myConversation:
+    myType: 1
+    conversationUniqueID: 4
+    conversationName: Prologue 2 - repair drone auto repair
+    remarks:
+    - tag: 
+      text: The repair drone is super nifty too! <tutorial>I can control it to repair
+        quickly, but it will also slowly repair on its own. </tutorial> I'm glad
+        I got it from the flea market.
+      portrait: 0
+      bigSpriteAction: 00000000
+      bigSpriteSlot: 00000000
+      bigSprite: 00000000
+    - tag: 
+      text: I should <tutorial>feed some fuel to the old boiler</tutorial> now.
+      portrait: 0
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: 

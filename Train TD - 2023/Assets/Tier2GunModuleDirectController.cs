@@ -255,10 +255,10 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 					}
 
 					if (ShootAction.action.IsPressed() && !enterDirectControlShootLock) {
-						myGun.gatlingAmount += Time.deltaTime;
+						myGun.gatlingAmount += Time.deltaTime*myGun.GetGatlingIncrease();
 						myGun.gatlingAmount = Mathf.Clamp(myGun.gatlingAmount, 0, myGun.GetMaxGatlingAmount());
 					} else {
-						myGun.gatlingAmount -= Time.deltaTime*myGun.gatlingDecayMultiplier;
+						myGun.gatlingAmount -= Time.deltaTime*myGun.GetGatlingDecayMultiplier();
 						myGun.gatlingAmount = Mathf.Clamp(myGun.gatlingAmount, 0, myGun.GetMaxGatlingAmount());
 					}
 
@@ -273,18 +273,21 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 					}
 
 					if (hasTarget) {
-						myGun.gatlingAmount += Time.deltaTime;
+						myGun.gatlingAmount += Time.deltaTime*myGun.GetGatlingIncrease();
 						myGun.gatlingAmount = Mathf.Clamp(myGun.gatlingAmount, 0, myGun.GetMaxGatlingAmount());
 					} else {
-						myGun.gatlingAmount -= Time.deltaTime*myGun.gatlingDecayMultiplier;
+						myGun.gatlingAmount -= Time.deltaTime*myGun.GetGatlingDecayMultiplier();
 						myGun.gatlingAmount = Mathf.Clamp(myGun.gatlingAmount, 0, myGun.GetMaxGatlingAmount());
 					}
 
 					break;
 			}
+		}else {
+			myGun.gatlingAmount -= Time.deltaTime * myGun.GetGatlingDecayMultiplier();
+			myGun.gatlingAmount = Mathf.Clamp(myGun.gatlingAmount, 0, myGun.GetMaxGatlingAmount());
 		}
 
-		gatlinificationSlider.value = Mathf.Clamp01(myGun.gatlingAmount / myGun.GetMaxGatlingAmount());
+		gatlinificationSlider.value = myGun.GetCurrentGatlingPercent();
 
 		rocketLockOnTime = Mathf.Min(1, myGun.GetFireDelay() * (1 / 2f));
 		curCooldown += Time.deltaTime;
@@ -355,9 +358,12 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 				Mathf.Lerp(0f, 1, range)
 			);
 			if (!SettingsController.GamepadMode()) {
+				if (myGun.directControlShakeMultiplier > 0) {
+					range /= myGun.directControlShakeMultiplier;
+				}
 				range /= myGun.directControlShakeMultiplier;
 				range *= 2;
-				CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range * 2, range * 2), range * 5));
+				//CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range * 2, range * 2), range * 5));
 			}
 		} else {
 			/*CameraShakeController.s.ShakeCamera(

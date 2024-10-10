@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.EventSystems;
@@ -77,10 +78,15 @@ public class Pauser : MonoBehaviour {
     }
 
 
+    [Button]
     public void Pause() {
+        Pause(true);
+    }
+    public void Pause(bool showMenu) {
         AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
 
-        pauseMenu.SetActive(true);
+        if(showMenu)
+            pauseMenu.SetActive(true);
         TimeController.s.Pause();
         isPaused = true;
         
@@ -91,6 +97,7 @@ public class Pauser : MonoBehaviour {
         }
     }
 
+    [Button]
     public void Unpause() {
         AudioManager.PlayOneShot(SfxTypes.ButtonClick2);
         pauseMenu.SetActive(false);

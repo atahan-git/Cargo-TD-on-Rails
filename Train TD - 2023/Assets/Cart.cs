@@ -81,7 +81,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
 
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
-                engineModule.OnEngineLowPower?.Invoke(true);
+                //engineModule.OnEngineLowPower?.Invoke(true);
                 engineModule.isDestroyed = true;
                 GetComponentInChildren<EngineFireController>().StopEngineFire();
             }
@@ -113,18 +113,13 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
                 disabledModule.CartDisabled();
             }
 
-            var warper = GetComponentInChildren<WarpStabilizerModule>();
-            if (!isMainEngine) { // main engine always warps
-                if(warper != null)
-                    warper.enabled = false;
-            }
         } else {
             GetComponent<PossibleTarget>().avoid = avoidByDefault;
         
             var engineModule = GetComponentInChildren<EngineModule>();
             if (engineModule) {
                 engineModule.enabled = true;
-                engineModule.OnEngineLowPower?.Invoke(false);
+                //engineModule.OnEngineLowPower?.Invoke(false);
                 engineModule.isDestroyed = false;
                 GetComponentInChildren<EngineFireController>().ActivateEngineFire();
             }
@@ -157,10 +152,6 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
             foreach (var disabledModule in disabledState) {
                 disabledModule.CartEnabled();
             }
-            
-            var warper = GetComponentInChildren<WarpStabilizerModule>();
-            if(warper != null)
-                warper.enabled= true;
         }
         
         Train.s.TrainChanged();
@@ -314,6 +305,15 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
 
     public bool IsAttachedToTrain() {
         return GetComponentInParent<Train>() != null;
+    }
+    
+    private DroneRepairController _holder;
+    public DroneRepairController GetHoldingDrone() {
+        return _holder;
+    }
+
+    public void SetHoldingDrone(DroneRepairController holder) {
+        _holder = holder;
     }
 }
 

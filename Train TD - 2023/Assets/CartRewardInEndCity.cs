@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using HighlightPlus;
 using UnityEngine;
 
-public class CartRewardInEndCity : MonoBehaviour, IClickableWorldItem, IResetShopBuilding
-{
+public class CartRewardInEndCity : MonoBehaviour, IClickableWorldItem, IResetShopBuilding {
+    public bool fullyDisable = false;
     public void CheckIfShouldEnableSelf() {
+        if (fullyDisable) {
+            gameObject.SetActive(false);
+            return;
+        }
         if (DataSaver.s.GetCurrentSave().currentRun.currentAct == 1) {
             gameObject.SetActive(false);
         } else {

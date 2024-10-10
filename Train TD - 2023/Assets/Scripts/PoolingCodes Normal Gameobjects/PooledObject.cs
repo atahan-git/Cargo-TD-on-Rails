@@ -32,18 +32,21 @@ public class PooledObject : MonoBehaviour {
 		ResetValues();
 		gameObject.SetActive(true);
 		isActive = true;
+		if (IsInvoking (nameof(DestroyPooledObject))) {
+			CancelInvoke (nameof(DestroyPooledObject));
+		};
 		if (lifeTime > 0f)
-			Invoke ("DisableObject", lifeTime);
+			Invoke (nameof(DestroyPooledObject), lifeTime);
 		myPool.ActiveObjects += 1;
 	}
 
 
 	void LifetimeChangeCheck () {
-		if (IsInvoking ("DisableObject")) {
-			CancelInvoke ("DisableObject");
+		if (IsInvoking (nameof(DestroyPooledObject))) {
+			CancelInvoke (nameof(DestroyPooledObject));
 		};
 		if(lifeTime > 0)
-			Invoke ("DisableObject", lifeTime);
+			Invoke (nameof(DestroyPooledObject), lifeTime);
 	}
 
 
@@ -55,7 +58,7 @@ public class PooledObject : MonoBehaviour {
 		gameObject.SetActive (false);
 		isActive = false;
 		myPool.ActiveObjects -= 1;
-		CancelInvoke ("DisableObject");
+		CancelInvoke (nameof(DisableObject));
 	}
 
 	public void DestroyPooledObject (){
@@ -89,6 +92,10 @@ public class PooledObject : MonoBehaviour {
 
 		if (GetComponent<RandomPitchAtStart>() != null) {
 			GetComponent<RandomPitchAtStart>().Play();
+		}
+
+		if (GetComponent<ResetObjPosWhenPooledObjReset>() != null) {
+			GetComponent<ResetObjPosWhenPooledObjReset>().ResetObject();
 		}
 	}
 }

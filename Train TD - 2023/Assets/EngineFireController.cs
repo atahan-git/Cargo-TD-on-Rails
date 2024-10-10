@@ -118,8 +118,8 @@ public class EngineFireController : MonoBehaviour {
 		    currentDelay = Mathf.Max(baseDelay/(((LevelReferences.s.speed-1)*speedDelayEffect)+1), minDelay);
 		    burst.repeatInterval = currentDelay;
 		    emissionModule.SetBurst(0, burst);
-		    var forceOverLifeTime = _particleSystem.forceOverLifetime;
-		    forceOverLifeTime.y = new ParticleSystem.MinMaxCurve(LevelReferences.s.speed * 25f);
+		    /*var forceOverLifeTime = _particleSystem.forceOverLifetime;
+		    forceOverLifeTime.y = new ParticleSystem.MinMaxCurve(LevelReferences.s.speed * 25f);*/
 
 		    // Engine Boost
 		    /*var playerControlAdjusted = lastEnginePowerPlayerControl;

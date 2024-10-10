@@ -56,9 +56,9 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
         var trainSpeedMultiplier = LevelReferences.s.speed / 5f;
         trainSpeedMultiplier = Mathf.Clamp01(trainSpeedMultiplier);
 
-        if (trainSpeedMultiplier < 0.1f) {
+        /*if (trainSpeedMultiplier < 0.1f) {
             return;
-        }
+        }*/
         
         target.y = transform.localPosition.y;
         if (stickToGround) {
@@ -69,10 +69,10 @@ public class CarLikeMovementOffsetsController : MonoBehaviour{
         }
 
 
-        transform.localPosition =  Vector3.Lerp(transform.localPosition, target, lerpSpeed*trainSpeedMultiplier * Time.deltaTime);
+        transform.localPosition =  Vector3.Lerp(transform.localPosition, target, lerpSpeed * Time.deltaTime);
 
         targetTargetPosition.y = target.y;
-        target = Vector3.MoveTowards(target, targetTargetPosition, targetMoveSpeed * Time.deltaTime * GetRealMoveSpeed());
+        target = Vector3.MoveTowards(target, targetTargetPosition, targetMoveSpeed * Time.deltaTime * GetRealMoveSpeed() * trainSpeedMultiplier);
 
         if (Vector3.Distance(target, targetTargetPosition) < 0.01f) {
             var randomInCircle = Random.insideUnitCircle;

@@ -67,7 +67,6 @@ public class PlayStateMaster : MonoBehaviour {
         OnCombatEntered.AddListener(TimeController.s.OnCombatStart);
         OnCombatEntered.AddListener(PlayerWorldInteractionController.s.OnEnterCombat);
         OnCombatEntered.AddListener(ShopStateController.s.OnCombatStart);
-        OnCombatEntered.AddListener(CrystalsAndWarpController.s.OnCombatStart);
         OnCombatEntered.AddListener(Act2DemoEndController.s.OnStartCombat);
         
         OnCombatFinished.AddListener(WorldDifficultyController.s.OnCombatEnd);

@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e47823205abe5f4598d2fa827f1ad65, type: 3}
+  m_Name: -tutorial text check- Conversation
+  m_EditorClassIdentifier: 
+  myConversation:
+    conversationName: -tutorial text check- Conversation
+    remarks:
+    - tag: 
+      text: 
+      portrait: {fileID: 0}
+      bigSpriteAction: 00000000
+      bigSpriteSlot: 00000000
+      bigSprite:
+      - {fileID: 21300000, guid: 0c4ad111a2f0e6644a7b61dc5de44271, type: 3}
+    - tag: 
+      text: 
+      portrait: {fileID: 0}
+      bigSpriteAction: 00000000
+      bigSpriteSlot: 02000000
+      bigSprite:
+      - {fileID: 21300000, guid: db6863d8dab0d8644afcb06e6528912b, type: 3}
+    - tag: 
+      text: Who are you?<delay=1> What are you doing here?
+      portrait: {fileID: 21300000, guid: 98b69c3d0f107064ba182b34fc9fa79a, type: 3}
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: []
+    - tag: 
+      text: I came here to replace you. <delay=1>Get rekt
+      portrait: {fileID: 21300000, guid: 58ba5d3f5f3a67f4ea6e622c5d1db2e1, type: 3}
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: []
+    - tag: 
+      text: Oke
+      portrait: {fileID: 21300000, guid: 98b69c3d0f107064ba182b34fc9fa79a, type: 3}
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: []
+    - tag: 
+      text: <speed=0.1>-vanishes-
+      portrait: {fileID: 21300000, guid: 98b69c3d0f107064ba182b34fc9fa79a, type: 3}
+      bigSpriteAction: 01000000
+      bigSpriteSlot: 00000000
+      bigSprite:
+      - {fileID: 0}
+    - tag: 
+      text: Now what?
+      portrait: {fileID: 21300000, guid: 58ba5d3f5f3a67f4ea6e622c5d1db2e1, type: 3}
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: []
+    - tag: 
+      text: -The end-
+      portrait: {fileID: 0}
+      bigSpriteAction: 01000000
+      bigSpriteSlot: 00000000
+      bigSprite:
+      - {fileID: 0}
+    - tag: 
+      text: <tutorial>This is a tutorial text</tutorial>
+      portrait: {fileID: 0}
+      bigSpriteAction: 0000000000000000
+      bigSpriteSlot: 0000000002000000
+      bigSprite:
+      - {fileID: 21300000, guid: 0c4ad111a2f0e6644a7b61dc5de44271, type: 3}
+      - {fileID: 21300000, guid: db6863d8dab0d8644afcb06e6528912b, type: 3}

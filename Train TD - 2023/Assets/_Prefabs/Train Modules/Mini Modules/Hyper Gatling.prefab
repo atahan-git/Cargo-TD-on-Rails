@@ -211,8 +211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotatingBit: {fileID: 3437792323652572398}
-  rotationSpeed: 1800
-  slowDownDelta: 900
+  rotationSpeedMultiplier: 1
   revSpeaker: {fileID: 1304596141411529972}
   playSound: 0
   isRotating: 0
@@ -319,8 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotatingBit: {fileID: 3823178592078179558}
-  rotationSpeed: 1800
-  slowDownDelta: 900
+  rotationSpeedMultiplier: 1
   revSpeaker: {fileID: 2760516814133041377}
   playSound: 0
   isRotating: 0
@@ -779,14 +777,14 @@ MonoBehaviour:
   isLazer: 0
   lazerMinDamageMultiplier: 0.1
   gatlingDecayMultiplier: 1
-  maxFireRateReduction: 0.92
+  maxFireRateReduction: 0.88
   gatlingAmount: 0
-  maxGatlingAmount: 4
+  maxGatlingAmount: 8
   myType: 9
   fireDelay: 4
   fireBarrageCount: 3
   fireBarrageDelay: 0
-  projectileDamage: 2
+  projectileDamage: 4
   burnDamage: 0
   dontGetAffectByMultipliers: 0
   currentAffectors:
@@ -798,6 +796,7 @@ MonoBehaviour:
     ammoMultiplier: 1
     uranium: 0
     fire: 0
+    fireExtraBurnTier: 0
     explosionRangeAdd: 0
     vampiric: 0
     gatlinificator: 0
@@ -806,16 +805,16 @@ MonoBehaviour:
     lizardOverride: 0
   isLockOn: 0
   rotateSpeed: 10
-  isHeal: 0
   directControlShakeMultiplier: 1
   mortarRotation: 0
   isHitScan: 0
   ammoPerBarrage: 0.2
   explosionRange: 0
-  inaccuracyMultiplier: 2
+  baseInaccuracy: 2
+  inaccuracyAddFireDelayMultiplier: 1
   gunShakeOnShoot: 1
   gunShakeMagnitudeMultiplier: 0.1
-  gunRotateUpOnShoot: 2
+  gunRotateUpOnShoot: 1
   rotateTransforms: []
   rotateTransform:
     anchor: {fileID: 483469733385342657}
@@ -870,6 +869,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 0
+  targetFarthest: 0
   delay: 0
 --- !u!1 &3233155868171273386
 GameObject:
@@ -1606,8 +1606,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotatingBit: {fileID: 9025628513854859352}
-  rotationSpeed: 180
-  slowDownDelta: 90
+  rotationSpeedMultiplier: 1
   revSpeaker: {fileID: 2323390346110032259}
   playSound: 1
   isRotating: 0
@@ -1797,8 +1796,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotatingBit: {fileID: 7351534438779255672}
-  rotationSpeed: 1800
-  slowDownDelta: 900
+  rotationSpeedMultiplier: 1
   revSpeaker: {fileID: 8209313092498219080}
   playSound: 0
   isRotating: 0

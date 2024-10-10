@@ -18,6 +18,7 @@ public class LevelReferences : MonoBehaviour {
 
     public Material cartOverlayMaterial;
     public GameObject burningEffect;
+    public GameObject enemyDamageEffect;
     public GameObject cartRepairableDamageEffect;
     public GameObject repairDoneEffect;
     public GameObject maxHealthReductionPlatePrefab;
@@ -30,6 +31,8 @@ public class LevelReferences : MonoBehaviour {
     public GameObject cartHealthPrefab;
     public GameObject bulletHealthPrefab;
     public GameObject damageNumbersPrefab;
+    public GameObject missPrefab;
+    public GameObject criticalDamagePrefab;
     public Transform uiDisplayParent;
 
     [Space]
@@ -38,10 +41,6 @@ public class LevelReferences : MonoBehaviour {
     public GameObject shieldUpEffectPrefab;
     public GameObject goodItemSpawnEffectPrefab;
     public GameObject cartBeingDisabledEffect;
-    
-    [Space]
-    
-    public EventReference droneFullyChargedSound;
     
     [Space]
     
@@ -117,6 +116,7 @@ public class LevelReferences : MonoBehaviour {
     public LayerMask artifactLayer;
     public LayerMask meepleLayer;
     public LayerMask scrapsItemLayer;
+    public LayerMask genericClickableLayer;
     public LayerMask allSelectablesLayer;
 
     [Space]
@@ -154,8 +154,8 @@ public class LevelReferences : MonoBehaviour {
 
     public GameObject mergeGemItem;
 
-    [Space] public GameObject coinDrop;
-    public GameObject crystalDrop;
+    [Space] 
+    public GameObject coinDrop;
 
     public AnimationCurve selectMarkerPulseCurve;
     public AnimationCurve alphaPulseCurve;

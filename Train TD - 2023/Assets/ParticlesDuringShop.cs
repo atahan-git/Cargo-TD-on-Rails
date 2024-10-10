@@ -61,11 +61,13 @@ public class ParticlesDuringShop : MonoBehaviour {
         isActive = false;
         GetComponentInChildren<AudioSource>()?.Stop();
         foreach (var particle in GetComponentsInChildren<RandomParticleTurnOnAndOff>()) {
-            particle.enabled = false;
+            if(particle != null)
+                particle.enabled = false;
         }
         
         foreach (var particle in GetComponentsInChildren<ParticleSystem>()) {
-            particle.Stop();
+            if(particle != null)
+                particle.Stop();
         }
     }
 }

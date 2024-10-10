@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 586818211553822249, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: rmsCount
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1182013964502472724, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: myTooltip.text
       value: Slowly repairs or reloads the cart.
@@ -123,6 +127,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree Gem
       objectReference: {fileID: 0}
+    - target: {fileID: 6486279127788060441, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 083fd6bbfc5a4f54cb575d182ea90167, type: 2}
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: buyCost
       value: 500

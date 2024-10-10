@@ -11,6 +11,7 @@ public class BossController : MonoBehaviour {
 
     private void Awake() {
         s = this;
+        //isBoss = true;
     }
 
     public GameObject bossFightUI;
@@ -18,6 +19,8 @@ public class BossController : MonoBehaviour {
     public TMP_Text bossKilledText;
     public GameObject continueButton;
 
+    public bool isBoss;
+    
     private bool bossStarted = false;
     private float bossUIFadeInTimer;
 
@@ -27,7 +30,15 @@ public class BossController : MonoBehaviour {
         bossFightUI.SetActive(false);
     }
 
+    public void SetBossComing(bool _isBoss) {
+        isBoss = _isBoss;
+    }
+
     public void NewPathEnteredWithBoss(float segmentStartDistance, float segmentLength) {
+        if (!isBoss) {
+            return;
+        }
+        
         if (!bossStarted) {
             MiniGUI_BossNameUI.s.ShowBossName("Le boss");
             MiniGUI_BossNameUI.s.ShowBossName("Le boss");
@@ -40,6 +51,7 @@ public class BossController : MonoBehaviour {
         continueButton.SetActive(false);
         continueButton.GetComponent<CanvasGroup>().alpha = 0;
     }
+
 
     // Update is called once per frame
     void Update()
@@ -69,4 +81,5 @@ public class BossController : MonoBehaviour {
             continueButton.GetComponent<CanvasGroup>().alpha = Mathf.MoveTowards(continueButton.GetComponent<CanvasGroup>().alpha, 1, 1 * Time.deltaTime);
         }
     }
+    
 }

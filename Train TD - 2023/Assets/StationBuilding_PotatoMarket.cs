@@ -84,7 +84,8 @@ public class StationBuilding_PotatoMarket : MonoBehaviour, IResetShopBuilding {
             
         }*/
 
-        if (Random.value < 0.25f) {
+        var randomValue = Random.value;
+        if (randomValue < 0.1f) {
             var rewardName = UpgradesController.s.GetCartReward();
             var newCart = Instantiate(DataHolder.s.GetCart(rewardName), target.transform.position, target.transform.rotation).GetComponent<Cart>();
             Train.ApplyStateToCart(newCart, new DataSaver.TrainState.CartState(){uniqueName = rewardName});
@@ -92,8 +93,15 @@ public class StationBuilding_PotatoMarket : MonoBehaviour, IResetShopBuilding {
             newCart.GetComponent<Rigidbody>().isKinematic = false;
             newCart.GetComponent<Rigidbody>().useGravity = true;
             newCart.GetComponent<Rigidbody>().AddForce(SmitheryController.GetRandomYeetForce());
-        } else {
+        } else if (randomValue < 0.35f) {
             var rewardName = UpgradesController.s.GetGemReward(true);
+            var newArtifact = Instantiate(DataHolder.s.GetArtifact(rewardName), target.transform.position, target.transform.rotation).GetComponent<Artifact>();
+            ShopStateController.s.AddArtifactToShop(newArtifact);
+            newArtifact.GetComponent<Rigidbody>().isKinematic = false;
+            newArtifact.GetComponent<Rigidbody>().useGravity = true;
+            newArtifact.GetComponent<Rigidbody>().AddForce(SmitheryController.GetRandomYeetForce());
+        } else {
+            var rewardName = UpgradesController.s.GetGemReward(false);
             var newArtifact = Instantiate(DataHolder.s.GetArtifact(rewardName), target.transform.position, target.transform.rotation).GetComponent<Artifact>();
             ShopStateController.s.AddArtifactToShop(newArtifact);
             newArtifact.GetComponent<Rigidbody>().isKinematic = false;

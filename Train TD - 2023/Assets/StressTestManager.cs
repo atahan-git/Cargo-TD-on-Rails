@@ -19,6 +19,9 @@ public class StressTestManager : MonoBehaviour {
     public DataSaver.TrainState stressTestTrain;
 
     public int stressTestMultiplier = 1;
+
+    public bool infiniteAmmo = false;
+    public bool prologueIndestructable = false;
     
     [Button]
     void BeginStressTest() {
@@ -26,7 +29,7 @@ public class StressTestManager : MonoBehaviour {
         startStation.SetActive(false);
         Train.s.DrawTrain(stressTestTrain);
         PlayStateMaster.s.DebugSetGameState(PlayStateMaster.GameState.combat);
-        ModuleHealth.prologueIndestructable = true;
+        ModuleHealth.prologueIndestructable = prologueIndestructable;
         EnemyTargetAssigner.s.shootCreditPerSecond = 10;
         EnemyTargetAssigner.s.maxShootCredit = 20;
         CheatsController.s.trainDoesntLoseSteam = true;
@@ -91,8 +94,10 @@ public class StressTestManager : MonoBehaviour {
                 }
             }
 
-            if (Train.s.GetComponent<AmmoTracker>().ammoProviders[0].AvailableAmmo() < 2) {
-                (Train.s.GetComponent<AmmoTracker>().ammoProviders[0] as ModuleAmmo).Reload(20);
+            if (infiniteAmmo) {
+                if (Train.s.GetComponent<AmmoTracker>().ammoProviders[0].AvailableAmmo() < 2) {
+                    (Train.s.GetComponent<AmmoTracker>().ammoProviders[0] as ModuleAmmo).Reload(20);
+                }
             }
         }
     }

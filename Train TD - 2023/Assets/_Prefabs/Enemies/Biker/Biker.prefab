@@ -59,7 +59,6 @@ MonoBehaviour:
   enemyDieSounds:
   - {fileID: 8300000, guid: d11c5a6875bef43459d4dc1dc2373fed, type: 3}
   isTeleporting: 0
-  teleportTiming: {x: 10, y: 30}
   isStealing: 0
   isNuker: 0
   nukingTime: 20
@@ -68,8 +67,11 @@ MonoBehaviour:
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
+  boidPosition: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
   myWave: {fileID: 0}
+  teleportInProgress: 0
+  teleportCooldown: 2
 --- !u!114 &2144092535843778901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,7 +99,11 @@ MonoBehaviour:
   mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
-  burnSpeed: 0
+  burnTimer: 0
+  currentBurnTier: 0
+  appliedBurnDamage: 0
+  maxBurnTier: 2
+  burnDecayTimer: 0
   _outlines: []
 --- !u!114 &2144092535843778903
 MonoBehaviour:
@@ -220,7 +226,7 @@ MonoBehaviour:
   outlineGradientInLocalSpace: 0
   outlineWidth: 0.45
   outlineBlurPasses: 2
-  outlineQuality: 2
+  outlineQuality: 1
   outlineEdgeMode: 0
   outlineEdgeThreshold: 0.995
   outlineSharpness: 1
@@ -625,6 +631,7 @@ GameObject:
   - component: {fileID: 8962482093196078361}
   - component: {fileID: 8954179380929637707}
   - component: {fileID: 6859997819659589366}
+  - component: {fileID: 2865362793734641907}
   m_Layer: 14
   m_Name: Motorcycle_v1_1
   m_TagString: Untagged
@@ -710,10 +717,24 @@ BoxCollider:
   m_GameObject: {fileID: 8939996837531325399}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.96, y: 1.55, z: 2.51}
   m_Center: {x: 0, y: 0.34, z: -0.08}
+--- !u!64 &2865362793734641907
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8939996837531325399}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 94fa3d207930509429b24c8b43f90f4e, type: 3}
 --- !u!1 &8940026235589141159
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,6 +746,7 @@ GameObject:
   - component: {fileID: 8937216388605246201}
   - component: {fileID: 8962910660290777535}
   - component: {fileID: 8954174827593133051}
+  - component: {fileID: 3566711215570055408}
   m_Layer: 14
   m_Name: Motorcycle_v1_STWheel
   m_TagString: Untagged
@@ -800,6 +822,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &3566711215570055408
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8940026235589141159}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300002, guid: 94fa3d207930509429b24c8b43f90f4e, type: 3}
 --- !u!1 &8940082957867838725
 GameObject:
   m_ObjectHideFlags: 0

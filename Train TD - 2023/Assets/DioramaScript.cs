@@ -4,55 +4,61 @@ using System.Collections.Generic;
 using HighlightPlus;
 using UnityEngine;
 
-public class DioramaScript : MonoBehaviour, IClickableWorldItem {
-    public bool selectable = false;
+public class DioramaScript : MonoBehaviour {
+    public bool clickable = false;
 
     public InfiniteMapController.DioramaHolder myDioramaHolder;
     private HighlightEffect _outline;
-    void SetSelectable(bool _selectable) {
-        selectable = _selectable;
+
+    public GameObject elite;
+    
+    void SetClickable(bool _clickable) {
+        clickable = _clickable;
         _outline = GetComponent<HighlightEffect>();
-        if (selectable) {
+        if (clickable) {
             _outline.outlineColor = Color.green;
         } else {
             _outline.outlineColor = Color.white;
         }
     }
-    
-    public bool CanClick() {
-        return true;
-    }
 
     public void Initialize(InfiniteMapController.DioramaHolder holder) {
         myDioramaHolder = holder;
         myDioramaHolder.myScript = this;
-        SetSelectable(myDioramaHolder.canGoHere);
+        SetClickable(myDioramaHolder.canGoHere);
+
+        var isElite = holder.myPiece.myEnemyType != null && (holder.myPiece.myEnemyType.myType == UpgradesController.PathEnemyType.PathType.boss || 
+                                                             holder.myPiece.myEnemyType.myType == UpgradesController.PathEnemyType.PathType.elite);
+        elite.SetActive(isElite);
+        
+        var genericClickable = GetComponent<GenericClickable>();
+        if (isElite) {
+            genericClickable.myDetails += "Enemies here are especially strong";
+        }
     }
 
-    public Transform GetUITargetTransform() {
-        return transform;
+    private void Start() {
+        var genericClickable = GetComponent<GenericClickable>();
+        genericClickable.click += Click;
+        genericClickable.select += Select;
+        genericClickable.deselect += Deselect;
     }
 
-    public void SetHoldingState(bool state) {
-        // do nothing
-    }
-    
     public void Click() {
-        if (selectable) {
+        if (clickable) {
             InfiniteMapController.s.GotoSection(myDioramaHolder);
         }
     }
 
     private bool mouseOver;
-    public void _OnMouseEnter() {
+    public void Select() {
         _outline.highlighted = true;
-        Invoke(nameof(ShowTooltip), TooltipsMaster.tooltipShowTime);
         mouseOver = true;
-        if (!selectable) {
+        if (!clickable) {
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.clickGate);
         }
 
-        if (selectable) {
+        if (clickable) {
             var enableOutlinesHolder = myDioramaHolder;
             while (enableOutlinesHolder.connectedPieces.Count > 0) {
                 enableOutlinesHolder = enableOutlinesHolder.connectedPieces[0];
@@ -61,35 +67,16 @@ public class DioramaScript : MonoBehaviour, IClickableWorldItem {
         }
     }
 
-    public void _OnMouseExit() {
+    public void Deselect() {
         _outline.highlighted = false;
-        CancelInvoke(nameof(ShowTooltip));
-        TooltipsMaster.s.HideTooltip();
         mouseOver = false;
         
-        if (selectable) {
+        if (clickable) {
             var enableOutlinesHolder = myDioramaHolder;
             while (enableOutlinesHolder.connectedPieces.Count > 0) {
                 enableOutlinesHolder = enableOutlinesHolder.connectedPieces[0];
                 if(enableOutlinesHolder.myScript != null)
                     enableOutlinesHolder.myScript.GetComponent<HighlightEffect>().highlighted = false;
-            }
-        }
-    }
-
-    void ShowTooltip() {
-        TooltipsMaster.s.ShowTooltip(new Tooltip(){text="Different biomes will eventually have different effects on gameplay"});
-    }
-    public void _OnMouseUpAsButton() {
-        Click();
-        _OnMouseExit();
-    }
-
-    private void Update() {
-        if (mouseOver) {
-            if (PlayerWorldInteractionController.s.showDetailClick.action.WasPerformedThisFrame()) {
-                CancelInvoke(nameof(ShowTooltip));
-                ShowTooltip();
             }
         }
     }

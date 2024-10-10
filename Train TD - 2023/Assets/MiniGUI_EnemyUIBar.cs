@@ -18,6 +18,12 @@ public class MiniGUI_EnemyUIBar : MonoBehaviour{
     public RectTransform shieldBar;
     public Image shieldFill;
 
+    public Transform burnParent;
+    public Image burnEffectTemplate;
+    public List<Image> activeBurnEffects = new List<Image>();
+
+    public Color[] burnColors = new Color[]{Color.black, Color.yellow, Color.red, Color.cyan};
+
     public EnemyHealth myHealth;
 
     public Color fullColor = Color.green;
@@ -35,15 +41,78 @@ public class MiniGUI_EnemyUIBar : MonoBehaviour{
         GetComponent<UIElementFollowWorldTarget>().SetUp(health.uiTransform);
         lastHealthPercent = -1;
         lastShieldPercent = -1;
+        lastBurnPercent = -1;
+        lastBurnTier = -1;
+        lastFillingTier = -1;
+    }
+    
+    public bool isVisible = true;
+    public void SetVisible(bool _isVisible) {
+        isVisible = _isVisible;
+        gameObject.SetActive(isVisible);
     }
 
     private float lastHealthPercent;
     private float lastShieldPercent;
+    private float lastBurnPercent;
+    private int lastBurnTier;
+    private int lastFillingTier;
     private void Update() {
         SetHealthBarValue();
         SetShieldBarValue();
+        SetBurnBarValue();
         if (myHealth.GetHealthPercent() < 1f || myHealth.currentShields < myHealth.maxShields) {
             healthBar.gameObject.SetActive(true);
+        }
+    }
+    
+    void SetBurnBarValue() {
+        var percent = myHealth.GetBurnPercent();
+        var tier = myHealth.GetBurnTier();
+        var fillingTier = myHealth.GetFillingBurnTier();
+        if (Mathf.Approximately(percent, lastBurnPercent) && tier != lastBurnTier && fillingTier != lastFillingTier) {
+            return;
+        }
+        lastBurnPercent = percent;
+        lastBurnTier = tier;
+        lastFillingTier = fillingTier;
+        
+        if (/*true ||*/ (tier == 0 && percent <= 0.1f)) {
+            burnParent.gameObject.SetActive(false);
+            return;
+        } else {
+            burnParent.gameObject.SetActive(true);
+        }
+        
+        percent = Mathf.Clamp(percent, 0, 1f);
+
+        /*var prevBurnColor = burnColors[Mathf.Clamp(tier,0,burnColors.Length-1)];
+        prevBurnColor.r *= 0.8f;
+        prevBurnColor.g *= 0.8f;
+        prevBurnColor.b *= 0.8f;*/
+        var curBurnColor = burnColors[Mathf.Clamp(fillingTier,0,burnColors.Length-1)];
+
+        while (activeBurnEffects.Count < fillingTier) {
+            activeBurnEffects.Add(Instantiate(burnEffectTemplate, burnParent));
+            activeBurnEffects[^1].gameObject.SetActive(true);
+        }
+
+        while (activeBurnEffects.Count > fillingTier) {
+            var toRemove = activeBurnEffects[^1];
+            activeBurnEffects.RemoveAt(activeBurnEffects.Count-1);
+            Destroy(toRemove);
+        }
+
+        if (activeBurnEffects.Count > 0) {
+            for (int i = 0; i < activeBurnEffects.Count; i++) {
+                activeBurnEffects[i].color = curBurnColor;
+            }
+
+            if (fillingTier >= tier) {
+                activeBurnEffects[^1].color = Color.gray;
+            }
+
+            activeBurnEffects[^1].fillAmount = percent;
         }
     }
 

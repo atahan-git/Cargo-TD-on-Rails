@@ -86,6 +86,7 @@ public class TimeController : MonoBehaviour {
         //print(fastForwardKey.action.ReadValue<float>());
         if (slowTimeForDetails) {
             Time.timeScale = Mathf.Lerp(Time.timeScale, 0.05f, 4 * Time.unscaledDeltaTime);
+            //Time.fixedDeltaTime = Time.timeScale * 0.02f;
             return;
         }
         
@@ -93,6 +94,7 @@ public class TimeController : MonoBehaviour {
             currentTimeScale = 4f;
             if (!isPaused) {
                 Time.timeScale = currentTimeScale;
+                //Time.fixedDeltaTime = Time.timeScale * 0.02f;
             }
 
             fastForwarding = true;
@@ -100,6 +102,7 @@ public class TimeController : MonoBehaviour {
             currentTimeScale = 1f;
             if (!isPaused) {
                 Time.timeScale = currentTimeScale;
+                //Time.fixedDeltaTime = Time.timeScale * 0.02f;
             }
             
             fastForwarding = false;

@@ -45,7 +45,7 @@ public class Artifact_MiniBomb : MonoBehaviour
         }
 
         foreach (var health in healthsInRange) {
-            health.DealDamage(750, null);
+            health.DealDamage(750, null, null);
             ApplyHitForceToObject(health);
             var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
             CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.mortarMiniHit, closestPoint, Quaternion.identity, VisualEffectsController.EffectPriority.Low);

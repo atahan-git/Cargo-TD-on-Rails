@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopping, IResetState, IDisabledState {
    public float speedAdd = 6;
-   public float extraSpeedAdd = 1;
+   public float extraSpeedAdd = 0;
    public int enginePower = 10;
    public int extraEnginePower = 0;
    public float GetSpeedAdd() {
@@ -92,11 +92,6 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public UnityEvent OnEngineStart = new UnityEvent();
    [HideInInspector]
    public UnityEvent OnEngineStop = new UnityEvent();
-
-   [HideInInspector]
-   public UnityEvent<bool> OnEngineBoost = new UnityEvent<bool>();
-   [HideInInspector]
-   public UnityEvent<bool> OnEngineLowPower = new UnityEvent<bool>();
 
 
    public float currentPressure = 1.0f;

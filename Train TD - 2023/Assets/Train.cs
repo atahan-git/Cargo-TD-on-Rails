@@ -30,6 +30,10 @@ public class Train : MonoBehaviour {
         }
     }
 
+    public AmmoTracker GetAmmoTracker() {
+        return GetComponent<AmmoTracker>();
+    }
+
     [Button]
     public void ReDrawCurrentTrain() {
         DrawTrain(GetTrainState());
@@ -87,7 +91,7 @@ public class Train : MonoBehaviour {
         UpdateCartPositions(true);
 
 
-        var holdingThings = GetComponentInChildren<ItemHolderModule>();
+        /*var holdingThings = GetComponentInChildren<ItemHolderModule>();
         for (int i = 0; i < trainState.myHoldingCarts.Count; i++) {
             var cartState = trainState.myHoldingCarts[i];
             var cart = Instantiate(DataHolder.s.GetCart(cartState.uniqueName).gameObject, transform.position, transform.rotation).GetComponent<Cart>();
@@ -99,7 +103,7 @@ public class Train : MonoBehaviour {
             var artifact = Instantiate( DataHolder.s.GetArtifact(artifactState.uniqueName).gameObject, transform.position, transform.rotation).GetComponent<Artifact>();
             ApplyStateToArtifact(artifact, artifactState);
             holdingThings.BeginHolding(artifact);
-        }
+        }*/
         
         
         isTrainDrawn = true;
@@ -142,7 +146,7 @@ public class Train : MonoBehaviour {
             trainState.myCarts.Add(GetStateFromCart(cartScript));
         }
 
-        var holdingThings = GetComponentInChildren<ItemHolderModule>();
+        /*var holdingThings = GetComponentInChildren<ItemHolderModule>();
         for (int i = 0; i < holdingThings.currentlyHolding.Count; i++) {
             var thing = holdingThings.currentlyHolding[i].item;
             if (thing != null) {
@@ -154,7 +158,7 @@ public class Train : MonoBehaviour {
                     trainState.myHoldingArtifacts.Add(GetStateFromArtifact(artifact));
                 }
             }
-        }
+        }*/
 
         return trainState;
     }
@@ -580,57 +584,6 @@ public class Train : MonoBehaviour {
         UpdateThingsAffectingOtherThings();
         
         onTrainCartsChanged?.Invoke();
-    }
-
-
-    public void CheckMerge() {
-        for (int i = 0; i < carts.Count-1; i++) {
-            var prevCart = carts[i];
-            var nextCart = carts[i + 1];
-            
-            var mergeResultUniqueName = DataHolder.s.GetMergeResult(prevCart.uniqueName, nextCart.uniqueName);
-            if ( DataHolder.s.IsLegalMergeResult(mergeResultUniqueName)) {
-                var prevCartArtifacts = prevCart.GetComponentsInChildren<Artifact>();
-                var nextCartArtifacts = nextCart.GetComponentsInChildren<Artifact>();
-                
-                RemoveCart(prevCart);
-                RemoveCart(nextCart);
-                var spawnPos = Vector3.Lerp(prevCart.transform.position, nextCart.transform.position, 0.5f);
-                var spawnRot = prevCart.transform.rotation;
-                var newMergedCart = Instantiate(
-                        DataHolder.s.GetCart(mergeResultUniqueName), 
-                        spawnPos, spawnRot)
-                    .GetComponent<Cart>();
-
-                VisualEffectsController.s.SmartInstantiate(LevelReferences.s.cartMergeEffect, spawnPos, spawnRot, VisualEffectsController.EffectPriority.Always);
-                ApplyStateToCart(newMergedCart, new DataSaver.TrainState.CartState(){uniqueName = mergeResultUniqueName});
-                AddCartAtIndex(prevCart.trainIndex, newMergedCart);
-
-                var n = 0;
-                for (int j = 0; j < prevCartArtifacts.Length; j++) {
-                    if (n < newMergedCart.myArtifactLocations.Count) {
-                        prevCartArtifacts[j].AttachToSnapLoc(newMergedCart.myArtifactLocations[n]);
-                    } else {
-                        prevCartArtifacts[j].DetachFromCart();
-                    }
-                    n++;
-                }
-
-                for (int j = 0; j < nextCartArtifacts.Length; j++) {
-                    if (n < newMergedCart.myArtifactLocations.Count) {
-                        nextCartArtifacts[j].AttachToSnapLoc(newMergedCart.myArtifactLocations[n]);
-                    } else {
-                        nextCartArtifacts[j].DetachFromCart();
-                    }
-
-                    n++;
-                }
-                
-                
-                Destroy(prevCart.gameObject);
-                Destroy(nextCart.gameObject);
-            }
-        }
     }
 
     public void TrainChanged() {

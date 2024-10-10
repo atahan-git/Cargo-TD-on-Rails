@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2992116414819062529}
   - component: {fileID: 3998294446182121063}
   - component: {fileID: 8364512651332160936}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: tracks (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 4.657, z: 0}
 --- !u!33 &3998294446182121063
 MeshFilter:
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 5239204411768022868}
   - component: {fileID: 1258171179144235217}
   - component: {fileID: 1510125182613205527}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: tracks (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -114,7 +114,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: -19.891, z: 0}
 --- !u!33 &1258171179144235217
 MeshFilter:
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 6859255977370523001}
   - component: {fileID: 1286817507374642373}
   - component: {fileID: 6484738432926659492}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: tracks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 24.568, z: 0}
 --- !u!33 &1286817507374642373
 MeshFilter:
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 3830013855137007223}
   - component: {fileID: 3830013855137007225}
   - component: {fileID: 3830013855137007222}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3830013855137007225
 MeshFilter:
@@ -343,7 +343,7 @@ GameObject:
   - component: {fileID: 3830013855477878314}
   - component: {fileID: 3830013855477878316}
   - component: {fileID: 3830013855477878317}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +363,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 157.192, z: 0}
 --- !u!33 &3830013855477878316
 MeshFilter:
@@ -425,8 +425,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3830013855662730528}
   - component: {fileID: 1057672650141067156}
+  - component: {fileID: 5277826772997392223}
   - component: {fileID: 3628387670753320843}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: Purplelands diorama
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -445,6 +446,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 8248850526336104791}
   - {fileID: 3830013856276964788}
   - {fileID: 3830013855137007223}
   - {fileID: 3830013855477878314}
@@ -473,7 +475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3682584a9a7f40243a0f909d19da5084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectable: 0
+  clickable: 0
   myDioramaHolder:
     playerIsHere: 0
     playerWasHere: 0
@@ -488,6 +490,21 @@ MonoBehaviour:
     myOffsetFromRoot: {x: 0, y: 0, z: 0}
     myScript: {fileID: 0}
     connectedPieces: []
+  elite: {fileID: 1795867453557315980}
+--- !u!114 &5277826772997392223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3830013855662730529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a545bccd233dc4cb9bdad5ef35a3a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myDetailsTitle: Purplelands
+  myDetails: Purple crystals shoot up from the ground here. Enemies act a bit strange.
 --- !u!114 &3628387670753320843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,8 +528,8 @@ MonoBehaviour:
     m_Bits: 4294967295
   effectNameFilter: 
   combineMeshes: 0
-  alphaCutOff: 0
-  cullBackFaces: 1
+  alphaCutOff: 0.5
+  cullBackFaces: 0
   ignoreObjectVisibility: 0
   reflectionProbes: 0
   GPUInstancing: 1
@@ -588,7 +605,7 @@ MonoBehaviour:
   outlineMaskMode: 2
   glow: 0
   glowWidth: 0.4
-  glowQuality: 3
+  glowQuality: 2
   glowBlurMethod: 0
   glowDownsampling: 2
   glowHQColor: {r: 0.64, g: 1, b: 0, a: 1}
@@ -661,7 +678,7 @@ MonoBehaviour:
   seeThroughTextureUVSpace: 0
   seeThroughTextureScale: 1
   seeThroughChildrenSortingMode: 0
-  rmsCount: 17
+  rmsCount: 16
   hitFxInitialIntensity: 0
   hitFxMode: 0
   hitFxFadeOutDuration: 0.25
@@ -678,7 +695,7 @@ GameObject:
   - component: {fileID: 3830013856240462725}
   - component: {fileID: 3830013856240462727}
   - component: {fileID: 3830013856240462724}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -698,7 +715,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 282.858, z: 0}
 --- !u!33 &3830013856240462727
 MeshFilter:
@@ -762,7 +779,7 @@ GameObject:
   - component: {fileID: 3830013856276964793}
   - component: {fileID: 3830013856276964790}
   - component: {fileID: 3830013856276964791}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -782,7 +799,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3830013856276964793
 MeshFilter:
@@ -858,7 +875,7 @@ GameObject:
   - component: {fileID: 1487688675869080912}
   - component: {fileID: 2434894823742183884}
   - component: {fileID: 3759369365613001709}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: tracks (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -878,7 +895,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: -28.226, z: 0}
 --- !u!33 &2434894823742183884
 MeshFilter:
@@ -941,7 +958,7 @@ GameObject:
   - component: {fileID: 557631574911228060}
   - component: {fileID: 7438999753759837261}
   - component: {fileID: 2312341067677113749}
-  m_Layer: 18
+  m_Layer: 28
   m_Name: tracks (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -961,7 +978,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3830013855662730528}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 1.693, z: 0}
 --- !u!33 &7438999753759837261
 MeshFilter:
@@ -1024,9 +1041,25 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1071735617352926203, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 4808493340223284250, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_Name
       value: Purpleland tree
+      objectReference: {fileID: 0}
+    - target: {fileID: 4808493340223284250, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 5567576944237418776, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 7046031949056968616, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
       objectReference: {fileID: 0}
     - target: {fileID: 7046031949056968616, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_IsActive
@@ -1034,7 +1067,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_LocalScale.x
@@ -1095,6 +1128,85 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8141790644671270346, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
   m_PrefabInstance: {fileID: 2927996558744819093}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3925996186337122107
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 3830013855662730528}
+    m_Modifications:
+    - target: {fileID: 3357366813524594359, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_Name
+      value: Elite
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357366813524594359, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 4886977421356262427, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5638154640364346059, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+--- !u!1 &1795867453557315980 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3357366813524594359, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+  m_PrefabInstance: {fileID: 3925996186337122107}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8248850526336104791 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4900546837790273132, guid: f5db00b1f17ad9b4d930c25ce31b76d3, type: 3}
+  m_PrefabInstance: {fileID: 3925996186337122107}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7380642634993928409
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1102,6 +1214,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3830013855662730528}
     m_Modifications:
+    - target: {fileID: 1214126184, guid: 7534d45593742de498b30f83834a8126, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 1214126184, guid: 7534d45593742de498b30f83834a8126, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -1114,9 +1230,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Purpleland Crystals (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4808493340223284250, guid: 7534d45593742de498b30f83834a8126, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 6625572623074562300, guid: 7534d45593742de498b30f83834a8126, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: 7534d45593742de498b30f83834a8126, type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: 7534d45593742de498b30f83834a8126, type: 3}
       propertyPath: m_LocalScale.x
@@ -1188,9 +1312,25 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1071735617352926203, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 4808493340223284250, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_Name
       value: Purpleland tree (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4808493340223284250, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 5567576944237418776, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 7046031949056968616, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
+      propertyPath: m_Layer
+      value: 28
       objectReference: {fileID: 0}
     - target: {fileID: 7046031949056968616, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_IsActive
@@ -1198,7 +1338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: dee38bb08d9c45e4290fbfbc4189d6d2, type: 3}
       propertyPath: m_LocalScale.x
@@ -1267,6 +1407,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 3830013855662730528}
     m_Modifications:
     - target: {fileID: 1214126184, guid: 7534d45593742de498b30f83834a8126, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 1214126184, guid: 7534d45593742de498b30f83834a8126, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -1278,9 +1422,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Purpleland Crystals
       objectReference: {fileID: 0}
+    - target: {fileID: 4808493340223284250, guid: 7534d45593742de498b30f83834a8126, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 6625572623074562300, guid: 7534d45593742de498b30f83834a8126, type: 3}
+      propertyPath: m_Layer
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: 7534d45593742de498b30f83834a8126, type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 8141790644671270346, guid: 7534d45593742de498b30f83834a8126, type: 3}
       propertyPath: m_LocalScale.x

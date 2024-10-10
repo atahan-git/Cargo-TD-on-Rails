@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -13,6 +14,8 @@ public class CameraSwitcher : MonoBehaviour {
 
 	public Transform curTarget;
 	public bool isEngaged = false;
+
+	public bool doSwitch = true;
 
 
 	private void Update() {
@@ -39,20 +42,29 @@ public class CameraSwitcher : MonoBehaviour {
 	private List<int> availableIndexes = new List<int>();
 	private int current = -1;
 	void PickTargetAndSwitch() {
-		if (availableIndexes.Count == 0) {
-			for (int i = 0; i < _targets.Length; i++) {
-				availableIndexes.Add(i);
+		if (doSwitch) {
+			if (availableIndexes.Count == 0) {
+				for (int i = 0; i < _targets.Length; i++) {
+					availableIndexes.Add(i);
+				}
+
+				/*if (current != -1)
+					availableIndexes.Remove(current);*/
 			}
 
-			/*if (current != -1)
-				availableIndexes.Remove(current);*/
+			current = availableIndexes[(current + 1) % availableIndexes.Count];
+			//availableIndexes.Remove(current);
+
+			curTarget = _targets[current].transform;
+			DepthOfFieldController.s.madeACameraJump = true;
 		}
 
-		current = availableIndexes[(current+1) % availableIndexes.Count];
-		//availableIndexes.Remove(current);
-		
-		curTarget = _targets[current].transform;
-		DepthOfFieldController.s.madeACameraJump = true;
 		Invoke("PickTargetAndSwitch", switchTime);
+	}
+
+	[Button]
+	void DebugReEngage() {
+		Disengage();
+		Engage();
 	}
 }

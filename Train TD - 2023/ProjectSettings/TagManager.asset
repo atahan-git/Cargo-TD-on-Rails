@@ -8,6 +8,7 @@ TagManager:
   - capture cam
   - Bullet
   - NoOutline
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -37,7 +38,7 @@ TagManager:
   - Scraps Item
   - CartRepairableSection
   - RepairDrone
-  - 
+  - GenericClickable
   - 
   - 
   - 

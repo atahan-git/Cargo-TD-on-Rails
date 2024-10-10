@@ -288,7 +288,7 @@ MonoBehaviour:
   gatlingDecayMultiplier: 20
   maxFireRateReduction: 0.875
   gatlingAmount: 0
-  maxGatlingAmount: 4
+  maxGatlingAmount: 8
   myType: 3
   fireDelay: 0.2
   fireBarrageCount: 1
@@ -305,6 +305,7 @@ MonoBehaviour:
     ammoMultiplier: 1
     uranium: 0
     fire: 0
+    fireExtraBurnTier: 0
     explosionRangeAdd: 0
     vampiric: 0
     gatlinificator: 0
@@ -318,7 +319,9 @@ MonoBehaviour:
   isHitScan: 0
   ammoPerBarrage: 0.1
   explosionRange: 0
-  inaccuracyMultiplier: 1
+  baseInaccuracy: 0
+  inaccuracyAddFireDelayMultiplier: 0
+  inaccuracyMultiplier: 0
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   gunRotateUpOnShoot: 2
@@ -374,6 +377,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 0
+  targetFarthest: 0
   delay: 0
 --- !u!1 &4868666074182737494
 GameObject:

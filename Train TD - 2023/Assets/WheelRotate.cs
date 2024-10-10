@@ -19,8 +19,11 @@ public class WheelRotate : MonoBehaviour {
         multiplier = (180 / (Mathf.PI * radius))*2 ;//double it because for some reason it is too slow
     }
 
-    void Update()
-    {
-        transform.Rotate(rotationVector * LevelReferences.s.speed * multiplier * Time.deltaTime) ;
+    private Vector3 lastPos;
+    void Update() {
+        var speed = (transform.position - lastPos).magnitude / Time.deltaTime;
+        multiplier = (180 / (Mathf.PI * radius))*2;//double it because for some reason it is too slow
+        transform.Rotate(rotationVector * speed * multiplier * Time.deltaTime) ;
+        lastPos = transform.position;
     }
 }

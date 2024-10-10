@@ -55,6 +55,7 @@ MonoBehaviour:
     speed: 7.5
     explosionRange: 0
     isPhaseThrough: 0
+    phaseDamageHalfExtends: {x: 0, y: 0, z: 0}
     isHoming: 0
     isAmmoHitter: 0
     isSlowDamage: 0
@@ -63,10 +64,16 @@ MonoBehaviour:
     healChunkCount: 2
     isTargetSeeking: 1
     seekStrength: 20
+    stopSeekTime: 0.5
     projectileDamage: 20
     burnDamage: 0
+    normalizedBurnDamage: 0
+    extraBurnTier: 0
     leaveArrow: 0
     leaveArrowChance: 0.5
+    scaleUpOverTime: 0
+    scaleUpSpeed: 2
+    baseScale: {x: 1, y: 1, z: 1}
     curSpeed: 0
     curSeekStrength: 0
     originObject: {fileID: 0}
@@ -75,6 +82,9 @@ MonoBehaviour:
     targetPlayerHealth: {fileID: 0}
     targetPoint: {x: 0, y: 0, z: 0}
     initialVelocity: {x: 0, y: 0, z: 0}
+    aliveTime: 0
+    hitPoint: {x: 0, y: 0, z: 0}
+    hitNormal: {x: 0, y: 0, z: 0}
   defaultData:
     isTargetingPlayer: 1
     didHitTarget: 0
@@ -83,6 +93,7 @@ MonoBehaviour:
     speed: 5
     explosionRange: 0
     isPhaseThrough: 0
+    phaseDamageHalfExtends: {x: 0, y: 0, z: 0}
     isHoming: 0
     isAmmoHitter: 0
     isSlowDamage: 0
@@ -91,10 +102,16 @@ MonoBehaviour:
     healChunkCount: 2
     isTargetSeeking: 1
     seekStrength: 20
+    stopSeekTime: 0.5
     projectileDamage: 20
     burnDamage: 0
+    normalizedBurnDamage: 0
+    extraBurnTier: 0
     leaveArrow: 1
-    leaveArrowChance: 0.5
+    leaveArrowChance: 1
+    scaleUpOverTime: 0
+    scaleUpSpeed: 2
+    baseScale: {x: 1, y: 1, z: 1}
     curSpeed: 0
     curSeekStrength: 0
     originObject: {fileID: 0}
@@ -103,6 +120,9 @@ MonoBehaviour:
     targetPlayerHealth: {fileID: 0}
     targetPoint: {x: 0, y: 0, z: 0}
     initialVelocity: {x: 0, y: 0, z: 0}
+    aliveTime: 0
+    hitPoint: {x: 0, y: 0, z: 0}
+    hitNormal: {x: 0, y: 0, z: 0}
   hitForceMultiplier: 20
   lifetime: 20
   myHitType: 0

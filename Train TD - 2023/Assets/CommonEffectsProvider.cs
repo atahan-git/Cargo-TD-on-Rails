@@ -47,9 +47,21 @@ public class CommonEffectsProvider : MonoBehaviour
 
     public enum CommonEffectType {
         dirtHit = 0, trainHit=1, enemyHit = 2, cantPenetrateArmor=3,rocketExplosion=4,lazerHit=5,mortarExplosion=6,mortarMiniHit=7,
-        smallDamage=8, mediumDamage=9,bigDamage=10,megaDamage=11, nothing = 12,
+        smallDamage=8, mediumDamage=9,bigDamage=10,megaDamage=11, nothing = 12, dirtHitClick =13, trainHitClick=14, enemyHitClick=15, 
+        gatlingTooHot = 16, gatlingChilled=17, fireSlowDecay=18, fireFastDecay=19, radGunSelfDamageMuzzleFlash=20
     }
 
+    public void SpawnEffect(CommonEffectType type, Vector3 position, Quaternion rotation, Transform parent, EffectPriority priority = EffectPriority.Always) {
+        if (type == CommonEffectType.nothing) {
+            return;
+        }
+        var pool = GetEffect(type);
+        if (pool != null) {
+            var obj = pool.Spawn(position, rotation);
+            obj.transform.SetParent(parent);
+        }
+    }
+    
     public void SpawnEffect(CommonEffectType type, Vector3 position, Quaternion rotation, EffectPriority priority = EffectPriority.Always) {
         if (type == CommonEffectType.nothing) {
             return;

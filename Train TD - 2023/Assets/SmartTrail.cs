@@ -60,8 +60,8 @@ public class SmartTrail : MonoBehaviour
             tAdd += Time.deltaTime;
             
             if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], railgunCurPos) >= minVertexDistance) {
-                points.InsertAtZero(posParent.InverseTransformPoint(railgunCurPos));
-                worldPoints.InsertAtZero(railgunCurPos);
+                points.InsertAtZero(railgunCurPos);
+                worldPoints.InsertAtZero(posParent.InverseTransformPoint(railgunCurPos));
                 pointTimes.InsertAtZero( Time.time+tAdd);
             }
 

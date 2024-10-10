@@ -72,15 +72,15 @@ public class DirectControlMaster : MonoBehaviour {
 	public GameObject ammo_good;
 	public GameObject ammo_full;
 	public GameObject ammo_fail;
+	public GameObject highWindsActive_ammo;
 
 	[Header("Repair")]
 	public Image validRepairImage;
 	public Image arrowRepairImage;
 	public Slider repairingSlider;
 	public LayerMask repairLookMask;
-	
-	public GameObject exitToRecharge;
-	public MiniGUI_ShowRepairDroneChargePercent chargePercentUI;
+	public GameObject droppedSomething;
+	public GameObject highWindsActive_repair;
 
 	[Header("Engine Control")] 
 	public SpeedometerScript pressureGauge;

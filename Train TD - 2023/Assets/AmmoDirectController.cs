@@ -55,6 +55,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
     public GameObject ammo_good=> DirectControlMaster.s.ammo_good;
     public GameObject ammo_full=> DirectControlMaster.s.ammo_full;
     public GameObject ammo_fail=> DirectControlMaster.s.ammo_fail;
+    public GameObject highWindsActive=> DirectControlMaster.s.highWindsActive_ammo;
 
     public int baseReloadCount = 4;
     public int curReloadCount = 4;
@@ -80,6 +81,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         public bool vampiric = false;
     }
 
+    public bool isThisDirectControlActive = false;
     public void ActivateDirectControl() {
         var currentCameraForward = MainCameraReference.s.cam.transform.forward;
 
@@ -112,6 +114,12 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
 
         needNewOnes = true;
         //myModuleAmmo.UseAmmo(10000);
+        highWindsActive.SetActive(false);
+        isThisDirectControlActive=true;
+    }
+
+    public void UpdateDirectControl() {
+        // do nothing. This one has a regular update because the bullets need to keep falling
     }
 
     public void DisableDirectControl() {
@@ -124,11 +132,78 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.directControlAlternativeActivate);
         GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.exitDirectControl);
+        highWindsActive.SetActive(false);
+        isThisDirectControlActive=false;
     }
 
     private bool ammoFull = false;
     Color ammoFullColor = Color.white;
-    public void UpdateDirectControl() {
+    public void Update() {
+        if (!isThisDirectControlActive) {
+            if (dropping) {
+                UpdateDroppingAmmoPhysics();
+                if (!dropping) {
+                    var dropWasSuccess = true;
+                    var dropWasPerfect = false;
+
+                    var newAmmoPos = newOnes[0].transform.position;
+                    var preAmmoPos = myAmmoBar.noAmmoPos.position;
+                    var matchDistMultiplier = 1f;
+                    if (myAmmoBar.allAmmoChunks.Count > 0) {
+                        preAmmoPos = myAmmoBar.allAmmoChunks[^1].transform.position;
+                    } else {
+                        matchDistMultiplier *= 2;
+                    }
+
+                    newAmmoPos.y = 0;
+                    preAmmoPos.y = 0;
+                    var dist = Vector3.Distance(preAmmoPos, newAmmoPos);
+                    if (dist > acceptableMatchDistance) {
+                        dropWasSuccess = false;
+                    }
+
+                    if (dropWasSuccess && (dist < perfectMatchDistance * currentAffectors.efficiency || currentAffectors.uranium > 0)) {
+                        dropWasPerfect = true;
+                    }
+
+                    if (dropWasPerfect) {
+                        curPerfectComboCount += 1;
+                    } else {
+                        curPerfectComboCount = 0;
+                    }
+
+                    curReloadCount = baseReloadCount * (curPerfectComboCount + 1);
+
+                    if (currentAffectors.uranium > 0 && dropWasSuccess) {
+                        myHealth.GetComponentInChildren<Artifact_UraniumGem>().ApplyDamage(myHealth.myCart, curReloadCount * 5);
+                    }
+
+                    if (dropWasSuccess) {
+                        var toReload = newOnes.Count;
+                        NewOnePlacementSuccess();
+                        myModuleAmmo.Reload(toReload);
+                        SetNewCurPos(true);
+                    } else {
+                        NewOnePlacementFailed();
+                        SetNewCurPos(false);
+                    }
+
+                    if (dropWasPerfect) {
+                        AnimateEffect(ammo_perfect);
+                    } else if (dropWasSuccess) {
+                        AnimateEffect(ammo_good);
+                    } else {
+                        AnimateEffect(ammo_fail);
+                    }
+
+                    needNewOnes = true;
+
+                    dropping = false;
+                }
+            }
+            return;
+        }
+        
         if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myHealth.myCart.isBeingDisabled || myModuleAmmo == null || myAmmoBar == null) {
             // in case our module gets destroyed
             DirectControlMaster.s.DisableDirectControl();
@@ -138,7 +213,6 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         positionsParent.transform.localPosition = Vector3.Lerp(positionsParent.transform.localPosition, Vector3.up* (Mathf.Min(myModuleAmmo.curAmmo+18)+2)*myAmmoBar.ammoChunkHeight, 2*Time.deltaTime);
 
         var delayMultiplier = (1f / currentAffectors.speed);
-        
         if (needNewOnes) {
             if (curDelay > 0) {
                 curDelay -= Time.deltaTime;
@@ -162,7 +236,17 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         if (!needNewOnes && !dropping && shootAction.action.IsPressed() && !enterDirectControlShootLock) {
             SetNewOnesDropping();
             dropping = true;
+
+            if (HighWindsController.s.currentlyHighWinds) {
+                dropping = false;
+                NewOnePlacementFailed();
+                    
+                curDelay = nextBlockBadDelay*delayMultiplier;
+                SetNewCurPos(false);
+            }
         }
+        
+        highWindsActive.SetActive(HighWindsController.s.currentlyHighWinds);
 
         if (dropping) {
             UpdateDroppingAmmoPhysics();

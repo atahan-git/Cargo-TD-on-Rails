@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
-using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -53,10 +52,14 @@ public class Projectile : MonoBehaviour {
         public bool isTargetSeeking = true;
         [ShowIf("isTargetSeeking")]
         public float seekStrength = 20f;
+        [ShowIf("isTargetSeeking")]
+        public float stopSeekTime = 0.5f;
         
         [Space]
         public float projectileDamage = 20f;
         public float burnDamage = 0;
+        public float normalizedBurnDamage = 0;
+        public int extraBurnTier = 0;
         [Space]
         public bool leaveArrow = false;
         [ShowIf("leaveArrow")]
@@ -91,6 +94,9 @@ public class Projectile : MonoBehaviour {
 
         [FoldoutGroup("Internal Variables")]
         public Vector3 initialVelocity;
+        
+        [FoldoutGroup("Internal Variables")]
+        public float aliveTime;
 
         [Space]
         [FoldoutGroup("Internal Variables")]
@@ -184,17 +190,22 @@ public class Projectile : MonoBehaviour {
                 break;
         }
 
-        if (currentData.isPhaseThrough) {
-            if (raycastResultsArray == null || raycastResultsArray.Length <= 0) {
+        /*if (currentData.isPhaseThrough) {
+            /*if (raycastResultsArray == null || raycastResultsArray.Length <= 0) {
                 raycastResultsArray = new RaycastHit[64];
+            }#1#
+            if (explosiveOverlapArray == null || explosiveOverlapArray.Length <= 0) {
+                explosiveOverlapArray = new Collider[64];
             }
-        }
+        }*/
 
         if (currentData.explosionRange > 0) {
             if (explosiveOverlapArray == null || explosiveOverlapArray.Length <= 0) {
                 explosiveOverlapArray = new Collider[64];
             }
         }
+        
+        prevPhaseDamaged.Clear();
     }
 
     private int hitScanRange = 50;
@@ -261,6 +272,11 @@ public class Projectile : MonoBehaviour {
 
     void FixedUpdate() {
         if (!isDead) {
+            currentData.aliveTime += Time.deltaTime;
+            if (currentData.isTargetSeeking && currentData.stopSeekTime >= 0 && currentData.aliveTime > currentData.stopSeekTime) {
+                currentData.isTargetSeeking = false;
+            }
+            
             if ( currentData.isTargetSeeking) {
                 if (currentData.target != null) {
                     var targetLook = Quaternion.LookRotation(currentData.target.position - transform.position);
@@ -281,7 +297,8 @@ public class Projectile : MonoBehaviour {
                 case HitType.Rocket:
                     var doMove = true;
                     if (currentData.isPhaseThrough) {
-                        PhaseThroughWhileDamaging();
+                        //PhaseThroughWhileDamaging();
+                        // this is now done through a child trigger as god intended
                     }else if (RaycastCollisionCheck()) {
                         transform.position = currentData.targetPoint;
 
@@ -296,9 +313,7 @@ public class Projectile : MonoBehaviour {
                     }
                 
                     if(doMove){
-                        //transform.position += currentData.initialVelocity * Time.deltaTime;
                         transform.position += transform.forward * currentData.speed * Time.deltaTime;
-
                     }
                     
                     break;
@@ -310,29 +325,19 @@ public class Projectile : MonoBehaviour {
         }
     }
 
-    void PhaseThroughWhileDamaging() {
-        var halfExtends = currentData.phaseDamageHalfExtends * transform.localScale.x;
-       var count=  Physics.BoxCastNonAlloc(transform.position, halfExtends, transform.forward, raycastResultsArray, transform.rotation, currentData.speed * Time.deltaTime,
-            LevelReferences.s.enemyLayer);
-       
-       //BoxCastDebug.DrawBoxCastBox(transform.position, halfExtends,transform.rotation, transform.forward, currentData.speed*Time.deltaTime, Color.red);
-
-       List<EnemyHealth> toDmg = new List<EnemyHealth>();
-       for (int i = 0; i < count; i++) {
-           var hit = raycastResultsArray[count];
-           if (hit.collider != null) {
-               var enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
-               if (!toDmg.Contains(enemyHealth)) {
-                   toDmg.Add(enemyHealth);
-               }
-           }
-       }
-
-       for (int i = 0; i < toDmg.Count; i++) {
-           DealDamageToEnemy(toDmg[i]);
-       }
+    private List<EnemyHealth> prevPhaseDamaged = new List<EnemyHealth>();
+    public void ChildTriggerEnter(Collider collider) {
+        if (collider != null) {
+            var enemyHealth = collider.GetComponentInParent<EnemyHealth>();
+            if (enemyHealth != null) {
+                if (!prevPhaseDamaged.Contains(enemyHealth)) {
+                    prevPhaseDamaged.Add(enemyHealth);
+                    DealDamageToEnemy(enemyHealth, true);
+                }
+            }
+        }
     }
-    
+
     bool RaycastCollisionCheck() {
         float minDistance = float.MaxValue;
         bool foundCollision = false;
@@ -457,20 +462,7 @@ public class Projectile : MonoBehaviour {
             }
         }
     }
-
     
-    void PhaseDamage(Collider other) {
-        var health = other.gameObject.GetComponentInParent<EnemyHealth>();
-
-        if (health != null) {
-            DealDamageToEnemy(health);
-            
-            /*GameObject miniHitPrefab = LevelReferences.s.mortarMiniHitPrefab;
-            var closestPoint = health.GetMainCollider().ClosestPoint(transform.position);
-            Instantiate(miniHitPrefab, closestPoint, Quaternion.identity);*/
-        }
-    }
-
     private void ExplosiveDamage() {
         var effectiveRange = Mathf.Sqrt(currentData.explosionRange);
 
@@ -490,7 +482,7 @@ public class Projectile : MonoBehaviour {
             }
             
             foreach (var health in healthsInRange) {
-                DealDamageToPlayer(health);
+                DealDamageToPlayer(health, false, false, Vector3.zero, Quaternion.identity);
             }
 
         } else {
@@ -527,7 +519,7 @@ public class Projectile : MonoBehaviour {
         
         if (currentData.didHitTarget) {
             if (currentData.isTargetingPlayer) {
-                DealDamageToPlayer(currentData.targetPlayerHealth);
+                DealDamageToPlayer(currentData.targetPlayerHealth, true,true,pos, rotation);
                 CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.trainHit, pos, rotation, VisualEffectsController.EffectPriority.Low);
             } else {
                 ApplyHitForceToObject(currentData.targetEnemyHealth);
@@ -563,16 +555,29 @@ public class Projectile : MonoBehaviour {
     }
 
 
-    void DealDamageToEnemy(EnemyHealth target) {
+    void DealDamageToEnemy(EnemyHealth target, bool phaseDamage = false) {
         if (target != null) {
             var dmg = currentData.projectileDamage;
             var burnDmg = currentData.burnDamage;
 
-            if (currentData.isSlowDamage) {
+            /*if (phaseDamage) {
+                dmg *= Time.deltaTime;
+                burnDmg *= Time.deltaTime;
+            }*/
+
+            if (currentData.isHeal) {
+                for (int i = 0; i < currentData.healChunkCount; i++) {
+                    target.RepairChunk();
+                }
+            }else if (currentData.isSlowDamage) {
                 target.gameObject.GetComponentInParent<EnemyWave>().AddSlow(currentData.slowDamage);
             } else  {
                 if (dmg > 0) {
-                    target.DealDamage(dmg, transform.position);
+                    if (phaseDamage) {
+                        target.DealDamage(dmg, null, null);
+                    } else {
+                        target.DealDamage(dmg, transform.position, Quaternion.AngleAxis(180, transform.up) * transform.rotation);
+                    }
                     if (dmg > 1) {
                         var damageNumbers = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent,
                             VisualEffectsController.EffectPriority.damageNumbers);
@@ -584,7 +589,7 @@ public class Projectile : MonoBehaviour {
                 }
 
                 if (burnDmg > 0) {
-                    target.BurnDamage(burnDmg);
+                    target.BurnDamage(burnDmg, currentData.normalizedBurnDamage, currentData.extraBurnTier);
                     //if(burnDamage > 1)
                         /*VisualEffectsController.s.SmartInstantiate(LevelReferences.s.damageNumbersPrefab, LevelReferences.s.uiDisplayParent)
                             .GetComponent<MiniGUI_DamageNumber>()
@@ -594,10 +599,28 @@ public class Projectile : MonoBehaviour {
         }
     }
 
-    void DealDamageToPlayer(ModuleHealth target) {
+    void DealDamageToPlayer(ModuleHealth target, bool canCrit, bool canMiss, Vector3 pos, Quaternion rot) {
         if (target != null) {
-            var dmg = currentData.projectileDamage*TweakablesMaster.s.GetEnemyDamageMultiplier();
+            var dmg = currentData.projectileDamage * TweakablesMaster.s.GetEnemyDamageMultiplier();
             var burnDmg = currentData.burnDamage * TweakablesMaster.s.GetEnemyDamageMultiplier();
+
+            var missChance = PlayerSpeedToEnemyDamageModifiersController.s.GetMissChance();
+            if (canMiss && Random.value < missChance) {
+                // missed
+                var missEffect = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.missPrefab, target.GetUITransform(), pos, rot,
+                    VisualEffectsController.EffectPriority.Medium);
+
+                dmg = 0;
+                // burn dmg does not crit, or miss
+            }
+
+            var critChance = PlayerSpeedToEnemyDamageModifiersController.s.GetCriticalChance();
+            var crit = false;
+            if (canCrit && Random.value < critChance) {
+                dmg *= 2;
+                // burn dmg does not crit, or miss
+                crit = true;
+            }
 
             if (dmg > 0) {
                 var burnChunk = target.DealDamage(dmg, transform.position, Quaternion.AngleAxis(180, transform.up) * transform.rotation);
@@ -609,6 +632,11 @@ public class Projectile : MonoBehaviour {
                         damageNumbers.GetComponent<MiniGUI_DamageNumber>()
                             .SetUp(target.GetUITransform(), (int)dmg, false, false, false);
                     }
+                }
+                
+                if (crit) {
+                    var critEffect = VisualEffectsController.s.SmartInstantiate(LevelReferences.s.criticalDamagePrefab, target.GetUITransform(), pos, rot,
+                        VisualEffectsController.EffectPriority.Medium);
                 }
             }
 

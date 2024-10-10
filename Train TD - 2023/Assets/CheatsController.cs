@@ -31,6 +31,8 @@ public class CheatsController : MonoBehaviour {
 
     public bool forceDisableFastForward = false;
     public bool trainDoesntLoseSteam = false;
+    
+    public bool instantRepair = false;
 
     public bool stopMoving = false;
     
@@ -56,19 +58,24 @@ public class CheatsController : MonoBehaviour {
         overrideTrainState = false;
         forceDisableFastForward = false;
         trainDoesntLoseSteam = false;
+        instantRepair = false;
     }
 
     
     private void Start() {
         if (Application.isEditor) {
             if (debugNoRegularSpawns  || instantEnterPlayMode ||playerIsImmune
-                  || everyPathIsEncounter  || setInstantEnterShopAnimation || overrideTrainState || forceDisableFastForward)
+                  || everyPathIsEncounter  || setInstantEnterShopAnimation || overrideTrainState || forceDisableFastForward || instantRepair)
                 Debug.LogError("Debug options active! See _CheatsController for more info");
 
 
             var tweakables = TweakablesMaster.s.myTweakables;
             if (tweakables.enemyDamageMultiplier != 1 || tweakables.enemyFirerateBoost != 1 || tweakables.playerDamageMultiplier != 1 || tweakables.playerFirerateBoost != 1 || tweakables.playerAmmoUseMultiplier != 1) {
                 Debug.Log("Tweakables values not all zero. Beware numbers not matching");
+            }
+
+            if (instantRepair) {
+                tweakables.playerRepairTimeMultiplier = 0.01f;
             }
 
             if (forceDisableFastForward) {
@@ -138,7 +145,13 @@ public class CheatsController : MonoBehaviour {
     }
 
     private void EngageCheat(InputAction.CallbackContext obj) {
+        //Debug.Break();
         InfiniteMapController.s.DebugRemakeMap();
+
+        /*if (PlayStateMaster.s.isCombatInProgress()) {
+            MissionLoseFinisher.s.MissionLost(MissionLoseFinisher.MissionLoseReason.abandon);
+        }*/
+        
         /*if (!PlayStateMaster.s.isCombatStarted()) {
             if (PlayStateMaster.s.isMainMenu())
                 MainMenu.s.StartGame();
@@ -184,7 +197,7 @@ public class CheatsController : MonoBehaviour {
     public void KillAllEnemies() {
         var enemies = EnemyWavesController.s.GetComponentsInChildren<EnemyHealth>();
         for (int i = 0; i < enemies.Length; i++) {
-            enemies[i].DealDamage(10000, null);
+            enemies[i].DealDamage(10000, null, null);
         }
     }
 

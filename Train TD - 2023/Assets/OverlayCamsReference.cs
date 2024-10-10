@@ -27,5 +27,4 @@ public class OverlayCamsReference : MonoBehaviour {
         camData.cameraStack.Add(MainCameraReference.s.cam);
         camData.cameraStack.Add(uiCam);*/
     }
-
 }

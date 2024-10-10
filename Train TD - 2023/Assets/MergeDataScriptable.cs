@@ -14,6 +14,11 @@ public class MergeDataScriptable : ScriptableObject {
     [ValueDropdown("GetAllModuleNames")]
     public string result;
 
+    public bool hasBonusGem = false;
+    [ValueDropdown("GetAllGemNames")]
+    [ShowIf("hasBonusGem")]
+    public string bonusGem;
+
 
     public MergeData GetMergeData() {
         var data = new MergeData();
@@ -27,9 +32,16 @@ public class MergeDataScriptable : ScriptableObject {
 
         data.result = result;
 
+        data.hasBonusGem = hasBonusGem;
+        data.bonusGem = bonusGem;
+
         return data;
     }
     
+    private static IEnumerable GetAllGemNames() {
+        var allBuildings =  GameObject.FindObjectOfType<DataHolder>().GetAllPossibleArtifactNames();
+        return allBuildings;
+    }
     private static IEnumerable GetAllModuleNames() {
         var allBuildings =  GameObject.FindObjectOfType<DataHolder>().GetAllPossibleBuildingNames();
         return allBuildings;
@@ -46,4 +58,6 @@ public class MergeDataScriptable : ScriptableObject {
 public class MergeData {
     public string[] sources;
     public string result;
+    public bool hasBonusGem;
+    public string bonusGem;
 }

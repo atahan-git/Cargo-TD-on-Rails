@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df91efa879250d943aed9b572dbeba4b, type: 3}
+  m_Name: Act 1 - Snowlands
+  m_EditorClassIdentifier: 
+  myBiome:
+    debugName: Act 1 - Snowlands
+    biomeIndex: 2
+    biomeSpawnWeight: 1
+    terrainPrefab: {fileID: 2040300268567586266, guid: 8baa67508cdf80f44bc6ee47d368eb4c, type: 3}
+    dioramaPrefab: {fileID: 3830013855662730529, guid: 8c136dda56c95dc46b293134962c861a, type: 3}
+    sun:
+      rotation: {x: -0, y: -0.8660254, z: 0.5, w: 0}
+      colorTemperature: 4547
+      intensity: 1
+    skybox: {fileID: 11400000, guid: ab73f0e089218ef44823b06bd7c298ba, type: 2}
+    skyboxLightIntensity: 1.56
+    genSettings:
+      grass0:
+        grassFrequency: 0.5
+        grassThreshold: 0.5
+        grassMaxDensity: 0
+      grass1:
+        grassFrequency: 0.5
+        grassThreshold: 0.3
+        grassMaxDensity: 0
+      treeDatas:
+      - treeFrequency: 0.1
+        treeThreshold: 0.6
+        treeMaxThreshold: 0.7
+        treeChanceAtMaxDensity: 0.1
+        sizeScale: {x: 0.5, y: 1.2}
+        minDensity: 0.8

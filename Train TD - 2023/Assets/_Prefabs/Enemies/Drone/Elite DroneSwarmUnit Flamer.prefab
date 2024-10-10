@@ -843,6 +843,7 @@ GameObject:
   - component: {fileID: 270755676286679523}
   - component: {fileID: 279339902313151035}
   - component: {fileID: 1276618759207639604}
+  - component: {fileID: 3402894703927603259}
   m_Layer: 0
   m_Name: LCoupe_v2_3
   m_TagString: Untagged
@@ -934,10 +935,24 @@ BoxCollider:
   m_GameObject: {fileID: 266329918438346093}
   m_Material: {fileID: 13400000, guid: 273ea4115990a014993e58f2aeca7082, type: 2}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 2.0219355, y: 1.6009834, z: 3.9632034}
   m_Center: {x: 0.0000009536743, y: 0.000000029802322, z: 0.00000017881393}
+--- !u!64 &3402894703927603259
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266329918438346093}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: e2c3a5d73541195488170184f4312d61, type: 3}
 --- !u!1 &266418944999233551
 GameObject:
   m_ObjectHideFlags: 0
@@ -1224,7 +1239,6 @@ MonoBehaviour:
   enemyDieSounds:
   - {fileID: 8300000, guid: d11c5a6875bef43459d4dc1dc2373fed, type: 3}
   isTeleporting: 0
-  teleportTiming: {x: 10, y: 30}
   isStealing: 0
   isNuker: 0
   nukingTime: 20
@@ -1233,8 +1247,11 @@ MonoBehaviour:
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
+  boidPosition: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
   myWave: {fileID: 0}
+  teleportInProgress: 0
+  teleportCooldown: 2
 --- !u!114 &2942942888468131773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1262,7 +1279,11 @@ MonoBehaviour:
   mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
-  burnSpeed: 0
+  burnTimer: 0
+  currentBurnTier: 0
+  appliedBurnDamage: 0
+  maxBurnTier: 2
+  burnDecayTimer: 0
   _outlines: []
 --- !u!114 &2942942888468131775
 MonoBehaviour:
@@ -1386,7 +1407,7 @@ MonoBehaviour:
   outlineGradientInLocalSpace: 0
   outlineWidth: 0.45
   outlineBlurPasses: 2
-  outlineQuality: 2
+  outlineQuality: 1
   outlineEdgeMode: 0
   outlineEdgeThreshold: 0.995
   outlineSharpness: 1

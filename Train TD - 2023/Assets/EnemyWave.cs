@@ -46,10 +46,6 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         wavePosition = position;
         isWaveMoving = isMoving;
 
-        if (isMoving) {
-            currentSpeed = mySpeed;
-        }
-
         /*var allEnemyHealths = GetComponentsInChildren<EnemyHealth>();
 
         for (int i = 0; i < allEnemyHealths.Length; i++) {
@@ -59,14 +55,18 @@ public class EnemyWave : MonoBehaviour, IShowOnDistanceRadar, ISpeedForEngineSou
         var allEnemiesInSwarm = GetComponentsInChildren<EnemyInSwarm>();
         
         var primeEnemy = allEnemiesInSwarm[0];
-        mySpeed = 100;
+        mySpeed = 6;
         
         for (int i = 0; i < allEnemiesInSwarm.Length; i++) {
-            mySpeed = Mathf.Min(mySpeed, allEnemiesInSwarm[i].speed);
+            //mySpeed = Mathf.Min(mySpeed, allEnemiesInSwarm[i].speed);
 
             if (allEnemiesInSwarm[i].primeEnemy) {
                 primeEnemy = allEnemiesInSwarm[i];
             }
+        }
+
+        if (isMoving) {
+            currentSpeed = mySpeed;
         }
         
         mainSprite = primeEnemy.enemyIcon;

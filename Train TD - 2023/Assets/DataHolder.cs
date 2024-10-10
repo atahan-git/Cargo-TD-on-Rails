@@ -174,23 +174,23 @@ public class DataHolder : MonoBehaviour {
     }
 
 
-    public string GetMergeResult(string uniqueName1, string uniqueName2) {
+    public MergeData GetMergeData(string uniqueName1, string uniqueName2) {
         var inputStrings = new List<string>() { PreProcess(uniqueName1), PreProcess(uniqueName2) };
         inputStrings.Sort();
         
         for (int i = 0; i < mergeDatas.Length; i++) {
             if (mergeDatas[i].sources[0] == inputStrings[0] && mergeDatas[i].sources[1] == inputStrings[1]) {
-                return mergeDatas[i].result;
+                return mergeDatas[i];
             }
         }
 
         return null;
     }
 
-    public string GetUpgradeResult(string uniqueName) {
+    public MergeData GetMergeWithAnyGemData(string uniqueName) {
         for (int i = 0; i < mergeDatas.Length; i++) {
             if (mergeDatas[i].sources[0] == PreProcess(anyArtifact) && mergeDatas[i].sources[1] == PreProcess(uniqueName)) {
-                return mergeDatas[i].result;
+                return mergeDatas[i];
             }
         }
 
@@ -200,7 +200,4 @@ public class DataHolder : MonoBehaviour {
 
     public const string anyArtifact = "___AnyArtifact";
     
-    public bool IsLegalMergeResult(string result) {
-        return result != null;
-    }
 }

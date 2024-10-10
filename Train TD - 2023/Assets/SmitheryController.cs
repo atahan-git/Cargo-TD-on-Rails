@@ -42,16 +42,16 @@ public class SmitheryController : MonoBehaviour, IResetShopBuilding
 
 
     private bool isCartUpgrade = false;
-    private string upgradeResult;
+    private MergeData mergeData;
     void CheckAndDoUpgrade() {
         var cart1 = location1.GetComponentInChildren<Cart>();
         var cart2 = location2.GetComponentInChildren<Cart>();
 
-        upgradeResult = "";
+        mergeData = null;
 
         if (cart1 != null && cart2 != null) {
-            upgradeResult = DataHolder.s.GetMergeResult(cart1.uniqueName, cart2.uniqueName);
-            if ( DataHolder.s.IsLegalMergeResult(upgradeResult)) {
+            mergeData = DataHolder.s.GetMergeData(cart1.uniqueName, cart2.uniqueName);
+            if ( mergeData != null) {
                 EngageUpgrade(true);
                 return;
             }
@@ -62,16 +62,16 @@ public class SmitheryController : MonoBehaviour, IResetShopBuilding
 
         if (artifact1 != null || artifact2 != null) {
             if (cart1 != null) {
-                upgradeResult = DataHolder.s.GetUpgradeResult(cart1.uniqueName);
-                if ( DataHolder.s.IsLegalMergeResult(upgradeResult)) {
+                mergeData = DataHolder.s.GetMergeWithAnyGemData(cart1.uniqueName);
+                if ( mergeData != null) {
                     EngageUpgrade(false);
                     return;
                 }
             }
 
             if (cart2 != null) {
-                upgradeResult = DataHolder.s.GetUpgradeResult(cart2.uniqueName);
-                if ( DataHolder.s.IsLegalMergeResult(upgradeResult)) {
+                mergeData = DataHolder.s.GetMergeWithAnyGemData(cart2.uniqueName);
+                if ( mergeData != null) {
                     EngageUpgrade(false);
                     return;
                 }
@@ -144,18 +144,28 @@ public class SmitheryController : MonoBehaviour, IResetShopBuilding
         var thing1 = location1.GetComponentInChildren<IPlayerHoldable>() as MonoBehaviour;
         var thing2 = location2.GetComponentInChildren<IPlayerHoldable>() as MonoBehaviour;
 
-        var newCart = Instantiate(DataHolder.s.GetCart(upgradeResult).gameObject, thing1.transform.position, thing1.transform.rotation).GetComponent<Cart>();
-        Train.ApplyStateToCart(newCart, new DataSaver.TrainState.CartState(){uniqueName = upgradeResult});
+        var cartState = new DataSaver.TrainState.CartState(){uniqueName = mergeData.result};
+        var newCart = Train.InstantiateCartFromState(cartState, thing1.transform.position, thing1.transform.rotation);
         ShopStateController.s.AddCartToShop(newCart);
         newCart.GetComponent<Rigidbody>().isKinematic = false;
         newCart.GetComponent<Rigidbody>().useGravity = true;
         newCart.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
+
+        if (mergeData.hasBonusGem) {
+            var artifactState = new DataSaver.TrainState.ArtifactState() { uniqueName = mergeData.bonusGem };
+            var newArtifact = Train.InstantiateArtifactFromState(artifactState, thing1.transform.position, thing1.transform.rotation);
+            ShopStateController.s.AddArtifactToShop(newArtifact);
+            newArtifact.GetComponent<Rigidbody>().isKinematic = false;
+            newArtifact.GetComponent<Rigidbody>().useGravity = true;
+            newArtifact.GetComponent<Rigidbody>().AddForce(GetRandomYeetForce());
+        }
 
         if (thing1 is Cart) {
             ShopStateController.s.RemoveCartFromShop(thing1 as Cart);
 
             foreach (var artifactLocation in (thing1 as Cart).myArtifactLocations) {
                 if (!artifactLocation.IsEmpty()) {
+                    SetColliderStatus(artifactLocation.gameObject, true);
                     artifactLocation.GetComponentInChildren<Artifact>().DetachFromCart();
                 }
             }
@@ -168,6 +178,7 @@ public class SmitheryController : MonoBehaviour, IResetShopBuilding
             
             foreach (var artifactLocation in (thing2 as Cart).myArtifactLocations) {
                 if (!artifactLocation.IsEmpty()) {
+                    SetColliderStatus(artifactLocation.gameObject, true);
                     artifactLocation.GetComponentInChildren<Artifact>().DetachFromCart();
                 }
             }

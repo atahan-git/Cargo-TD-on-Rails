@@ -72,9 +72,7 @@ public class LightShellController : MonoBehaviour {
         }
 
         var targetLightAmount = 0f;
-        if (CrystalsAndWarpController.s.warpProgress >= 2) {
-            targetLightAmount = 1;
-        }
+        
         if (!PlayStateMaster.s.isCombatInProgress()) {
             targetLightAmount = 0;
         }
@@ -188,7 +186,8 @@ public class LightShellController : MonoBehaviour {
         }
 
 
-        var engineParticleAmount = CrystalsAndWarpController.s.warpProgress;
+        //var engineParticleAmount = CrystalsAndWarpController.s.warpProgress;
+        var engineParticleAmount = 1f;
         engineParticleAmount = Mathf.Clamp01(engineParticleAmount);
         
         if (engineParticleAmount < 0.05f) {

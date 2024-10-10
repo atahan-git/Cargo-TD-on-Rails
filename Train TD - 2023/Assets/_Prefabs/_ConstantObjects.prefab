@@ -1276,8 +1276,8 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 0
-  m_AllowMSAA: 0
+  m_HDR: 1
+  m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 0
@@ -1486,7 +1486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 228885c3b905c94459a5ef85bb5bddc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deltaTime: 0
+  last60dT: []
 --- !u!1 &7995596485511151644
 GameObject:
   m_ObjectHideFlags: 0

@@ -427,6 +427,10 @@ public class EnemyWavesController : MonoBehaviour {
 		return enemyInSwarms.Count;
 	}
 
+	public bool AnyEnemyIsPresent() {
+		return GetActiveEnemyCount() > 0;
+	}
+
 	public void StopSpawningNewDynamicEnemies() {
 		spawnDynamicEnemies = false;
 	}

@@ -494,13 +494,13 @@ MonoBehaviour:
   gunUniqueName: cannon
   gunSprite: {fileID: 21300000, guid: 8445c017ed6362a4381194ee86773dda, type: 3}
   isGigaGatling: 0
+  isLazer: 0
+  lazerMinDamageMultiplier: 0.1
+  gatlingDecayMultiplier: 1
   maxFireRateReduction: 0.875
   gatlingAmount: 0
   maxGatlingAmount: 8
-  useProviderBullet: 1
   myType: 1
-  bulletPrefab: {fileID: 4908573584345181807, guid: 3690077eb46ed4b488ed16149aedc46c, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3819cb1af423dac46ba712e39e10fbc5, type: 3}
   fireDelay: 2
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
@@ -513,8 +513,10 @@ MonoBehaviour:
     efficiency: 1
     flatDamageAdd: 0
     flatAmmoCostAdd: 0
+    ammoMultiplier: 1
     uranium: 0
     fire: 0
+    fireExtraBurnTier: 0
     explosionRangeAdd: 0
     vampiric: 0
     gatlinificator: 0
@@ -523,13 +525,13 @@ MonoBehaviour:
     lizardOverride: 0
   isLockOn: 0
   rotateSpeed: 10
-  isHeal: 0
   directControlShakeMultiplier: 1
   mortarRotation: 0
   isHitScan: 0
   ammoPerBarrage: 1
   explosionRange: 0
-  inaccuracyMultiplier: 1
+  baseInaccuracy: 0
+  inaccuracyAddFireDelayMultiplier: 1
   gunShakeOnShoot: 1
   gunShakeMagnitudeMultiplier: 1
   gunRotateUpOnShoot: 2
@@ -586,6 +588,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 0
+  targetFarthest: 0
   delay: 0
 --- !u!1 &3453434237798867949
 GameObject:

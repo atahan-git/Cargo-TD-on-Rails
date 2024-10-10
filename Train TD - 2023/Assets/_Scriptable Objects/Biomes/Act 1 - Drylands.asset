@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myBiome:
     debugName: Act 1 - Drylands
+    biomeIndex: 1
     biomeSpawnWeight: 1
     terrainPrefab: {fileID: 2040300268567586266, guid: edc843d59b5e15e448978e913d9a25ac, type: 3}
     dioramaPrefab: {fileID: 3830013855662730529, guid: fbeb17b45accbef41b979749db02b065, type: 3}
     sun:
       rotation: {x: -0, y: -0.8660254, z: 0.5, w: 0}
-      colorTemperature: 4547
-      intensity: 1
+      colorTemperature: 5000
+      intensity: 1.25
     skybox: {fileID: 11400000, guid: 9d1ce5b90f3740b40a4bb28f445218c8, type: 2}
     skyboxLightIntensity: 1.56
     genSettings:

@@ -495,13 +495,13 @@ MonoBehaviour:
   gunUniqueName: railgun
   gunSprite: {fileID: 21300000, guid: a8c3594a448aa6a4fb74ae48df3f2056, type: 3}
   isGigaGatling: 0
+  isLazer: 0
+  lazerMinDamageMultiplier: 0.1
+  gatlingDecayMultiplier: 1
   maxFireRateReduction: 0.875
   gatlingAmount: 0
   maxGatlingAmount: 8
-  useProviderBullet: 1
   myType: 10
-  bulletPrefab: {fileID: 4908573584345181807, guid: 0f72bfe2f8895fd499049f35214ce1ee, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 3819cb1af423dac46ba712e39e10fbc5, type: 3}
   fireDelay: 5.5
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
@@ -517,6 +517,7 @@ MonoBehaviour:
     ammoMultiplier: 1
     uranium: 0
     fire: 0
+    fireExtraBurnTier: 0
     explosionRangeAdd: 0
     vampiric: 0
     gatlinificator: 0
@@ -525,12 +526,13 @@ MonoBehaviour:
     lizardOverride: 0
   isLockOn: 0
   rotateSpeed: 5
-  isHeal: 0
   directControlShakeMultiplier: 1
   mortarRotation: 0
   isHitScan: 0
   ammoPerBarrage: 3
   explosionRange: 0
+  baseInaccuracy: 0
+  inaccuracyAddFireDelayMultiplier: 1
   inaccuracyMultiplier: 0
   gunShakeOnShoot: 1
   gunShakeMagnitudeMultiplier: 1
@@ -588,6 +590,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 0
+  targetFarthest: 0
   delay: 0
 --- !u!1 &3453434237798867949
 GameObject:

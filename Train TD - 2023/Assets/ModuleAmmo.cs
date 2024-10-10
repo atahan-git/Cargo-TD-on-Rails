@@ -177,7 +177,7 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     public void Update() {
         if (!myCart.isDestroyed) {
             autoReloadCharge += currentAffectors.reloadOverTime * Time.deltaTime;
-            if (autoReloadCharge >= 1) {
+            if (autoReloadCharge >= 4) {
                 autoReloadCharge -= 1;
                 Reload(1);
             }

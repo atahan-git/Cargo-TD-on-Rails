@@ -47,11 +47,14 @@ public class ObjectPool : MonoBehaviour {
 		return objs;
 	}
 
-	public void RePopulateWithNewObject(GameObject obj) {
+	public bool RePopulateWithNewObject(GameObject obj) {
 		if (myObject != obj || !setUpAtLeastOnce) {
 			myObject = obj;
 			ResetPool();
+			return true;
 		}
+
+		return false;
 	}
 
 	void SetUp (int poolsize){

@@ -27,10 +27,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	public Image validRepairImage => DirectControlMaster.s.validRepairImage;
 	public Image arrowRepairImage => DirectControlMaster.s.arrowRepairImage;
 	public Slider repairingSlider => DirectControlMaster.s.repairingSlider;
-	
-	public GameObject exitToRecharge => DirectControlMaster.s.exitToRecharge;
-	public MiniGUI_ShowRepairDroneChargePercent chargePercentUI => DirectControlMaster.s.chargePercentUI;
-
+	public GameObject droppedSomething => DirectControlMaster.s.droppedSomething;
+	public GameObject highWindsActive => DirectControlMaster.s.highWindsActive_repair;
+	private bool droppedSomethingCheck = false;
 
 	public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
 
@@ -61,6 +60,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		DepthOfFieldController.s.SetDepthOfField(false);
 
 		SetRepairControllerStatus(myRepairController, true);
+		highWindsActive.SetActive(false);
 	}
 
 	public void DisableDirectControl() {
@@ -79,13 +79,23 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		SetRepairControllerStatus(myRepairController, false);
 
 		DepthOfFieldController.s.SetDepthOfField(true);
+		highWindsActive.SetActive(false);
 	}
 	
 	void SetRepairControllerStatus(DroneRepairController repairController, bool isDirectControl) {
 		if (isDirectControl) {
+			if (repairController.carryDraggableMode) {
+				droppedSomething.SetActive(true);
+				droppedSomethingCheck = true;
+			} else {
+				droppedSomething.SetActive(false);
+				droppedSomethingCheck = false;
+			}
+			repairController.StopHoldingThing();
+			
 			repairController.DisableAutoDrone();
 			repairController.beingDirectControlled = true;
-			repairController.droneScript.needToFullyCharge = false;
+			
 		} else {
 			repairController.beingDirectControlled = false;
 			repairController.ActivateAutoDrone();
@@ -105,10 +115,13 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			DirectControlMaster.s.DisableDirectControl();
 			return;
 		}
-		
-		
-		var droneCharge = myRepairController.droneScript.currentChargePercent;
-		var enoughCharge = droneCharge >= 0f;
+
+		if (droppedSomethingCheck) {
+			if (LevelReferences.s.combatHoldableThings.Count <= 0) {
+				droppedSomethingCheck = false;
+				droppedSomething.SetActive(false);
+			}
+		}
 		
 
 		var camTrans = MainCameraReference.s.cam.transform;
@@ -177,31 +190,35 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			}
 		}
 
-		validRepairImage.gameObject.SetActive(validTarget && !repairTarget.hasArrow && enoughCharge);
+		validRepairImage.gameObject.SetActive(validTarget && !repairTarget.hasArrow);
 
 		var drone = myRepairController.drone;
-		
-		drone.transform.rotation = Quaternion.Lerp(drone.transform.rotation, camTrans.transform.rotation, 20*Time.unscaledDeltaTime);
 
-		currentFlightVelocity = CalculateFlightVelocity(currentFlightVelocity, moveAction.action.ReadValue<Vector2>(), camTrans, flyUpAction.action.IsPressed(),
-			flyDownAction.action.IsPressed());
+		if (!HighWindsController.s.currentlyHighWinds) {
+			drone.transform.rotation = Quaternion.Lerp(drone.transform.rotation, camTrans.transform.rotation, 20 * Time.unscaledDeltaTime);
+
+			currentFlightVelocity = CalculateFlightVelocity(currentFlightVelocity, moveAction.action.ReadValue<Vector2>(), camTrans, flyUpAction.action.IsPressed(),
+				flyDownAction.action.IsPressed());
 
 
-		drone.transform.position += currentFlightVelocity * Time.unscaledDeltaTime;
+			drone.transform.position += currentFlightVelocity * Time.unscaledDeltaTime;
+		}
 
 		var doRepair = shootAction.action.IsPressed() && !enterDirectControlShootLock;
+
+		if (HighWindsController.s.currentlyHighWinds) {
+			doRepair = false;
+		}
+
+		highWindsActive.SetActive(HighWindsController.s.currentlyHighWinds);
+		
+		
 		/*var repairClick = shootAction.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
 
 		if (keepClickTimer > 0) {
 			keepClickTimer -= Time.deltaTime;
 			doRepair = true;
 		}*/
-		
-		
-
-		if (!enoughCharge) {
-			doRepair = false;
-		}
 
 		if (arrowRepairing && !doRepair) {
 			arrowRepairing = false;
@@ -214,17 +231,12 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 			}
 		}
 		
-		UpdateArrowRepairImageState(validTarget && enoughCharge, doRepair);
+		UpdateArrowRepairImageState(validTarget, doRepair);
 
 		var isRepairing = doRepair && validTarget;
 		drone.GetComponent<RepairDrone>().SetCurrentlyRepairingState(isRepairing);
 
 		var directControlRepairSpeedMultiplier = 5f;
-		if (isRepairing) {
-			myRepairController.droneScript.currentChargePercent -= (1f / myRepairController.repairChargeFullUseTime) * Time.deltaTime * directControlRepairSpeedMultiplier;
-		}
-
-		myRepairController.droneScript.currentChargePercent -= (1f / 180f) * Time.deltaTime; // just direct controlling also use energy
 
 		if (validTarget) {
 			if (doRepair) {
@@ -253,8 +265,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		}
 
 		repairingSlider.value = curRepairTime;
-		chargePercentUI.SetPercent(droneCharge, 0f);
-		exitToRecharge.SetActive(droneCharge <= 0f);
 	}
 
 	private void LateUpdate() {
@@ -272,6 +282,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 			validRepairImage.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
 			repairingSlider.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
+		} else {
+			repairingSlider.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+			//repairingSlider.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
 		}
 	}
 
@@ -424,6 +437,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		
 		if (minDistance > 5) {
 			previousVelocity = minDistanceMoveVector.normalized * 1.5f;
+			if (minDistance > 10) {
+				previousVelocity *= minDistance;
+			}
 		}
 
 		return previousVelocity;

@@ -89,8 +89,7 @@ public class MissionLoseFinisher : MonoBehaviour {
         
 
         DataSaver.s.SaveActiveGame();
-        
-        
+
         /*AnalyticsResult analyticsResult = Analytics.CustomEvent(
             "LevelLost",
             new Dictionary<string, object> {
@@ -108,8 +107,51 @@ public class MissionLoseFinisher : MonoBehaviour {
         DirectControlMaster.s.DisableDirectControl();
 
 
+        StartCoroutine(DeathAnimation());
+    }
+
+    private bool isDeathAnimPlaying = false;
+    private bool mainCamLerpComplete = false;
+    public Transform mainCamMoveTarget;
+    IEnumerator DeathAnimation() {
+        isDeathAnimPlaying = true;
+        mainCamLerpComplete = false;
+
+        var engine = Train.s.carts[0].transform;
+
+        mainCamMoveTarget.position = engine.position + engine.right * 2.73f + engine.up * 3.62f;
+        mainCamMoveTarget.LookAt(engine);
+        
+        
+        yield return null;
+        
+        
         if (DataSaver.s.GetCurrentSave().instantRestart) {
             BackToMenu();
+        }// else the player will need to click back to menu on their own
+
+        //isDeathAnimPlaying = false;
+    }
+
+    private void LateUpdate() {
+        if (isDeathAnimPlaying) {
+            if (mainCamLerpComplete) {
+                var _camTrans = MainCameraReference.s.cam.transform;
+                if (!mainCamLerpComplete) {
+                    if (
+                        Vector3.Distance(_camTrans.transform.position, mainCamMoveTarget.position) > 0.01f
+                        && Quaternion.Angle(_camTrans.transform.rotation, mainCamMoveTarget.rotation) > 1
+                    ) {
+                        _camTrans.transform.position = Vector3.Lerp(_camTrans.position, mainCamMoveTarget.position, 5*Time.deltaTime);
+                        _camTrans.transform.rotation = Quaternion.Slerp(_camTrans.rotation, mainCamMoveTarget.rotation, 20*Time.deltaTime);
+                    } else {
+                        mainCamLerpComplete = true;
+                    }
+                } else {
+                    _camTrans.position = mainCamMoveTarget.position;
+                    _camTrans.rotation = mainCamMoveTarget.rotation;
+                }
+            }
         }
     }
 

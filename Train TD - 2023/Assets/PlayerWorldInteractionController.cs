@@ -307,12 +307,18 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }
         CastRayToOutline();
 
+        if (currentSelectedThing is GenericClickable genericClickable) {
+            genericClickable.Click();
+        }
+
         if (!CanDragThing(currentSelectedThing)) {
             return;
         }
         isComboDragStarted = true;
         
         isSnapping = false;
+        
+        currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
 
         displacedArtifact = null;
         currentSnapLoc = null;
@@ -604,6 +610,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 Destroy(currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>());
             }
 
+            currentSelectedThing.GetHoldingDrone()?.StopHoldingThing();
             if (currentSelectedThing is Cart || currentSelectedThing is Artifact) {
                 var rigid = (currentSelectedThingMonoBehaviour).GetComponent<Rigidbody>();
                 rigid.isKinematic = true;
@@ -621,10 +628,15 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         }else{
             currentSelectedThing.SetHoldingState(false);
             
+            if (currentSelectedThing.GetHoldingDrone() != null) {
+                currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().isKinematic = true;
+                currentSelectedThingMonoBehaviour.GetComponent<Rigidbody>().useGravity = false;
+            }
 
             if (PlayStateMaster.s.isCombatInProgress()) {
-                if (currentSelectedThingMonoBehaviour is Cart || currentSelectedThingMonoBehaviour is Artifact)
+                if (currentSelectedThingMonoBehaviour is Cart || currentSelectedThingMonoBehaviour is Artifact) {
                     LevelReferences.s.combatHoldableThings.Add(currentSelectedThing);
+                }
             }
 
             var rubbleFollowFloor = currentSelectedThingMonoBehaviour.GetComponent<RubbleFollowFloor>();
@@ -738,6 +750,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     public MiniGUI_BuildingInfoCard buildingInfoCard;
     public MiniGUI_EnemyInfoCard enemyInfoCard;
     public MiniGUI_ArtifactInfoCard artifactInfoCard;
+    public MiniGUI_GenericClickableInfoCard genericClickableInfoCard;
 
     private float alternateClickTime = 0;
     private Vector3 alternateClickPos;
@@ -773,7 +786,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     private RaycastHit[] hitCastArray = new RaycastHit[32];
     private IPlayerHoldable[] hitSeenObjects = new IPlayerHoldable[32];
     private IPlayerHoldable GetFirstPriorityItemGamePad() {
-        // selection preference: artifact -> cart -> enemy -> meeple -> merge item -> IGenericClickable
+        // selection preference: artifact -> cart -> enemy -> meeple -> merge item -> GenericClickable
         RaycastHit hit;
         Ray ray = GetRay();
 
@@ -803,7 +816,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
     }
 
     IPlayerHoldable GetFirstPriorityItemMouse() {
-        // selection preference: artifact -> cart -> enemy -> meeple -> merge item
+        // selection preference: artifact -> cart -> enemy -> meeple -> merge item -> GenericClickable
         RaycastHit hit;
         Ray ray = GetRay();
         
@@ -828,6 +841,10 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         
         if (Physics.SphereCast(ray, GetSphereCastRadius(true), out hit, maxDistance, LevelReferences.s.scrapsItemLayer)) {
             return hit.collider.gameObject.GetComponentInParent<ScrapsItem>();
+        }
+        
+        if (Physics.Raycast(ray,  out hit, maxDistance, LevelReferences.s.genericClickableLayer)) {
+            return hit.collider.gameObject.GetComponentInParent<GenericClickable>();
         }
 
         return null;
@@ -891,6 +908,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }else if (currentSelectedThing is Meeple meeple) {
                 meeple.GetClicked();
                 infoCardActive = false;
+            } else if (currentSelectedThing is GenericClickable genericClickable) {
+                genericClickableInfoCard.SetUp(genericClickable);
             } else {
                 infoCardActive = false;
             }
@@ -907,7 +926,8 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         buildingInfoCard.Hide();
         enemyInfoCard.Hide();
         artifactInfoCard.Hide();
-        
+        genericClickableInfoCard.Hide();
+
         TimeController.s.SetTimeSlowForDetailScreen(false);
     }
 
@@ -946,10 +966,28 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
         OnSelectSomething?.Invoke(enemy, isSelecting);
     }
+
+    void SelectGenericClickable(GenericClickable genericClickable) {
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.clickGate);
+        genericClickable.Select();
+    }
+    
+    void DeselectGenericClickable(GenericClickable genericClickable) {
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+        GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.clickGate);
+        genericClickable.Deselect();
+    }
     
     Color SelectEnemy(EnemyHealth enemy) {
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
+        enemy.SetHealthBarState(true);
         return enemyColor;
+    }
+    
+    
+    void DeselectEnemy(EnemyHealth enemy) {
+        enemy.SetHealthBarState(false);
     }
     
     Color SelectArtifact(Artifact artifact) {
@@ -1004,6 +1042,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.showDetails);
 
             Color myColor = cantActColor;
+            bool setColor = true;
             if (newSelectableThing is Artifact artifact) {
                 myColor = SelectArtifact(artifact);
             }else if ( newSelectableThing is Cart cart) {
@@ -1014,9 +1053,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
                 myColor = SelectMeeple(meeple);
             }else if (newSelectableThing is ScrapsItem scrapsItem) {
                 myColor = SelectScrapsItem(scrapsItem);
+            }else if (newSelectableThing is GenericClickable genericClickable) {
+                SelectGenericClickable(genericClickable);
+                setColor = false;
             }
 
-            if (outline != null) {
+            if (setColor && outline != null) {
                 outline.outlineColor = myColor;
             }
             
@@ -1024,12 +1066,16 @@ public class PlayerWorldInteractionController : MonoBehaviour {
         } else {
             if (newSelectableThing is Cart cart) {
                 DeselectCart(cart);
+            }else if (newSelectableThing is GenericClickable genericClickable) {
+                DeselectGenericClickable(genericClickable);
+            }else if (newSelectableThing is EnemyHealth enemyHealth) {
+                DeselectEnemy(enemyHealth);
             }
 
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.move);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.showDetails);
-            
-            
+            GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.clickGate);
+
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.repairControl);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.reloadControl);
             GamepadControlsHelper.s.RemovePossibleAction(GamepadControlsHelper.PossibleActions.gunControl);
@@ -1098,7 +1144,7 @@ public class PlayerWorldInteractionController : MonoBehaviour {
 
          deselectedCart.GetHealthModule().SetHealthBarState(false);
     }
-    
+
 
     private void LogData(bool currentlyMultiBuilding, Cart newBuilding) {
         var buildingName = newBuilding.uniqueName;
@@ -1178,4 +1224,6 @@ public interface IPlayerHoldable {
     public Transform GetUITargetTransform();
     public void SetHoldingState(bool state);
     public bool CanDrag();
+    public DroneRepairController GetHoldingDrone();
+    public void SetHoldingDrone(DroneRepairController holder);
 }

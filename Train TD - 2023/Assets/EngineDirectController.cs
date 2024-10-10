@@ -59,7 +59,7 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
         GamepadControlsHelper.s.AddPossibleActions(GamepadControlsHelper.PossibleActions.exitDirectControl);
     }
 
-    public int crystalStored = 0;
+    public float crystalStored = 0;
     public void UpdateDirectControl() {
         if (myHealth == null || myHealth.isDead || myHealth.myCart.isDestroyed || myHealth.myCart.isBeingDisabled  || myEngineModule == null) {
             // in case our module gets destroyed
@@ -72,11 +72,11 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
 
         if (click) {
             if (crystalStored <= 0) {
-                //var crystalIn = CrystalsAndWarpController.s.TryUseCrystals(1);
+                //var crystalIn = TryUseAmmo();
                 var crystalIn = 1;
 
                 if (crystalIn > 0) {
-                    crystalStored += crystalIn/**5*/;
+                    crystalStored += crystalIn*5;
                 }
             }
 
@@ -90,7 +90,6 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
 
         if (brakeAction) {
             SpeedController.s.SetBrakingStatus(!SpeedController.s.IsBraking());
-            print("yete");
         }
 
         var isBraking = SpeedController.s.IsBraking();
@@ -104,6 +103,23 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
 
         engineOverdrive.gameObject.SetActive(myEngineModule.GetSelfDamageMultiplier()>0);
 
+    }
+
+    public float TryUseAmmo() {
+        var _ammoTracker = Train.s.GetAmmoTracker();
+        var ammoUse = 5f;
+        
+        if (_ammoTracker != null) {
+            for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
+                ammoUse = Mathf.Min(_ammoTracker.ammoProviders[i].AvailableAmmo(), ammoUse);
+                if (ammoUse >= 1f) {
+                    _ammoTracker.ammoProviders[i].UseAmmo(ammoUse);
+                    return ammoUse;
+                }
+            }
+        }
+
+        return 0;
     }
 
     public float vampiricHealthStorage;

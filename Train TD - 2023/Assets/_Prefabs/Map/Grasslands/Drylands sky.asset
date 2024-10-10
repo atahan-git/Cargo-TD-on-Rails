@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Drylands sky
   m_EditorClassIdentifier: 
   SkyboxMaterial: {fileID: 2100000, guid: 4d0e0ffc7a6c1bf44b435e0b23260f8c, type: 2}
-  _topColor: {r: 0.15663938, g: 0.36207935, b: 0.6037736, a: 1}
+  _topColor: {r: 0.50980395, g: 0.6627451, b: 0.7529412, a: 1}
   _middleColor: {r: 0.6011926, g: 0.630785, b: 0.6603774, a: 1}
   _bottomColor: {r: 0.62352943, g: 0.523008, b: 0.14509805, a: 1}
   _topExponent: 0.4

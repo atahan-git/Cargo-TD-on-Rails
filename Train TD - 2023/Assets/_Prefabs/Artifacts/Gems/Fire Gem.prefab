@@ -95,6 +95,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Fire Gem
       objectReference: {fileID: 0}
+    - target: {fileID: 6486279127788060441, guid: 196a9628965f8844d89169a7403b898d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 083fd6bbfc5a4f54cb575d182ea90167, type: 2}
     - target: {fileID: 9107765271094784149, guid: 196a9628965f8844d89169a7403b898d, type: 3}
       propertyPath: mySprite
       value: 

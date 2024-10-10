@@ -15260,7 +15260,6 @@ MonoBehaviour:
   enemyEnterSounds: []
   enemyDieSounds: []
   isTeleporting: 0
-  teleportTiming: {x: 10, y: 30}
   isStealing: 0
   isNuker: 1
   nukingTime: 25
@@ -15269,8 +15268,11 @@ MonoBehaviour:
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
+  boidPosition: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
   myWave: {fileID: 0}
+  teleportInProgress: 0
+  teleportCooldown: 2
 --- !u!114 &2757841068463546037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15298,7 +15300,11 @@ MonoBehaviour:
   mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
-  burnSpeed: 0
+  burnTimer: 0
+  currentBurnTier: 0
+  appliedBurnDamage: 0
+  maxBurnTier: 2
+  burnDecayTimer: 0
   _outlines: []
 --- !u!114 &2757841068463546039
 MonoBehaviour:
@@ -15421,7 +15427,7 @@ MonoBehaviour:
   outlineGradientInLocalSpace: 0
   outlineWidth: 0.45
   outlineBlurPasses: 2
-  outlineQuality: 2
+  outlineQuality: 1
   outlineEdgeMode: 0
   outlineEdgeThreshold: 0.995
   outlineSharpness: 1
@@ -16002,6 +16008,7 @@ GameObject:
   - component: {fileID: 3495724884744729088}
   - component: {fileID: 3504182364538466024}
   - component: {fileID: 7691192327446636816}
+  - component: {fileID: 5308118999828667719}
   m_Layer: 14
   m_Name: LCoupe_v1_1
   m_TagString: Untagged
@@ -16100,10 +16107,24 @@ BoxCollider:
   m_GameObject: {fileID: 3526942250461960488}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1.83, y: 1.15, z: 4.3}
   m_Center: {x: 0, y: -0.000000029802326, z: 0}
+--- !u!64 &5308118999828667719
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3526942250461960488}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: c273bde838d717e4ebaa59048a35c4c7, type: 3}
 --- !u!1 &3526953459256169568
 GameObject:
   m_ObjectHideFlags: 0
@@ -16789,22 +16810,81 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68089be438ef6484592685f717df1c08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 4
   harpoon: {fileID: 4755961362090415697}
   harpoonSpawnLocation: {fileID: 5260913574884364721}
   ropeEndPoint: {fileID: 8658212629804988765}
   harpoonRotatePoint: {fileID: 1264893188402336803}
   target: {fileID: 0}
+  nextTarget: {fileID: 0}
   _lineRenderer: {fileID: 8504337836653825774}
   sparks: {fileID: 2546578051162834395}
-  doDisable: 0
+  myState: 0
+  defaultLineColor:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  zapFlipLineColor:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
   ropeLerpInProgress: 0
   harpoonShootEffect: {fileID: 980176138545819842, guid: 17539b399b107624781864ae9591fa2b, type: 3}
   harpoonDisengageEffect: {fileID: 980176138545819842, guid: c924af16b189e2243a3c5c5775570c0e, type: 3}
   harpoonActiveEffect: {fileID: 980176138545819842, guid: ce4ca281004963545b5127a897e11caf, type: 3}
   harpoonLerpInProgress: 0
-  harpoonEngaged: 0
+  harpoonConnected: 0
   canShoot: 0
+  activeCartDisableEffect: {fileID: 0}
 --- !u!1 &6138432392666939328
 GameObject:
   m_ObjectHideFlags: 0

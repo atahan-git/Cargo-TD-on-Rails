@@ -38,17 +38,43 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public int GetMaxGatlingAmount() {
         return (isGigaGatling && currentAffectors.gatlinificator) ? (maxGatlingAmount * 2) : maxGatlingAmount;
     }
+
+    public float GetGatlingIncrease() {
+        return 1 * BiomeEffectsController.s.GetCurrentEffects().gatlinificationIncreaseRate;
+    }
+
+    public float GetCurrentGatlingPercent() {
+        if (isGigaGatling || currentAffectors.gatlinificator) {
+            return Mathf.Clamp01(gatlingAmount / GetMaxGatlingAmount());
+        } else {
+            return 0;
+        }
+    }
     
     [Header("Bullet Info")]
     public ProjectileProvider.ProjectileTypes myType;
 
     public float GetFireDelay() {
-        if (!isLazer && (isGigaGatling || currentAffectors.gatlinificator)) { 
-            var reduction = Mathf.Pow(gatlingAmount / GetMaxGatlingAmount(), 1 / 3f) * maxFireRateReduction;
-            return (fireDelay * (1-reduction)) * GetAttackSpeedMultiplier();
+        if (!isLazer && (isGigaGatling || currentAffectors.gatlinificator)) {
+            return GetFireDelayAtGatlingPercent(gatlingAmount / GetMaxGatlingAmount());
         } else {
-            return fireDelay * GetAttackSpeedMultiplier();
+            return GetFireDelayAtGatlingPercent(0);
         }
+    }
+    
+    public float GetFireDelayAtGatlingPercent(float percent) {
+        var curDelay = 0.08f;
+
+        if (percent > 0) {
+            var reduction = Mathf.Pow(percent, 1 / 3f) * maxFireRateReduction;
+            reduction = (1 - reduction);
+            reduction *= BiomeEffectsController.s.GetCurrentEffects().gatlinificationGunsMaxEffectMultiplier;
+            curDelay = (fireDelay * reduction) * GetAttackSpeedMultiplier();
+        } else {
+            curDelay = fireDelay * GetAttackSpeedMultiplier();
+        }
+
+        return Mathf.Max(curDelay, 0.08f);
     }
     
     [Header("Damage and stuff")]
@@ -79,6 +105,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
         public float uranium = 0;
         public float fire = 0;
+        public int fireExtraBurnTier = 0;
         public float explosionRangeAdd = 0;
 
         public bool vampiric = false;
@@ -106,7 +133,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
     public float ammoPerBarrage = 1;
 
     public float explosionRange = 0;
-    public float inaccuracyMultiplier = 1f;
+    public float baseInaccuracy = 1f;
+    public float inaccuracyAddFireDelayMultiplier = 1f;
+    
+    [InfoBox("@baseInaccuracy + (inaccuracyAddFireDelayMultiplier * 0.25f * (1/(fireDelay * (1-maxFireRateReduction))))", InfoMessageType.Warning)] 
+    [InfoBox("@baseInaccuracy + (inaccuracyAddFireDelayMultiplier * 0.25f * (1/fireDelay))")]
 
     [Header("Shake info")]
     public bool gunShakeOnShoot = true;
@@ -167,7 +198,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         if (dontGetAffectByMultipliers) {
             return projectileDamage;
         } else {
-            return (projectileDamage + currentAffectors.flatDamageAdd) * GetDamageMultiplier();
+            if (projectileDamage > 0) {
+                return (projectileDamage + currentAffectors.flatDamageAdd) * GetDamageMultiplier();
+            } else {
+                return 0;
+            }
         }
     }
 
@@ -179,7 +214,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         var burnBulletAddonDamage = 0f;
 
         if (projectileDamage > 0) {
-            burnBulletAddonDamage = projectileDamage * currentAffectors.fire;
+            burnBulletAddonDamage = projectileDamage * currentAffectors.fire * 0.5f;
         } else {
             burnBulletAddonDamage = burnDamage * currentAffectors.fire;
             /*burnBulletAddonDamage += burnDamage * currentAffectors.regularToRangeConversionMultiplier;*/
@@ -253,7 +288,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
 
                 if (!beingDirectControlled) {
-                    gatlingAmount += Time.deltaTime;
+                    gatlingAmount += Time.deltaTime * GetGatlingIncrease();
                     gatlingAmount = Mathf.Clamp(gatlingAmount, 0, GetMaxGatlingAmount());
                 }
 
@@ -274,13 +309,13 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
                 IsBarrelPointingCorrectly = false;
 
                 if (!beingDirectControlled) {
-                    gatlingAmount -= Time.deltaTime*2*gatlingDecayMultiplier;
+                    gatlingAmount -= Time.deltaTime*GetGatlingDecayMultiplier();
                     gatlingAmount = Mathf.Clamp(gatlingAmount, 0, GetMaxGatlingAmount());
                 }
             }
         } else {
             if (!beingDirectControlled) {
-                gatlingAmount -= Time.deltaTime * 2*gatlingDecayMultiplier;
+                gatlingAmount -= Time.deltaTime * GetGatlingDecayMultiplier();
                 gatlingAmount = Mathf.Clamp(gatlingAmount, 0, GetMaxGatlingAmount());
             }
             
@@ -309,6 +344,10 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
                 waitTimer = GetFireDelay();
             }
         }
+    }
+
+    public float GetGatlingDecayMultiplier() {
+        return gatlingDecayMultiplier*3;
     }
 
     public void LookAtLocation(Vector3 location) {
@@ -404,6 +443,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             //print(reduction);
         }
 
+        dmgMul *= currentAffectors.power;
+
         return dmgMul;
     }
     
@@ -413,6 +454,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
         if (beingDirectControlled) {
             dmgMul *= directControlDamageMultiplier;
         }
+        
+        dmgMul *= currentAffectors.power;
 
         return dmgMul;
     }
@@ -496,12 +539,11 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             var position = barrelEnd.position;
             var rotation = barrelEnd.rotation;
 
-            var addAngleInaccuracy = 1f;
-            addAngleInaccuracy += gatlingAmount / Mathf.Max(GetMaxGatlingAmount(),1) * 3;
+            var maxInaccuracy = baseInaccuracy;
+            maxInaccuracy += (1 / GetFireDelay())*0.25f * inaccuracyAddFireDelayMultiplier; // max possible base add is 6.25
 
             var randomDirection = Random.onUnitSphere;
-            var actualInaccuracy = Random.Range(0, addAngleInaccuracy);
-            actualInaccuracy *= inaccuracyMultiplier;
+            var actualInaccuracy = Random.Range(0, maxInaccuracy);
             
             var bullet = ProjectileProvider.s.GetProjectile(myType, currentAffectors.fire, position + barrelEnd.forward*projectileSpawnOffset, rotation);
 
@@ -513,6 +555,17 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             bullet.transform.localScale = Vector3.one*(currentAffectors.power*1.5f);
             if (i == 0 || GetFireBarrageDelay() > 0) {
                 var muzzleFlash = ProjectileProvider.s.GetMuzzleFlash(myType, position, rotation, transform, beingDirectControlled ? EffectPriority.Always : EffectPriority.High);
+                if (GetCurrentGatlingPercent() >= 1f && BiomeEffectsController.s.currentEffects.gatlinificationGunsMaxEffectMultiplier > 1) {
+                    CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.gatlingTooHot, position, rotation, transform, beingDirectControlled ? EffectPriority.Always : EffectPriority.High);
+                }
+
+                if (GetCurrentGatlingPercent() > 0.1f &&  BiomeEffectsController.s.currentEffects.gatlinificationGunsMaxEffectMultiplier < 1) {
+                    CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.gatlingChilled, position, rotation, transform, beingDirectControlled ? EffectPriority.Always : EffectPriority.High);
+                }
+                
+                if (currentAffectors.uranium > 0) {
+                    CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.radGunSelfDamageMuzzleFlash, position, rotation, transform, beingDirectControlled ? EffectPriority.Always : EffectPriority.High);
+                }
             }
 
             var projectile = bullet.GetComponent<Projectile>();
@@ -522,6 +575,8 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             data.originObject = GetComponentInParent<Rigidbody>().gameObject;
             data.projectileDamage = GetDamage();
             data.burnDamage = GetBurnDamage();
+            data.normalizedBurnDamage = GetBurnDamage() * fireBarrageCount / GetFireDelay();
+            data.extraBurnTier = currentAffectors.fireExtraBurnTier;
             if (target != null) {
                 data.targetEnemyHealth = target.GetComponent<EnemyHealth>();
                 if (data.targetEnemyHealth != null) {

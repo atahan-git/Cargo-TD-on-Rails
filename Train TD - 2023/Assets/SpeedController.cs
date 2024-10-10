@@ -104,6 +104,7 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
 
     public float cartCapacity;
     public float targetSpeed = 0;
+    public float currentPressure = 0;
     public float acceleration = 0;
 
     public void AddEngine(EngineModule engineModule) {
@@ -123,10 +124,12 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             return;
         
         cartCapacity = 0;
+        currentPressure = 0;
         var newTargetSpeed = 0f;
         for (int i = 0; i < engines.Count; i++) {
             cartCapacity += engines[i].GetEnginePower();
             newTargetSpeed += engines[i].GetSpeedAdd();
+            currentPressure += engines[i].GetEffectivePressure();
         }
 
         var cartCount = Train.s.carts.Count - 1;// main engine itself doesn't count hence +1
@@ -181,17 +184,6 @@ public class SpeedController : MonoBehaviour, IShowOnDistanceRadar {
             engines[i].OnEngineStart?.Invoke();
         }
     }
-    
-    public void SetEngineBoostEffects(bool isBoosting, bool isLowPower) {
-        for (int i = 0; i < engines.Count; i++) {
-            engines[i].OnEngineBoost?.Invoke(isBoosting);
-        }
-        for (int i = 0; i < engines.Count; i++) {
-            engines[i].OnEngineLowPower?.Invoke(isLowPower);
-        }
-    }
-
-    public float maxSpeed = 8;
     
     private void Update() {
         CalculateSpeedBasedOnCartCapacity();

@@ -225,6 +225,7 @@ public class DataSaver {
 		public int lastDifficultySelected = 0;
 		
 		public TutorialProgress tutorialProgress = new TutorialProgress();
+		public StoryProgress storyProgress = new StoryProgress();
 	}
 	
 	[Serializable]
@@ -269,6 +270,11 @@ public class DataSaver {
 		public bool prologueDone = false;
 		public int runsMadeAfterTutorial = 0;
 		public bool showTutorials = true;
+	}
+
+	[Serializable]
+	public class StoryProgress {
+		public List<int> seenConversations = new List<int>();
 	}
 
 	[Serializable]

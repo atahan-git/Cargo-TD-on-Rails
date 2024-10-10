@@ -288,10 +288,10 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 					}
 
 					if (ShootAction.action.IsPressed() && !enterDirectControlShootLock) {
-						myActiveGun.gatlingAmount += Time.deltaTime;
+						myActiveGun.gatlingAmount += Time.deltaTime *myActiveGun.GetGatlingIncrease();
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					} else {
-						myActiveGun.gatlingAmount -= Time.deltaTime*myActiveGun.gatlingDecayMultiplier;
+						myActiveGun.gatlingAmount -= Time.deltaTime*myActiveGun.GetGatlingDecayMultiplier();
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					}
 
@@ -306,18 +306,21 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 					}
 
 					if (hasTarget) {
-						myActiveGun.gatlingAmount += Time.deltaTime;
+						myActiveGun.gatlingAmount += Time.deltaTime*myActiveGun.GetGatlingIncrease();
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					} else {
-						myActiveGun.gatlingAmount -= Time.deltaTime * myActiveGun.gatlingDecayMultiplier;
+						myActiveGun.gatlingAmount -= Time.deltaTime * myActiveGun.GetGatlingDecayMultiplier();
 						myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 					}
 
 					break;
 			}
+		} else {
+			myActiveGun.gatlingAmount -= Time.deltaTime * myActiveGun.GetGatlingDecayMultiplier();
+			myActiveGun.gatlingAmount = Mathf.Clamp(myActiveGun.gatlingAmount, 0, myActiveGun.GetMaxGatlingAmount());
 		}
 
-		gatlinificationSlider.value = Mathf.Clamp01(myActiveGun.gatlingAmount / myActiveGun.GetMaxGatlingAmount());
+		gatlinificationSlider.value = myActiveGun.GetCurrentGatlingPercent();
 
 		rocketLockOnTime = Mathf.Min(1, myActiveGun.GetFireDelay() * (1 / 2f));
 		curCooldown += Time.deltaTime;
@@ -380,9 +383,9 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 
 		var fastShootMultiplier = 1f;
 
-		if (myActiveGun.GetFireDelay() < 1f) {
+		if (myActiveGun.GetFireDelay() < 2f) {
 			fastShootMultiplier = myActiveGun.GetFireDelay();
-			fastShootMultiplier.Remap(0.25f, 1f, 0, 1f);
+			fastShootMultiplier.Remap(0.5f, 2f, 0, 1f);
 			fastShootMultiplier = Mathf.Clamp01(fastShootMultiplier);
 		}
 		
@@ -401,7 +404,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 				}
 				range *= 2;
 				range *= fastShootMultiplier;
-				CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range * 2, range * 2), range * 5));
+				//CameraController.s.ProcessDirectControl(new Vector2(Random.Range(-range * 2, range * 2), range * 5));
 			}
 		} else {
 			/*CameraShakeController.s.ShakeCamera(

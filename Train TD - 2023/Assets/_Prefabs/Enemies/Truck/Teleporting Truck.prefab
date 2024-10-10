@@ -710,6 +710,7 @@ GameObject:
   - component: {fileID: 7611344108328251557}
   - component: {fileID: 7602524163336402605}
   - component: {fileID: 3394843230562559647}
+  - component: {fileID: 5541122753768686922}
   m_Layer: 14
   m_Name: Minibus_v1
   m_TagString: Untagged
@@ -801,10 +802,24 @@ BoxCollider:
   m_GameObject: {fileID: 7625480581539500521}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 2.63, y: 2.82, z: 5.817032}
   m_Center: {x: -0.00000011920929, y: 0.05, z: -0.00000011920929}
+--- !u!64 &5541122753768686922
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7625480581539500521}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300058, guid: fd8eb9b21d8e659409ba168f39c93ea3, type: 3}
 --- !u!1 &7625605671082405629
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,7 +1024,6 @@ MonoBehaviour:
   enemyDieSounds:
   - {fileID: 8300000, guid: c3a770767c607c44982bf4ed42c146c0, type: 3}
   isTeleporting: 1
-  teleportTiming: {x: 10, y: 30}
   isStealing: 0
   isNuker: 0
   nukingTime: 20
@@ -1018,8 +1032,11 @@ MonoBehaviour:
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
+  boidPosition: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
   myWave: {fileID: 0}
+  teleportInProgress: 0
+  teleportCooldown: 2
 --- !u!114 &9165746279054586431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1047,7 +1064,11 @@ MonoBehaviour:
   mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
-  burnSpeed: 0
+  burnTimer: 0
+  currentBurnTier: 0
+  appliedBurnDamage: 0
+  maxBurnTier: 2
+  burnDecayTimer: 0
   _outlines: []
 --- !u!114 &9165746279054586429
 MonoBehaviour:
@@ -1170,7 +1191,7 @@ MonoBehaviour:
   outlineGradientInLocalSpace: 0
   outlineWidth: 0.45
   outlineBlurPasses: 2
-  outlineQuality: 2
+  outlineQuality: 1
   outlineEdgeMode: 0
   outlineEdgeThreshold: 0.995
   outlineSharpness: 1

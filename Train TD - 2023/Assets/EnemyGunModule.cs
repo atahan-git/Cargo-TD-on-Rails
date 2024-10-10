@@ -36,10 +36,15 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
     [Header("Bullet Info")]
     public ProjectileProvider.EnemyProjectileTypes myType;
 
+    public float GetGatlingIncrease() {
+        return 1 * BiomeEffectsController.s.GetCurrentEffects().gatlinificationIncreaseRate;
+    }
     public float GetFireDelay() {
         if (isGigaGatling ) { 
             var reduction = Mathf.Pow(gatlingAmount / maxGatlingAmount, 1 / 3f) * maxFireRateReduction;
-                return (fireDelay * (1-reduction)) * GetAttackSpeedMultiplier();
+            reduction = (1 - reduction);
+            reduction *= BiomeEffectsController.s.GetCurrentEffects().gatlinificationGunsMaxEffectMultiplier;
+            return (fireDelay * reduction) * GetAttackSpeedMultiplier();
         } else {
             return fireDelay * GetAttackSpeedMultiplier();
         }
@@ -113,7 +118,7 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
                     LookAtLocation(target.position);
                 }
 
-                gatlingAmount += Time.deltaTime;
+                gatlingAmount += Time.deltaTime * GetGatlingIncrease();
                 gatlingAmount = Mathf.Clamp(gatlingAmount, 0, maxGatlingAmount);
             } else {
                 // look at center of targeting area
@@ -236,12 +241,12 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
                 gotShootCredits = false;
             }
         }
-        
-        if (target == null) {
-            yield break;
-        }
-        
+
         for (int i = 0; i < fireBarrageCount; i++) {
+            if (target == null) {
+                yield break;
+            }
+            
             var barrelEnd = GetShootTransform().transform;
             var position = barrelEnd.position;
             var rotation = barrelEnd.rotation;
@@ -269,7 +274,7 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
             
             projectile.defaultData.CopyTo(projectile.currentData);
             var data = projectile.currentData;
-            data.isTargetingPlayer = true;
+            data.isTargetingPlayer = myType != ProjectileProvider.EnemyProjectileTypes.heal;
             GameObject originObject = gameObject;
             if (rg) {
                 originObject = rg.gameObject;
@@ -278,12 +283,24 @@ public class EnemyGunModule : MonoBehaviour, IComponentWithTarget,IEnemyEquipmen
             if (target == null) {
                 Debug.Break();
             }
-            data.targetPlayerHealth = target.GetComponentInParent<ModuleHealth>();
-            if (data.targetPlayerHealth == null) {
-                print($"{target.gameObject.name}");
+
+            if (data.isTargetingPlayer) {
+                data.targetPlayerHealth = target.GetComponentInParent<ModuleHealth>();
+                if (data.targetPlayerHealth == null) {
+                    print($"{target.gameObject.name}");
+                }
+
+                data.target = data.targetPlayerHealth.GetUITransform();
+            } else {
+                data.targetEnemyHealth = target.GetComponentInParent<EnemyHealth>();
+                
+                if (data.targetEnemyHealth == null) {
+                    print($"{target.gameObject.name}");
+                }
+
+                data.target = data.targetEnemyHealth.GetUITransform();
             }
-            data.target = data.targetPlayerHealth.GetUITransform();
-            
+
             data.initialVelocity = myVelocity;
             
             projectile.SetUp(data);

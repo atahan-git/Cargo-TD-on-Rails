@@ -12,16 +12,12 @@ public class BiomeController : MonoBehaviour {
     private void Awake() {
         s = this;
     }
-
-    [NonSerialized] public UnityEvent OnBiomeChanged = new UnityEvent();
-
     [SerializeField] private Biome currentBiome;
     public Light sun;
 
     public BiomeScriptable debugBiomeOverride;
 
     public ActBiomesHolder[] actBiomes;
-
 
     public int GetRandomBiomeVariantForCurrentAct() {
         var act = actBiomes[GetAct()];
@@ -80,11 +76,16 @@ public class BiomeController : MonoBehaviour {
         currentBiome.sun.ApplyToSun(sun);
         currentBiome.skybox.SetActiveSkybox(sun, null);
         RenderSettings.ambientIntensity = currentBiome.skyboxLightIntensity;
+        //PPController.s.SetPostExposure(currentBiome.postExposure);
+        //RenderSettings.subtractiveShadowColor = currentBiome.shadowColor;
+
+        if (repopulateTerrain) {
+            var repopulated = PathAndTerrainGenerator.s.terrainPool.RePopulateWithNewObject(currentBiome.terrainPrefab);
+            if(repopulated)
+                PathAndTerrainGenerator.s.myTerrains.Clear();
+        }
         
-        if(repopulateTerrain)
-            PathAndTerrainGenerator.s.terrainPool.RePopulateWithNewObject(currentBiome.terrainPrefab);
-        
-        OnBiomeChanged?.Invoke();
+        BiomeEffectsController.s.ApplyBiomeEffects(currentBiome);
     }
 
 
@@ -97,8 +98,10 @@ public class BiomeController : MonoBehaviour {
     
     [Button]
     void DebugApplySunAndSkyboxEditor(BiomeScriptable target) {
-        _SetBiome(currentBiome);
+        _SetBiome(target.myBiome);
+        PathAndTerrainGenerator.s.DebugReDrawTerrainAroundCenter();
     }
+
 }
 
 [Serializable]

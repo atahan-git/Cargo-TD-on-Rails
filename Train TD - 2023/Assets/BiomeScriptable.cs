@@ -20,6 +20,8 @@ public class BiomeScriptable : ScriptableObject {
 public class Biome {
     public string debugName;
 
+    public int biomeIndex = -1; // for biome effects
+
     public float biomeSpawnWeight = 1;
     
     [Header("Prefabs")]
@@ -34,6 +36,9 @@ public class Biome {
     public SunSettings sun;
     public SkyboxParametersScriptable skybox;
     public float skyboxLightIntensity = 1.56f;
+
+    //public float postExposure = 1f;
+    //public Color shadowColor = new Color(0.42f, 0.478f, 0.627f);
 
     [Header("Terrain Gen")] 
     public TerrainGenerationSettings genSettings;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ConversationSystem;
 using HighlightPlus;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -26,6 +27,7 @@ public class PrologueController : MonoBehaviour {
     public bool isPrologueActive = false;
 
     public PrologueState currentState;
+    
     public GameObject[] tutorialPanels;
 
     void ChangeIntoState(PrologueState targetState) {
@@ -59,6 +61,7 @@ public class PrologueController : MonoBehaviour {
         private bool canExitRepairsActive = false;
         public override void EnterState() {
             var engineHealth = Train.s.carts[0].GetHealthModule();
+            Random.InitState(42);
             engineHealth.DealDamage(engineHealth.GetMaxHealth()*10);
 
             var repairModule = Train.s.carts[1].GetComponentInChildren<DroneRepairController>();
@@ -66,7 +69,8 @@ public class PrologueController : MonoBehaviour {
             repairModule.droneCannotActivateOverride = true;
             
             
-            tutorialPanels[0].SetActive(true);
+            //tutorialPanels[0].SetActive(true);
+            ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_0__meteor_repair_engine, 2.5f);
         }
 
         public override PrologueState UpdateState() {
@@ -85,10 +89,12 @@ public class PrologueController : MonoBehaviour {
                 if (DirectControlMaster.s.directControlInProgress) {
                     if (!canExitRepairsActive) {
                         canExitRepairsActive = true;
-                        tutorialPanels[1].SetActive(true);
+                        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_1__cart_activate_after_half,0.5f);
+                        //tutorialPanels[1].SetActive(true);
                     }
                 } else {
-                    tutorialPanels[2].SetActive(true);
+                    ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_2__repair_drone_auto_repair,1f);
+                    //tutorialPanels[2].SetActive(true);
                     return new StartEngine();
                 }
             }
@@ -195,11 +201,13 @@ public class PrologueController : MonoBehaviour {
 
             if (!showEnginePowerTutorial && DirectControlMaster.s.currentDirectControllable == Train.s.carts[0].GetComponentInChildren<IDirectControllable>()) {
                 showEnginePowerTutorial = true;
-                tutorialPanels[3].SetActive(true);
+                //tutorialPanels[3].SetActive(true);
+                ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_3__put_fuel, 0.5f);
             }
             
             if (engine.GetEffectivePressure() > 1.8f) {
-                tutorialPanels[4].SetActive(true);
+                //tutorialPanels[4].SetActive(true);
+                ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_4__cannot_go_to_red, 0.1f);
                 engine.currentPressure = 1.1f;
             }
 
@@ -397,14 +405,14 @@ public class PrologueController : MonoBehaviour {
         public override PrologueState UpdateState() {
             stateTime += Time.deltaTime;
             
-            if (!enemyHasSpawned && stateTime > 0.5f && SpeedController.s.currentDistance > gemDistance) {
+            if (!enemyHasSpawned && stateTime > 0.5f && SpeedController.s.currentDistance > gemDistance && Train.s.GetComponentsInChildren<Artifact>().Length > 0) {
                 tutorialPanels[11].SetActive(true);
                 SpawnFriendlyEnemy();
             }
 
             //print($"Enemy spawned {enemyHasSpawned}");
             if (enemyHasSpawned) {
-                if (stateTime > 1f && EnemyWavesController.s.GetActiveEnemyCount() <= 0 && Train.s.GetComponentsInChildren<Artifact>().Length > 0) {
+                if (stateTime > 1f && EnemyWavesController.s.GetActiveEnemyCount() <= 0) {
                     return new TimeToDie();
                 }
             }
@@ -605,7 +613,8 @@ public class PrologueController : MonoBehaviour {
     IEnumerator GetGunAnimations() {
         yield return new WaitForSeconds(2f);
         
-        tutorialPanels[5].SetActive(true);
+        //tutorialPanels[5].SetActive(true);
+        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_5__oh_no_artifact,0.5f);
         
         var curState = currentState as GetGun;
         curState.funkyCamMagnitude = 0;
@@ -792,15 +801,15 @@ public class PrologueController : MonoBehaviour {
                     RewardCartLost(rewardCartState);
                 }
 
-                if (Vector3.Distance(rewardCart.transform.position, Train.s.trainMiddle.position) > 15) {
-                    
+                /*if (Vector3.Distance(rewardCart.transform.position, Train.s.trainMiddle.position) > 40) {
                     RewardCartLost(rewardCartState);
-                }
+                }*/
             }
         }
 
         void RewardCartLost(DataSaver.TrainState.CartState rewardCartState) {
             WakeUpAnimation.s.Engage();
+            DirectControlMaster.s.DisableDirectControl();
             CameraController.s.ResetCameraPos();
         
             SpawnNewRewardCart(rewardCartState);

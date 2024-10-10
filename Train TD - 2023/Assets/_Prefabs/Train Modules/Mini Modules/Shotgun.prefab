@@ -516,6 +516,7 @@ MonoBehaviour:
     ammoMultiplier: 1
     uranium: 0
     fire: 0
+    fireExtraBurnTier: 0
     explosionRangeAdd: 0
     vampiric: 0
     gatlinificator: 0
@@ -529,6 +530,8 @@ MonoBehaviour:
   isHitScan: 0
   ammoPerBarrage: 1
   explosionRange: 0
+  baseInaccuracy: 2
+  inaccuracyAddFireDelayMultiplier: 0.5
   inaccuracyMultiplier: 2
   gunShakeOnShoot: 1
   gunShakeMagnitudeMultiplier: 2
@@ -586,6 +589,7 @@ MonoBehaviour:
   myPossibleTargets: 00000000
   canHitFlying: 0
   checkForHealing: 0
+  targetFarthest: 0
   delay: 0
 --- !u!1 &3453434237798867949
 GameObject:

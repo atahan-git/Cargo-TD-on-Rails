@@ -625,6 +625,7 @@ GameObject:
   - component: {fileID: 2928061150507596836}
   - component: {fileID: 2919538574869230974}
   - component: {fileID: 2942942888102365653}
+  - component: {fileID: 7988705555263460454}
   m_Layer: 14
   m_Name: Buggy_v1
   m_TagString: Untagged
@@ -715,10 +716,24 @@ BoxCollider:
   m_GameObject: {fileID: 2941762279283711516}
   m_Material: {fileID: 13400000, guid: 273ea4115990a014993e58f2aeca7082, type: 2}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1.5, z: 4.4756384}
   m_Center: {x: -0.00000005960466, y: 0.3, z: 0}
+--- !u!64 &7988705555263460454
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2941762279283711516}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: b91de7b355924304a86ca9d1ee9f5a36, type: 3}
 --- !u!1 &2941811346672047796
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,7 +1157,6 @@ MonoBehaviour:
   enemyDieSounds:
   - {fileID: 8300000, guid: 908a6c921e4428c4b924ab54e5bf2ec5, type: 3}
   isTeleporting: 0
-  teleportTiming: {x: 10, y: 30}
   isStealing: 0
   isNuker: 0
   nukingTime: 20
@@ -1151,8 +1165,11 @@ MonoBehaviour:
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
+  boidPosition: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
   myWave: {fileID: 0}
+  teleportInProgress: 0
+  teleportCooldown: 2
 --- !u!114 &2942942888468131773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1180,7 +1197,11 @@ MonoBehaviour:
   mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
-  burnSpeed: 0
+  burnTimer: 0
+  currentBurnTier: 0
+  appliedBurnDamage: 0
+  maxBurnTier: 2
+  burnDecayTimer: 0
   _outlines: []
 --- !u!114 &2942942888468131775
 MonoBehaviour:

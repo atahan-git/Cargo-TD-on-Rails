@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myBiome:
     debugName: Act 3 - Darklands
+    biomeIndex: 0
+    biomeSpawnWeight: 1
     terrainPrefab: {fileID: 2040300268567586266, guid: f4e41ecc668e4624ba400ae09ee9d085, type: 3}
     dioramaPrefab: {fileID: 3830013855662730529, guid: 3a68c5043fdca2849be457ce11647262, type: 3}
     sun:

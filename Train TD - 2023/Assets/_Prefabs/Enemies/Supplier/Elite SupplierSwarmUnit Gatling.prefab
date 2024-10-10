@@ -86,7 +86,6 @@ MonoBehaviour:
   enemyEnterSounds: []
   enemyDieSounds: []
   isTeleporting: 0
-  teleportTiming: {x: 10, y: 30}
   isStealing: 0
   isNuker: 0
   nukingTime: 20
@@ -95,8 +94,11 @@ MonoBehaviour:
   mainCollider: {fileID: 0}
   boilRealDelta: {x: 0, y: 0, z: 0}
   boidTargetDelta: {x: 0, y: 0, z: 0}
+  boidPosition: {x: 0, y: 0, z: 0}
   mySwarm: {fileID: 0}
   myWave: {fileID: 0}
+  teleportInProgress: 0
+  teleportCooldown: 2
 --- !u!114 &2757841068463546037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +126,11 @@ MonoBehaviour:
   mySwarm: {fileID: 0}
   activeBurnEffects: []
   currentBurn: 0
-  burnSpeed: 0
+  burnTimer: 0
+  currentBurnTier: 0
+  appliedBurnDamage: 0
+  maxBurnTier: 2
+  burnDecayTimer: 0
   _outlines: []
 --- !u!114 &2757841068463546039
 MonoBehaviour:
@@ -248,7 +254,7 @@ MonoBehaviour:
   outlineGradientInLocalSpace: 0
   outlineWidth: 0.45
   outlineBlurPasses: 2
-  outlineQuality: 2
+  outlineQuality: 1
   outlineEdgeMode: 0
   outlineEdgeThreshold: 0.995
   outlineSharpness: 1
@@ -1075,6 +1081,7 @@ GameObject:
   - component: {fileID: 5030051589880496985}
   - component: {fileID: 5039120700384441537}
   - component: {fileID: 5025651387589791838}
+  - component: {fileID: 779739722875152255}
   m_Layer: 14
   m_Name: Pickup_v1_1
   m_TagString: Untagged
@@ -1170,10 +1177,24 @@ BoxCollider:
   m_GameObject: {fileID: 5025651387589791839}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 3.4509442, y: 2.6, z: 6.692671}
   m_Center: {x: -0.00000023841858, y: 0.3, z: -0.00000011920929}
+--- !u!64 &779739722875152255
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5025651387589791839}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300056, guid: 4e242ef32aae8d64d8c16b43e78b149e, type: 3}
 --- !u!1 &5025653165133820999
 GameObject:
   m_ObjectHideFlags: 0

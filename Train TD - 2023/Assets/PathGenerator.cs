@@ -9,6 +9,18 @@ using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 
 public class PathGenerator : MonoBehaviour {
+    
+    // math
+    /*
+     * |       5 (0.02617, 0.99958)
+     * |     4   \
+     * |   3      \
+     * | 2         \   r = 19.1029
+     * |1           \
+     * 0 (0,0) ------C (19.1029, 0)
+     * arc angle = 3 degrees or 0.052359877559 radians
+     * arc length = 1.00022550
+     */
 
     [Serializable]
     public class TrainPath {
@@ -21,6 +33,7 @@ public class PathGenerator : MonoBehaviour {
         public int endRotateStartPoint;
         public bool addImprintNoise = true;
         public int trackObjectsId = -1;
+        //public int[] blueprint;
 
         public bool debugDrawGizmo = false;
     }
@@ -54,6 +67,7 @@ public class PathGenerator : MonoBehaviour {
         
         var trackPieceCount = Mathf.CeilToInt((length / stepLength)/5)*5 + 1;
         var path = new Vector3[trackPieceCount];
+        //var blueprint = new int[(trackPieceCount - 1) / 5];
         length = (path.Length - 1) * stepLength;
 
         var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
@@ -80,6 +94,16 @@ public class PathGenerator : MonoBehaviour {
                 if (Mathf.Abs(curAngle) < maxAngle)
                     doClampAngle = true;
             }
+
+            /*if (i - 1 % 5 == 0) {
+                if (curAngle > 0) {
+                    blueprint[(i - 1)/5] = 1;
+                }else if (curAngle < 0) {
+                    blueprint[(i - 1) / 5] = -1;
+                } else {
+                    blueprint[i] = 0;
+                }
+            }*/
 
             var curDirection = Quaternion.AngleAxis(curAngle, Vector3.up) * direction;
             
@@ -130,7 +154,134 @@ public class PathGenerator : MonoBehaviour {
         trainPath.bounds.SetMinMax(minEdge, maxEdge);
         trainPath.length = length;
         trainPath.stepLength = stepLength;
+        //trainPath.blueprint = blueprint;
         return trainPath;
+    }
+
+
+    //private int bossPathOffset = 2;
+    /*public TrainPath MakeBossPath(TrainPath sourcePath) {
+        var length = 0f;
+
+        var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        var maxEdge = new Vector3(float.MinValue,10,float.MinValue);// give volume to the bounds
+        var trackLength = 1.00022550f;
+        // 2PIr = total length
+        // 2.5f = angle of a single piece
+        // (2.5f/360)*2PI r = length of a single track piece
+        // 
+        var actualOffset = trackLength * bossPathOffset;
+
+        /*var pathBlueprint = new List<int>();
+        for (int j = 0; j < ((sourcePath.points.Length-1)/5); j++) {
+            var i = j * 5+1;
+            var bend = CheckPointPosition(sourcePath.points[i], sourcePath.points[i + 2], sourcePath.points[i + 4]);
+
+            pathBlueprint.Add(bend);
+        }#1#
+        List<int> pathBlueprint;
+        /*if (sourcePath.blueprint != null) {
+            pathBlueprint = new List<int>(sourcePath.blueprint);
+        } else {
+            pathBlueprint = new List<int>();
+            pathBlueprint.Add(0);
+            print("no blueprint!");
+        }#1#
+        pathBlueprint = new List<int>();
+
+        int lastDirection = pathBlueprint[0];
+        print(string.Join(", ", pathBlueprint));
+        for (int i = 0; i < pathBlueprint.Count; i++) {
+            if (pathBlueprint[i] != lastDirection) {
+                lastDirection = pathBlueprint[i];
+                if (pathBlueprint[i] > 0) {
+                    for (int j = 0; j < bossPathOffset; j++) {
+                        pathBlueprint.RemoveAt(i);
+                    }
+                }else if (pathBlueprint[i] < 0) {
+                    for (int j = 0; j < bossPathOffset; j++) {
+                        pathBlueprint.Insert(i, lastDirection);
+                    }
+                }
+            }
+        }
+        print(string.Join(", ", pathBlueprint));
+
+        var path = new Vector3[pathBlueprint.Count * 5 + 1];
+        var direction = sourcePath.points[1] - sourcePath.points[0];
+        direction.Normalize();
+        float curAngle = 0;
+        var left = Quaternion.AngleAxis(90, Vector3.up) * direction;
+        path[0] = sourcePath.points[0] + actualOffset*left;
+        
+        for (int j = 0; j < pathBlueprint.Count; j++) {
+            var curBend = pathBlueprint[j];
+            for (int k = 0; k < 5; k++) {
+                var i = j * 5 + k+1;
+                
+                switch (curBend) {
+                    case 0:
+                        // do nothing
+                        break;
+                    case 1:
+                        curAngle += turnAngle;
+                        break;
+                    case -1:
+                        curAngle -= turnAngle;
+                        break;
+                }
+                
+                var curDirection = Quaternion.AngleAxis(curAngle, Vector3.up) * direction;
+                path[i] = path[i - 1] + curDirection.normalized * stepLength;
+
+                maxEdge.x = Mathf.Max(maxEdge.x, path[i].x);
+                maxEdge.y = Mathf.Max(maxEdge.y, path[i].y);
+                maxEdge.z = Mathf.Max(maxEdge.z, path[i].z);
+            
+                minEdge.x = Mathf.Min(minEdge.x, path[i].x);
+                minEdge.y = Mathf.Min(minEdge.y, path[i].y);
+                minEdge.z = Mathf.Min(minEdge.z, path[i].z);
+            }
+        }
+        
+        var trainPath = new TrainPath();
+        trainPath.points = path;
+        trainPath.bounds = new Bounds();
+        trainPath.bounds.SetMinMax(minEdge, maxEdge);
+        trainPath.length = length;
+        trainPath.stepLength = stepLength;
+        return trainPath;
+    }*/
+
+    int CheckPointPosition(Vector3 p1, Vector3 p2, Vector3 p3)
+    {
+        // Get the vectors
+        Vector3 v1 = p2 - p1; // Vector from point1 to point2
+        Vector3 v2 = p3 - p1; // Vector from point1 to point3
+
+        // Project to the XZ plane (ignoring Y axis if working in 2D-like space)
+        Vector3 v1_2D = new Vector3(v1.x, 0, v1.z);
+        Vector3 v2_2D = new Vector3(v2.x, 0, v2.z);
+
+        // Calculate the cross product of the two vectors in 2D
+        float crossProduct = v1_2D.x * v2_2D.z - v1_2D.z * v2_2D.x;
+
+        //print(crossProduct);
+        if (Mathf.Abs(crossProduct - 0) < 0.001f) 
+        {
+            //Debug.Log("The points are collinear.");
+            return 0;
+        }
+        else if (crossProduct > 0)
+        {
+            //Debug.Log("The middle point is to the left of the line.");
+            return -1;
+        }
+        else
+        {
+            //Debug.Log("The middle point is to the right of the line.");
+            return 1;
+        }
     }
 
     public const float stationStraightDistance = 100;
@@ -145,9 +296,12 @@ public class PathGenerator : MonoBehaviour {
 
         var combinedPath = new TrainPath();
         combinedPath.points = new Vector3[curvyPath.points.Length + straightPath.points.Length -1];
+        //combinedPath.blueprint = new int[curvyPath.blueprint.Length + straightPath.blueprint.Length -1];
         
         curvyPath.points.CopyTo(combinedPath.points,0);
         straightPath.points.CopyTo(combinedPath.points,curvyPath.points.Length -1);
+        //curvyPath.blueprint.CopyTo(combinedPath.blueprint,0);
+        //straightPath.blueprint.CopyTo(combinedPath.blueprint,curvyPath.blueprint.Length -1);
         
         combinedPath.bounds = new Bounds();
         combinedPath.bounds.Encapsulate(curvyPath.bounds);
@@ -172,9 +326,12 @@ public class PathGenerator : MonoBehaviour {
 
         var combinedPath = new TrainPath();
         combinedPath.points = new Vector3[curvyPath.points.Length + straightPath.points.Length -1];
+        //combinedPath.blueprint = new int[curvyPath.blueprint.Length + straightPath.blueprint.Length];
         
         straightPath.points.CopyTo(combinedPath.points,0);
-        curvyPath.points.CopyTo(combinedPath.points,straightPath.points.Length-1);
+        curvyPath.points.CopyTo(combinedPath.points, straightPath.points.Length - 1);
+        //straightPath.blueprint.CopyTo(combinedPath.blueprint,0);
+        //curvyPath.blueprint.CopyTo(combinedPath.blueprint,straightPath.blueprint.Length);
         
         combinedPath.bounds = new Bounds();
         combinedPath.bounds.Encapsulate(curvyPath.bounds);
@@ -189,6 +346,7 @@ public class PathGenerator : MonoBehaviour {
     public TrainPath MakeStraightPath(Vector3 startPoint, Vector3 direction, float length) {
         var trackPieceCount = Mathf.CeilToInt((length / stepLength)/5)*5 + 1;
         var path = new Vector3[trackPieceCount];
+        //var blueprint = new int[(trackPieceCount - 1) / 5];
         length = (path.Length - 1) * stepLength;
 
         var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
@@ -214,6 +372,7 @@ public class PathGenerator : MonoBehaviour {
         trainPath.bounds.SetMinMax(minEdge, maxEdge);
         trainPath.length = length;
         trainPath.stepLength = stepLength;
+        //trainPath.blueprint = blueprint;
         return trainPath;
     }
 

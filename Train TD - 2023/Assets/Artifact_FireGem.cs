@@ -10,12 +10,13 @@ public class Artifact_FireGem : MonoBehaviour, IChangeCartState, IArtifactDescri
         var didApply = false;
         foreach (var gunModule in target.GetComponentsInChildren<GunModule>()) {
             if (gunModule.burnDamage > 0 || gunModule.currentAffectors.fire > 0) {
-                currentDescription = "Increases burn damage";
+                currentDescription = "Increases burn damage and raises max burn tier";
+                gunModule.currentAffectors.fireExtraBurnTier += 1;
             } else {
-                currentDescription = "Converts regular damage to burn damage";
+                currentDescription = "Adds burn damage";
             }
             
-            gunModule.currentAffectors.fire += 1f;
+            gunModule.currentAffectors.fire += 0.5f;
             didApply = true;
         }
         
@@ -26,7 +27,7 @@ public class Artifact_FireGem : MonoBehaviour, IChangeCartState, IArtifactDescri
         }
         
         foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
-            moduleAmmo.currentAffectors.reloadOverTime += 0.5f;
+            moduleAmmo.currentAffectors.reloadOverTime += 0.35f;
             currentDescription = "Slowly gain ammo";
             didApply = true;
         }

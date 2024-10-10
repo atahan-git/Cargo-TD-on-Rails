@@ -148,13 +148,13 @@ public class NewspaperController : MonoBehaviour {
     public void ConvertCarts() {
         var inkCarts = new List<Cart>();
         
-        for (int i = 0; i < Train.s.carts.Count; i++) {
+        /*for (int i = 0; i < Train.s.carts.Count; i++) {
             if (Train.s.carts[i].GetComponentInChildren<WarpStabilizerModule>() is { } warpStabilizerModule && warpStabilizerModule != null) {
                 if (warpStabilizerModule.inkCount > 0) {
                     inkCarts.Add(Train.s.carts[i]);
                 }
             }
-        }
+        }*/
 
         convertButton.SetActive(false);
         StartCoroutine(_ConvertCarts(inkCarts));
@@ -217,13 +217,13 @@ public class NewspaperController : MonoBehaviour {
 
 
     public static bool TrainHasCrystalCarts() {
-        for (int i = 0; i < Train.s.carts.Count; i++) {
+        /*for (int i = 0; i < Train.s.carts.Count; i++) {
             if (Train.s.carts[i].GetComponentInChildren<WarpStabilizerModule>() is { } warpStabilizerModule && warpStabilizerModule != null) {
                 if (warpStabilizerModule.inkCount > 0) {
                     return true;
                 }
             }
-        }
+        }*/
 
         return false;
     }

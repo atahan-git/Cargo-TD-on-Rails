@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class PulseAlpha : MonoBehaviour {
 
     public float speed = 1f;
-
+    
     private float curTime = 0;
     private Color _color;
     private Image _image;
