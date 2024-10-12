@@ -41,7 +41,7 @@ public class Tier2GunModuleDirectController : MonoBehaviour, IDirectControllable
 	public GameObject isExplosive => DirectControlMaster.s.isExplosive;
 	public GameObject isSticky => DirectControlMaster.s.isSticky;
 	public void ActivateDirectControl() {
-		CameraController.s.ActivateDirectControl(myGun.GetComponentInChildren<DirectControlCameraPosition>().transform, true);
+		CameraController.s.ActivateDirectControl(myGun.GetComponentInChildren<DirectControlCameraPosition>().transform, true,true);
 		gatlinificationSlider.gameObject.SetActive(myGun.isGigaGatling || myGun.currentAffectors.gatlinificator);
 		gatlinificationSlider.value = myGun.gatlingAmount;
 

@@ -140,7 +140,7 @@ public class EnemyWavesController : MonoBehaviour {
 		var curLevel = PlayStateMaster.s.currentLevel;
 		
 		var playerDistance = SpeedController.s.currentDistance;
-		var wave = Instantiate(curLevel.formations[Random.Range(0, curLevel.formations.Length)], Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
+		var wave = Instantiate(curLevel.formations[Random.Range(0, curLevel.formations.Length)], PathAndTerrainGenerator.s.GetPointOnActivePath(distance-playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
 		wave.transform.SetParent(transform);
 
 		var slots = wave.GetComponentsInChildren<EnemySwarmMaker>();
@@ -226,13 +226,15 @@ public class EnemyWavesController : MonoBehaviour {
 		waves.Add(wave);
 	}
 
-	public void SpawnCustomBattalion(GameObject battalionPrefab, float distance, bool spawnMoving, bool isLeft) {
+	public EnemyWave SpawnCustomBattalion(GameObject battalionPrefab, float distance, bool spawnMoving, bool isLeft) {
 		var playerDistance = SpeedController.s.currentDistance;
-		var wave = Instantiate(battalionPrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
+		var wave = Instantiate(battalionPrefab, PathAndTerrainGenerator.s.GetPointOnActivePath(distance-playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
 		wave.transform.SetParent(transform);
 		
 		wave.SetUp(distance, spawnMoving, isLeft);
 		waves.Add(wave);
+
+		return wave;
 	}
 
 	int[] RandomIntsThatAddUpToInput(int total, int count) {
@@ -302,11 +304,14 @@ public class EnemyWavesController : MonoBehaviour {
 	
 	public EnemyWave SpawnEnemy(GameObject enemyPrefab, GameObject gear, float distance, bool startMoving, bool isLeft, bool isDynamic = false) {
 		var playerDistance = SpeedController.s.currentDistance;
-		var wave = Instantiate(enemyPrefab, Vector3.forward * (distance - playerDistance), Quaternion.identity).GetComponent<EnemyWave>();
+		return SpawnEnemy(enemyPrefab, gear, PathAndTerrainGenerator.s.GetPointOnActivePath(distance-playerDistance), Quaternion.identity, startMoving, isLeft, isDynamic, distance);
+	}
+
+	public EnemyWave SpawnEnemy(GameObject enemyPrefab, GameObject gear, Vector3 position, Quaternion rotation, bool startMoving, bool isLeft, bool isDynamic, float distance) {
+		var wave = Instantiate(enemyPrefab, position, rotation).GetComponent<EnemyWave>();
 		wave.transform.SetParent(transform);
 		wave.SetUp(distance, startMoving, isLeft);
 		waves.Add(wave);
-
 
 		if (gear != null) {
 			var gunSlots = wave.GetComponentsInChildren<EnemyGunSlot>();
@@ -316,11 +321,10 @@ public class EnemyWavesController : MonoBehaviour {
 			}
 		}
 
-		if(isDynamic)
+		if (isDynamic)
 			dynamicWaves.Add(wave);
 
 		return wave;
-		//UpdateEnemyTargetables();
 	}
 
 	/*public void SpawnAmbush(LevelSegment ambush) {
@@ -428,7 +432,7 @@ public class EnemyWavesController : MonoBehaviour {
 	}
 
 	public bool AnyEnemyIsPresent() {
-		return GetActiveEnemyCount() > 0;
+		return GetActiveEnemyCount() > 0 || BossController.s.IsBossAlive();
 	}
 
 	public void StopSpawningNewDynamicEnemies() {

@@ -60,7 +60,7 @@ public class Tier1GunModuleDirectController : MonoBehaviour, IDirectControllable
 		
 		SetGunDirectControlStatus(myActiveGun, true);
 
-		CameraController.s.ActivateDirectControl(myActiveGun!.GetComponentInChildren<DirectControlCameraPosition>().transform, true);
+		CameraController.s.ActivateDirectControl(myActiveGun!.GetComponentInChildren<DirectControlCameraPosition>().transform, true, true);
 		gatlinificationSlider.gameObject.SetActive(myActiveGun.isGigaGatling || myActiveGun.currentAffectors.gatlinificator);
 		gatlinificationSlider.value = myActiveGun.gatlingAmount;
 

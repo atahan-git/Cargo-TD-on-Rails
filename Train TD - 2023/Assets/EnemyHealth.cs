@@ -26,7 +26,12 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 	[ReadOnly]
 	public MiniGUI_EnemyUIBar enemyUIBar;
 	
+	[Space]
 	public bool isComponentEnemy = false;
+	public float cartEnemyLength = 0.55f;
+	public GameObject deadObject;
+	public bool isEngine = false;
+	[Space]
 	
 	public float maxShields = 0;
 	public float currentShields = 0;
@@ -70,7 +75,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 			Die();
 		}
 
-		if (currentHealth >= 0) {
+		if (currentHealth >= 0 && !isComponentEnemy) {
 			mySwarm.TookDamage(damage / maxHealth);
 		}
 
@@ -223,7 +228,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 	private int lastBurnTier;
 	public float appliedBurnDamage = 0;
 	public int maxBurnTier = 2;
-	const int minBurnTier = 2;
+	public const int minBurnTier = 2;
 	public float burnDecayTimer = 0;
 	public void BurnDamage(float damage, float normalizedBurnDamage, int extraBurnTier) {
 		currentBurn += damage;
@@ -373,7 +378,12 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 		if(deathPrefab != null)
 			VisualEffectsController.s.SmartInstantiate(deathPrefab, pos, rot);
 
-		Destroy(gameObject);
+		if (isComponentEnemy && deadObject != null) {
+			deadObject.SetActive(true);
+			Destroy(GetComponent<PossibleTarget>());
+		} else {
+			Destroy(gameObject);
+		}
 	}
 	
 	private void OnDestroy() {

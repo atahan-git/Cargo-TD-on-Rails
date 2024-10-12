@@ -36,7 +36,7 @@ public class InfiniteMapController : MonoBehaviour {
     {
         if (PlayStateMaster.s.isCombatInProgress()) {
             if (!killedAllEnemies) {
-                if (EnemyWavesController.s.GetActiveEnemyCount() <= 0) {
+                if (!EnemyWavesController.s.AnyEnemyIsPresent()) {
                     killedAllEnemies = true;
                     SectionComplete();
                 }
@@ -140,6 +140,7 @@ public class InfiniteMapController : MonoBehaviour {
         yield return new WaitUntil(() => MiniGUI_MapTransitionAnimator.s.transitionProgress >= 1f);
         
         //loadingBar
+        // holder.myPiece.myEnemyType.myType = UpgradesController.PathEnemyType.PathType.boss; // always boss cheat thing
         var isBoss = holder.myPiece.myEnemyType.myType == UpgradesController.PathEnemyType.PathType.boss;
         BossController.s.SetBossComing(isBoss);
         

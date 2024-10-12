@@ -96,7 +96,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
             }
         }
         
-        CameraController.s.ActivateDirectControl(targetTransform, false);
+        CameraController.s.ActivateDirectControl(targetTransform, false,true);
         
         ammo_perfect.SetActive(false);
         ammo_full.SetActive(false);
@@ -247,6 +247,7 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
         }
         
         highWindsActive.SetActive(HighWindsController.s.currentlyHighWinds);
+        var isStoppedMoving = HighWindsController.s.IsStopped();
 
         if (dropping) {
             UpdateDroppingAmmoPhysics();
@@ -270,19 +271,21 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                     dropWasSuccess = false;
                 }
 
-                if (dropWasSuccess && (dist < perfectMatchDistance * currentAffectors.efficiency || currentAffectors.uranium > 0)) {
-                    dropWasPerfect = true;
+                if (!isStoppedMoving) {
+                    if (dropWasSuccess && (dist < perfectMatchDistance * currentAffectors.efficiency || currentAffectors.uranium > 0)) {
+                        dropWasPerfect = true;
+                    }
+
+                    if (dropWasPerfect) {
+                        curPerfectComboCount += 1;
+                    } else {
+                        curPerfectComboCount = 0;
+                    }
                 }
-                
-                if (dropWasPerfect) {
-                    curPerfectComboCount += 1;
-                } else {
-                    curPerfectComboCount = 0;
-                }
+
                 curReloadCount = baseReloadCount*(curPerfectComboCount+1);
 
                 if (currentAffectors.uranium > 0 && dropWasSuccess) {
-                    
                     myHealth.GetComponentInChildren<Artifact_UraniumGem>().ApplyDamage(myHealth.myCart, curReloadCount*5);
                 }
 
@@ -300,7 +303,10 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
                     SetNewCurPos(false);
                 }
 
-                
+                if (isStoppedMoving) {
+                    curDelay = 0;
+                }
+
 
                 if (dropWasPerfect) {
                     AnimateEffect(ammo_perfect);
@@ -318,18 +324,23 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
 
         //var speedMultiplier = currentAffectors.speed;
         var speedMultiplier = 1;
+        
         if (!dropping && !needNewOnes) {
-            if (moveForward) {
-                curPos += moveSpeed * Time.deltaTime * speedMultiplier;
-                if (curPos >= 1f) {
-                    curPos = 1f;
-                    moveForward = false;
-                }
+            if (isStoppedMoving) {
+                curPos = Mathf.MoveTowards(curPos, 0.5f, moveSpeed * Time.deltaTime * speedMultiplier);
             } else {
-                curPos -= moveSpeed * Time.deltaTime * speedMultiplier;
-                if (curPos <= 0f) {
-                    curPos = 0f;
-                    moveForward = true;
+                if (moveForward) {
+                    curPos += moveSpeed * Time.deltaTime * speedMultiplier;
+                    if (curPos >= 1f) {
+                        curPos = 1f;
+                        moveForward = false;
+                    }
+                } else {
+                    curPos -= moveSpeed * Time.deltaTime * speedMultiplier;
+                    if (curPos <= 0f) {
+                        curPos = 0f;
+                        moveForward = true;
+                    }
                 }
             }
         }
@@ -522,6 +533,10 @@ public class AmmoDirectController : MonoBehaviour, IDirectControllable, IResetSt
 
         if (curSpawnForward) {
             curPos = 1 - curPos;
+        }
+
+        if (HighWindsController.s.IsStopped()) {
+            curPos = 0.5f;
         }
 
         moveForward = !curSpawnForward;

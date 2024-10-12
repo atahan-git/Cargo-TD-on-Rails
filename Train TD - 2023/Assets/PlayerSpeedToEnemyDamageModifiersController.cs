@@ -11,7 +11,7 @@ public class PlayerSpeedToEnemyDamageModifiersController : MonoBehaviour {
     }
     // speed ranges
     // <2 blue
-    // 2-4 green
+    // 2-4 green 3 is default
     // 4-6 orange
     // 6+ red
 

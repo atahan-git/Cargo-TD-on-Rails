@@ -44,8 +44,6 @@ public class HighWindsController : MonoBehaviour {
                 DeactivateHighWinds();
             }
 
-
-
             if (highWindsTimer <= 0) {
                 if (!currentlyHighWinds) {
                     ActivateHighWinds();
@@ -60,11 +58,29 @@ public class HighWindsController : MonoBehaviour {
             regularWinds.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
             highWinds.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
         }
+        
         trainForwardWind.transform.position =  PathAndTerrainGenerator.s.GetPointOnActivePath(0);
         trainForwardWind.transform.rotation =  PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
         trainForwardWind.windMain = -LevelReferences.s.speed / 7;
+        
+        if (LevelReferences.s.speed > 4) {
+            regularWinds.SetActive(true);
+            regularWinds.transform.position = PathAndTerrainGenerator.s.GetPointOnActivePath(0);
+            regularWinds.transform.rotation = PathAndTerrainGenerator.s.GetRotationOnActivePath(0);
+            currentlyHighWinds = true;
+            
+        } else {
+            if (!highWindsPresent) {
+                regularWinds.SetActive(false);
+                currentlyHighWinds = false;
+            }
+        }
     }
 
+
+    public bool IsStopped() {
+        return LevelReferences.s.speed < 1;
+    }
 
     void ActivateHighWinds() {
         currentlyHighWinds = true;

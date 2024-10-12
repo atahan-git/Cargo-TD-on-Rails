@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ClickableEntityInfo : MonoBehaviour, IClickableInfo {
+
+    public Sprite icon;
+
     public Tooltip tooltip;
     
     [TextArea]

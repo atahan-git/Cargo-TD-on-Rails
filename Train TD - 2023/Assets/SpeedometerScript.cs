@@ -10,8 +10,7 @@ public class SpeedometerScript : MonoBehaviour {
     public RectTransform gauge;
     public float minRotation = -90;
     public float maxRotation = 45;
-    
-    
+
     [Button]
     public void SetSpeed(float speed) {
         gauge.rotation = Quaternion.Euler(0,0,speed.Remap(minSpeed,maxSpeed,minRotation,maxRotation));

@@ -11,7 +11,6 @@ public class BossController : MonoBehaviour {
 
     private void Awake() {
         s = this;
-        //isBoss = true;
     }
 
     public GameObject bossFightUI;
@@ -34,6 +33,7 @@ public class BossController : MonoBehaviour {
         isBoss = _isBoss;
     }
 
+    private EnemyTrain boss;
     public void NewPathEnteredWithBoss(float segmentStartDistance, float segmentLength) {
         if (!isBoss) {
             return;
@@ -46,7 +46,10 @@ public class BossController : MonoBehaviour {
         }
 
         var distance = Random.Range(segmentLength / 10f, segmentLength / 3f);
-        EnemyWavesController.s.SpawnEnemy(myBoss.bossMainPrefab, segmentStartDistance + distance, false, Random.value < 0.5f);
+        
+        boss = Instantiate(myBoss.bossMainPrefab).GetComponent<EnemyTrain>();
+        boss.SetUpEnemyTrain();
+        //EnemyWavesController.s.SpawnEnemy(myBoss.bossMainPrefab, segmentStartDistance + distance, false, Random.value < 0.5f);
         
         continueButton.SetActive(false);
         continueButton.GetComponent<CanvasGroup>().alpha = 0;
@@ -72,8 +75,17 @@ public class BossController : MonoBehaviour {
         }
     }
 
+    public bool IsBossAlive() {
+        if (isBoss) {
+            if (boss != null) {
+                return boss.IsAlive();
+            }
+        } 
+        
+        return false;
+    }
     void UpdateBossKilledTextAndContinueButton() {
-        if (EnemyWavesController.s.GetActiveEnemyCount() > 0) {
+        if (EnemyWavesController.s.AnyEnemyIsPresent()) {
             bossKilledText.text = $"Defeat the boss";
         } else {
             bossKilledText.text = $"Congrats!";

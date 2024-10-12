@@ -264,6 +264,11 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
     public float TryDoRepair(RepairableBurnEffect target, out bool removedArrow, out bool repairSuccess,float deltaTime, float extraMultiplier = 1) {
         removedArrow = false;
         repairSuccess = false;
+        
+        if (HighWindsController.s.IsStopped()) {
+            extraMultiplier *= 2;
+        }
+        
         if (target.hasArrow) {
             repairTimer = target.removeArrowState;
             repairTimer += deltaTime * GetArrowRepairTimeMultiplier()*extraMultiplier;

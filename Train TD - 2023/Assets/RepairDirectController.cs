@@ -40,7 +40,7 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	public float curRepairTime;
 	
 	public void ActivateDirectControl() {
-		CameraController.s.ActivateDirectControl(myRepairController.GetComponentInChildren<DirectControlCameraPosition>().transform, true);
+		CameraController.s.ActivateDirectControl(myRepairController.GetComponentInChildren<DirectControlCameraPosition>().transform, true, true);
 		repairingSlider.value = 0;
 		validRepairImage.gameObject.SetActive(false);
 

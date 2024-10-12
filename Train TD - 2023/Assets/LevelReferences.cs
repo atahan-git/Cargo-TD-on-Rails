@@ -67,7 +67,7 @@ public class LevelReferences : MonoBehaviour {
     
     [Space]
 
-    public float speed = 1f;
+    public float speed = 1f; // 3 is base speed, more than 5 is considered fast
 
     public List<PossibleTarget> allTargets = new List<PossibleTarget>();
     public TargetValues[] allTargetValues = new TargetValues[0];

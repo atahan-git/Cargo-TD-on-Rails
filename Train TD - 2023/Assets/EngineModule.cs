@@ -11,9 +11,9 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
    public int extraEnginePower = 0;
    public float GetSpeedAdd() {
       var curSpeedAdd = (speedAdd + extraSpeedAdd) * GetEffectivePressure();
-      if (!IsBoosting()) {
+      /*if (!IsBoosting()) {
          curSpeedAdd *= TweakablesMaster.s.GetTrainSpeedMultiplier(); // boosting speed doesn't change between difficulties
-      }
+      }*/
    
       return curSpeedAdd;
    }
@@ -26,6 +26,8 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
       if (SpeedController.s.IsBraking()) {
          return 0;
       }
+
+      return MiniGUI_EnginePowerSlider.s.GetEngineSpeed();
       
       if (currentPressure > greenZone[0] && currentPressure < greenZone[1]) {
          return 1;
@@ -76,9 +78,10 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
       }
       
       var damageAmount = 0f;
-      if (currentPressure > damageZones[0]) {
+      var pressure = GetEffectivePressure();
+      if (pressure > damageZones[0]) {
          damageAmount = damageAmounts[0];
-         if (currentPressure > damageZones[1]) {
+         if (pressure > damageZones[1]) {
             damageAmount = damageAmounts[1];
          }
       }
@@ -132,10 +135,11 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
          currentPressure -= GetPressureUse() * Time.deltaTime * 0.5f;
 
          currentPressure = Mathf.Clamp(currentPressure, 0, 3);
+         var effectivePressure = GetEffectivePressure();
 
-         if (currentPressure > damageZones[0]) {
+         if (effectivePressure > damageZones[0]) {
             var damageAmount = damageAmounts[0];
-            if (currentPressure > damageZones[1]) {
+            if (effectivePressure > damageZones[1]) {
                damageAmount = damageAmounts[1];
             }
 
@@ -144,7 +148,7 @@ public class EngineModule : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
             if (curDamageInterval <= 0) {
                var health = GetComponentInParent<ModuleHealth>();
                health.SelfDamage(damage*damageAmount);
-               if (currentPressure < damageZones[1]) {
+               if (effectivePressure < damageZones[1]) {
                   CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.mediumDamage, health.GetUITransform().position, Quaternion.identity);
                } else {
                   CommonEffectsProvider.s.SpawnEffect(CommonEffectsProvider.CommonEffectType.bigDamage, health.GetUITransform().position, Quaternion.identity);

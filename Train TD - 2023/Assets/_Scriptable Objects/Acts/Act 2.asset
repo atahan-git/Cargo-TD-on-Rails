@@ -36,9 +36,7 @@ MonoBehaviour:
   eliteEquipment:
   - {fileID: 593209492897996642, guid: b08eef6530c08644590a2f7dff7bb707, type: 3}
   possibleBossDatas:
-  - bossName: The Army
-    bossMainPrefab: {fileID: 1982649860289487492, guid: b55136b907843ad4080b5a0ee808a097, type: 3}
-    bossesToSpawn: 9
-    bossNeededKillCount: 9
+  - bossName: The Train
+    bossMainPrefab: {fileID: 9007462253808032611, guid: 6eb4fe48995df684d8f619f74fff272c, type: 3}
   segmentLengthsMin: {x: 150, y: 200}
   segmentLengthsRange: {x: 50, y: 55}

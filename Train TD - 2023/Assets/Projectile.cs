@@ -535,6 +535,9 @@ public class Projectile : MonoBehaviour {
 
     void ApplyHitForceToObject(EnemyHealth health) {
         var collider = health.GetMainCollider();
+        if (collider == null) {
+            return;
+        }
         var rigidbody = collider.GetComponent<Rigidbody>();
         if (rigidbody == null) {
             rigidbody = collider.GetComponentInParent<Rigidbody>();

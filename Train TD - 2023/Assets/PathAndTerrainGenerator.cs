@@ -24,7 +24,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public List<PathGenerator.TrainPath> myPaths = new List<PathGenerator.TrainPath>();
     public List<TerrainGenerator.TrainTerrain> myTerrains = new List<TerrainGenerator.TrainTerrain>();
     public Dictionary<int, List<GameObject>> myTracks = new Dictionary<int, List<GameObject>>();
-    //public Dictionary<PathGenerator.TrainPath, PathGenerator.TrainPath> pathToBossPath = new Dictionary<PathGenerator.TrainPath, PathGenerator.TrainPath>();
+    public Dictionary<PathGenerator.TrainPath, PathGenerator.TrainPath> pathToBossPath = new Dictionary<PathGenerator.TrainPath, PathGenerator.TrainPath>();
     public List<PathGenerator.TrainPath> cityStampPaths = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> _comboList = new List<PathGenerator.TrainPath>();
     List<PathGenerator.TrainPath> comboList {
@@ -46,15 +46,15 @@ public class PathAndTerrainGenerator : MonoBehaviour {
     public GameObject distantMountains;
     
     private int lastId = 0;
-    void AddToMyPaths(PathGenerator.TrainPath toAdd) {
+    void AddToMyPaths(PathGenerator.TrainPath toAdd, bool goIn = false) {
         if (toAdd.trackObjectsId <= 0) {
             lastId += 1;
             toAdd.trackObjectsId = lastId;
         }
         myPaths.Add(toAdd);
 
-        /*if (BossController.s.isBoss) {
-            var bossPath = _pathGenerator.MakeBossPath(toAdd);
+        if (BossController.s.isBoss) {
+            var bossPath = _pathGenerator.MakeBossPath(toAdd, goIn);
             
             if (bossPath.trackObjectsId <= 0) {
                 lastId += 1;
@@ -62,7 +62,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
             }
             myPaths.Add(bossPath);
             pathToBossPath[toAdd] = bossPath;
-        }*/
+        }
     }
 
     void RemoveFromMyPaths(PathGenerator.TrainPath toRemove) {
@@ -75,7 +75,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         }
         myTracks.Remove(toRemove.trackObjectsId);
 
-        /*if (BossController.s.isBoss) {
+        if (BossController.s.isBoss) {
             toRemove = pathToBossPath[toRemove];
             myPaths.Remove(toRemove);
             if (myTracks.ContainsKey(toRemove.trackObjectsId)) {
@@ -85,7 +85,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                 }
             }
             myTracks.Remove(toRemove.trackObjectsId);
-        }*/
+        }
     }
 
     void ClearAllMyPaths() {
@@ -223,7 +223,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
         terrainViewRange = mapTerrainViewRange;
         
         var starterStationPath = _pathGenerator.MakeStationAtBeginningPath(-Vector3.forward * PathGenerator.stationStraightDistance / 2f, Vector3.forward, Vector3.forward, Random.Range(30,50));
-        AddToMyPaths(starterStationPath);
+        AddToMyPaths(starterStationPath,true);
         isComboListDirty = true;
         
         var cityDistance =  PathGenerator.stationStraightDistance/2f;
@@ -299,7 +299,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
         var backTrackDistance = 100;
         var starterPath = _pathGenerator.MakeTrainPath(-Vector3.forward * backTrackDistance, Vector3.forward, Vector3.forward, backTrackDistance*2);
-        AddToMyPaths(starterPath);
+        AddToMyPaths(starterPath, true);
         isComboListDirty = true;
         
         currentPathTree = new PathTree() {
@@ -859,6 +859,7 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                         var direction = trainPath.points[index + 1] - trainPath.points[index];
                         var directionFurther = trainPath.points[index + 4] - trainPath.points[index];
                         var rotation = Quaternion.LookRotation(direction);
+                        var lengthMultiplier = (trainPath.points[index + 2]-trainPath.points[index + 1]).magnitude/0.2f;
 
                         GameObject newTrack;
                         if (Vector3.Angle(direction, directionFurther) > 0) {
@@ -866,10 +867,19 @@ public class PathAndTerrainGenerator : MonoBehaviour {
                             //Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+direction,Color.red, 1000f);
                             //Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+directionFurther,Color.blue, 1000f);
                             //Debug.DrawLine(newTrack.transform.position, newTrack.transform.position+Vector3.Cross(direction, directionFurther).normalized,Color.green, 1000f);
+
                             if (Vector3.Cross(direction, directionFurther).y > 0) {
-                                newTrack.transform.localScale = new Vector3(-1, 1, 1);
+                                if (trainPath.isBossPath) {
+                                    newTrack.transform.localScale = new Vector3(-1, 1, lengthMultiplier);
+                                } else {
+                                    newTrack.transform.localScale = new Vector3(-1, 1, 1);
+                                }
                             } else {
-                                newTrack.transform.localScale = new Vector3(1, 1, 1);
+                                if (trainPath.isBossPath) {
+                                    newTrack.transform.localScale = new Vector3(1, 1, lengthMultiplier);    
+                                } else {
+                                    newTrack.transform.localScale = new Vector3(1, 1, 1);
+                                }
                             }
                         } else {
                             newTrack = trackPool.Spawn(point, rotation);
@@ -1173,5 +1183,27 @@ public class PathAndTerrainGenerator : MonoBehaviour {
 
     public int GetDepthForEnemyDifficultyPurposes() {
         return InfiniteMapController.s.depth;
+    }
+    
+    public Vector3 GetPointOnBossPath(float currentDistanceOffset) {
+        var currentDistance = GetCurrentDistance(currentDistanceOffset);
+        var correctPath = GetCorrectPath(ref currentDistance);
+        correctPath = pathToBossPath[correctPath];
+        
+        if(correctPath == null)
+            return Vector3.forward*currentDistance;
+
+        return PathGenerator.GetPointOnLine(correctPath, currentDistance);
+    }
+    
+    public Quaternion GetRotationOnBossPath(float currentDistanceOffset) {
+        var currentDistance = GetCurrentDistance(currentDistanceOffset);
+        var correctPath = GetCorrectPath(ref currentDistance);
+        correctPath = pathToBossPath[correctPath];
+        
+        if(correctPath == null)
+            return Quaternion.identity;
+
+        return PathGenerator.GetDirectionOnTheLine(correctPath, currentDistance);
     }
 }

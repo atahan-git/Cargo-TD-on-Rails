@@ -33,7 +33,7 @@ public class PathGenerator : MonoBehaviour {
         public int endRotateStartPoint;
         public bool addImprintNoise = true;
         public int trackObjectsId = -1;
-        //public int[] blueprint;
+        public bool isBossPath = false;
 
         public bool debugDrawGizmo = false;
     }
@@ -159,89 +159,49 @@ public class PathGenerator : MonoBehaviour {
     }
 
 
-    //private int bossPathOffset = 2;
-    /*public TrainPath MakeBossPath(TrainPath sourcePath) {
+    public const float bossPathOffset = 3f;
+    public TrainPath MakeBossPath(TrainPath sourcePath, bool goIn) {
         var length = 0f;
 
         var minEdge = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         var maxEdge = new Vector3(float.MinValue,10,float.MinValue);// give volume to the bounds
-        var trackLength = 1.00022550f;
-        // 2PIr = total length
-        // 2.5f = angle of a single piece
-        // (2.5f/360)*2PI r = length of a single track piece
-        // 
-        var actualOffset = trackLength * bossPathOffset;
+        var path = new Vector3[sourcePath.points.Length];
 
-        /*var pathBlueprint = new List<int>();
-        for (int j = 0; j < ((sourcePath.points.Length-1)/5); j++) {
-            var i = j * 5+1;
-            var bend = CheckPointPosition(sourcePath.points[i], sourcePath.points[i + 2], sourcePath.points[i + 4]);
-
-            pathBlueprint.Add(bend);
-        }#1#
-        List<int> pathBlueprint;
-        /*if (sourcePath.blueprint != null) {
-            pathBlueprint = new List<int>(sourcePath.blueprint);
-        } else {
-            pathBlueprint = new List<int>();
-            pathBlueprint.Add(0);
-            print("no blueprint!");
-        }#1#
-        pathBlueprint = new List<int>();
-
-        int lastDirection = pathBlueprint[0];
-        print(string.Join(", ", pathBlueprint));
-        for (int i = 0; i < pathBlueprint.Count; i++) {
-            if (pathBlueprint[i] != lastDirection) {
-                lastDirection = pathBlueprint[i];
-                if (pathBlueprint[i] > 0) {
-                    for (int j = 0; j < bossPathOffset; j++) {
-                        pathBlueprint.RemoveAt(i);
-                    }
-                }else if (pathBlueprint[i] < 0) {
-                    for (int j = 0; j < bossPathOffset; j++) {
-                        pathBlueprint.Insert(i, lastDirection);
-                    }
-                }
-            }
+        var joinPoint = 0;
+        if (goIn) {
+            joinPoint = sourcePath.points.Length - 200;
         }
-        print(string.Join(", ", pathBlueprint));
+        for (int i = joinPoint; i < sourcePath.points.Length; i++) {
+            var forward = GetDirectionVectorOnTheLine(sourcePath, i*stepLength+stepLength/2f);
+            var left = Quaternion.AngleAxis(90, Vector3.up) * forward;
+            path[i] = sourcePath.points[i] + left * bossPathOffset;
 
-        var path = new Vector3[pathBlueprint.Count * 5 + 1];
-        var direction = sourcePath.points[1] - sourcePath.points[0];
-        direction.Normalize();
-        float curAngle = 0;
-        var left = Quaternion.AngleAxis(90, Vector3.up) * direction;
-        path[0] = sourcePath.points[0] + actualOffset*left;
+            maxEdge.x = Mathf.Max(maxEdge.x, path[i].x);
+            maxEdge.y = Mathf.Max(maxEdge.y, path[i].y);
+            maxEdge.z = Mathf.Max(maxEdge.z, path[i].z);
         
-        for (int j = 0; j < pathBlueprint.Count; j++) {
-            var curBend = pathBlueprint[j];
-            for (int k = 0; k < 5; k++) {
-                var i = j * 5 + k+1;
-                
-                switch (curBend) {
-                    case 0:
-                        // do nothing
-                        break;
-                    case 1:
-                        curAngle += turnAngle;
-                        break;
-                    case -1:
-                        curAngle -= turnAngle;
-                        break;
-                }
-                
-                var curDirection = Quaternion.AngleAxis(curAngle, Vector3.up) * direction;
-                path[i] = path[i - 1] + curDirection.normalized * stepLength;
+            minEdge.x = Mathf.Min(minEdge.x, path[i].x);
+            minEdge.y = Mathf.Min(minEdge.y, path[i].y);
+            minEdge.z = Mathf.Min(minEdge.z, path[i].z);
+        }
 
-                maxEdge.x = Mathf.Max(maxEdge.x, path[i].x);
-                maxEdge.y = Mathf.Max(maxEdge.y, path[i].y);
-                maxEdge.z = Mathf.Max(maxEdge.z, path[i].z);
-            
-                minEdge.x = Mathf.Min(minEdge.x, path[i].x);
-                minEdge.y = Mathf.Min(minEdge.y, path[i].y);
-                minEdge.z = Mathf.Min(minEdge.z, path[i].z);
+        var backwards = Quaternion.AngleAxis(180, Vector3.up) * GetDirectionVectorOnTheLine(sourcePath, joinPoint*stepLength);
+        var turnCount = 160;
+        for (int i = joinPoint-1; i >= 0; i--) {
+            if (turnCount > 0) {
+                backwards = Quaternion.AngleAxis(-0.5f, Vector3.up) * backwards;
+                turnCount -= 1;
             }
+
+            path[i] = path[i + 1] + backwards * stepLength;
+            
+            maxEdge.x = Mathf.Max(maxEdge.x, path[i].x);
+            maxEdge.y = Mathf.Max(maxEdge.y, path[i].y);
+            maxEdge.z = Mathf.Max(maxEdge.z, path[i].z);
+        
+            minEdge.x = Mathf.Min(minEdge.x, path[i].x);
+            minEdge.y = Mathf.Min(minEdge.y, path[i].y);
+            minEdge.z = Mathf.Min(minEdge.z, path[i].z);
         }
         
         var trainPath = new TrainPath();
@@ -250,38 +210,8 @@ public class PathGenerator : MonoBehaviour {
         trainPath.bounds.SetMinMax(minEdge, maxEdge);
         trainPath.length = length;
         trainPath.stepLength = stepLength;
+        trainPath.isBossPath = true;
         return trainPath;
-    }*/
-
-    int CheckPointPosition(Vector3 p1, Vector3 p2, Vector3 p3)
-    {
-        // Get the vectors
-        Vector3 v1 = p2 - p1; // Vector from point1 to point2
-        Vector3 v2 = p3 - p1; // Vector from point1 to point3
-
-        // Project to the XZ plane (ignoring Y axis if working in 2D-like space)
-        Vector3 v1_2D = new Vector3(v1.x, 0, v1.z);
-        Vector3 v2_2D = new Vector3(v2.x, 0, v2.z);
-
-        // Calculate the cross product of the two vectors in 2D
-        float crossProduct = v1_2D.x * v2_2D.z - v1_2D.z * v2_2D.x;
-
-        //print(crossProduct);
-        if (Mathf.Abs(crossProduct - 0) < 0.001f) 
-        {
-            //Debug.Log("The points are collinear.");
-            return 0;
-        }
-        else if (crossProduct > 0)
-        {
-            //Debug.Log("The middle point is to the left of the line.");
-            return -1;
-        }
-        else
-        {
-            //Debug.Log("The middle point is to the right of the line.");
-            return 1;
-        }
     }
 
     public const float stationStraightDistance = 100;

@@ -786,7 +786,7 @@ public class CameraController : MonoBehaviour {
         }
     }
     
-    public void ActivateDirectControl(Transform target, bool allowFreeLook) {
+    public void ActivateDirectControl(Transform target, bool allowFreeLook, bool lockCursor) {
         //UnSnap();
         directControlTransform = target;
         directControlActive = true;
@@ -795,7 +795,9 @@ public class CameraController : MonoBehaviour {
         rotLerping = true;
         posLerping = true;
         allowDirectControlFreeLook = allowFreeLook;
-        Cursor.lockState = CursorLockMode.Locked;
+        if (lockCursor) {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
     public void ChangeDirectControlTransformWithoutChangingCurrentRotation(Transform target) {

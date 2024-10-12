@@ -25,11 +25,12 @@ public class WorldDifficultyController : MonoBehaviour {
 
     public float baseDamageMultiplier = 0.6f;
     public float baseHealthMultiplier = 0.6f;
-    [ReadOnly]
-    public float currentDamageMultiplier;
-    [ReadOnly]
-    public float currentHealthMultiplier;
+    
+    [Space]
+    public float currentDamageMultiplier = 1f;
+    public float currentHealthMultiplier = 1f;
 
+    [HideInInspector]
     public UnityEvent OnDifficultyChanged = new UnityEvent();
 
     public float combatStartTime;

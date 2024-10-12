@@ -30,7 +30,7 @@ public class NotImplementedDirectController : MonoBehaviour, IDirectControllable
             }
         }
         
-        CameraController.s.ActivateDirectControl(targetTransform, false);
+        CameraController.s.ActivateDirectControl(targetTransform, false, true);
         
         DirectControlMaster.s.notImplementedUI.SetActive(true);
         

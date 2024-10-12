@@ -48,7 +48,7 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
             }
         }
         
-        CameraController.s.ActivateDirectControl(targetTransform, false);
+        CameraController.s.ActivateDirectControl(targetTransform, false, false);
         
         
         DirectControlMaster.s.trainEngineControlUI.SetActive(true);

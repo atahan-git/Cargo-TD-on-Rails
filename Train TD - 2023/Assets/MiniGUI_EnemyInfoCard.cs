@@ -21,8 +21,14 @@ public class MiniGUI_EnemyInfoCard : MonoBehaviour
         var posFollower = GetComponent<MiniGUI_InfoCardFollowPositionLogic>();
 
         var swarm = enemy.GetComponent<EnemyInSwarm>();
-        icon.sprite = swarm.enemyIcon;
         var info = enemy.GetComponent<ClickableEntityInfo>();
+        
+        if(swarm != null){
+            icon.sprite = swarm.enemyIcon;
+        } else {
+            icon.sprite = info.icon;
+        }
+            
         moduleName.text = info.info;
 
         moduleDescription.text = info.tooltip.text;
