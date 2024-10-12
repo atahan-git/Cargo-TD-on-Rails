@@ -202,15 +202,18 @@ public class NewspaperController : MonoBehaviour {
 
 
     public void CloseNewspaperScreen() {
-        newspaperOpenState = false;
-        PlayerWorldInteractionController.s.canSelect = true;
+        if (MissionLoseFinisher.s.isMissionLost) {
+            MissionLoseFinisher.s.Continue();
+        } else {
+            newspaperOpenState = false;
+            PlayerWorldInteractionController.s.canSelect = true;
+        }
     }
 
     void ToggleNewspaperScreen(InputAction.CallbackContext context) {
         if (newspaperOpenState) {
             CloseNewspaperScreen();
-        }else
-        {
+        }else {
             OpenNewspaperScreen();
         }
     }

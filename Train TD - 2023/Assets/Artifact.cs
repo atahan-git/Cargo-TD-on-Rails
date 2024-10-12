@@ -96,7 +96,7 @@ public class Artifact : MonoBehaviour, IPlayerHoldable
     }
 
     public bool CanDrag() {
-        return canDrag;
+        return canDrag && !PlayStateMaster.s.isEndGame();
     }
 
     private DroneRepairController _holder;

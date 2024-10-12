@@ -143,7 +143,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 
     public void UpdateHpState() {
         currentHealth = Mathf.Clamp(currentHealth, 0, GetMaxHealth());
-        if (!PlayStateMaster.s.isCombatInProgress()) {
+        if (!PlayStateMaster.s.isCombatStarted()) {
             currentHealth = GetMaxHealth();
         }
         

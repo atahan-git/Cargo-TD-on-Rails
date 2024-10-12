@@ -17,9 +17,8 @@ MonoBehaviour:
     conversationUniqueID: 7
     conversationName: Prologue 5 - oh no artifact
     remarks:
-    - tag: 
-      text: Uh oh, the meteor seems to be interacting with the nuclear steam engine.
-        And worse,<speed=0.25><i> It's messing up my mustache with the static.<speed=1></i>
+    - text: Uh oh, the meteor seems to be interacting with the nuclear steam engine.
+        And worse, <speed=0.25><i>it's messing up my mustache.<speed=1></i>
       portrait: 0
       bigSpriteAction: 00000000
       bigSpriteSlot: 00000000

@@ -27,8 +27,6 @@ namespace ConversationSystem {
 
 	[System.Serializable]
 	public class Remark {
-		public string tag;
-
 		[TextArea]
 		[Tooltip("<delay='waitSeconds'>,\n <wait='click/enabled'>,\n <give='itemType'-'itemId'>,\n <trigger='commandID'>")]
 		public string text;

@@ -98,7 +98,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
             return;
         }
         
-        if (myHealth.myCart.isDestroyed) {
+        if (myHealth.myCart.isDestroyed && PlayStateMaster.s.isCombatInProgress()) {
             curSelfRepair += selfRepairSpeed * Time.deltaTime;
             curSelfRepair = Mathf.Clamp01(curSelfRepair);
             selfRepairImage.fillAmount = curSelfRepair / 1f;

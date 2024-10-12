@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class MissionLoseFinisher : MonoBehaviour {
@@ -72,9 +73,6 @@ public class MissionLoseFinisher : MonoBehaviour {
         isMissionLost = true;
         PlayStateMaster.s.FinishCombat(true);
 
-        Time.timeScale = 0;
-        Pauser.s.isPaused = true;
-        
         for (int i = 0; i < scriptsToDisable.Length; i++) {
             scriptsToDisable[i].enabled = false;
         }
@@ -111,41 +109,104 @@ public class MissionLoseFinisher : MonoBehaviour {
     }
 
     private bool isDeathAnimPlaying = false;
+    private bool moveMainCam = false;
     private bool mainCamLerpComplete = false;
     public Transform mainCamMoveTarget;
+    public RawImage blackBackgroundImage;
+    public CanvasGroup fullBlackOverlay;
+    public Camera deathCam;
     IEnumerator DeathAnimation() {
         isDeathAnimPlaying = true;
         mainCamLerpComplete = false;
+        moveMainCam = true;
+        
+        var _camTrans = MainCameraReference.s.cam.transform;
+        mainCamMoveTarget.position = _camTrans.position;
+        mainCamMoveTarget.rotation = _camTrans.rotation;
 
-        var engine = Train.s.carts[0].transform;
+        blackBackgroundImage.gameObject.SetActive(true);
+        blackBackgroundImage.color = new Color(1, 1, 1, 0);
 
-        mainCamMoveTarget.position = engine.position + engine.right * 2.73f + engine.up * 3.62f;
-        mainCamMoveTarget.LookAt(engine);
+        TimeController.s.SetTimeSlowForDetailScreen(true);
+
+
+        yield return new WaitForSecondsRealtime(2);
+
+        deathCam.enabled = true;
+
+        AsteroidInTheDistancePositionController.s.enabled = false;
+        var meteor = AsteroidInTheDistancePositionController.s.transform;
+        var meteorStartPos = meteor.position;
+        var enginePos = Train.s.carts[0].transform.position;
+        var direction = meteorStartPos - enginePos;
+        //meteorStartPos = direction.normalized * 150;
+        meteor.localScale = Vector3.one * 0.25f;
+
+        var lerpCam = 0f;
+        while (lerpCam <= 1f) {
+            var color = Color.white;
+            color.a = Mathf.Clamp01(lerpCam.Remap(0,1,0,0.75f));
+            blackBackgroundImage.color = color;
+            
+            meteor.position = Vector3.Lerp(meteorStartPos, enginePos, lerpCam);
+            
+            lerpCam += Time.unscaledDeltaTime/2f;
+            yield return null;
+        }
+        blackBackgroundImage.color = Color.white;
+        
+        meteor.gameObject.SetActive(false);
+        fullBlackOverlay.gameObject.SetActive(true);
         
         
-        yield return null;
+        deathCam.enabled = false;
+        moveMainCam = false;
+        CameraController.s.enabled = true;
+        NewspaperController.s.OpenNewspaperScreen();
+        blackBackgroundImage.gameObject.SetActive(false);
         
+        yield return new WaitForSecondsRealtime(2);
         
         if (DataSaver.s.GetCurrentSave().instantRestart) {
             BackToMenu();
-        }// else the player will need to click back to menu on their own
+            yield break;
+        } else {
+            var lerpBlack = 0f;
+            while (lerpBlack <= 1f) {
+                fullBlackOverlay.alpha = Mathf.Clamp01(lerpBlack.Remap(0, 1, 1, 0));
+                lerpBlack += Time.unscaledDeltaTime / 2f;
+                yield return null;
+            }
 
-        //isDeathAnimPlaying = false;
+            fullBlackOverlay.gameObject.SetActive(false);
+
+            PlayerWorldInteractionController.s.canSelect = true;
+
+            isDeathAnimPlaying = false;
+        }
     }
 
     private void LateUpdate() {
         if (isDeathAnimPlaying) {
-            if (mainCamLerpComplete) {
+            if (moveMainCam) {
                 var _camTrans = MainCameraReference.s.cam.transform;
+
+                deathCam.transform.position = _camTrans.position;
+                deathCam.transform.rotation = _camTrans.rotation;
+
                 if (!mainCamLerpComplete) {
-                    if (
-                        Vector3.Distance(_camTrans.transform.position, mainCamMoveTarget.position) > 0.01f
-                        && Quaternion.Angle(_camTrans.transform.rotation, mainCamMoveTarget.rotation) > 1
-                    ) {
-                        _camTrans.transform.position = Vector3.Lerp(_camTrans.position, mainCamMoveTarget.position, 5*Time.deltaTime);
-                        _camTrans.transform.rotation = Quaternion.Slerp(_camTrans.rotation, mainCamMoveTarget.rotation, 20*Time.deltaTime);
-                    } else {
+                    var engine = Train.s.carts[0].transform;
+
+                    var targetPosition = engine.position + engine.right * 2.73f + engine.up * 3.62f;
+                    mainCamMoveTarget.position = Vector3.Lerp(mainCamMoveTarget.position, targetPosition, 0.2f * Time.unscaledDeltaTime);
+                    mainCamMoveTarget.LookAt(engine);
+
+                    _camTrans.position = mainCamMoveTarget.position;
+                    _camTrans.rotation = Quaternion.Slerp(_camTrans.rotation, mainCamMoveTarget.rotation, 1f * Time.unscaledDeltaTime);
+
+                    if (Vector3.Distance(mainCamMoveTarget.position, targetPosition) < 0.01f) {
                         mainCamLerpComplete = true;
+                        mainCamMoveTarget.position = targetPosition;
                     }
                 } else {
                     _camTrans.position = mainCamMoveTarget.position;
@@ -155,11 +216,9 @@ public class MissionLoseFinisher : MonoBehaviour {
         }
     }
 
-
-    /*public void Restart() {
-        throw new NotImplementedException();
+    public void Continue() {
+        BackToMenu();
     }
-    */
 
 
     public void BackToMenu() {

@@ -10,7 +10,7 @@ public class RandomParticleTurnOnAndOff : MonoBehaviour {
 
     public Vector2 stayOfftime = new Vector2(2f, 4f);
 
-    private ParticleSystem[] _particleSystems;
+    private ParticleSystem[] _particleSystems = new ParticleSystem[0];
     private void Start() {
         _particleSystems = GetComponentsInChildren<ParticleSystem>();
     }

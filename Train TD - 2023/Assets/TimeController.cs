@@ -83,9 +83,6 @@ public class TimeController : MonoBehaviour {
 
     public bool fastForwarding = false;
     public void ProcessFastForward() {
-        
-        
-        
         if (slowTimeForDetails) {
             Time.timeScale = Mathf.Lerp(Time.timeScale, 0.05f, 4 * Time.unscaledDeltaTime);
             return;

@@ -71,6 +71,7 @@ public class PrologueController : MonoBehaviour {
             
             //tutorialPanels[0].SetActive(true);
             ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_0__meteor_repair_engine, 2.5f);
+            CurrentGoalController.s.SetText("Repair Engine");
         }
 
         public override PrologueState UpdateState() {
@@ -90,10 +91,12 @@ public class PrologueController : MonoBehaviour {
                     if (!canExitRepairsActive) {
                         canExitRepairsActive = true;
                         ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_1__cart_activate_after_half,0.5f);
+                        CurrentGoalController.s.ClearText();
                         //tutorialPanels[1].SetActive(true);
                     }
                 } else {
                     ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_2__repair_drone_auto_repair,1f);
+                    CurrentGoalController.s.SetText("Start Engine");
                     //tutorialPanels[2].SetActive(true);
                     return new StartEngine();
                 }
@@ -205,10 +208,10 @@ public class PrologueController : MonoBehaviour {
                 ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_3__put_fuel, 0.5f);
             }
             
-            if (engine.GetEffectivePressure() > 1.8f) {
+            if (engine.GetEffectivePressure() > 1.8f && !ConversationDisplayer.s.conversationInProgress) {
                 //tutorialPanels[4].SetActive(true);
                 ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_4__cannot_go_to_red, 0.1f);
-                engine.currentPressure = 1.1f;
+                MiniGUI_EnginePowerSlider.s.engineSlider.value = 1;
             }
 
             if (engine.GetEffectivePressure() >= 1f && !DirectControlMaster.s.directControlInProgress) {
@@ -330,7 +333,9 @@ public class PrologueController : MonoBehaviour {
                 gun.gunCannotActivateOverride = true;
             }
             
-            tutorialPanels[8].SetActive(true);
+            //tutorialPanels[8].SetActive(true);
+            ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_8_need_ammo,0.5f);
+            CurrentGoalController.s.SetText("Get Ammo");
         }
 
         void SpawnAmmoCartAndFriendlyEnemy() {
@@ -350,9 +355,11 @@ public class PrologueController : MonoBehaviour {
                 SpawnAmmoCartAndFriendlyEnemy();
             }
 
-            if (!shownShootTutorial && Train.s.GetComponent<AmmoTracker>().GetAmmoPercent() > 0.001f) {
+            if (!shownShootTutorial && Train.s.GetComponent<AmmoTracker>().GetAmmoPercent() > 0.001f && !DirectControlMaster.s.directControlInProgress) {
                 shownShootTutorial = true;
-                tutorialPanels[9].SetActive(true);
+                //tutorialPanels[9].SetActive(true);
+                ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_9_normally_autoshoot_but_direct_control,0.5f);
+                CurrentGoalController.s.SetText("Kill Enemy");
             }
             
             if (enemyHasSpawned && stateTime > 1f && Train.s.carts.Count >= 4) {
@@ -389,7 +396,9 @@ public class PrologueController : MonoBehaviour {
         private bool gemTaken;
         private bool shownShootTutorial;
         public override void EnterState() {
-            tutorialPanels[10].SetActive(true);
+            //tutorialPanels[10].SetActive(true);
+            ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_10_gem_loot,5f);
+            CurrentGoalController.s.SetText("Get Gem");
             var gemReward = Instantiate(s.bigGemRewardOnRoad).GetComponent<GemRewardOnRoad>();
             gemDistance = SpeedController.s.currentDistance + 45;
             gemReward.autoStart = false;
@@ -406,7 +415,9 @@ public class PrologueController : MonoBehaviour {
             stateTime += Time.deltaTime;
             
             if (!enemyHasSpawned && stateTime > 0.5f && SpeedController.s.currentDistance > gemDistance && Train.s.GetComponentsInChildren<Artifact>().Length > 0) {
-                tutorialPanels[11].SetActive(true);
+                //tutorialPanels[11].SetActive(true);
+                ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_11_gem_can_move,0);
+                CurrentGoalController.s.SetText("Kill Enemies");
                 SpawnFriendlyEnemy();
             }
 
@@ -482,7 +493,8 @@ public class PrologueController : MonoBehaviour {
             tutorialPanels[i].SetActive(false);
         }
         
-        tutorialUI.SetActive(true);
+        CurrentGoalController.s.ClearText();
+        //tutorialUI.SetActive(true);
     }
 
     public void DrawPrologueWorld() {
@@ -555,7 +567,9 @@ public class PrologueController : MonoBehaviour {
         var meteorShard = Train.s.carts[0].GetComponentInChildren<Artifact_MeteorShard>();
         meteorShard.SetParticlesState(true);
         
-        tutorialPanels[12].SetActive(true);
+        //tutorialPanels[12].SetActive(true);
+        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_12_oh_no_again,0.5f);
+        CurrentGoalController.s.SetText("DIE");
         
         yield return new WaitForSeconds(2f);
         
@@ -603,6 +617,9 @@ public class PrologueController : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
         EnemyWavesController.s.gameObject.SetActive(true);
         SetBiome(2);
+        
+        
+        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_13_time_to_die,0.5f);
     }
 
     public DataSaver.TrainState.CartState cannonState;
@@ -614,7 +631,9 @@ public class PrologueController : MonoBehaviour {
         yield return new WaitForSeconds(2f);
         
         //tutorialPanels[5].SetActive(true);
-        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_5__oh_no_artifact,0.5f);
+        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_5__oh_no_artifact,1.5f);
+        
+        CurrentGoalController.s.SetText("???");
         
         var curState = currentState as GetGun;
         curState.funkyCamMagnitude = 0;
@@ -716,16 +735,27 @@ public class PrologueController : MonoBehaviour {
         }
         
         
-        tutorialPanels[6].SetActive(true);
-
-
+        //ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_5_2_patch_train,0.5f);
+        //tutorialPanels[6].SetActive(true);
+        
+        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_5_1_who_were_those_guys,1.5f);
+        
+        while (SpeedController.s.currentDistance < rewardDistance-5.5f) {
+            yield return null;
+        }
+        
+        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_6_we_need_gun,0);
+        CurrentGoalController.s.SetText("Get gun");
+        
         while (SpeedController.s.currentDistance < rewardDistance-2.5f) {
             yield return null;
         }
         
+        
         TimeController.s.SetSlowDownAndPauseState(true);
         
-        tutorialPanels[7].SetActive(true);
+        ConversationsHolder.s.TriggerConversation(ConversationsIds.Prologue_7_attach_gun,0.5f);
+        CurrentGoalController.s.SetText("Attach Gun");
 
         yield return new WaitForSecondsRealtime(2f);
         

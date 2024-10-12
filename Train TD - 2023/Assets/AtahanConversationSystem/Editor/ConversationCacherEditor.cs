@@ -29,7 +29,8 @@ public class ConversationCacherEditor
         {
             var path = AssetDatabase.GUIDToAssetPath(guids[n]);
             allConversations[n] = AssetDatabase.LoadAssetAtPath<ConversationScriptable>(path);
-            var safeName = allConversations[n].myConversation.conversationName.Replace(' ', '_').Replace("-", "").Replace(",", "");
+            var safeName = allConversations[n].myConversation.conversationName
+                .Replace(' ', '_').Replace("-", "").Replace(",", "").Replace(".", "_");
             enumContent.AppendLine($"    {safeName}={n},");
             maxID = Mathf.Max(maxID, allConversations[n].myConversation.conversationUniqueID+1);
             if (allConversations[n].myConversation.conversationUniqueID >= 0 && seenIds.Contains(allConversations[n].myConversation.conversationUniqueID)) {

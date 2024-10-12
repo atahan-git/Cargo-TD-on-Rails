@@ -8,4 +8,13 @@ public enum ConversationsIds
     Prologue_3__put_fuel=5,
     Prologue_4__cannot_go_to_red=6,
     Prologue_5__oh_no_artifact=7,
+    Prologue_5_1_who_were_those_guys=8,
+    Prologue_6_we_need_gun=9,
+    Prologue_7_attach_gun=10,
+    Prologue_8_need_ammo=11,
+    Prologue_9_normally_autoshoot_but_direct_control=12,
+    Prologue_10_gem_loot=13,
+    Prologue_11_gem_can_move=14,
+    Prologue_12_oh_no_again=15,
+    Prologue_13_time_to_die=16,
 }

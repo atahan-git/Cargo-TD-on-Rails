@@ -60,7 +60,11 @@ public class Pauser : MonoBehaviour {
             TogglePause();
     }
 
+    public bool blockPauseStateChange = false;
     void TogglePause() {
+        if(blockPauseStateChange)
+            return;
+        
         isPaused = !isPaused;
         
         if (isPaused) {
@@ -82,31 +86,37 @@ public class Pauser : MonoBehaviour {
     public void Pause() {
         Pause(true);
     }
+
+    private CursorLockMode modeBeforePause;
     public void Pause(bool showMenu) {
+        if(blockPauseStateChange)
+            return;
+        
         AudioManager.PlayOneShot(SfxTypes.ButtonClick1);
 
         if(showMenu)
             pauseMenu.SetActive(true);
+        
         TimeController.s.Pause();
         isPaused = true;
         
         //Debug.Break();
-        
-        if (CameraController.s.directControlActive) {
-            Cursor.lockState = CursorLockMode.None;
-        }
+
+        modeBeforePause = Cursor.lockState;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     [Button]
     public void Unpause() {
+        if(blockPauseStateChange)
+            return;
+        
         AudioManager.PlayOneShot(SfxTypes.ButtonClick2);
         pauseMenu.SetActive(false);
         TimeController.s.UnPause();
         isPaused = false;
         
-        if (CameraController.s.directControlActive) {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+        Cursor.lockState = modeBeforePause;
     }
 
     public void AbandonMission() {

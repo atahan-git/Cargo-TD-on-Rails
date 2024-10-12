@@ -17,16 +17,14 @@ MonoBehaviour:
     conversationUniqueID: 5
     conversationName: Prologue 3 - put fuel
     remarks:
-    - tag: 
-      text: Just under the orange zone should do it. There will be times to get more
-        pressure, but I don't think any other bastards will come after me for a while.
+    - text: Lets put it to normal operation. There will be times to get more pressure,
+        but I don't think any other bastards will come after me for a while.
       portrait: 0
       bigSpriteAction: 00000000
       bigSpriteSlot: 00000000
       bigSprite: 00000000
-    - tag: 
-      text: Anything above the orange zone will damage the engine and I don't think
-        it can take the beating today.
+    - text: Overdriving the engine will damage it and I don't think it can take the
+        beating today.
       portrait: 0
       bigSpriteAction: 
       bigSpriteSlot: 

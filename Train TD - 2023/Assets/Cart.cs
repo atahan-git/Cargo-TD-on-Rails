@@ -83,6 +83,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
             if (engineModule) {
                 //engineModule.OnEngineLowPower?.Invoke(true);
                 engineModule.isDestroyed = true;
+                MiniGUI_EnginePowerSlider.s.engineSlider.value = 0;
                 GetComponentInChildren<EngineFireController>().StopEngineFire();
             }
 
@@ -185,7 +186,7 @@ public class Cart : MonoBehaviour, IPlayerHoldable {
     }
 
     public bool CanDrag() {
-        return (!isMainEngine && canPlayerDrag) && (PlayStateMaster.s.isShopOrEndGame() || !IsAttachedToTrain());
+        return (!isMainEngine && canPlayerDrag) && (PlayStateMaster.s.isShop() || !IsAttachedToTrain());
     }
 
     public void SetComponentCombatShopMode() {

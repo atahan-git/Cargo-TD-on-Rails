@@ -22,6 +22,8 @@ public class StressTestManager : MonoBehaviour {
 
     public bool infiniteAmmo = false;
     public bool prologueIndestructable = false;
+
+    public bool instantLose = false;
     
     [Button]
     void BeginStressTest() {
@@ -63,6 +65,9 @@ public class StressTestManager : MonoBehaviour {
         Invoke(nameof(SetTrainPressure), 2f);
 
         Invoke(nameof(SpawnEnemies),2f);
+        if (instantLose) {
+            Invoke(nameof(InstantLose),4f);
+        }
     }
 
     public bool spawnOneWave = true;
@@ -73,6 +78,13 @@ public class StressTestManager : MonoBehaviour {
                 EnemyWavesController.s.MakeSegmentEnemy(60, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular }, true, true, true, true);
                 EnemyWavesController.s.MakeSegmentEnemy(60, new UpgradesController.PathEnemyType() { myType = UpgradesController.PathEnemyType.PathType.regular }, true, false, true, true);
             }
+        }
+    }
+
+    void InstantLose() {
+        for (int i = 0; i < Train.s.carts.Count; i++) {
+            var health = Train.s.carts[i].GetHealthModule();
+            health.DealDamage(health.currentHealth * 2);
         }
     }
 

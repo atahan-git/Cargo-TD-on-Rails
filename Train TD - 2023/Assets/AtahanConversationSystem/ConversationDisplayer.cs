@@ -36,8 +36,19 @@ public class ConversationDisplayer : MonoBehaviour {
 	public void StartConversation(Conversation _conversation) {
 		StartConversation(_conversation, 0);
 	}
-	
+
+	private bool blockHoldUntilUnclick = false;
+	public bool conversationInProgress = false;
 	public void StartConversation(Conversation _conversation, float initialDelay) {
+		if (conversationInProgress) {
+			Debug.LogError("Trying to start two conversations at the same time!");
+		}
+
+		conversationInProgress = true;
+		blockHoldUntilUnclick = true;
+		startSkipAllTimer = false;
+		canHold = false;
+		skipCounter = 0;
 		DataSaver.s.GetCurrentSave().storyProgress.seenConversations.Add(_conversation.conversationUniqueID);
 		StartCoroutine(_ShowConversation(_conversation, initialDelay));
 	}
@@ -46,8 +57,13 @@ public class ConversationDisplayer : MonoBehaviour {
 		Debug.Log($"Conversation started: \"{conversation.conversationName}\"");
 		Clear();
 
-		if (initialDelay > 0) {
-			yield return new WaitForSecondsRealtime(initialDelay);
+		while (initialDelay > 0) {
+			if (Time.timeScale > 0) {
+				initialDelay -= Time.deltaTime;
+			} else {
+				initialDelay -= Time.unscaledDeltaTime;
+			}
+			yield return null;
 		}
 		
 		OnConversationStart();
@@ -78,10 +94,13 @@ public class ConversationDisplayer : MonoBehaviour {
 	void OnConversationStart() {
 		conversationParent.SetActive (true);
 		Pauser.s.Pause(false);
+		Pauser.s.blockPauseStateChange = true;
 	}
 
 	void OnConversationEnd() {
+		conversationInProgress = false;
 		conversationParent.SetActive (false);
+		Pauser.s.blockPauseStateChange = false;
 		Pauser.s.Unpause();
 	}
 	
@@ -104,7 +123,7 @@ public class ConversationDisplayer : MonoBehaviour {
 			}
 		}
 
-		if (startSkipAllTimer) {
+		if (startSkipAllTimer && !blockHoldUntilUnclick) {
 			skipAllTimer += Time.unscaledDeltaTime;
 			if (skipAllTimer > 0.5f) {
 				skipAll = true;
@@ -313,6 +332,7 @@ public class ConversationDisplayer : MonoBehaviour {
 	}
 
 	public void PointerUp () {
+		blockHoldUntilUnclick = false;
 		startSkipAllTimer = false;
 		skipAllTimer = 0;
 		skipAll = false;

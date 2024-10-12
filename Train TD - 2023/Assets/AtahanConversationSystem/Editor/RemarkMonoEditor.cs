@@ -17,17 +17,13 @@ public class RemarkMonoEditor : Editor
     }
 
     public static void ValidateRemark(RemarkMono myRemark) {
-        if (!(myRemark.myRemark.tag == "" || myRemark.myRemark.tag == " ")) {
-            myRemark.gameObject.name = "Remark " + myRemark.transform.GetSiblingIndex() + " - " + myRemark.myRemark.tag;
-        } else {
-            var remarkText = myRemark.myRemark.text;
-            var len = remarkText.Length;
-            if (len > 24) {
-                remarkText = remarkText.Substring(0, 17);
-                remarkText += "..." + (len-17);
-            }
-            myRemark.gameObject.name = "Remark " + myRemark.transform.GetSiblingIndex() + " - " + remarkText;
+        var remarkText = myRemark.myRemark.text;
+        var len = remarkText.Length;
+        if (len > 24) {
+            remarkText = remarkText.Substring(0, 17);
+            remarkText += "..." + (len-17);
         }
+        myRemark.gameObject.name = "Remark " + myRemark.transform.GetSiblingIndex() + " - " + remarkText;
 
         int min = Mathf.Min(myRemark.myRemark.bigSpriteAction.Length, myRemark.myRemark.bigSpriteSlot.Length, myRemark.myRemark.bigSprite.Length);
         int max = Mathf.Max(myRemark.myRemark.bigSpriteAction.Length, myRemark.myRemark.bigSpriteSlot.Length, myRemark.myRemark.bigSprite.Length);

@@ -17,16 +17,14 @@ MonoBehaviour:
     conversationUniqueID: 4
     conversationName: Prologue 2 - repair drone auto repair
     remarks:
-    - tag: 
-      text: The repair drone is super nifty too! <tutorial>I can control it to repair
+    - text: The repair drone is super nifty too! <tutorial>I can control it to repair
         quickly, but it will also slowly repair on its own. </tutorial> I'm glad
         I got it from the flea market.
       portrait: 0
       bigSpriteAction: 00000000
       bigSpriteSlot: 00000000
       bigSprite: 00000000
-    - tag: 
-      text: I should <tutorial>feed some fuel to the old boiler</tutorial> now.
+    - text: I should <tutorial>start the engine</tutorial> now.
       portrait: 0
       bigSpriteAction: 
       bigSpriteSlot: 

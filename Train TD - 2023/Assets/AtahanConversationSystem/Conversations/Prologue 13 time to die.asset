@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e47823205abe5f4598d2fa827f1ad65, type: 3}
+  m_Name: Prologue 13 time to die
+  m_EditorClassIdentifier: 
+  myConversation:
+    myType: 1
+    conversationUniqueID: 19
+    conversationName: Prologue 13 time to die
+    remarks:
+    - text: 'Oh no. I don''t think I can survive this battle. I wish I managed to
+        reach the meteor before I died.  '
+      portrait: 0
+      bigSpriteAction: 00000000
+      bigSpriteSlot: 00000000
+      bigSprite: 00000000
+    - text: COME AT ME YOU PILES OF RUST. I WONT GO DOWN WITHOUT A FIGHT!
+      portrait: 0
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: 

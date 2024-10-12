@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: 2677815042219743533}
   - component: {fileID: 2875152516060408527}
   - component: {fileID: 2874976440168343851}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: CFXR Fire Breath
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4758,7 +4758,7 @@ GameObject:
   - component: {fileID: 2681588759849982381}
   - component: {fileID: 2874615113846339437}
   - component: {fileID: 2874150258872473349}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: Small flames
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9510,7 +9510,7 @@ GameObject:
   - component: {fileID: 2677427405171424869}
   - component: {fileID: 2875504347219640505}
   - component: {fileID: 2873918771762670681}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: Smoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
