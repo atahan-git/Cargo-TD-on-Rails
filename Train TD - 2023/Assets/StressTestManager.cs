@@ -107,8 +107,8 @@ public class StressTestManager : MonoBehaviour {
             }
 
             if (infiniteAmmo) {
-                if (Train.s.GetComponent<AmmoTracker>().ammoProviders[0].AvailableAmmo() < 2) {
-                    (Train.s.GetComponent<AmmoTracker>().ammoProviders[0] as ModuleAmmo).Reload(20);
+                if (Train.s.GetComponent<AmmoTracker>().GetAmmoPercent() < 0.2f) {
+                    (Train.s.GetComponent<AmmoTracker>().GetAmmoProviders()[0] as ModuleAmmo).Reload(20);
                 }
             }
         }

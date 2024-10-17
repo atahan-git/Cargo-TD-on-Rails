@@ -29,6 +29,13 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	public Slider repairingSlider => DirectControlMaster.s.repairingSlider;
 	public GameObject droppedSomething => DirectControlMaster.s.droppedSomething;
 	public GameObject highWindsActive => DirectControlMaster.s.highWindsActive_repair;
+	public GameObject notEnoughJuice => DirectControlMaster.s.notEnoughJuice;
+	public Transform extraRepairsParent => DirectControlMaster.s.extraRepairsParent;
+
+	private UIElementFollowWorldTarget[] extraRepairs = new UIElementFollowWorldTarget[0];
+	private RepairableBurnEffect[] extraRepairTargets;
+	private int extraRepairCount;
+	
 	private bool droppedSomethingCheck = false;
 
 	public bool enterDirectControlShootLock => DirectControlMaster.s.enterDirectControlShootLock;
@@ -61,6 +68,9 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 		SetRepairControllerStatus(myRepairController, true);
 		highWindsActive.SetActive(false);
+
+		extraRepairs = extraRepairsParent.GetComponentsInChildren<UIElementFollowWorldTarget>(true);
+		extraRepairTargets = new RepairableBurnEffect[extraRepairs.Length];
 	}
 
 	public void DisableDirectControl() {
@@ -191,7 +201,8 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 		}
 
 		validRepairImage.gameObject.SetActive(validTarget && !repairTarget.hasArrow);
-
+		
+		
 		var drone = myRepairController.drone;
 
 		if (!HighWindsController.s.currentlyHighWinds) {
@@ -206,11 +217,12 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 		var doRepair = shootAction.action.IsPressed() && !enterDirectControlShootLock;
 
-		if (HighWindsController.s.currentlyHighWinds) {
+		if (HighWindsController.s.currentlyHighWinds || !myRepairController.HasJuice()) {
 			doRepair = false;
 		}
 
 		highWindsActive.SetActive(HighWindsController.s.currentlyHighWinds);
+		notEnoughJuice.SetActive(!myRepairController.HasJuice());
 		
 		
 		/*var repairClick = shootAction.action.WasPerformedThisFrame() && !enterDirectControlShootLock;
@@ -282,9 +294,30 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 
 			validRepairImage.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
 			repairingSlider.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
+
+			var extrasActive = validRepairImage.gameObject.activeSelf;
+			if (extrasActive) {
+				var targets = myRepairController.GetExtraRepairs(extraRepairTargets, repairTarget.GetComponentInParent<ModuleHealth>(), repairTarget);
+				for (int i = 0; i < extraRepairs.Length; i++) {
+					if (i < targets) {
+						extraRepairs[i].gameObject.SetActive(true);
+						extraRepairs[i].OneTimeSetPosition(extraRepairTargets[i].transform.position);
+						//Debug.DrawLine(myRepairController.drone.transform.position, extraRepairTargets[i].transform.position);
+					} else {
+						extraRepairs[i].gameObject.SetActive(false);
+					}
+				}
+			} else {
+				for (int i = 0; i < extraRepairs.Length; i++) {
+					extraRepairs[i].gameObject.SetActive(false);
+				}
+			}
 		} else {
 			repairingSlider.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
 			//repairingSlider.GetComponent<UIElementFollowWorldTarget>().OneTimeSetPosition(repairTarget.transform.position);
+			for (int i = 0; i < extraRepairs.Length; i++) {
+				extraRepairs[i].gameObject.SetActive(false);
+			}
 		}
 	}
 
@@ -336,7 +369,6 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 				}
 			}
 		}
-		
 		
 		arrowRepairImage.gameObject.SetActive(arrowAnimating || (validTarget && repairTarget.hasArrow));
 	}

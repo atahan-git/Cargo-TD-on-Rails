@@ -241,14 +241,7 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
             return true;
         }
 
-        var ammoUse = AmmoUseWithMultipliers();
-        for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
-            if (_ammoTracker.ammoProviders[i].AvailableAmmo() >= ammoUse) {
-                return true;
-            }
-        }
-
-        return false;
+        return _ammoTracker.HasAmmo(AmmoUseWithMultipliers());
     }
     
     public void ResetState() {
@@ -504,30 +497,24 @@ public class GunModule : MonoBehaviour, IComponentWithTarget, IActiveDuringComba
 
         var neverUseAmmo = currentAffectors.efficiency >= 2;// at >2 efficiency chance to not use ammo is 100%
         if (!isFree && !neverUseAmmo) {
-            if (_ammoTracker != null) {
-                for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
-                    if (_ammoTracker.ammoProviders[i].AvailableAmmo() >= AmmoUseWithMultipliers()) {
-                        if (currentAffectors.efficiency > 1) {
-                            var noUseChance = (currentAffectors.efficiency - 1f);
-                            if (Random.value > noUseChance) {
-                                _ammoTracker.ammoProviders[i].UseAmmo(AmmoUseWithMultipliers());
-                            }
-                        }else {
+            if (_ammoTracker != null) { // by the time we are here we assume there is enough ammo to use
+                if (currentAffectors.efficiency > 1) {
+                    var noUseChance = (currentAffectors.efficiency - 1f);
+                    if (Random.value > noUseChance) {
+                        _ammoTracker.UseAmmo(AmmoUseWithMultipliers());
+                    }
+                }else {
                             
-                            var ammoUse = ((1f / currentAffectors.efficiency)); // at 1 efficiency ammoUse=1,  at 0.5 efficiency we get ammoUse = 2 meaning double ammo. in between we get a chance to use more 
-                            while (ammoUse >= 1) {
-                                ammoUse -= 1;
-                                _ammoTracker.ammoProviders[i].UseAmmo(AmmoUseWithMultipliers());
-                            }
+                    var ammoUse = ((1f / currentAffectors.efficiency)); // at 1 efficiency ammoUse=1,  at 0.5 efficiency we get ammoUse = 2 meaning double ammo. in between we get a chance to use more 
+                    while (ammoUse >= 1) {
+                        ammoUse -= 1;
+                        _ammoTracker.UseAmmo(AmmoUseWithMultipliers());
+                    }
 
-                            if (ammoUse > 0) {
-                                if (Random.value < ammoUse) {
-                                    _ammoTracker.ammoProviders[i].UseAmmo(AmmoUseWithMultipliers());
-                                }
-                            }
+                    if (ammoUse > 0) {
+                        if (Random.value < ammoUse) {
+                            _ammoTracker.UseAmmo(AmmoUseWithMultipliers());
                         }
-
-                        break;
                     }
                 }
             }

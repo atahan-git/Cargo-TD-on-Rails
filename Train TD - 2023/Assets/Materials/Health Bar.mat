@@ -122,7 +122,7 @@ Material:
     - _ThickBar: 0.00476
     - _ThinBar: 0.0112
     - _ThinnestBar: 0.0318
-    - _Tiling: 6.3
+    - _Tiling: 17.96
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:

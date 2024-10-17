@@ -20,7 +20,7 @@ public class NewspaperController : MonoBehaviour {
 
     public bool newspaperOpenState = false;
 
-    public InputActionReference openNewspaperAction;
+    //public InputActionReference openNewspaperAction;
 
     public Transform newspaperTrainFront;
     public Transform newspaperTrainBack;
@@ -92,7 +92,7 @@ public class NewspaperController : MonoBehaviour {
     }
     
     
-    protected void OnEnable()
+    /*protected void OnEnable()
     {
         openNewspaperAction.action.Enable();
         openNewspaperAction.action.performed += ToggleNewspaperScreen;
@@ -104,7 +104,7 @@ public class NewspaperController : MonoBehaviour {
     {
         openNewspaperAction.action.Disable();
         openNewspaperAction.action.performed -= ToggleNewspaperScreen;
-    }
+    }*/
     
 
     void Start() {

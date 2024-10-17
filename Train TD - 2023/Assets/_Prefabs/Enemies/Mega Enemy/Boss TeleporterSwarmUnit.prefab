@@ -348,10 +348,14 @@ MonoBehaviour:
   uiTransform: {fileID: 4734297801412349416}
   enemyUIBar: {fileID: 0}
   isComponentEnemy: 0
+  cartEnemyLength: 0.55
+  deadObject: {fileID: 0}
+  isEngine: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
   mySwarm: {fileID: 0}
+  activeDamageEffects: []
   activeBurnEffects: []
   currentBurn: 0
   burnTimer: 0
@@ -359,6 +363,7 @@ MonoBehaviour:
   appliedBurnDamage: 0
   maxBurnTier: 2
   burnDecayTimer: 0
+  rewardJuice: 80
   _outlines: []
 --- !u!114 &3038431739623073049
 MonoBehaviour:
@@ -391,6 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: Has a huge health pool and will mess with your carts. Has lots of guns
       too!
@@ -759,10 +765,14 @@ MonoBehaviour:
   uiTransform: {fileID: 677720628383939467}
   enemyUIBar: {fileID: 0}
   isComponentEnemy: 1
+  cartEnemyLength: 0.55
+  deadObject: {fileID: 0}
+  isEngine: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
   mySwarm: {fileID: 0}
+  activeDamageEffects: []
   activeBurnEffects: []
   currentBurn: 0
   burnTimer: 0
@@ -770,6 +780,7 @@ MonoBehaviour:
   appliedBurnDamage: 0
   maxBurnTier: 2
   burnDecayTimer: 0
+  rewardJuice: 20
   _outlines: []
 --- !u!114 &2566350374031917171
 MonoBehaviour:
@@ -802,6 +813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: Side gatling unit of the boss.
   info: Side gatling unit.
@@ -1219,7 +1231,8 @@ MonoBehaviour:
   isHitScan: 0
   ammoPerBarrage: 1
   explosionRange: 0
-  inaccuracyMultiplier: 1
+  baseInaccuracy: 1
+  inaccuracyAddFireDelayMultiplier: 1
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   gunRotateUpOnShoot: 2
@@ -1271,6 +1284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: Shoots a lot and shoots fast. At least drops a nice amount of ammo as a
       reward.
@@ -1377,7 +1391,8 @@ MonoBehaviour:
   isHitScan: 0
   ammoPerBarrage: 1
   explosionRange: 0
-  inaccuracyMultiplier: 1
+  baseInaccuracy: 1
+  inaccuracyAddFireDelayMultiplier: 1
   gunShakeOnShoot: 0
   gunShakeMagnitudeMultiplier: 1
   gunRotateUpOnShoot: 2
@@ -1430,6 +1445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: Flame throwers fire very fast and (not implemented yet) deal area damage.
       Gives extra fuel as reward
@@ -3874,10 +3890,14 @@ MonoBehaviour:
   uiTransform: {fileID: 90277407465082495}
   enemyUIBar: {fileID: 0}
   isComponentEnemy: 1
+  cartEnemyLength: 0.55
+  deadObject: {fileID: 0}
+  isEngine: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
   mySwarm: {fileID: 0}
+  activeDamageEffects: []
   activeBurnEffects: []
   currentBurn: 0
   burnTimer: 0
@@ -3885,6 +3905,7 @@ MonoBehaviour:
   appliedBurnDamage: 0
   maxBurnTier: 2
   burnDecayTimer: 0
+  rewardJuice: 20
   _outlines: []
 --- !u!114 &3237756680805762530
 MonoBehaviour:
@@ -3917,6 +3938,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: Side flamethrower unit of the boss.
   info: Side flamethrower unit.

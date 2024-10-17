@@ -7,7 +7,7 @@ using UnityEngine;
 public class AmmoTracker : MonoBehaviour {
     
     [ShowInInspector]
-    public List<IAmmoProvider> ammoProviders = new List<IAmmoProvider>();
+    private List<IAmmoProvider> ammoProviders = new List<IAmmoProvider>();
 
     public float GetAmmoPercent() {
         var currentAmmo = 0f;
@@ -21,8 +21,30 @@ public class AmmoTracker : MonoBehaviour {
         return Mathf.Clamp01(currentAmmo / ammoCapacity);
     }
 
+    public List<IAmmoProvider> GetAmmoProviders() {
+        return ammoProviders;
+    }
+
 
     public void RegisterAmmoProviders() {
         ammoProviders = new List<IAmmoProvider>(GetComponentsInChildren<IAmmoProvider>(true));
+    }
+
+    public bool HasAmmo(float amount) {
+        for (int i = 0; i < ammoProviders.Count; i++) {
+            if (ammoProviders[i].AvailableAmmo() >= amount) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void UseAmmo(float amount) {
+        for (int i = 0; i < ammoProviders.Count; i++) {
+            if (ammoProviders[i].AvailableAmmo() >= amount) {
+                ammoProviders[i].UseAmmo(amount);
+            }
+        }
     }
 }

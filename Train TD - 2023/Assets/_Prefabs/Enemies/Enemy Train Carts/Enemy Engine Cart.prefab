@@ -124,6 +124,7 @@ MonoBehaviour:
   appliedBurnDamage: 0
   maxBurnTier: 2
   burnDecayTimer: 0
+  rewardJuice: 40
   _outlines: []
 --- !u!114 &2381813599302415210
 MonoBehaviour:
@@ -137,6 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: Filty bandits use old school combustion engines to propel their trains.
   info: Engine Cart

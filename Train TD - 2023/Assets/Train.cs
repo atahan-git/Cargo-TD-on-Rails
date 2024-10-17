@@ -540,6 +540,7 @@ public class Train : MonoBehaviour {
         }
             
         GetComponent<AmmoTracker>().RegisterAmmoProviders();
+        GetComponent<RepairJuiceTracker>().RegisterJuiceProviders();
         SpeedController.s.CalculateSpeedBasedOnCartCapacity();
 
         var applyStateToEntireTrain = GetComponentsInChildren<IChangeStateToEntireTrain>();
@@ -551,6 +552,7 @@ public class Train : MonoBehaviour {
             carts[i].GetHealthModule().UpdateHpState();
         }
         
+        MiniGUI_RepairJuiceBar.s.MaxJuiceChanged();
         MaxHealthModified();
     }
 
@@ -659,30 +661,38 @@ public class Train : MonoBehaviour {
     }
 
     public void MaxHealthModified() {
-        MiniGUI_TrainOverallHealthBar.s.MaxHealthChanged();
+        if(MiniGUI_TrainOverallHealthBar.s != null){
+            MiniGUI_TrainOverallHealthBar.s.MaxHealthChanged();
+        }
         HealthModified();
     }
     
     public void HealthModified() {
-        MiniGUI_TrainOverallHealthBar.s.HealthChanged();
+        if(MiniGUI_TrainOverallHealthBar.s != null){
+            MiniGUI_TrainOverallHealthBar.s.HealthChanged();
+        }
+        
+        SetHealthVignette();
+        
         onTrainCartsOrHealthOrArtifactsChanged?.Invoke();
     }
 
-    /*public void UseRepairJuice() {
+    void SetHealthVignette() {
+        var maxHealth = 0f;
+        var health = 0f;
+        for (int i = 0; i < Train.s.carts.Count; i++) {
+            var cart = Train.s.carts[i].GetHealthModule();
+            if (!cart.invincible) {
+                maxHealth += cart.GetMaxHealth(false);
+                health += cart.currentHealth;
+            }
+        }
         
+        if (PlayStateMaster.s.isCombatInProgress()) {
+            var percent = health / maxHealth;
+            VignetteController.s.SetVignette(1 - Mathf.Clamp01(percent * 2));
+        }
     }
-
-    public bool HasEnoughRepairJuice() {
-        
-    }
-
-    public float GetMaxRepairJuice() {
-        return 100;
-    }
-
-    public float GetCurrentRepairJuice() {
-        
-    }*/
 
     public Cart GetNextBuilding(int amount, Cart cart) {
         var nextCart = cart.trainIndex - amount;

@@ -56,8 +56,9 @@ public class EnemyTargetPickerAmmoTargeter : MonoBehaviour
 
         var closestTargetDistance = range + 1;
         Transform closestTarget = null;
-        for (int i = 0; i < ammoTracker.ammoProviders.Count; i++) {
-            var provider = ammoTracker.ammoProviders[i] as ModuleAmmo;
+        var ammoProviders = ammoTracker.GetAmmoProviders();
+        for (int i = 0; i < ammoProviders.Count; i++) {
+            var provider = ammoProviders[i] as ModuleAmmo;
             if(provider == null)
                 continue;
             

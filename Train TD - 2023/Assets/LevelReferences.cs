@@ -156,6 +156,7 @@ public class LevelReferences : MonoBehaviour {
 
     [Space] 
     public GameObject coinDrop;
+    public GameObject repairJuiceDrop;
 
     public AnimationCurve selectMarkerPulseCurve;
     public AnimationCurve alphaPulseCurve;

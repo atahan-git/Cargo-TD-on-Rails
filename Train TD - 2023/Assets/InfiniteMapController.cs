@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -14,6 +15,7 @@ public class InfiniteMapController : MonoBehaviour {
     }
 
     public GameObject mapButton;
+    public InputActionReference openMapAction;
 
     public bool killedAllEnemies = false;
     public bool movedThisTime = false;
@@ -28,8 +30,21 @@ public class InfiniteMapController : MonoBehaviour {
     public bool nextPathIsEndPath = false;
 
     private void Start() {
-        mapButton.SetActive(false);
+        canOpenMap = false;
+        mapButton.SetActive(canOpenMap);
         MakeMap();
+    }
+    
+    protected void OnEnable()
+    {
+        openMapAction.action.Enable();
+        openMapAction.action.performed += ToggleMap;
+    }
+
+    protected void OnDisable()
+    {
+        openMapAction.action.Disable();
+        openMapAction.action.performed -= ToggleMap;
     }
 
     void Update()
@@ -56,6 +71,7 @@ public class InfiniteMapController : MonoBehaviour {
     }
 
     public int depth = 0;
+    public bool canOpenMap = false;
     void SectionComplete() {
         if(PrologueController.s.isPrologueActive)
             return;
@@ -66,14 +82,21 @@ public class InfiniteMapController : MonoBehaviour {
         if (nextPathIsEndPath) {
             return;
         }
-        
-        mapButton.SetActive(true);
+
+        canOpenMap = true;
+        mapButton.SetActive(canOpenMap);
         RenderMap();
     }
 
     public bool isMapOpen = false;
+    
+    private void ToggleMap(InputAction.CallbackContext obj) {
+        ToggleMap();
+    }
     public void ToggleMap() {
-        
+        if (!canOpenMap) {
+            return;
+        }
         
         isMapOpen = !isMapOpen;
 
@@ -247,7 +270,8 @@ public class InfiniteMapController : MonoBehaviour {
         killedAllEnemies = false;
         isMapOpen = true;
         ToggleMap();
-        mapButton.SetActive(false);
+        canOpenMap = false;
+        mapButton.SetActive(canOpenMap);
         
         StoryAndTutorialsController.s.OnSectionWithEnemyStarted();
     }

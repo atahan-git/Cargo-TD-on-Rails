@@ -347,7 +347,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 		totalSize = myBounds.size.magnitude;
 	}
 
-	
+	public float rewardJuice = 20;
 	void Die(bool giveRewards = true) {
 		isAlive = false;
 
@@ -366,6 +366,15 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 
 			if (rewardMoney > 0) {
 				//Instantiate(LevelReferences.s.crystalDrop, LevelReferences.s.uiDisplayParent).GetComponent<CrystalDrop>().SetUp(uiTransform.position, rewardMoney);
+			}
+
+			/*if (rewardJuice > 0) {
+				Instantiate(LevelReferences.s.repairJuiceDrop, transform.position, transform.rotation).GetComponent<CrystalDrop>().SetUp(uiTransform.position, rewardMoney);
+			}*/
+			
+			var juiceTracker = Train.s.GetComponent<RepairJuiceTracker>();
+			if (juiceTracker != null) {
+				juiceTracker.FillJuice(rewardJuice);
 			}
 		}
 

@@ -136,10 +136,8 @@ MonoBehaviour:
   maxFireRateReduction: 0.9
   gatlingAmount: 0
   maxGatlingAmount: 4
-  bulletPrefab: {fileID: 4908573584345181807, guid: ca5147168c2970647a902ce7cc5a8733, type: 3}
-  muzzleFlashPrefab: {fileID: 980176138545819842, guid: 053b6de4892b1834a8a0720f42edcb55, type: 3}
   myType: 7
-  fireDelay: 3
+  fireDelay: 10
   fireBarrageCount: 1
   fireBarrageDelay: 0.1
   rotateSpeed: 10
@@ -196,6 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: doesn't deal any damage but slows your train down.
   info: Goo Cannon

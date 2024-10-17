@@ -560,16 +560,14 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
 			
             while (activeBurnEffects.Count > targetBurnEffectCount) {
                 var decommissioned = activeBurnEffects[0];
-                var index = 0;
                 if (decommissioned.isTaken) {
                     if (activeBurnEffects.Count >= 2) {
                         decommissioned = activeBurnEffects[1];
-                        index = 1;
                     }
                 }
-                activeBurnEffects.RemoveAt(index);
+                activeBurnEffects.Remove(decommissioned);
                 SetBuildingMaxHealthReductionChunks(decommissioned.transform);
-                decommissioned.GetComponent<RepairableBurnEffect>().Repair();
+                decommissioned.Repair();
             }
 			
         }else if (activeBurnEffects.Count < targetBurnEffectCount) {
@@ -722,6 +720,10 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         while (currentHealth < GetMaxHealth()) {
             Repair(repairChunkSize, false);
         }
+    }
+
+    public int GetChunkCount() {
+        return activeBurnEffects.Count;
     }
 
     public bool IsPlayer() {

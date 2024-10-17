@@ -124,10 +124,14 @@ MonoBehaviour:
   uiTransform: {fileID: 4734297801412349416}
   enemyUIBar: {fileID: 0}
   isComponentEnemy: 0
+  cartEnemyLength: 0.55
+  deadObject: {fileID: 0}
+  isEngine: 0
   maxShields: 0
   currentShields: 0
   curShieldDelay: 0
   mySwarm: {fileID: 0}
+  activeDamageEffects: []
   activeBurnEffects: []
   currentBurn: 0
   burnTimer: 0
@@ -135,6 +139,7 @@ MonoBehaviour:
   appliedBurnDamage: 0
   maxBurnTier: 2
   burnDecayTimer: 0
+  rewardJuice: 80
   _outlines: []
 --- !u!114 &3038431739623073049
 MonoBehaviour:
@@ -167,6 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c169ad6aaecd4bb7f7534554cbdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
   tooltip:
     text: Has a huge health pool and lots of guns too!
   info: Big Boi
@@ -486,6 +492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ecc18a8393905340a31a51228267dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myType: 0
 --- !u!1 &5582219786172079475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2633,6 +2640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ecc18a8393905340a31a51228267dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myType: 0
 --- !u!1 &6982342113035365158
 GameObject:
   m_ObjectHideFlags: 0
@@ -2677,6 +2685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ecc18a8393905340a31a51228267dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myType: 0
 --- !u!1 &7375322012703263624
 GameObject:
   m_ObjectHideFlags: 0
@@ -2721,6 +2730,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ecc18a8393905340a31a51228267dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myType: 0
 --- !u!1 &7929351096327467668
 GameObject:
   m_ObjectHideFlags: 0

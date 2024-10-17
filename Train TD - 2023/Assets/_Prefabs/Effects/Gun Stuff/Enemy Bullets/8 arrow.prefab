@@ -108,7 +108,7 @@ MonoBehaviour:
     normalizedBurnDamage: 0
     extraBurnTier: 0
     leaveArrow: 1
-    leaveArrowChance: 1
+    leaveArrowChance: 0.5
     scaleUpOverTime: 0
     scaleUpSpeed: 2
     baseScale: {x: 1, y: 1, z: 1}

@@ -81,6 +81,8 @@ public class DirectControlMaster : MonoBehaviour {
 	public LayerMask repairLookMask;
 	public GameObject droppedSomething;
 	public GameObject highWindsActive_repair;
+	public GameObject notEnoughJuice;
+	public Transform extraRepairsParent;
 
 	[Header("Engine Control")] 
 	public SpeedometerScript pressureGauge;

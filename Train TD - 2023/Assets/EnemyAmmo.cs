@@ -39,8 +39,8 @@ public class EnemyAmmo : MonoBehaviour, IAmmoProvider
         }
         Reload(-1);
 
-        GetComponentInParent<AmmoTracker>().ammoProviders.Add(this);
-
+        //GetComponentInParent<AmmoTracker>().ammoProviders.Add(this);
+Debug.LogError("enemy ammo not supported anymore");
     }
     
     public float AvailableAmmo() {

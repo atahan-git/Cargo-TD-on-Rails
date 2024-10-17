@@ -21,7 +21,7 @@ public class Artifact_FireGem : MonoBehaviour, IChangeCartState, IArtifactDescri
         }
         
         foreach (var droneRepair in target.GetComponentsInChildren<DroneRepairController>()) {
-            droneRepair.currentAffectors.power += 1;
+            droneRepair.currentAffectors.fire += 1;
             currentDescription = "Repair an extra burn";
             didApply = true;
         }

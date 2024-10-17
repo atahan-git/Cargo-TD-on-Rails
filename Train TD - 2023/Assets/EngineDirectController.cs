@@ -105,23 +105,6 @@ public class EngineDirectController : MonoBehaviour, IDirectControllable, IReset
 
     }
 
-    public float TryUseAmmo() {
-        var _ammoTracker = Train.s.GetAmmoTracker();
-        var ammoUse = 5f;
-        
-        if (_ammoTracker != null) {
-            for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
-                ammoUse = Mathf.Min(_ammoTracker.ammoProviders[i].AvailableAmmo(), ammoUse);
-                if (ammoUse >= 1f) {
-                    _ammoTracker.ammoProviders[i].UseAmmo(ammoUse);
-                    return ammoUse;
-                }
-            }
-        }
-
-        return 0;
-    }
-
     public float vampiricHealthStorage;
     void DoAdd() {
         if (currentAffectors.vampiric) {

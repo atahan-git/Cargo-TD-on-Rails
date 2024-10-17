@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState {
+public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState, IRepairJuiceProvider {
 
     public Transform droneDockedPosition;
     public int dockOffset;
@@ -71,6 +71,10 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
     [Tooltip("at 1 multiplier repairing takes 5 secs")]
     public float repairSpeedMultiplier = 1f;
 
+    public float currentJuice = 100;
+    public float baseJuice = 100;
+    public float naturalJuiceGeneration = 1;
+
     public Affectors currentAffectors;
     [Serializable]
     public class Affectors {
@@ -97,18 +101,27 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         if (MissionLoseFinisher.s.isMissionLost) {
             return;
         }
+
+        if (currentJuice < JuiceCapacity()) {
+            if (EnemyWavesController.s.AnyEnemyIsPresent()) {
+                currentJuice += naturalJuiceGeneration * Time.deltaTime * 0.5f;
+            } else {
+                currentJuice += naturalJuiceGeneration * Time.deltaTime * 3f;
+            }
+        }
         
         if (myHealth.myCart.isDestroyed && PlayStateMaster.s.isCombatInProgress()) {
-            curSelfRepair += selfRepairSpeed * Time.deltaTime;
+            curSelfRepair += selfRepairSpeed * Time.deltaTime*5;
             curSelfRepair = Mathf.Clamp01(curSelfRepair);
             selfRepairImage.fillAmount = curSelfRepair / 1f;
-            if (curSelfRepair >= 1) {
+            if (curSelfRepair >= 1 && HasJuice()) {
                 curSelfRepair = 0;
-                myHealth.FullyRepair();
+                myHealth.RepairChunk(2);
+                UseJuice();
             }
         }
 
-        if (HighWindsController.s.currentlyHighWinds) {
+        if (HighWindsController.s.currentlyHighWinds || (!HasJuice() && !beingDirectControlled)) {
             droneScript.SetCurrentlyRepairingState(false);
             MoveDroneWithVelocity(droneDockedPosition.transform.position + Vector3.up * dockOffset, droneDockedPosition.transform.rotation);
 
@@ -265,6 +278,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         removedArrow = false;
         repairSuccess = false;
         
+        
         if (HighWindsController.s.IsStopped()) {
             extraMultiplier *= 2;
         }
@@ -284,7 +298,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
 
         if (repairTimer >= 1) {
             DoRepair(target.GetComponentInParent<ModuleHealth>(), target);
-            
+
             TryGetNewTarget();
 
             repairSuccess = true;
@@ -313,7 +327,9 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
 
     public float vampiricHealthStorage;
     public void DoRepair(ModuleHealth targetHealth, RepairableBurnEffect chunk) {
+        var chunkPos = chunk.transform.position;
         targetHealth.RepairChunk(chunk);
+        UseJuice();
 
         if (currentAffectors.explosionRange > 0) {
             //print("repair explosion");
@@ -331,8 +347,9 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
 
             for (int i = 0; i < otherRepairChunksInRange.Length; i++) {
                 var repairable = otherRepairChunksInRange[i].gameObject.GetComponentInParent<RepairableBurnEffect>();
-                if (repairable != null) {
+                if (repairable != null && HasJuice()) {
                     repairable.GetComponentInParent<ModuleHealth>().RepairChunk(repairable);
+                    UseJuice();
                 }
             }
         }
@@ -351,39 +368,98 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
         }
 
         if (currentAffectors.iron > 0) {
-            targetHealth.FullyRepair();
+            FullyRepairTarget(targetHealth);
             for (int i = 1; i < currentAffectors.iron; i++) {
-                Train.s.GetNextBuilding(i, targetHealth.myCart)?.FullyRepair();
-                Train.s.GetNextBuilding(-i, targetHealth.myCart)?.FullyRepair();
-            }
-        } else {
-            if (currentAffectors.power > 1) {
-                var powerCount = 0;
-                var powerTokens = currentAffectors.power - 1;
-                while (powerTokens >= 1) {
-                    targetHealth.RepairChunk();
-                
-                    powerCount += 1;
-                    powerTokens -= 1;
+                var frontCart = Train.s.GetNextBuilding(i, targetHealth.myCart);
+                if (frontCart != null) {
+                    FullyRepairTarget(frontCart.GetHealthModule());
                 }
+                var backCart = Train.s.GetNextBuilding(-i, targetHealth.myCart);
+                if (backCart != null) {
+                    FullyRepairTarget(backCart.GetHealthModule());
+                }
+            }
+        }
 
-                if (Random.value < powerTokens) {
-                    targetHealth.RepairChunk();
-                
-                    powerCount += 1;
+        var extraRepairs = currentAffectors.fire + (beingDirectControlled ? 2 : 0);
+        if (extraRepairs > 0) {
+            var otherRepairChunks = targetHealth.activeBurnEffects;
+            
+            if (otherRepairChunks.Contains(chunk)) {
+                otherRepairChunks.Remove(chunk);
+            }
+
+            otherRepairChunks.RemoveAll(x => x.hasArrow);
+
+            otherRepairChunks.Sort((a, b) => {
+                float distanceToA = Vector3.Distance(a.transform.position, chunkPos);
+                float distanceToB = Vector3.Distance(b.transform.position, chunkPos);
+                return distanceToA.CompareTo(distanceToB);
+            });
+
+            var chunksToRepair = Mathf.Min(extraRepairs, otherRepairChunks.Count);
+            for (int i = 0; i < chunksToRepair; i++) {
+                if(HasJuice()) {
+                    targetHealth.RepairChunk(otherRepairChunks[i]);
+                    UseJuice();
+                } else {
+                    break;
                 }
             }
         }
     }
 
+    public int GetExtraRepairs(RepairableBurnEffect[] list, ModuleHealth targetHealth, RepairableBurnEffect chunk ) {
+        var extraRepairs = currentAffectors.fire + (beingDirectControlled ? 2 : 0);
+        var chunkPos = chunk.transform.position;
+        if (extraRepairs > 0) {
+            var otherRepairChunks = targetHealth.activeBurnEffects;
+
+            if (otherRepairChunks.Contains(chunk)) {
+                otherRepairChunks.Remove(chunk);
+            }
+            
+            otherRepairChunks.RemoveAll(x => x.hasArrow);
+
+            otherRepairChunks.Sort((a, b) => {
+                float distanceToA = Vector3.Distance(a.transform.position, chunkPos);
+                float distanceToB = Vector3.Distance(b.transform.position, chunkPos);
+                return distanceToA.CompareTo(distanceToB);
+            });
+            for (int i = 0; i < otherRepairChunks.Count; i++) {
+                Debug.DrawLine(chunkPos, otherRepairChunks[i].transform.position);
+            }
+
+            var repairJuiceEnoughness = Mathf.FloorToInt(_juiceTracker.GetCurrentJuice() / JuiceUse())-1;
+            
+            extraRepairs = Mathf.Min(extraRepairs, otherRepairChunks.Count, list.Length, repairJuiceEnoughness);
+            
+            for (int i = 0; i < extraRepairs; i++) {
+                list[i] = otherRepairChunks[i];
+            }
+
+        } 
+        
+        return extraRepairs;
+    }
+
+    private void FullyRepairTarget(ModuleHealth targetHealth) {
+        var chunkCount = targetHealth.GetChunkCount();
+        for (int i = 0; i < chunkCount; i++) {
+            if (HasJuice()) {
+                targetHealth.RepairChunk();
+                UseJuice();
+            } else {
+                break;
+            }
+        }
+    }
+
     private AmmoTracker _ammoTracker;
+    private RepairJuiceTracker _juiceTracker;
     void UseAmmo() {
         if (_ammoTracker != null) {
-            for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
-                if (_ammoTracker.ammoProviders[i].AvailableAmmo() >= AmmoUse()) {
-                    _ammoTracker.ammoProviders[i].UseAmmo(AmmoUse());
-                }
-            }
+            _ammoTracker.UseAmmo(AmmoUse());
         }
     }
 
@@ -404,14 +480,30 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
             return true;
         }
 
-        var ammoUse = AmmoUse();
-        for (int i = 0; i < _ammoTracker.ammoProviders.Count; i++) {
-            if (_ammoTracker.ammoProviders[i].AvailableAmmo() >= ammoUse) {
-                return true;
-            }
+        return _ammoTracker.HasAmmo(AmmoUse());
+    }
+    
+    void UseJuice(int multiplier =1) {
+        if (_juiceTracker != null) {
+            _juiceTracker.UseJuice(JuiceUse()*multiplier);
+        }
+    }
+
+
+    float JuiceUse() {
+        return 5f;
+    }
+    
+    public bool HasJuice(int multiplier = 1) {
+        if (_juiceTracker == null) {
+            _juiceTracker = GetComponentInParent<RepairJuiceTracker>();
         }
 
-        return false;
+        if (_juiceTracker == null) {
+            return true;
+        }
+
+        return _juiceTracker.HasJuice(JuiceUse()*multiplier);
     }
 
     public void UpdateDroneSize() {
@@ -597,7 +689,40 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState 
             droneScript.SetCurrentlyRepairingState(false);
         selfRepairImage.transform.parent.gameObject.SetActive(false);
     }
-    
+
+    public float AvailableJuice() {
+        return currentJuice;
+    }
+
+    public float JuiceCapacity() {
+        return baseJuice * currentAffectors.power;
+    }
+
+    public float UseJuice(float amountUsed) {
+        if (currentJuice >= amountUsed) {
+            currentJuice -= amountUsed;
+            return 0;
+        } else {
+            amountUsed -= currentJuice;
+            currentJuice = 0;
+            return amountUsed;
+        }
+    }
+
+    public float FillJuice(float amountToFill) {
+        if (currentJuice > JuiceCapacity()) {
+            return amountToFill;
+        }
+        
+        if (currentJuice + amountToFill <= JuiceCapacity()) {
+            currentJuice += amountToFill;
+            return 0;
+        } else {
+            amountToFill -= JuiceCapacity() - currentJuice;
+            currentJuice = JuiceCapacity();
+            return amountToFill;
+        }
+    }
 }
 
 
