@@ -668,6 +668,22 @@ public class Train : MonoBehaviour {
         onTrainCartsOrHealthOrArtifactsChanged?.Invoke();
     }
 
+    /*public void UseRepairJuice() {
+        
+    }
+
+    public bool HasEnoughRepairJuice() {
+        
+    }
+
+    public float GetMaxRepairJuice() {
+        return 100;
+    }
+
+    public float GetCurrentRepairJuice() {
+        
+    }*/
+
     public Cart GetNextBuilding(int amount, Cart cart) {
         var nextCart = cart.trainIndex - amount;
         if (nextCart >= 0 && nextCart < carts.Count) {

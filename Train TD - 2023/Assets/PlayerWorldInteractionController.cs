@@ -894,6 +894,12 @@ public class PlayerWorldInteractionController : MonoBehaviour {
             }
         }
     }
+
+    public void ShownThingInfo(IPlayerHoldable thing) {
+        Deselect();
+        SelectThing(thing, true);
+        ShowSelectedThingInfo();
+    }
     
     public bool infoCardActive = false;
     void ShowSelectedThingInfo() {

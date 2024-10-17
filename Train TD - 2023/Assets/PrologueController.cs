@@ -485,7 +485,7 @@ public class PrologueController : MonoBehaviour {
         PlayerWorldInteractionController.s.OnSelectSomething.AddListener(OnSelectSomething);
         DirectControlMaster.s.OnDirectControlStateChange.AddListener(OnDirectControlStateChange);
         currentState = new WaitingLoad();
-        DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial = -1;
+        //DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial = -1;
         DataSaver.s.GetCurrentSave().runsMade = -1;
         isPrologueActive = true;
 

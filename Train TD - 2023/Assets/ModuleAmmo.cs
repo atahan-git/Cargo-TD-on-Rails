@@ -160,12 +160,12 @@ public class ModuleAmmo : MonoBehaviour, IActiveDuringCombat, IActiveDuringShopp
     }
 
     public void CartDisabled() {
-        if (dontLoseAmmoInThisDisable) {
+        /*if (dontLoseAmmoInThisDisable) {
             dontLoseAmmoInThisDisable = false;
         } else {
             if(currentAffectors.explosionResistance <= 0)
                 curAmmo = 0;
-        }
+        }*/
 
         UpdateModuleState();
         if(myAmmoBar != null)

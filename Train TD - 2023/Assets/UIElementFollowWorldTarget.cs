@@ -99,6 +99,10 @@ public class UIElementFollowWorldTarget : MonoBehaviour {
                 halfHeightLimit
             );*/
 
+            if (PlayerWorldInteractionController.s.screenIsFlipped) {
+                WorldObject_ScreenPosition.x = CanvasRect.sizeDelta.x - WorldObject_ScreenPosition.x;
+            }
+
             UIRect.anchoredPosition = WorldObject_ScreenPosition;
         } else {
             // if we cant see the object go to some off screen location

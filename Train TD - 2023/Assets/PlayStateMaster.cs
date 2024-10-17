@@ -58,6 +58,7 @@ public class PlayStateMaster : MonoBehaviour {
         OnShopEntered.AddListener(NewspaperController.s.CheckShowNewspaper);
         OnShopEntered.AddListener(Act2DemoEndController.s.OnEnterShop);
         OnShopEntered.AddListener(ResetShopBuildings.s.OnShopEntered);
+        OnShopEntered.AddListener(StoryAndTutorialsController.s.OnShopEntered);
         
         OnCombatEntered.AddListener(WorldDifficultyController.s.OnCombatStart);
         OnCombatEntered.AddListener(FMODMusicPlayer.s.PlayCombatMusic);

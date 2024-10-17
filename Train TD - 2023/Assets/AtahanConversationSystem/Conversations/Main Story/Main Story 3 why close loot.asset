@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e47823205abe5f4598d2fa827f1ad65, type: 3}
+  m_Name: Main Story 3 why close loot
+  m_EditorClassIdentifier: 
+  myConversation:
+    myType: 2
+    conversationUniqueID: -1
+    conversationName: Main Story 3 why close loot
+    remarks:
+    - text: Wait why is there loot so close to the city? Not that Im complaining!
+      portrait: 0
+      bigSpriteAction: 00000000
+      bigSpriteSlot: 00000000
+      bigSprite: 00000000
+    - text: Also is that a crystal? How can that be?
+      portrait: 0
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: 
+    - text: 'Maybe that wasnt a dream! Did i actually die? '
+      portrait: 0
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: 
+    - text: 'Either way I should take this crystal and return to town...<delay=0.5>
+        but I won''t. I can feel something is different. I should keep going forward. '
+      portrait: 0
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: 
+    - text: I hate it back in that town anyways.
+      portrait: 0
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: 

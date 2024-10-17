@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e47823205abe5f4598d2fa827f1ad65, type: 3}
+  m_Name: Prologue 7 attach gun
+  m_EditorClassIdentifier: 
+  myConversation:
+    myType: 1
+    conversationUniqueID: 13
+    conversationName: Prologue 7 attach gun
+    remarks:
+    - text: My repair drone also doubles as <tutorial>loot catcher</tutorial>. It
+        will hold on to carts until I place it somewhere on the train.
+      portrait: 0
+      bigSpriteAction: 00000000
+      bigSpriteSlot: 00000000
+      bigSprite: 00000000
+    - text: Incredible technology really. Given only steam and crystal tech is functional
+        nowadays.
+      portrait: 0
+      bigSpriteAction: 
+      bigSpriteSlot: 
+      bigSprite: 

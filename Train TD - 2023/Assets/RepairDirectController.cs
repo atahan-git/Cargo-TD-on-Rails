@@ -344,7 +344,13 @@ public class RepairDirectController : MonoBehaviour , IDirectControllable
 	private float initialGrabLocalOffset;
 	private bool arrowRepairSuccess = false;
 	private bool arrowAnimating = false;
+	private bool firstTimeTryPullout = true;
 	void MakeArrowPullOutMagic() {
+		if (firstTimeTryPullout) {
+			StoryAndTutorialsController.s.OnTryingPullOutArrow();
+			firstTimeTryPullout = false;
+		}
+		
 		curRepairTime = 0;
 		arrowRepairSuccess = false;
 		

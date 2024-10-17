@@ -79,6 +79,7 @@ public class InfiniteMapController : MonoBehaviour {
 
         if (isMapOpen) {
             CameraController.s.EnterMapMode();
+            StoryAndTutorialsController.s.OnOpenMap();
         } else {
             CameraController.s.ExitMapMode();
         }
@@ -247,6 +248,8 @@ public class InfiniteMapController : MonoBehaviour {
         isMapOpen = true;
         ToggleMap();
         mapButton.SetActive(false);
+        
+        StoryAndTutorialsController.s.OnSectionWithEnemyStarted();
     }
 
     void MakeMap() {
@@ -300,7 +303,6 @@ public class InfiniteMapController : MonoBehaviour {
     DioramaHolder MakeSection(DioramaHolder root, Vector3 offset) {
         bool isFirstSection = (root.myDepth < 3);
         
-        
         var rewards = MakeRewardSection(isFirstSection);
         
         var pos = offset;
@@ -324,7 +326,9 @@ public class InfiniteMapController : MonoBehaviour {
     List<RewardTypes> MakeRewardSection(bool firstSection) {
         List<RewardTypes> rewards = new List<RewardTypes>();
         
-        rewards.Add(Random.value < 0.6f ? RewardTypes.gem : RewardTypes.randomGem);
+        if (!firstSection) {
+            rewards.Add(Random.value < 0.6f ? RewardTypes.gem : RewardTypes.randomGem);
+        }
         rewards.Add(Random.value < 0.6f ? RewardTypes.gem : RewardTypes.randomGem);
         rewards.Add(Random.value < 0.6f ? RewardTypes.bigGem : RewardTypes.randomBigGem);
         if (firstSection) {
@@ -334,6 +338,10 @@ public class InfiniteMapController : MonoBehaviour {
         }
         
         rewards = ExtensionMethods.Shuffle(rewards);
+
+        if (firstSection) { // first place of first section is always a regular gem
+            rewards.Insert(0, Random.value < 0.6f ? RewardTypes.gem : RewardTypes.randomGem);
+        }
 
         return rewards;
     }

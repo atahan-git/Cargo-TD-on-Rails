@@ -31,7 +31,7 @@ public class Artifact_ExplosiveGem: MonoBehaviour, IChangeCartState,IArtifactDes
             
         }
         
-        foreach (var ammoModule in target.GetComponentsInChildren<ModuleAmmo>()) {
+        /*foreach (var ammoModule in target.GetComponentsInChildren<ModuleAmmo>()) {
             if (ammoModule.currentAffectors.explosionResistance == 0) {
                 currentDescription = "Ammo doesn't disappear if cart explodes";
             } else {
@@ -39,6 +39,11 @@ public class Artifact_ExplosiveGem: MonoBehaviour, IChangeCartState,IArtifactDes
             }
             
             ammoModule.currentAffectors.explosionResistance += 1;
+            didApply = true;
+        }*/
+        foreach (var moduleAmmo in target.GetComponentsInChildren<ModuleAmmo>()) {
+            moduleAmmo.currentAffectors.reloadOverTime += 0.35f;
+            currentDescription = "Slowly gain ammo";
             didApply = true;
         }
 

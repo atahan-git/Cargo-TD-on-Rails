@@ -126,6 +126,7 @@ public class SettingsController : MonoBehaviour {
         Pauser.s.Unpause();
 
         DataSaver.s.GetCurrentSave().tutorialProgress = new DataSaver.TutorialProgress();
+        DataSaver.s.GetCurrentSave().storyProgress = new DataSaver.StoryProgress();
         //ResetRun();
 
         //SFX

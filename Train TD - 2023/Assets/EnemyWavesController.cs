@@ -165,7 +165,8 @@ public class EnemyWavesController : MonoBehaviour {
 					Instantiate(curLevel.enemyGuns[Random.Range(0, curLevel.enemyGuns.Length)], gunSlots[j].transform);
 				}
 			}
-
+			
+			StoryAndTutorialsController.s.OnEliteEnemySpawned(megaEnemy.transform);
 			//megaEnemy.GetComponent<EnemyInSwarm>().isElite = true;
 		}
 
@@ -203,6 +204,7 @@ public class EnemyWavesController : MonoBehaviour {
 							Instantiate(forcedEquipment, gunSlots[k].transform);
 						} else {
 							Instantiate(curLevel.uniqueEquipment[Random.Range(0, curLevel.uniqueEquipment.Length)], gunSlots[k].transform);
+							StoryAndTutorialsController.s.OnUniqueGearEnemy(enemy.transform);
 						}
 
 						uniqueGearBudget -= 1;

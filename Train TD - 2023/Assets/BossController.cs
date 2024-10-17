@@ -53,6 +53,8 @@ public class BossController : MonoBehaviour {
         
         continueButton.SetActive(false);
         continueButton.GetComponent<CanvasGroup>().alpha = 0;
+        
+        StoryAndTutorialsController.s.OnBossStart();
     }
 
 

@@ -41,7 +41,7 @@ public class MissionLoseFinisher : MonoBehaviour {
         if (PrologueController.s.isPrologueActive) {
             PrologueController.s.PrologueDone(); 
         } else {
-            DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial += 1;
+            //DataSaver.s.GetCurrentSave().tutorialProgress.runsMadeAfterTutorial += 1;
             DataSaver.s.GetCurrentSave().runsMade += 1;
         }
 

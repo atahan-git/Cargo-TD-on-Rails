@@ -268,13 +268,24 @@ public class DataSaver {
 	[Serializable]
 	public class TutorialProgress {
 		public bool prologueDone = false;
-		public int runsMadeAfterTutorial = 0;
 		public bool showTutorials = true;
+		
+		public bool shownEnemyWithUniqueGearText = false;
+		public bool shownEliteEnemyText = false;
+		public bool shownArrowPullOutText = false;
+		public bool shownFirstDrylandsText = false;
+		public bool shownFirstSnowlandsText = false;
 	}
 
 	[Serializable]
 	public class StoryProgress {
 		public List<int> seenConversations = new List<int>();
+		public int firstCityWakeyTextShownCount = 0;
+		public bool shownMapFirstText = false;
+		public bool shownLootFirstText = false;
+		public bool shownBossFirstText = false;
+		public bool shownAct2weirdText = false;
+		public bool shownFirstBanditText = false;
 	}
 
 	[Serializable]
