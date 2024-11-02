@@ -135,7 +135,7 @@ public class CameraController : MonoBehaviour {
 
     private void Update() {
         if (mainCamera.fieldOfView != targetFOV) {
-            mainCamera.fieldOfView = Mathf.MoveTowards(mainCamera.fieldOfView, targetFOV, fovChangeSpeed * Time.unscaledDeltaTime);
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, targetFOV, 10f * Time.unscaledDeltaTime);
         }
     }
 
@@ -151,11 +151,13 @@ public class CameraController : MonoBehaviour {
     private void LateUpdate() {
         if (!Pauser.s.isPaused) {
             if (directControlActive) {
+                targetFOV = 70;
                 ProcessDirectControl(aimAction.action.ReadValue<Vector2>(), aimGamepadAction.action.ReadValue<Vector2>());
                 if (allowDirectControlFreeLook) {
                     ProcessVelocityPredictionAndAimAssist();
                 }
             } else {
+                targetFOV = 40;
                 if (PlayerWorldInteractionController.s.canSelect || cannotSelectButCanMoveOverride) {
                     var mousePos = Mouse.current.position.ReadValue();
                     if (canEdgeMove)
@@ -795,6 +797,7 @@ public class CameraController : MonoBehaviour {
         rotLerping = true;
         posLerping = true;
         allowDirectControlFreeLook = allowFreeLook;
+        
         if (lockCursor) {
             Cursor.lockState = CursorLockMode.Locked;
         }

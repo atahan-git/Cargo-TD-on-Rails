@@ -35,7 +35,7 @@ public class StoryAndTutorialsController : MonoBehaviour {
 		var tutorialProgress = currentSave.tutorialProgress;
 		var storyProgress = DataSaver.s.GetCurrentSave().storyProgress;
 
-		if (!storyProgress.shownFirstBanditText && EnemyWavesController.s.AnyEnemyIsPresent()) {
+		if (!storyProgress.shownFirstBanditText && EnemyWavesController.s.AnyEnemyIsPresent() && EnemyWavesController.s.enemyInSwarms.Count > 0) {
 			trackingEnemy = true;
 			enemyBeingTracked = EnemyWavesController.s.enemyInSwarms[0].GetComponent<EnemyHealth>();
 			conversationToShowWhenEnemyIsNear = ConversationsIds.Main_Story_4_bandits;
@@ -112,7 +112,7 @@ public class StoryAndTutorialsController : MonoBehaviour {
 		var storyProgress = currentSave.storyProgress;
 		if (!storyProgress.shownBossFirstText) {
 			storyProgress.shownBossFirstText = true;
-			ConversationsHolder.s.TriggerConversation(ConversationsIds.Main_Story_5_city_in_the_distance_boss_start,0.5f);
+			ConversationsHolder.s.TriggerConversation(ConversationsIds.Main_Story_5_city_in_the_distance_boss_start,5f);
 		}
 	}
 
@@ -139,8 +139,8 @@ public class StoryAndTutorialsController : MonoBehaviour {
 				trackingEnemy = false;
 
 				if (showEnemyDetailsWhenReached) {
-					DirectControlMaster.s.DisableDirectControl();
-					CameraController.s.SnapToTransform(enemyBeingTracked.transform);
+					//DirectControlMaster.s.DisableDirectControl();
+					//CameraController.s.SnapToTransform(enemyBeingTracked.transform);
 					PlayerWorldInteractionController.s.ShownThingInfo(enemyBeingTracked);
 				}
 

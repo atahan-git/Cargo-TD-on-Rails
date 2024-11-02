@@ -19,6 +19,11 @@ public class MiniGUI_EnginePowerSlider : MonoBehaviour {
     public int GetEngineSpeed() {
         return (int)engineSlider.value;
     }
+
+    public void SetSpeed(int speed) {
+        engineSlider.value = speed;
+        OnValueChanged();
+    }
     
     public void GoBackToDefaultSpeed() {
         engineSlider.value = 1;

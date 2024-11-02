@@ -57,7 +57,14 @@ public class CommonEffectsProvider : MonoBehaviour
         }
         var pool = GetEffect(type);
         if (pool != null) {
+            var autoExpand = pool.autoExpand;
+            if (priority == EffectPriority.Medium) {
+                pool.autoExpand = false;
+            }
             var obj = pool.Spawn(position, rotation);
+            if (priority == EffectPriority.Medium) {
+                pool.autoExpand = autoExpand;
+            }
             obj.transform.SetParent(parent);
         }
     }

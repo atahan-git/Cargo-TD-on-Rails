@@ -102,13 +102,13 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState,
             return;
         }
 
-        if (currentJuice < JuiceCapacity()) {
+        /*if (currentJuice < JuiceCapacity()) {
             if (EnemyWavesController.s.AnyEnemyIsPresent()) {
-                currentJuice += naturalJuiceGeneration * Time.deltaTime * 0.5f;
+                currentJuice += naturalJuiceGeneration * Time.deltaTime * 0.1f;
             } else {
-                currentJuice += naturalJuiceGeneration * Time.deltaTime * 3f;
+                currentJuice += naturalJuiceGeneration * Time.deltaTime * 1f;
             }
-        }
+        }*/
         
         if (myHealth.myCart.isDestroyed && PlayStateMaster.s.isCombatInProgress()) {
             curSelfRepair += selfRepairSpeed * Time.deltaTime*5;
@@ -381,7 +381,7 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState,
             }
         }
 
-        var extraRepairs = currentAffectors.fire + (beingDirectControlled ? 2 : 0);
+        var extraRepairs = GetExtraRepairCount();
         if (extraRepairs > 0) {
             var otherRepairChunks = targetHealth.activeBurnEffects;
             
@@ -409,8 +409,12 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState,
         }
     }
 
+    private int GetExtraRepairCount() {
+        return currentAffectors.fire + (beingDirectControlled ? 2 : 0);
+    }
+
     public int GetExtraRepairs(RepairableBurnEffect[] list, ModuleHealth targetHealth, RepairableBurnEffect chunk ) {
-        var extraRepairs = currentAffectors.fire + (beingDirectControlled ? 2 : 0);
+        var extraRepairs = GetExtraRepairCount();
         var chunkPos = chunk.transform.position;
         if (extraRepairs > 0) {
             var otherRepairChunks = targetHealth.activeBurnEffects;
@@ -592,7 +596,6 @@ public class DroneRepairController : MonoBehaviour, IResetState, IDisabledState,
     }
 
     void TryGetNewTarget() {
-        
         if (!droneActive || !canPickNewTargets || !currentAffectors.IsActive()) {
             UnsetTarget();
             gettingNewTarget = false;

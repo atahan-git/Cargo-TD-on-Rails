@@ -316,7 +316,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 		for (int i = 0; i < activeBurnEffects.Count; i++) {
 			var effect = activeBurnEffects[i];
 			if (effect != null) {
-				CommonEffectsProvider.s.SpawnEffect(type, effect.transform.position, effect.transform.rotation, effect.transform, VisualEffectsController.EffectPriority.High);
+				CommonEffectsProvider.s.SpawnEffect(type, effect.transform.position, effect.transform.rotation, effect.transform, VisualEffectsController.EffectPriority.Medium);
 			}
 		}
 	}
@@ -374,7 +374,7 @@ public class EnemyHealth : MonoBehaviour, IPlayerHoldable {
 			
 			var juiceTracker = Train.s.GetComponent<RepairJuiceTracker>();
 			if (juiceTracker != null) {
-				juiceTracker.FillJuice(rewardJuice);
+				juiceTracker.FillJuice(rewardJuice*0.5f);
 			}
 		}
 

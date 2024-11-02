@@ -333,6 +333,7 @@ public class Projectile : MonoBehaviour {
                 if (!prevPhaseDamaged.Contains(enemyHealth)) {
                     prevPhaseDamaged.Add(enemyHealth);
                     DealDamageToEnemy(enemyHealth, true);
+                    currentData.onHitCallback?.Invoke();
                 }
             }
         }

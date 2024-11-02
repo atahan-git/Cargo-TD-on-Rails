@@ -113,6 +113,9 @@ public class InfiniteMapController : MonoBehaviour {
         if(movedThisTime)
             return;
         movedThisTime = true;
+        
+        MiniGUI_EnginePowerSlider.s.SetSpeed(1);
+        SpeedController.s.SetBrakingStatus(false);
 
         StartCoroutine(_GoToSection(holder));
     }
