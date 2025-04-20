@@ -157,7 +157,7 @@ public class CameraController : MonoBehaviour {
                     ProcessVelocityPredictionAndAimAssist();
                 }
             } else {
-                targetFOV = 40;
+                targetFOV = 60;
                 if (PlayerWorldInteractionController.s.canSelect || cannotSelectButCanMoveOverride) {
                     var mousePos = Mouse.current.position.ReadValue();
                     if (canEdgeMove)

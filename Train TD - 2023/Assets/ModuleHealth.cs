@@ -677,7 +677,7 @@ public class ModuleHealth : MonoBehaviour, IActiveDuringCombat, IActiveDuringSho
         }
     }
 
-    public const int repairChunkSize = 50;
+    public const int repairChunkSize = 10;
     public const int maxHealthReductionChunkSize = 5;
     public void RepairChunk(RepairableBurnEffect toRepair) {
         if (invincible)
